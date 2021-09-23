@@ -1,0 +1,19 @@
+﻿<Window x:Class="SLC_LayoutEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SLC_LayoutEditor"
+        xmlns:ui="clr-namespace:SLC_LayoutEditor.UI"
+        xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
+        xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
+        TextElement.Foreground="{DynamicResource ForegroundColor}"
+        Background="{DynamicResource BackgroundColor}"
+        mc:Ignorable="d"
+        Title="SLC Layout Editor" MinHeight="450" MinWidth="650"
+        d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    <ContentPresenter Content="{Binding Content}"/>
+</Window>

@@ -1,0 +1,71 @@
+﻿<DockPanel x:Class="SLC_LayoutEditor.UI.WelcomeScreen"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           xmlns:local="clr-namespace:SLC_LayoutEditor.UI"
+           xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
+           xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
+           mc:Ignorable="d" 
+           d:DesignHeight="450" d:DesignWidth="800" LastChildFill="False" Margin="8">
+    <DockPanel.DataContext>
+        <vm:WelcomeScreenViewModel/>
+    </DockPanel.DataContext>
+    <DockPanel.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="FontSize" Value="16"/>
+        </Style>
+    </DockPanel.Resources>
+    <TextBlock Text="Welcome!" FontSize="24" DockPanel.Dock="Top"/>
+    <TextBlock Text="Seems like you're using the editor for the first time. There are some things you need to keep in mind when using this software:"
+                   Margin="4,8,0,0" DockPanel.Dock="Top"/>
+    <StackPanel Margin="8,4" DockPanel.Dock="Top">
+        <DockPanel>
+            <TextBlock Text="1. "/>
+            <StackPanel>
+                <TextBlock Text="Cabin layouts created with the editor are not saved into the layout directory of SLC, they are instead saved in a separate location."/>
+                <TextBlock Text="This is because the folder where layouts are located is by default read-only. (you need Administrator rights in order to write to the directory)"/>
+                <TextBlock Text="Once you're done with your cabin layout you need to copy it to the SLC layout directory."/>
+            </StackPanel>
+        </DockPanel>
+        <DockPanel Margin="0,4,0,0">
+            <TextBlock Text="2. "/>
+            <StackPanel>
+                <TextBlock Text="The editor will copy all existing layouts to its own directory, but you can skip it if you like."/>
+                <TextBlock Text="You will find these in your documents folder under &quot;SLC Layout Editor/CabinLayouts&quot;"/>
+            </StackPanel>
+        </DockPanel>
+        <DockPanel Margin="0,4,0,0">
+            <TextBlock Text="3. "/>
+            <StackPanel>
+                <TextBlock Text="This program is not maintained by FPVSteve as it is a fan project of mine, so if you run into bugs, problems, etc. send a PM to BlackTasty via the Discord server &quot;FPVSteve&quot; ;)"/>
+            </StackPanel>
+        </DockPanel>
+    </StackPanel>
+    <UniformGrid Columns="2" DockPanel.Dock="Bottom">
+        <Button Height="40" Content="Copy layouts first" Margin="16" FontSize="20" Click="CopyLayouts_Click"
+                IsEnabled="{Binding IsCopying, Converter={StaticResource InverseBooleanConverter}}"/>
+        <Button Height="40" Content="Continue without copying" Margin="16" FontSize="20" Click="Continue_Click"
+                IsEnabled="{Binding IsCopying, Converter={StaticResource InverseBooleanConverter}}"
+                Style="{StaticResource YellowButtonStyle}"/>
+    </UniformGrid>
+    <StackPanel DockPanel.Dock="Bottom" Margin="8"
+                Visibility="{Binding IsCopying, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <TextBlock Margin="0,4,0,2">
+            <Run Text="{Binding CurrentAirplane, StringFormat={}Current airplane: {0}}"/>
+            <Run Text="{Binding CopiedAirplanesCount, StringFormat={}({0} /}"/>
+            <Run Text="{Binding AirplanesCount, StringFormat={}{0})}"/>
+        </TextBlock>
+        <ProgressBar Value="{Binding CopiedAirplanesCount}" Maximum="{Binding AirplanesCount}"/>
+        <TextBlock Margin="0,4,0,2">
+            <Run Text="{Binding CurrentLayout, StringFormat={}Current cabin layout: {0}}"/>
+            <Run Text="{Binding CopiedLayoutsCount, StringFormat={}({0} /}"/>
+            <Run Text="{Binding LayoutsCount, StringFormat={}{0})}"/>
+        </TextBlock>
+        <ProgressBar Value="{Binding CopiedLayoutsCount}" Maximum="{Binding LayoutsCount}"/>
+    </StackPanel>
+</DockPanel>
