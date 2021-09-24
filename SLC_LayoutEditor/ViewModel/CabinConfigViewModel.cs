@@ -1,5 +1,4 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
-using SLC_LayoutEditor.Core.Enum;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,12 +17,10 @@ namespace SLC_LayoutEditor.ViewModel
         private CabinLayoutSet mSelectedLayoutSet;
         private CabinLayout mSelectedCabinLayout;
 
-        private List<CabinSlot> mSelectedCabinSlots = new List<CabinSlot>();
+        private CabinSlot mSelectedCabinSlot;
         private int mSelectedCabinSlotFloor;
 
         private FrameworkElement mDialog;
-
-        private CabinSlotType mMultiSlotType;
 
         public VeryObservableCollection<CabinLayoutSet> LayoutSets
         {
@@ -53,25 +50,19 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedCabinLayout = value;
                 InvokePropertyChanged();
-                SelectedCabinSlots.Clear();
+                SelectedCabinSlot = null;
             }
         }
 
-        public List<CabinSlot> SelectedCabinSlots
+        public CabinSlot SelectedCabinSlot
         {
-            get => mSelectedCabinSlots;
+            get => mSelectedCabinSlot;
             set
             {
-                mSelectedCabinSlots = value;
+                mSelectedCabinSlot = value;
                 InvokePropertyChanged();
-                InvokePropertyChanged("SelectedCabinSlot");
-                InvokePropertyChanged("IsSingleCabinSlotSelected");
             }
         }
-
-        public CabinSlot SelectedCabinSlot => SelectedCabinSlots.FirstOrDefault();
-
-        public bool IsSingleCabinSlotSelected => SelectedCabinSlots.Count <= 1;
 
         public int SelectedCabinSlotFloor
         {
@@ -90,20 +81,6 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mDialog = value;
                 InvokePropertyChanged();
-            }
-        }
-
-        public int MultiSlotTypeId
-        {
-            get => (int)mMultiSlotType;
-            set
-            {
-                mMultiSlotType = (CabinSlotType)value;
-                InvokePropertyChanged();
-                foreach (CabinSlot selected in SelectedCabinSlots)
-                {
-                    selected.Type = mMultiSlotType;
-                }
             }
         }
 

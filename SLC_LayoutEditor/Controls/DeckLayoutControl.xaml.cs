@@ -1,5 +1,4 @@
-﻿using SLC_LayoutEditor.Core;
-using SLC_LayoutEditor.Core.Cabin;
+﻿using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Events;
 using System;
 using System.Collections.Generic;
@@ -34,7 +33,7 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<EventArgs> LayoutRegenerated;
         public event EventHandler<RemoveCabinDeckEventArgs> RemoveDeckClicked;
 
-        //private CabinSlotControl selectedSlots;
+        private CabinSlotControl selectedSlot;
 
         private Border horizontalDivider;
         private Border verticalDivider;
@@ -58,9 +57,6 @@ namespace SLC_LayoutEditor.Controls
         public static readonly DependencyProperty CabinDeckProperty =
             DependencyProperty.Register("CabinDeck", typeof(CabinDeck), typeof(DeckLayoutControl), cabinDeckMetadata);
         #endregion
-
-        public IEnumerable<CabinSlotControl> SelectedSlots => layout_deck.Children.OfType<CabinSlotControl>()
-                                                                .Where(x => x.IsSelected);
 
         public DeckLayoutControl()
         {
@@ -88,7 +84,8 @@ namespace SLC_LayoutEditor.Controls
             }
             #endregion
 
-            #region Generate layout row- and column select buttons
+            #region Generate layout row- and column buttons (DISABLED)
+            /*
             for (int row = 0; row < rows; row++)
             {
                 AddRowSelectButton(row);
@@ -97,7 +94,7 @@ namespace SLC_LayoutEditor.Controls
             for (int column = 0; column < columns; column++)
             {
                 AddColumnSelectButton(column);
-            }
+            }*/
             #endregion
 
             #region Generate buttons to add rows and columns
@@ -168,37 +165,17 @@ namespace SLC_LayoutEditor.Controls
         private void AddRowSelectButton(int row)
         {
             Button rowButton = GetSelectButton(true, row);
-            rowButton.Click += RowSelectButton_Click;
 
             layout_deck.Children.Add(rowButton);
             Canvas.SetLeft(rowButton, row * SLOT_WIDTH + LAYOUT_OFFSET_X);
         }
 
-        private void RowSelectButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && int.TryParse(button.Tag.ToString(), out int row))
-            {
-                SetSlotsSelected(CabinDeck.CabinSlots.Where(x => x.Row == row).ToList());
-                OnCabinSlotClicked(new CabinSlotClickedEventArgs(SelectedSlots, CabinDeck.Floor, this));
-            }
-        }
-
         private void AddColumnSelectButton(int column)
         {
             Button columnButton = GetSelectButton(false, column);
-            columnButton.Click += ColumnSelectButton_Click;
 
             layout_deck.Children.Add(columnButton);
             Canvas.SetTop(columnButton, column * SLOT_HEIGHT + LAYOUT_OFFSET_Y);
-        }
-
-        private void ColumnSelectButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && int.TryParse(button.Tag.ToString(), out int column))
-            {
-                SetSlotsSelected(CabinDeck.CabinSlots.Where(x => x.Column == column).ToList());
-                OnCabinSlotClicked(new CabinSlotClickedEventArgs(SelectedSlots, CabinDeck.Floor, this));
-            }
         }
 
         private void RefreshControlSize()
@@ -216,8 +193,8 @@ namespace SLC_LayoutEditor.Controls
 
         private void AddRowButton_Click(object sender, RoutedEventArgs e)
         {
-            int columns = GetColumnCount();
-            int newRow = GetRowCount() + 1;
+            int columns = CabinDeck.Columns;
+            int newRow = CabinDeck.Rows + 1;
 
             for (int column = 0; column <= columns; column++)
             {
@@ -233,8 +210,8 @@ namespace SLC_LayoutEditor.Controls
 
         private void AddColumnButton_Click(object sender, RoutedEventArgs e)
         {
-            int rows = GetRowCount();
-            int newColumn = GetColumnCount() + 1;
+            int rows = CabinDeck.Rows;
+            int newColumn = CabinDeck.Columns + 1;
 
             for (int row = 0; row <= rows; row++)
             {
@@ -248,24 +225,21 @@ namespace SLC_LayoutEditor.Controls
             RefreshControlSize();
         }
 
-        public void SetSlotsSelected(List<CabinSlot> selectedSlots)
+        public void SetSlotSelected(CabinSlot selectedSlot)
         {
-            if (selectedSlots?.Count > 0)
+            if (selectedSlot != null)
             {
-                foreach (CabinSlot selectedSlot in selectedSlots)
-                {
-                    CabinSlotControl target = layout_deck.Children.OfType<CabinSlotControl>()
+                CabinSlotControl target = layout_deck.Children.OfType<CabinSlotControl>()
                                             .FirstOrDefault(x => x.CabinSlot.Row == selectedSlot.Row && x.CabinSlot.Column == selectedSlot.Column);
 
-                    if (target != null)
-                    {
-                        SetSelectionHighlight(target, selectedSlots.Count > 0);
-                    }
+                if (target != null)
+                {
+                    SetSelectionHighlight(target);
                 }
             }
             else
             {
-                SetSelectionHighlight(null, false);
+                SetSelectionHighlight(null);
             }
         }
 
@@ -284,45 +258,26 @@ namespace SLC_LayoutEditor.Controls
             };
         }
 
-        private void SetSelectionHighlight(CabinSlotControl target, bool simulateShift)
+        private void SetSelectionHighlight(CabinSlotControl target)
         {
-            //selectedSlots?.SetSelected(false);
-            List<CabinSlotControl> selectedSlots = SelectedSlots.ToList();
-
-            if (selectedSlots.Count > 0 && !Util.IsShiftDown() && !simulateShift)
-            {
-                foreach (CabinSlotControl selectedSlot in selectedSlots)
-                {
-                    selectedSlot.SetSelected(false);
-                }
-            }
+            selectedSlot?.SetSelected(false);
 
             target?.SetSelected(true);
-            //selectedSlots = target;
+            selectedSlot = target;
         }
 
         private void GetRowAndColumnCount(out int rows, out int columns)
         {
-            rows = GetRowCount() + 1;
-            columns = GetColumnCount() + 1;
-        }
-
-        private int GetRowCount()
-        {
-            return CabinDeck.CabinSlots.Count > 0 ? CabinDeck.CabinSlots.Max(x => x.Row) : 0;
-        }
-
-        private int GetColumnCount()
-        {
-            return CabinDeck.CabinSlots.Count > 0 ? CabinDeck.CabinSlots.Max(x => x.Column) : 0;
+            rows = CabinDeck.Rows + 1;
+            columns = CabinDeck.Columns + 1;
         }
 
         private void SlotLayout_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is CabinSlotControl target)
             {
-                SetSelectionHighlight(target, false);
-                OnCabinSlotClicked(new CabinSlotClickedEventArgs(SelectedSlots, CabinDeck.Floor, this));
+                SetSelectionHighlight(target);
+                OnCabinSlotClicked(new CabinSlotClickedEventArgs(target, CabinDeck.Floor, this));
             }
         }
 

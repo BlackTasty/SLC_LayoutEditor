@@ -61,19 +61,9 @@ namespace SLC_LayoutEditor
             SaveAppSettings();
         }
 
-        public static void LoadAppSettings()
-        {
-            FileInfo fi = new FileInfo(Path.Combine(basePath, "settings.json"));
-
-            if (fi.Exists)
-            {
-                Settings = AppSettings.Load(fi);
-            }
-        }
-
         public static void SaveAppSettings()
         {
-            Settings.Save(basePath);
+            Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
         }
     }
 }

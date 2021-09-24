@@ -39,13 +39,12 @@ namespace SLC_LayoutEditor.UI
             CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             if (activeDeckControl != null)
             {
-                activeDeckControl.SetSlotsSelected(null);
+                activeDeckControl.SetSlotSelected(null);
             }
 
-            vm.SelectedCabinSlots = e.SelectedSlots.Select(x => x.CabinSlot).ToList();
+            vm.SelectedCabinSlot = e.Target.CabinSlot;
             vm.SelectedCabinSlotFloor = e.Floor;
             activeDeckControl = e.DeckControl;
-            e.DeckControl.SetSlotsSelected(vm.SelectedCabinSlots);
         }
 
         private void SaveLayout_Click(object sender, RoutedEventArgs e)
@@ -92,9 +91,9 @@ namespace SLC_LayoutEditor.UI
         private void layout_LayoutRegenerated(object sender, EventArgs e)
         {
             CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-            if (sender is DeckLayoutControl deckLayout && vm.SelectedCabinSlots != null)
+            if (sender is DeckLayoutControl deckLayout && vm.SelectedCabinSlot != null)
             {
-                deckLayout.SetSlotsSelected(vm.SelectedCabinSlots);
+                deckLayout.SetSlotSelected(vm.SelectedCabinSlot);
             }
         }
 
@@ -166,7 +165,25 @@ namespace SLC_LayoutEditor.UI
         private void AddCabinDeck_Click(object sender, RoutedEventArgs e)
         {
             CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-            vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1));
+            int rows = 1;
+            int columns = 1;
+
+            if (vm.SelectedCabinLayout.CabinDecks.Count > 0)
+            {
+                MessageBoxResult result = MessageBox.Show("Should the new deck have matching rows and columns?",
+                    "Match existing layout?", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                else if (result == MessageBoxResult.Yes)
+                {
+                    CabinDeck lastDeck = vm.SelectedCabinLayout.CabinDecks.LastOrDefault();
+                    rows = lastDeck.Rows + 1;
+                    columns = lastDeck.Columns + 1;
+                }
+            }
+            vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
         }
     }
 }

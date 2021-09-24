@@ -37,6 +37,7 @@ namespace SLC_LayoutEditor.UI
         protected virtual void OnWelcomeConfirmed(EventArgs e)
         {
             App.Settings.WelcomeScreenShown = true;
+            App.SaveAppSettings();
             WelcomeConfirmed?.Invoke(this, e);
         }
 

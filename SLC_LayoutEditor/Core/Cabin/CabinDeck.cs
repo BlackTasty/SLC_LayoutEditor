@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Core.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,10 @@ namespace SLC_LayoutEditor.Core.Cabin
         public double Width { get; set; }
 
         public double Height { get; set; }
+
+        public int Rows => CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Row) : 0;
+
+        public int Columns => CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Column) : 0;
 
         public VeryObservableCollection<CabinSlot> CabinSlots
         {
@@ -48,23 +53,41 @@ namespace SLC_LayoutEditor.Core.Cabin
         }
 
         public bool AreServicePointsValid =>
-            mCabinSlots.Where(x => x.Type == Enum.CabinSlotType.ServiceStartPoint).Count() ==
-            mCabinSlots.Where(x => x.Type == Enum.CabinSlotType.ServiceEndPoint).Count();
+            mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint).Count() ==
+            mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceEndPoint).Count();
 
         public bool AreGalleysValid =>
-            mCabinSlots.Where(x => x.Type == Enum.CabinSlotType.Galley).Count() >=
-            mCabinSlots.Where(x => x.Type == Enum.CabinSlotType.ServiceStartPoint).Count();
+            mCabinSlots.Where(x => x.Type == CabinSlotType.Galley).Count() >=
+            mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint).Count();
 
-        public bool AreKitchensValid => mCabinSlots.Where(x => x.Type == Enum.CabinSlotType.Kitchen).Count() > 0;
+        public bool AreKitchensValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Kitchen).Count() > 0;
 
-        public bool AreDoorsValid => mCabinSlots.Where(x => x.Type == Enum.CabinSlotType.Door).Count() > 0;
+        public bool AreDoorsValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Door).Count() > 0;
 
-        public int ProblemCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreKitchensValid, AreServicePointsValid);
+        public bool AreSeatsReachableByService
+        {
+            get
+            {
+                IEnumerable<int> coveredRows = GetRowsCoveredByService();
+                IEnumerable<int> rowsWithSeats = CabinSlots.Where(x => x.IsSeat).Select(x => x.Row).Distinct();
+                return rowsWithSeats.All(x => coveredRows.Contains(x));
+            }
+        }
 
-        public CabinDeck(int floor)
+        public int ProblemCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreKitchensValid, 
+            AreServicePointsValid, AreSeatsReachableByService);
+
+        public CabinDeck(int floor, int rows, int columns)
         {
             mFloor = floor;
-            mCabinSlots.Add(new CabinSlot(0, 0, Enum.CabinSlotType.Wall, 0));
+            for (int column = 0; column < columns; column++)
+            {
+                for (int row = 0; row < rows; row++)
+                {
+                    CabinSlotType slotType = row == 0 || row == rows - 1 || column == 0 || column == columns - 1 ? CabinSlotType.Wall : CabinSlotType.Aisle;
+                    mCabinSlots.Add(new CabinSlot(row, column, slotType, 0));
+                }
+            }
         }
 
         private void CabinSlots_ObserveChanges(object sender, EventArgs e)
@@ -99,7 +122,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public Dictionary<CabinSlot, int> GetStairways()
         {
             Dictionary<CabinSlot, int> stairwayDict = new Dictionary<CabinSlot, int>();
-            foreach (CabinSlot stairway in CabinSlots.Where(x => x.Type == Enum.CabinSlotType.Stairway))
+            foreach (CabinSlot stairway in CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
             {
                 stairwayDict.Add(stairway, Floor);
             }
@@ -112,12 +135,26 @@ namespace SLC_LayoutEditor.Core.Cabin
             return CabinSlots.Max(x => x.Column) + 1;
         }
 
+        private IEnumerable<int> GetRowsCoveredByService()
+        {
+            List<int> coveredRows = new List<int>();
+            foreach (CabinSlot serviceStart in CabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint))
+            {
+                CabinSlot serviceEnd = CabinSlots.FirstOrDefault(x => x.Type == CabinSlotType.ServiceEndPoint && x.Row > serviceStart.Row);
+                coveredRows.AddRange(CabinSlots.Where(x => x.Row >= serviceStart.Row && x.Row <= serviceEnd.Row)
+                                        .GroupBy(x => x.Row).Select(x => x.Key));
+            }
+
+            return coveredRows.Distinct();
+        } 
+
         private void CabinSlot_CabinSlotChanged(object sender, Events.CabinSlotChangedEventArgs e)
         {
             InvokePropertyChanged("AreServicePointsValid");
             InvokePropertyChanged("AreGalleysValid");
             InvokePropertyChanged("AreKitchensValid");
             InvokePropertyChanged("AreDoorsValid");
+            InvokePropertyChanged("AreSeatsReachableByService");
             InvokePropertyChanged("ProblemCount");
 
             OnCabinSlotsChanged(e);

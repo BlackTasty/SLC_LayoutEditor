@@ -58,6 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\RoundedCornersPolygon.cs" />
+    <Compile Include="Controls\SeatCapacityBox.xaml.cs">
+      <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\GreaterThanConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Core\Events\AddDialogClosingEventArgs.cs" />
@@ -100,6 +103,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CabinSlotControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SeatCapacityBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

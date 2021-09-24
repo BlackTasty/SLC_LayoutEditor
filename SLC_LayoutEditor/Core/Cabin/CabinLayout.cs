@@ -36,8 +36,26 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public int PassengerCapacity => CabinDecks.SelectMany(x => x.CabinSlots).Where(x => x.IsSeat).Count();
+        #region Seat counts
+        public int PassengerCapacity => CabinDecks.SelectMany(x => x.CabinSlots).Where(x => x.IsSeat && x.Type != CabinSlotType.UnavailableSeat).Count();
 
+        public int EconomyCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
+                                        .Where(x => x.Type == CabinSlotType.EconomyClassSeat).Count();
+
+        public int BusinessCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
+                                        .Where(x => x.Type == CabinSlotType.BusinessClassSeat).Count();
+
+        public int PremiumCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
+                                        .Where(x => x.Type == CabinSlotType.PremiumClassSeat).Count();
+
+        public int FirstClassCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
+                                        .Where(x => x.Type == CabinSlotType.FirstClassSeat).Count();
+
+        public int SupersonicCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
+                                        .Where(x => x.Type == CabinSlotType.SupersonicClassSeat).Count();
+        #endregion
+
+        #region Problem checking
         public bool HasNoDuplicateEconomySeats => CheckNoDuplicateSeatNumbers(CabinSlotType.EconomyClassSeat);
 
         public bool HasNoDuplicateBusinessSeats => CheckNoDuplicateSeatNumbers(CabinSlotType.BusinessClassSeat);
@@ -56,6 +74,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             HasNoDuplicateBusinessSeats, HasNoDuplicateEconomySeats, 
             HasNoDuplicateFirstClassSeats, HasNoDuplicatePremiumSeats, HasNoDuplicateSupersonicSeats, 
             HasNoDuplicateUnavailableSeats, StairwaysValid);
+        #endregion
 
         public string FilePath => filePath;
 

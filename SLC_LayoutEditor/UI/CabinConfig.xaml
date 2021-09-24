@@ -76,9 +76,33 @@
                     </ComboBox.Style>
                 </ComboBox>
             </DockPanel>
-            <TextBlock DockPanel.Dock="Top" Margin="4" FontSize="16"
-                   Text="{Binding SelectedCabinLayout.PassengerCapacity, StringFormat={}Passenger capacity: {0}, FallbackValue=Passenger capacity: 0}"
-                   Visibility="{Binding SelectedCabinLayout, Converter={StaticResource NotNullToVisibilityConverter}}"/>
+            <StackPanel DockPanel.Dock="Top"
+                        Visibility="{Binding SelectedCabinLayout, Converter={StaticResource NotNullToVisibilityConverter}}">
+                <TextBlock Margin="4" FontSize="16" Style="{StaticResource DefaultTextStyle}"
+                   Text="{Binding SelectedCabinLayout.PassengerCapacity, StringFormat={}Passenger capacity: {0}, FallbackValue=Passenger capacity: 0}"/>
+                <UniformGrid Columns="5">
+                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="ECO"
+                                          Capacity="{Binding SelectedCabinLayout.EconomyCapacity}"
+                                          BoxBackground="{StaticResource EconomyClassColor}"
+                                          ToolTip="Economy class"/>
+                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="BZ"
+                                          Capacity="{Binding SelectedCabinLayout.BusinessCapacity}"
+                                          BoxBackground="{StaticResource BusinessClassColor}"
+                                          ToolTip="Business class"/>
+                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="PREM"
+                                          Capacity="{Binding SelectedCabinLayout.PremiumCapacity}"
+                                          BoxBackground="{StaticResource PremiumClassColor}"
+                                          ToolTip="Premium class"/>
+                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="FIRST"
+                                          Capacity="{Binding SelectedCabinLayout.FirstClassCapacity}"
+                                          BoxBackground="{StaticResource FirstClassColor}"
+                                          ToolTip="First class"/>
+                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="SUPER"
+                                          Capacity="{Binding SelectedCabinLayout.SupersonicCapacity}"
+                                          BoxBackground="{StaticResource SupersonicClassColor}"
+                                          ToolTip="Supersonic class"/>
+                </UniformGrid>
+            </StackPanel>
             <Button DockPanel.Dock="Bottom" Margin="8,0" Content="Save layout" Click="SaveLayout_Click"
                 IsEnabled="{Binding SelectedCabinLayout, Converter={StaticResource NotNullToBooleanConverter}}"/>
             <Expander DockPanel.Dock="Top" Margin="0,16,0,8">
@@ -280,7 +304,20 @@
                                                             <Setter Property="Text" Value="Service start- and endpoints are valid"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding AreServicePointsValid}" Value="False">
-                                                                    <Setter Property="Text" Value="Invalid serice points!"/>
+                                                                    <Setter Property="Text" Value="Invalid service points!"/>
+                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <TextBlock DockPanel.Dock="Top">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
+                                                            <Setter Property="Text" Value="All seat rows covered by service"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding AreSeatsReachableByService}" Value="False">
+                                                                    <Setter Property="Text" Value="Some rows aren't covered by service!"/>
                                                                     <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
@@ -326,17 +363,8 @@
         <Border Width="1" Background="{StaticResource SlotSelectedColor}"/>
         <DockPanel Margin="8">
             <StackPanel DockPanel.Dock="Bottom">
-                <TextBlock Text="Configure multiple slots" FontSize="16" Style="{StaticResource DefaultTextStyle}"/>
-
-                <StackPanel Margin="4">
-                    <TextBlock Text="Slot type" Margin="0,0,0,4" Style="{StaticResource DefaultTextStyle}"/>
-                    <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
-                                          SelectedIndex="{Binding MultiSlotTypeId}"/>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding IsSingleCabinSlotSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Single slot configuration " FontSize="16" Style="{StaticResource DefaultTextStyle}"/>
+                    <TextBlock Text="Slot configuration " FontSize="16" Style="{StaticResource DefaultTextStyle}"/>
                     <TextBlock FontSize="16" Visibility="{Binding SelectedCabinSlot, Converter={StaticResource NotNullToVisibilityConverter}}"
                                        Style="{StaticResource DefaultTextStyle}">
                                 <Run Text="{Binding SelectedCabinSlotFloor, StringFormat={}(Floor {0}}"/><Run Text=","/>
@@ -383,11 +411,11 @@
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                                       Margin="4,8">
                     <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
-                              ItemsSource="{Binding SelectedCabinLayout.CabinDecks, Mode=OneWay}"
-                              x:Name="layout_decks" GridLinesVisibility="None"
-                              VerticalScrollBarVisibility="Hidden" BorderBrush="Transparent" 
-                              CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
-                              CanUserResizeColumns="False" CanUserSortColumns="False">
+                                      ItemsSource="{Binding SelectedCabinLayout.CabinDecks}"
+                                      x:Name="layout_decks" GridLinesVisibility="None"
+                                      VerticalScrollBarVisibility="Hidden" BorderBrush="Transparent" 
+                                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
+                                      CanUserResizeColumns="False" CanUserSortColumns="False">
                         <DataGrid.Resources>
                             <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                             <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
