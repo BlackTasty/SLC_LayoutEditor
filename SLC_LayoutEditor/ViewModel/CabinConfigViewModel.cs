@@ -17,8 +17,12 @@ namespace SLC_LayoutEditor.ViewModel
         private CabinLayoutSet mSelectedLayoutSet;
         private CabinLayout mSelectedCabinLayout;
 
-        private List<CabinSlot> mSelectedCabinSlots;
+        private List<CabinSlot> mSelectedCabinSlots = new List<CabinSlot>();
         private int mSelectedCabinSlotFloor;
+        private int mSelectedAutomationIndex = -1;
+        private string mAutomationSeatLetters = "";
+        private int mServiceAreasCount = 1;
+        private int mSelectedMultiSlotTypeIndex = -1;
 
         private FrameworkElement mDialog;
 
@@ -61,8 +65,20 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedCabinSlots = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged("IsSingleCabinSlotSelected");
+
+                if (value.Count <= 1)
+                {
+                    InvokePropertyChanged("SelectedCabinSlot");
+                }
+
+                SelectedMultiSlotTypeIndex = -1;
             }
         }
+
+        public CabinSlot SelectedCabinSlot => SelectedCabinSlots.FirstOrDefault();
+
+        public bool IsSingleCabinSlotSelected => mSelectedCabinSlots.Count <= 1;
 
         public int SelectedCabinSlotFloor
         {
@@ -70,6 +86,65 @@ namespace SLC_LayoutEditor.ViewModel
             set
             {
                 mSelectedCabinSlotFloor = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public int SelectedAutomationIndex
+        {
+            get => mSelectedAutomationIndex;
+            set
+            {
+                mSelectedAutomationIndex = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public string AutomationSeatLetters
+        {
+            get => mAutomationSeatLetters;
+            set
+            {
+                mAutomationSeatLetters = value.ToUpper();
+                InvokePropertyChanged();
+                InvokePropertyChanged("AutomationLettersValid");
+            }
+        }
+
+        public bool AutomationLettersValid
+        {
+            get
+            {
+                string[] letters = AutomationSeatLetters.Split(',');
+
+                for (int i = 0; i < letters.Length; i++)
+                {
+                    if (string.IsNullOrWhiteSpace(letters[i]) || !char.IsLetter(letters[i][0]) || ArrayContains(letters, i))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        public int ServiceAreasCount
+        {
+            get => mServiceAreasCount;
+            set
+            {
+                mServiceAreasCount = Math.Max(1, value);
+                InvokePropertyChanged();
+            }
+        }
+
+        public int SelectedMultiSlotTypeIndex
+        {
+            get => mSelectedMultiSlotTypeIndex;
+            set
+            {
+                mSelectedMultiSlotTypeIndex = value;
                 InvokePropertyChanged();
             }
         }
@@ -100,6 +175,24 @@ namespace SLC_LayoutEditor.ViewModel
         private async void LoadLayouts()
         {
             await SelectedLayoutSet.LoadCabinLayout();
+        }
+
+        private bool ArrayContains(string[] array, int targetIndex)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (i == targetIndex)
+                {
+                    continue;
+                }
+
+                if (array[i] == array[targetIndex])
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

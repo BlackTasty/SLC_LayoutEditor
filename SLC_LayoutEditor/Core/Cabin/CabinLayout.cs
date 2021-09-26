@@ -11,7 +11,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 {
     class CabinLayout : ViewModelBase
     {
-        private string filePath;
+        private FileInfo layoutFile;
 
         private string mLayoutName; //e.g. Default
         private VeryObservableCollection<CabinDeck> mCabinDecks = new VeryObservableCollection<CabinDeck>("CabinDecks");
@@ -76,7 +76,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             HasNoDuplicateUnavailableSeats, StairwaysValid);
         #endregion
 
-        public string FilePath => filePath;
+        public string FilePath => layoutFile.FullName;
 
         public CabinLayout(string layoutName)
         {
@@ -87,25 +87,33 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             if (layoutFile.Exists)
             {
-                mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
-                string[] decks = File.ReadAllText(layoutFile.FullName)
-                                        .Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
-                for (int floor = 0; floor < decks.Length; floor++)
-                {
-                    if (string.IsNullOrWhiteSpace(decks[floor]))
-                    {
-                        continue;
-                    }
+                this.layoutFile = layoutFile;
 
-                    CabinDeck deck = new CabinDeck(decks[floor], floor);
-                    deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
-                    mCabinDecks.Add(deck);
+                LoadCabinLayout();
+            }
+        }
+
+        public void LoadCabinLayout()
+        {
+            mCabinDecks.Clear();
+
+            mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
+            string[] decks = File.ReadAllText(layoutFile.FullName)
+                                    .Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int floor = 0; floor < decks.Length; floor++)
+            {
+                if (string.IsNullOrWhiteSpace(decks[floor]))
+                {
+                    continue;
                 }
 
-                filePath = layoutFile.FullName;
-                InvokePropertyChanged("PassengerCapacity");
-                RefreshProblemChecks();
+                CabinDeck deck = new CabinDeck(decks[floor], floor);
+                deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
+                mCabinDecks.Add(deck);
             }
+
+            InvokePropertyChanged("PassengerCapacity");
+            RefreshProblemChecks();
         }
 
         private void Deck_CabinSlotsChanged(object sender, EventArgs e)
@@ -131,7 +139,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void SaveLayout()
         {
-            File.WriteAllText(filePath, ToLayoutFile());
+            File.WriteAllText(FilePath, ToLayoutFile());
         }
 
         private bool CheckNoDuplicateSeatNumbers(CabinSlotType seatType)

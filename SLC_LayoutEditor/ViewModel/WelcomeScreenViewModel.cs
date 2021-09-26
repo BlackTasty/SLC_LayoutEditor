@@ -97,6 +97,12 @@ namespace SLC_LayoutEditor.ViewModel
         {
             await Task.Run(() =>
             {
+                if (Directory.Exists(App.Settings.CabinLayoutsEditPath))
+                {
+                    Directory.Delete(App.Settings.CabinLayoutsEditPath, true);
+                }
+
+                Directory.CreateDirectory(App.Settings.CabinLayoutsEditPath);
                 IsCopying = true;
 
                 var layoutSets = new DirectoryInfo(App.Settings.CabinLayoutsReadoutPath).EnumerateDirectories();

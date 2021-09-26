@@ -64,18 +64,20 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool AreDoorsValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Door).Count() > 0;
 
+        public bool AreToiletsAvailable => mCabinSlots.Where(x => x.Type == CabinSlotType.Toilet).Count() > 0;
+
         public bool AreSeatsReachableByService
         {
             get
             {
                 IEnumerable<int> coveredRows = GetRowsCoveredByService();
-                IEnumerable<int> rowsWithSeats = CabinSlots.Where(x => x.IsSeat).Select(x => x.Row).Distinct();
+                IEnumerable<int> rowsWithSeats = GetRowsWithSeats();
                 return rowsWithSeats.All(x => coveredRows.Contains(x));
             }
         }
 
         public int ProblemCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreKitchensValid, 
-            AreServicePointsValid, AreSeatsReachableByService);
+            AreServicePointsValid, AreSeatsReachableByService, AreToiletsAvailable);
 
         public CabinDeck(int floor, int rows, int columns)
         {
@@ -92,11 +94,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void CabinSlots_ObserveChanges(object sender, EventArgs e)
         {
-            InvokePropertyChanged("AreServicePointsValid");
-            InvokePropertyChanged("AreGalleysValid");
-            InvokePropertyChanged("AreKitchensValid");
-            InvokePropertyChanged("AreDoorsValid");
-            InvokePropertyChanged("ProblemCount");
+            RefreshProblemChecks();
 
             OnCabinSlotsChanged(e);
         }
@@ -117,6 +115,11 @@ namespace SLC_LayoutEditor.Core.Cabin
                     mCabinSlots.Add(cabinSlot);
                 }
             }
+        }
+
+        public IEnumerable<int> GetRowsWithSeats()
+        {
+            return CabinSlots.Where(x => x.IsSeat).Select(x => x.Row).Distinct();
         }
 
         public Dictionary<CabinSlot, int> GetStairways()
@@ -150,12 +153,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void CabinSlot_CabinSlotChanged(object sender, Events.CabinSlotChangedEventArgs e)
         {
-            InvokePropertyChanged("AreServicePointsValid");
-            InvokePropertyChanged("AreGalleysValid");
-            InvokePropertyChanged("AreKitchensValid");
-            InvokePropertyChanged("AreDoorsValid");
-            InvokePropertyChanged("AreSeatsReachableByService");
-            InvokePropertyChanged("ProblemCount");
+            RefreshProblemChecks();
 
             OnCabinSlotsChanged(e);
         }
@@ -177,6 +175,17 @@ namespace SLC_LayoutEditor.Core.Cabin
         protected virtual void OnCabinSlotsChanged(EventArgs e)
         {
             CabinSlotsChanged?.Invoke(this, e);
+        }
+
+        private void RefreshProblemChecks()
+        {
+            InvokePropertyChanged("AreServicePointsValid");
+            InvokePropertyChanged("AreGalleysValid");
+            InvokePropertyChanged("AreKitchensValid");
+            InvokePropertyChanged("AreDoorsValid");
+            InvokePropertyChanged("AreToiletsAvailable");
+            InvokePropertyChanged("AreSeatsReachableByService");
+            InvokePropertyChanged("ProblemCount");
         }
     }
 }

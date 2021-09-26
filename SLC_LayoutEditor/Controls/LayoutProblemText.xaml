@@ -1,0 +1,21 @@
+﻿<TextBlock x:Class="SLC_LayoutEditor.Controls.LayoutProblemText"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
+             mc:Ignorable="d"
+             d:DesignHeight="20" d:DesignWidth="240">
+    <TextBlock.Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
+            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ValidText}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsValid, UpdateSourceTrigger=PropertyChanged}"
+                                                     Value="False">
+                    <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=Self}, Path=InvalidText}"/>
+                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </TextBlock.Style>
+</TextBlock>

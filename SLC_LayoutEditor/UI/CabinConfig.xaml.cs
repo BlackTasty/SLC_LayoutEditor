@@ -1,6 +1,7 @@
 ﻿using SLC_LayoutEditor.Controls;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
@@ -184,6 +185,68 @@ namespace SLC_LayoutEditor.UI
                 }
             }
             vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+        }
+
+        private void MultiSelect_SlotTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
+            {
+                CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+
+                foreach (CabinSlot cabinSlot in vm.SelectedCabinSlots)
+                {
+                    cabinSlot.Type = slotType;
+                }
+            }
+        }
+
+        private void ReloadDeck_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Do you really want to reload this layout? Any unsaved changes are lost!", 
+                "Reload cabin layout", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+            activeDeckControl.SetMultipleSlotsSelected(new List<CabinSlot>(), true);
+            vm.SelectedCabinSlots = new List<CabinSlot>();
+            vm.SelectedCabinLayout.LoadCabinLayout();
+        }
+
+        private void Automate_Click(object sender, RoutedEventArgs e)
+        {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+            switch (vm.SelectedAutomationIndex)
+            {
+                case 0: // Seat numeration
+                    var seatRowGroups = vm.SelectedCabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).OrderBy(x => x.Key);
+                    string[] seatLetters = vm.AutomationSeatLetters.Split(',');
+                    int currentLetterIndex = 0;
+                    foreach (var group in seatRowGroups)
+                    {
+                        int seatNumber = 1;
+                        foreach (CabinSlot cabinSlot in group)
+                        {
+                            cabinSlot.SeatLetter = seatLetters[currentLetterIndex][0];
+                            cabinSlot.SlotNumber = seatNumber;
+                            seatNumber++;
+                        }
+
+                        if (currentLetterIndex + 1 < seatLetters.Length)
+                        {
+                            currentLetterIndex++;
+                        }
+                    }
+                    break;
+                case 1: //Service points (WIP)
+                    CabinDeck selectedCabinDeck = vm.SelectedCabinLayout.CabinDecks.FirstOrDefault(x => x.Floor == vm.SelectedCabinSlotFloor);
+                    if (selectedCabinDeck != null)
+                    {
+                        var seatRows = selectedCabinDeck.GetRowsWithSeats();
+                    }
+                    break;
+            }
         }
     }
 }

@@ -8,11 +8,11 @@ using System.Windows.Data;
 
 namespace SLC_LayoutEditor.Converter
 {
-    class NotNullToBooleanConverter : IValueConverter
+    class StringNotEmptyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null;
+            return !string.IsNullOrWhiteSpace(value.ToString());
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

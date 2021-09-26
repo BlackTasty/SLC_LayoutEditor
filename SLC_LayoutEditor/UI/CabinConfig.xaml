@@ -15,9 +15,12 @@
     </Grid.DataContext>
     <Grid.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converter:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
         <converter:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
         <converter:NotNullToBooleanConverter x:Key="NotNullToBooleanConverter"/>
         <converter:GreaterThanConverter x:Key="GreaterThanConverter"/>
+        <converter:EqualsToVisibilityConverter x:Key="EqualsToVisibilityConverter"/>
+        <converter:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
     </Grid.Resources>
     <DockPanel>
         <DockPanel Width="270" Margin="8" LastChildFill="False">
@@ -136,104 +139,27 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="No duplicate Economy Class seats"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedCabinLayout.HasNoDuplicateEconomySeats, UpdateSourceTrigger=PropertyChanged}"
-                                                     Value="False">
-                                            <Setter Property="Text" Value="Duplicate Economy Class seats found!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="No duplicate Business Class seats"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedCabinLayout.HasNoDuplicateBusinessSeats, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Value="False">
-                                            <Setter Property="Text" Value="Duplicate Business Class seats found!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="No duplicate Premium Class seats"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedCabinLayout.HasNoDuplicatePremiumSeats, UpdateSourceTrigger=PropertyChanged}"
-                                                     Value="False">
-                                            <Setter Property="Text" Value="Duplicate Premium Class seats found!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="No duplicate First Class seats"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedCabinLayout.HasNoDuplicateFirstClassSeats, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Value="False">
-                                            <Setter Property="Text" Value="Duplicate First Class seats found!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="No duplicate Supersonic Class seats"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedCabinLayout.HasNoDuplicateSupersonicSeats, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Value="False">
-                                            <Setter Property="Text" Value="Duplicate Supersonic Class seats found!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="No duplicate Unavailable seats"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedCabinLayout.HasNoDuplicateUnavailableSeats, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Value="False">
-                                            <Setter Property="Text" Value="Duplicate Unavailable seats found!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="Stairway positions valid"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedCabinLayout.StairwaysValid, UpdateSourceTrigger=PropertyChanged}" 
-                                                     Value="False">
-                                            <Setter Property="Text" Value="Invalid stairway positions!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                        <controls:LayoutProblemText ValidText="No duplicate Economy Class seats"
+                                                    InvalidText="Duplicate Economy Class seats found!"
+                                                    IsValid="{Binding SelectedCabinLayout.HasNoDuplicateEconomySeats}"/>
+                        <controls:LayoutProblemText ValidText="No duplicate Business Class seats"
+                                                    InvalidText="Duplicate Business Class seats found!"
+                                                    IsValid="{Binding SelectedCabinLayout.HasNoDuplicateBusinessSeats}"/>
+                        <controls:LayoutProblemText ValidText="No duplicate Premium Class seats"
+                                                    InvalidText="Duplicate Premium Class seats found!"
+                                                    IsValid="{Binding SelectedCabinLayout.HasNoDuplicatePremiumSeats}"/>
+                        <controls:LayoutProblemText ValidText="No duplicate First Class seats"
+                                                    InvalidText="Duplicate First Class seats found!"
+                                                    IsValid="{Binding SelectedCabinLayout.HasNoDuplicateFirstClassSeats}"/>
+                        <controls:LayoutProblemText ValidText="No duplicate Supersonic Class seats"
+                                                    InvalidText="Duplicate Supersonic Class seats found!"
+                                                    IsValid="{Binding SelectedCabinLayout.HasNoDuplicateSupersonicSeats}"/>
+                        <controls:LayoutProblemText ValidText="No duplicate Unavailable seats"
+                                                    InvalidText="Duplicate Unavailable seats found!"
+                                                    IsValid="{Binding SelectedCabinLayout.HasNoDuplicateUnavailableSeats}"/>
+                        <controls:LayoutProblemText ValidText="Stairway positions valid"
+                                                    InvalidText="Invalid stairway positions!"
+                                                    IsValid="{Binding SelectedCabinLayout.StairwaysValid}"/>
                         <TextBlock Text="Problems per deck" FontSize="18" Margin="0,16,0,0" Style="{StaticResource DefaultTextStyle}"/>
                         <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
                               GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
@@ -272,84 +198,27 @@
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
-                                                <TextBlock DockPanel.Dock="Top">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                                            <Setter Property="Text" Value="Doors available"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding AreDoorsValid}" Value="False">
-                                                                    <Setter Property="Text" Value="No doors for this deck!"/>
-                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock DockPanel.Dock="Top">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                                            <Setter Property="Text" Value="No duplicate doors"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding HasNoDuplicateDoors}" Value="False">
-                                                                    <Setter Property="Text" Value="Duplicate doors found!"/>
-                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock DockPanel.Dock="Top">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                                            <Setter Property="Text" Value="Service start- and endpoints are valid"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding AreServicePointsValid}" Value="False">
-                                                                    <Setter Property="Text" Value="Invalid service points!"/>
-                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock DockPanel.Dock="Top">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                                            <Setter Property="Text" Value="All seat rows covered by service"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding AreSeatsReachableByService}" Value="False">
-                                                                    <Setter Property="Text" Value="Some rows aren't covered by service!"/>
-                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock DockPanel.Dock="Top">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                                            <Setter Property="Text" Value="Valid galley count"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding AreGalleysValid}" Value="False">
-                                                                    <Setter Property="Text" Value="Insufficient galley slots for servicing!"/>
-                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock DockPanel.Dock="Top">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                                            <Setter Property="Text" Value="Kitchen accessible (In-Flight services available)"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding AreKitchensValid}" Value="False">
-                                                                    <Setter Property="Text" Value="No kitchen available! (No In-Flight services)"/>
-                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
+                                                    InvalidText="No doors for this deck!"
+                                                    IsValid="{Binding AreDoorsValid}"/>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="No duplicate doors"
+                                                    InvalidText="Duplicate doors found!"
+                                                    IsValid="{Binding HasNoDuplicateDoors}"/>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
+                                                    InvalidText="Invalid service points!"
+                                                    IsValid="{Binding AreServicePointsValid}"/>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="All seat rows covered by service"
+                                                    InvalidText="Some rows aren't covered by service!"
+                                                    IsValid="{Binding AreSeatsReachableByService}"/>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Valid galley count"
+                                                    InvalidText="Insufficient galley seats for servicing!"
+                                                    IsValid="{Binding AreGalleysValid}"/>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Kitchen accessible (In-Flight services available)"
+                                                    InvalidText="No kitchen available! (No In-Flight services)"
+                                                    IsValid="{Binding AreKitchensValid}"/>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
+                                                    InvalidText="No toilets on this deck!"
+                                                    IsValid="{Binding AreToiletsAvailable}"/>
                                             </DockPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -362,9 +231,72 @@
         </DockPanel>
         <Border Width="1" Background="{StaticResource SlotSelectedColor}"/>
         <DockPanel Margin="8">
-            <StackPanel DockPanel.Dock="Bottom">
+            <StackPanel DockPanel.Dock="Bottom"
+                        Visibility="{Binding IsSingleCabinSlotSelected, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Slot configuration " FontSize="16" Style="{StaticResource DefaultTextStyle}"/>
+                    <TextBlock FontSize="16" Style="{StaticResource DefaultTextStyle}">
+                                <Run Text="{Binding SelectedCabinSlotFloor, StringFormat={}Multi-slot configuration (Floor {0})}"/>
+                    </TextBlock>
+                </StackPanel>
+                <UniformGrid Rows="1">
+                    <!--<UniformGrid.Style>
+                        <Style TargetType="UniformGrid">
+                            <Setter Property="Columns" Value="3"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedAutomationIndex}" Value="0">
+                                    <Setter Property="Columns" Value="4"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </UniformGrid.Style>-->
+                    <StackPanel Margin="4">
+                        <TextBlock Text="Slot type" Margin="0,0,0,4" Style="{StaticResource DefaultTextStyle}"/>
+                        <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
+                                  SelectedIndex="{Binding SelectedMultiSlotTypeIndex}"
+                                  SelectionChanged="MultiSelect_SlotTypeSelectionChanged"/>
+                    </StackPanel>
+                    <StackPanel Margin="4">
+                        <TextBlock Text="Automation" Margin="0,0,0,4" Style="{StaticResource DefaultTextStyle}"/>
+                        <ComboBox SelectedIndex="{Binding SelectedAutomationIndex}">
+                            <ComboBoxItem Content="Seat numeration"/>
+                            <ComboBoxItem Content="Service points" Visibility="Collapsed"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Margin="4" ToolTip="When modifying multiple rows, split letters with ,"
+                                Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=0}">
+                        <TextBlock Margin="0,0,0,4" Text="Seat letter(s)" Style="{StaticResource DefaultTextStyle}"/>
+                        <TextBox Text="{Binding AutomationSeatLetters, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <StackPanel Margin="4"
+                                Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=1}">
+                        <TextBlock Margin="0,0,0,4" Text="Service area count" Style="{StaticResource DefaultTextStyle}"/>
+                        <TextBox Text="{Binding ServiceAreasCount, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <Button Margin="4" Content="Automate" Click="Automate_Click">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedAutomationIndex}" Value="-1">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding SelectedAutomationIndex}" Value="0"/>
+                                            <Condition Binding="{Binding AutomationLettersValid}"
+                                                       Value="False">
+                                            </Condition>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </UniformGrid>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Bottom" Visibility="{Binding IsSingleCabinSlotSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Single slot configuration " FontSize="16" Style="{StaticResource DefaultTextStyle}"/>
                     <TextBlock FontSize="16" Visibility="{Binding SelectedCabinSlot, Converter={StaticResource NotNullToVisibilityConverter}}"
                                        Style="{StaticResource DefaultTextStyle}">
                                 <Run Text="{Binding SelectedCabinSlotFloor, StringFormat={}(Floor {0}}"/><Run Text=","/>
@@ -405,6 +337,8 @@
             <DockPanel IsEnabled="{Binding SelectedCabinLayout, Converter={StaticResource NotNullToBooleanConverter}}">
                 <DockPanel DockPanel.Dock="Top">
                     <Button DockPanel.Dock="Right" Content="Add deck" Padding="8,0" Click="AddCabinDeck_Click"/>
+                    <Button DockPanel.Dock="Right" Content="Reload from disk" Padding="8,0" Click="ReloadDeck_Click"
+                            Margin="8,0" Style="{StaticResource YellowButtonStyle}"/>
                     <TextBlock Text="{Binding SelectedLayoutSet.AirplaneName, StringFormat={}Cabin layout for {0}}"
                                    FontSize="22" Style="{StaticResource DefaultTextStyle}"/>
                 </DockPanel>

@@ -75,7 +75,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             get => mSeatLetter;
             set
             {
-                mSeatLetter = value;
+                if (char.IsLetter(value))
+                {
+                    mSeatLetter = char.ToUpper(value);
+                }
+                else
+                {
+                    mSeatLetter = 'Z';
+                }
                 InvokePropertyChanged();
                 InvokePropertyChanged("DisplayText");
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
