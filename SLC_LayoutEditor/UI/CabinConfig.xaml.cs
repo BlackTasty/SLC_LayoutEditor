@@ -37,12 +37,12 @@ namespace SLC_LayoutEditor.UI
         private void layout_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
         {
             CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-            if (activeDeckControl != null)
+            if (activeDeckControl != null && e.Selected.Count == 0)
             {
                 activeDeckControl.SetSlotSelected(null);
             }
 
-            vm.SelectedCabinSlot = e.Target.CabinSlot;
+            vm.SelectedCabinSlots = e.Selected;
             vm.SelectedCabinSlotFloor = e.Floor;
             activeDeckControl = e.DeckControl;
         }
@@ -91,9 +91,9 @@ namespace SLC_LayoutEditor.UI
         private void layout_LayoutRegenerated(object sender, EventArgs e)
         {
             CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-            if (sender is DeckLayoutControl deckLayout && vm.SelectedCabinSlot != null)
+            if (sender is DeckLayoutControl deckLayout && vm.SelectedCabinSlots != null)
             {
-                deckLayout.SetSlotSelected(vm.SelectedCabinSlot);
+                deckLayout.SetMultipleSlotsSelected(vm.SelectedCabinSlots, false);
             }
         }
 

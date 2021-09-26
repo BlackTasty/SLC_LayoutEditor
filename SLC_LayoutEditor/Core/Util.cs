@@ -34,10 +34,17 @@ namespace SLC_LayoutEditor.Core
                 Arguments = string.Format("/e, /select, \"{0}\"", path)
             });
         }
+
         public static bool IsShiftDown()
         {
             return Keyboard.IsKeyDown(Key.LeftShift) ||
                    Keyboard.IsKeyDown(Key.RightShift);
+        }
+
+        public static bool IsControlDown()
+        {
+            return Keyboard.IsKeyDown(Key.LeftCtrl) ||
+                   Keyboard.IsKeyDown(Key.RightCtrl);
         }
     }
 }

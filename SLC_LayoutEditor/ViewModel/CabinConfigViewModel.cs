@@ -17,7 +17,7 @@ namespace SLC_LayoutEditor.ViewModel
         private CabinLayoutSet mSelectedLayoutSet;
         private CabinLayout mSelectedCabinLayout;
 
-        private CabinSlot mSelectedCabinSlot;
+        private List<CabinSlot> mSelectedCabinSlots;
         private int mSelectedCabinSlotFloor;
 
         private FrameworkElement mDialog;
@@ -50,16 +50,16 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedCabinLayout = value;
                 InvokePropertyChanged();
-                SelectedCabinSlot = null;
+                SelectedCabinSlots = new List<CabinSlot>();
             }
         }
 
-        public CabinSlot SelectedCabinSlot
+        public List<CabinSlot> SelectedCabinSlots
         {
-            get => mSelectedCabinSlot;
+            get => mSelectedCabinSlots;
             set
             {
-                mSelectedCabinSlot = value;
+                mSelectedCabinSlots = value;
                 InvokePropertyChanged();
             }
         }
