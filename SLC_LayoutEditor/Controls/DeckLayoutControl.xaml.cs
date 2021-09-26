@@ -97,6 +97,19 @@ namespace SLC_LayoutEditor.Controls
             }*/
             #endregion
 
+            #region Generate row- and column remove buttons
+            
+            for (int row = 0; row < rows; row++)
+            {
+                AddRowRemoveButton(row);
+            }
+
+            for (int column = 0; column < columns; column++)
+            {
+                AddColumnRemoveButton(column);
+            }
+            #endregion
+
             #region Generate buttons to add rows and columns
             Button addRowButton = new Button()
             {
@@ -162,6 +175,7 @@ namespace SLC_LayoutEditor.Controls
             Canvas.SetTop(slotLayout, cabinSlot.Column * SLOT_HEIGHT + LAYOUT_OFFSET_Y + 8);
         }
 
+        #region Row- and column select button generators
         private void AddRowSelectButton(int row)
         {
             Button rowButton = GetSelectButton(true, row);
@@ -176,6 +190,82 @@ namespace SLC_LayoutEditor.Controls
 
             layout_deck.Children.Add(columnButton);
             Canvas.SetTop(columnButton, column * SLOT_HEIGHT + LAYOUT_OFFSET_Y);
+        }
+        #endregion
+
+        private void AddRowRemoveButton(int row)
+        {
+            Button rowButton = GetRemoveButton(true, row);
+            rowButton.Click += RowRemoveButton_Click;
+
+            layout_deck.Children.Add(rowButton);
+            Canvas.SetLeft(rowButton, row * SLOT_WIDTH + LAYOUT_OFFSET_X);
+        }
+
+        private void ColumnRemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to remove this column? This cannot be undone!", 
+                    "Confirm column removal", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            if (sender is Button button && int.TryParse(button.Tag.ToString(), out int targetColumns))
+            {
+                int currentColumnCount = CabinDeck.Columns;
+
+                foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Column == targetColumns).ToList())
+                {
+                    CabinDeck.CabinSlots.Remove(slot);
+                }
+
+                for (int column = targetColumns + 1; column < currentColumnCount; column++)
+                {
+                    foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Column == column))
+                    {
+                        slot.Column = column - 1;
+                    }
+                }
+
+                RefreshCabinDeckLayout();
+            }
+        }
+
+        private void AddColumnRemoveButton(int column)
+        {
+            Button columnButton = GetRemoveButton(false, column);
+            columnButton.Click += ColumnRemoveButton_Click;
+
+            layout_deck.Children.Add(columnButton);
+            Canvas.SetTop(columnButton, column * SLOT_HEIGHT + LAYOUT_OFFSET_Y);
+        }
+
+        private void RowRemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to remove this row? This cannot be undone!", "Confirm row removal", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            if (sender is Button button && int.TryParse(button.Tag.ToString(), out int targetRow))
+            {
+                int currentRowCount = CabinDeck.Rows;
+
+                foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Row == targetRow).ToList())
+                {
+                    CabinDeck.CabinSlots.Remove(slot);
+                }
+
+                for (int row = targetRow + 1; row < currentRowCount; row++)
+                {
+                    foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Row == row))
+                    {
+                        slot.Row = row - 1;
+                    }
+                }
+
+                RefreshCabinDeckLayout();
+            }
         }
 
         private void RefreshControlSize()
@@ -255,6 +345,23 @@ namespace SLC_LayoutEditor.Controls
                 Height = LAYOUT_OFFSET_Y,
                 Margin = isRow ? new Thickness(PADDING, 0, PADDING, 0) : new Thickness(0, PADDING, 0, PADDING),
                 Padding = new Thickness()
+            };
+        }
+
+        private Button GetRemoveButton(bool isRow, int index)
+        {
+            return new Button()
+            {
+                Content = "-",
+                VerticalContentAlignment = VerticalAlignment.Center,
+                Style = App.Current.FindResource("RedButtonStyle") as Style,
+                FontWeight = FontWeights.Bold,
+                ToolTip = string.Format("Remove {0} {1}", !isRow ? "row" : "column", index + 1),
+                Tag = index,
+                Width = LAYOUT_OFFSET_X,
+                Height = LAYOUT_OFFSET_Y,
+                Margin = isRow ? new Thickness(PADDING, 0, PADDING, 0) : new Thickness(0, PADDING, 0, PADDING),
+                Padding = new Thickness(0, 0, 0, 3)
             };
         }
 
