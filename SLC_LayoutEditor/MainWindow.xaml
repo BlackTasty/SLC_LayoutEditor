@@ -12,7 +12,7 @@
         Background="{DynamicResource BackgroundColor}"
         mc:Ignorable="d"
         Title="SLC Layout Editor" MinHeight="450" MinWidth="920"
-        d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}">
+        d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}" Icon="Resources/icon.ico">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -23,11 +23,11 @@
     </Window.Resources>
     <DockPanel>
         <Grid DockPanel.Dock="Top" Background="#66000000">
-            <Menu Foreground="{StaticResource ForegroundColor}" HorizontalAlignment="Left" Width="760">
-                <MenuItem Header="File">
+            <Menu Foreground="{StaticResource ForegroundColor}">
+                <MenuItem Header="File" Background="Transparent" Height="34">
                     <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
                 </MenuItem>
-                <MenuItem Header="System">
+                <MenuItem Header="System" Background="Transparent" Height="34">
                     <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
                               IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
                 </MenuItem>

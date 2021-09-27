@@ -39,6 +39,7 @@
 
         <SolidColorBrush x:Key="SlotSelectedColor">#44FFFFFF</SolidColorBrush>
         <SolidColorBrush x:Key="BackdropColor">#99000000</SolidColorBrush>
+        <SolidColorBrush x:Key="MenuItemHoverColor">#333333</SolidColorBrush>
 
         <SolidColorBrush x:Key="ButtonBorderColor">#CCFFCC</SolidColorBrush>
         <SolidColorBrush x:Key="ButtonBorderPressedColor">#538255</SolidColorBrush>
@@ -437,10 +438,9 @@
         <Style TargetType="MenuItem">
             <Setter Property="Foreground" Value="{DynamicResource ForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource BackgroundColor}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource SlotSelectedColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MenuItemHoverColor}"/>
             <Setter Property="Template" Value="{DynamicResource MenuItemTemplate}"/>
             <Setter Property="Padding" Value="4,2"/>
-            <Setter Property="Height" Value="30"/>
         </Style>
 
         <Style TargetType="Menu">
@@ -449,13 +449,13 @@
         </Style>
 
         <Style TargetType="ContextMenu">
-            <Setter Property="BorderBrush" Value="{DynamicResource SlotSelectedColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MenuItemHoverColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ContextMenu}">
                         <Border x:Name="Border"
                             Background="{DynamicResource BackgroundColor}"
-                            BorderThickness="1" BorderBrush="{DynamicResource SlotSelectedColor}">
+                            BorderThickness="1" BorderBrush="{DynamicResource MenuItemHoverColor}">
                             <StackPanel IsItemsHost="True"
                                     KeyboardNavigation.DirectionalNavigation="Cycle" />
                         </Border>
@@ -465,8 +465,9 @@
         </Style>
 
         <ControlTemplate x:Key="MenuItemTemplate" TargetType="{x:Type MenuItem}">
-            <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" 
-                SnapsToDevicePixels="True" Padding="4">
+            <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" 
+                    Background="{TemplateBinding Background}" 
+                    SnapsToDevicePixels="True" Padding="4">
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -482,10 +483,11 @@
                                   Grid.Column="1"
                                   Margin="{TemplateBinding Padding}"
                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                    <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" 
-                       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
-                       PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
-                        <Border x:Name="SubMenuBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" 
+                    <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False"
+                           IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                           PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" 
+                           Placement="Bottom" PlacementTarget="{Binding ElementName=templateRoot}">
+                        <Border x:Name="SubMenuBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
                             Background="{TemplateBinding Background}" Padding="0">
                             <ScrollViewer x:Name="SubMenuScrollViewer" 
                                   Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}"
@@ -518,17 +520,18 @@
                     <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
                 </Trigger>
                 <Trigger Property="IsHighlighted" Value="True">
-                    <Setter Property="Background" TargetName="templateRoot" Value="{DynamicResource SlotSelectedColor}"/>
+                    <Setter Property="Background" TargetName="templateRoot" Value="{DynamicResource MenuItemHoverColor}"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Fill" TargetName="GlyphPanel" Value="#FF707070"/>
+                    <Setter Property="Foreground" TargetName="TextElement" Value="#FF707070"/>
                 </Trigger>
                 <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
                     <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
                     <Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
                 </Trigger>
                 <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                    <Setter TargetName="templateRoot" Property="Background" Value="{DynamicResource SlotSelectedColor}" />
+                    <Setter TargetName="templateRoot" Property="Background" Value="{DynamicResource MenuItemHoverColor}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
