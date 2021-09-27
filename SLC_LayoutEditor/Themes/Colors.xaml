@@ -1,0 +1,43 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="CockpitColor">#00FFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="CrewAreaColor">#576C73</SolidColorBrush>
+    <SolidColorBrush x:Key="FirstClassColor">#806C00</SolidColorBrush>
+    <SolidColorBrush x:Key="BusinessClassColor">#23415A</SolidColorBrush>
+    <SolidColorBrush x:Key="PremiumClassColor">#808080</SolidColorBrush>
+    <SolidColorBrush x:Key="EconomyClassColor">#222222</SolidColorBrush>
+    <SolidColorBrush x:Key="SupersonicClassColor">#6D5310</SolidColorBrush>
+    <SolidColorBrush x:Key="UnavailableSeatColor">#71D8FF</SolidColorBrush>
+    <SolidColorBrush x:Key="ToiletColor">#FF0000</SolidColorBrush>
+    <SolidColorBrush x:Key="StairwellColor">#A66A2E</SolidColorBrush>
+    <SolidColorBrush x:Key="WallColor">#3D0000</SolidColorBrush>
+    <SolidColorBrush x:Key="DoorColor">#FF0000</SolidColorBrush>
+    <SolidColorBrush x:Key="KitchenColor">#191970</SolidColorBrush>
+    <SolidColorBrush x:Key="IntercomColor">#FFFFFF</SolidColorBrush>
+
+
+    <SolidColorBrush x:Key="BackgroundColor">#111111</SolidColorBrush>
+    <SolidColorBrush x:Key="ForegroundColor">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="ErrorForegroundColor">#FFAAAA</SolidColorBrush>
+    <SolidColorBrush x:Key="ErrorHighlightColor">#44FFAAAA</SolidColorBrush>
+    <SolidColorBrush x:Key="ValidForegroundColor">#CCFFCC</SolidColorBrush>
+
+    <SolidColorBrush x:Key="SlotSelectedColor">#44FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="BackdropColor">#99000000</SolidColorBrush>
+    <SolidColorBrush x:Key="MenuItemHoverColor">#333333</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ButtonBorderColor">#CCFFCC</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonBorderPressedColor">#538255</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonBackgroundHoverColor">#44CCFFCC</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonBackgroundPressedColor">#44538255</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ButtonYellowBorderColor">#FDFF9E</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonYellowBorderPressedColor">#AAAD51</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonYellowBackgroundHoverColor">#44FDFF9E</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonYellowBackgroundPressedColor">#44AAAD51</SolidColorBrush>
+
+    <SolidColorBrush x:Key="ButtonRedBorderColor">#FF9E9E</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonRedBorderPressedColor">#AD5151</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonRedBackgroundHoverColor">#44FF9E9E</SolidColorBrush>
+    <SolidColorBrush x:Key="ButtonRedBackgroundPressedColor">#44AD5151</SolidColorBrush>
+</ResourceDictionary>

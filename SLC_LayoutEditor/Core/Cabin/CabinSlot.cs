@@ -12,6 +12,7 @@ namespace SLC_LayoutEditor.Core.Cabin
     public class CabinSlot : ViewModelBase
     {
         public event EventHandler<CabinSlotChangedEventArgs> CabinSlotChanged;
+        public event EventHandler<EventArgs> ProblematicChanged;
 
         private int mRow;
         private int mColumn;
@@ -235,6 +236,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         protected virtual void OnCabinSlotChanged(CabinSlotChangedEventArgs e)
         {
             CabinSlotChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnProblematicChanged(EventArgs e)
+        {
+            ProblematicChanged?.Invoke(this, e);
         }
     }
 }

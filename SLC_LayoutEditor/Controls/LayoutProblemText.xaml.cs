@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Core.Cabin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for LayoutProblemText.xaml
     /// </summary>
-    public partial class LayoutProblemText : TextBlock
+    public partial class LayoutProblemText : StackPanel
     {
         #region ValidText property
         public string ValidText
@@ -56,9 +57,50 @@ namespace SLC_LayoutEditor.Controls
             DependencyProperty.Register("IsValid", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(true));
         #endregion
 
+        #region InvalidSlots property
+        public IEnumerable<CabinSlot> InvalidSlots
+        {
+            get { return (IEnumerable<CabinSlot>)GetValue(InvalidSlotsProperty); }
+            set { SetValue(InvalidSlotsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for InvalidSlots.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty InvalidSlotsProperty =
+            DependencyProperty.Register("InvalidSlots", typeof(IEnumerable<CabinSlot>), typeof(LayoutProblemText), new PropertyMetadata(new List<CabinSlot>()));
+        #endregion
+
+        #region ShowEye property
+        public bool ShowEye
+        {
+            get { return (bool)GetValue(ShowEyeProperty); }
+            set { SetValue(ShowEyeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowEye.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowEyeProperty =
+            DependencyProperty.Register("ShowEye", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(false));
+        #endregion
+
+        #region ShowProblems property
+        public bool ShowProblems
+        {
+            get { return (bool)GetValue(ShowProblemsProperty); }
+            set { SetValue(ShowProblemsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowProblems.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowProblemsProperty =
+            DependencyProperty.Register("ShowProblems", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(false));
+        #endregion
+
         public LayoutProblemText()
         {
             InitializeComponent();
+        }
+
+        private void ToggleProblemVisibility_Click(object sender, RoutedEventArgs e)
+        {
+            ShowProblems = !ShowProblems;
         }
     }
 }

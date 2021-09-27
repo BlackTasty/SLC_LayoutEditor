@@ -66,8 +66,10 @@ namespace SLC_LayoutEditor.Controls
 
         public void RefreshCabinDeckLayout()
         {
+#if DEBUG
             Stopwatch sw = new Stopwatch();
             sw.Start();
+#endif
 
             layout_deck.Children.Clear();
 
@@ -157,8 +159,11 @@ namespace SLC_LayoutEditor.Controls
             #endregion
 
             RefreshControlSize();
+
+#if DEBUG
             Console.WriteLine("Total time generating deck: " + sw.ElapsedMilliseconds);
             sw.Stop();
+#endif
         }
 
         #region Column- and row add events
@@ -408,6 +413,20 @@ namespace SLC_LayoutEditor.Controls
             }
 
             SetMultipleSlotsSelected(selectedControls, clearCurrentSelection);
+        }
+
+        public void HighlightProblematicSlots(IEnumerable<CabinSlot> problematicSlots, bool isHighlighted)
+        {
+            foreach (CabinSlot cabinSlot in problematicSlots)
+            {
+                CabinSlotControl target = layout_deck.Children.OfType<CabinSlotControl>()
+                                            .FirstOrDefault(x => x.CabinSlot.Row == cabinSlot.Row && x.CabinSlot.Column == cabinSlot.Column);
+
+                if (target != null)
+                {
+                    target.SetProblematicHighlight(isHighlighted);
+                }
+            }
         }
 
         private void SetMultipleSlotsSelected(IEnumerable<CabinSlotControl> selectedSlots, bool clearCurrentSelection)

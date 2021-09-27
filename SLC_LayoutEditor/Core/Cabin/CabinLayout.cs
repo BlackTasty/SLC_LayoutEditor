@@ -56,19 +56,35 @@ namespace SLC_LayoutEditor.Core.Cabin
         #endregion
 
         #region Problem checking
-        public bool HasNoDuplicateEconomySeats => CheckNoDuplicateSeatNumbers(CabinSlotType.EconomyClassSeat);
+        #region Seat checks
+        public IEnumerable<CabinSlot> DuplicateEconomySeats => GetDuplicateSeats(CabinSlotType.EconomyClassSeat);
 
-        public bool HasNoDuplicateBusinessSeats => CheckNoDuplicateSeatNumbers(CabinSlotType.BusinessClassSeat);
+        public bool HasNoDuplicateEconomySeats => DuplicateEconomySeats.Count() == 0;
 
-        public bool HasNoDuplicatePremiumSeats => CheckNoDuplicateSeatNumbers(CabinSlotType.PremiumClassSeat);
+        public IEnumerable<CabinSlot> DuplicateBusinessSeats => GetDuplicateSeats(CabinSlotType.BusinessClassSeat);
 
-        public bool HasNoDuplicateFirstClassSeats => CheckNoDuplicateSeatNumbers(CabinSlotType.FirstClassSeat);
+        public bool HasNoDuplicateBusinessSeats => DuplicateBusinessSeats.Count() == 0;
 
-        public bool HasNoDuplicateSupersonicSeats => CheckNoDuplicateSeatNumbers(CabinSlotType.SupersonicClassSeat);
+        public IEnumerable<CabinSlot> DuplicatePremiumSeats => GetDuplicateSeats(CabinSlotType.PremiumClassSeat);
 
-        public bool HasNoDuplicateUnavailableSeats => CheckNoDuplicateSeatNumbers(CabinSlotType.UnavailableSeat);
+        public bool HasNoDuplicatePremiumSeats => DuplicatePremiumSeats.Count() == 0;
 
-        public bool StairwaysValid => CheckStairwayPositions();
+        public IEnumerable<CabinSlot> DuplicateFirstClassSeats => GetDuplicateSeats(CabinSlotType.FirstClassSeat);
+
+        public bool HasNoDuplicateFirstClassSeats => DuplicateFirstClassSeats.Count() == 0;
+
+        public IEnumerable<CabinSlot> DuplicateSupersonicSeats => GetDuplicateSeats(CabinSlotType.SupersonicClassSeat);
+
+        public bool HasNoDuplicateSupersonicSeats => DuplicateSupersonicSeats.Count() == 0;
+
+        public IEnumerable<CabinSlot> DuplicateUnavailableSeats => GetDuplicateSeats(CabinSlotType.UnavailableSeat);
+
+        public bool HasNoDuplicateUnavailableSeats => DuplicateUnavailableSeats.Count() == 0;
+        #endregion
+
+        public IEnumerable<CabinSlot> InvalidStairways => GetInvalidStairways();
+
+        public bool StairwaysValid => InvalidStairways.Count() == 0;
 
         public int ProblemCountSum => Util.GetProblemCount(CabinDecks.Sum(x => x.ProblemCount), 
             HasNoDuplicateBusinessSeats, HasNoDuplicateEconomySeats, 
@@ -142,35 +158,37 @@ namespace SLC_LayoutEditor.Core.Cabin
             File.WriteAllText(FilePath, ToLayoutFile());
         }
 
-        private bool CheckNoDuplicateSeatNumbers(CabinSlotType seatType)
+        private IEnumerable<CabinSlot> GetDuplicateSeats(CabinSlotType seatType)
         {
-            var seatSlots = CabinDecks.SelectMany(x => x.CabinSlots).Where(x => x.Type == seatType);
-            return seatSlots.Count() == seatSlots.GroupBy(x => x.ToString()).Count();
+            return CabinDecks.SelectMany(x => x.CabinSlots)
+                .Where(x => x.Type == seatType)
+                .GroupBy(x => x.ToString())
+                .Where(x => x.Count() > 1)
+                .SelectMany(x => x);
         }
 
-        private bool CheckStairwayPositions()
+        private IEnumerable<CabinSlot> GetInvalidStairways()
         {
             var stairwaySlots = CabinDecks.SelectMany(x => x.GetStairways()).GroupBy(x => x.Value);
+
             if (stairwaySlots.Count() == 1)
             {
-                return false;
+                return stairwaySlots.SelectMany(x => x).Select(x => x.Key);
             }
             else if (stairwaySlots.Count() > 1)
             {
-                for (int floor = 1; floor < stairwaySlots.Count() - 1; floor++)
+                List<CabinSlot> invalidStairways = new List<CabinSlot>();
+                for (int floorIndex = 0; floorIndex < stairwaySlots.Count() - 1; floorIndex++)
                 {
-                    if (!CheckStairwayDeckAccesibility(stairwaySlots.ElementAt(floor).Select(x => x.Key),
-                        stairwaySlots.ElementAt(floor + 1).Select(x => x.Key), GetLowerDeckOffset(floor)))
-                    {
-                        return false;
-                    }
+                    invalidStairways.AddRange(GetInaccessibleStairways(stairwaySlots.ElementAt(floorIndex).Select(x => x.Key),
+                        stairwaySlots.ElementAt(floorIndex + 1).Select(x => x.Key), GetLowerDeckOffset(floorIndex + 1)));
                 }
 
-                return true;
+                return invalidStairways;
             }
             else
             {
-                return true;
+                return new List<CabinSlot>();
             }
         }
 
@@ -189,33 +207,36 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        private bool CheckStairwayDeckAccesibility(IEnumerable<CabinSlot> lowerDeckStairways, 
+        private IEnumerable<CabinSlot> GetInaccessibleStairways(IEnumerable<CabinSlot> lowerDeckStairways,
             IEnumerable<CabinSlot> upperDeckStairways, int lowerDeckOffset)
         {
-            if (lowerDeckStairways.Count() != upperDeckStairways.Count())
-            {
-                return false;
-            }
-
+            List<CabinSlot> inaccessibleStairways = new List<CabinSlot>();
             foreach (CabinSlot stairwaySlot in lowerDeckStairways)
             {
                 if (!upperDeckStairways.Any(x => x.Row == stairwaySlot.Row && x.Column + lowerDeckOffset == stairwaySlot.Column))
                 {
-                    return false;
+                    inaccessibleStairways.Add(stairwaySlot);
                 }
             }
 
-            return true;
+            return inaccessibleStairways;
         }
 
         private void RefreshProblemChecks()
         {
+            InvokePropertyChanged("DuplicateEconomySeats");
             InvokePropertyChanged("HasNoDuplicateEconomySeats");
+            InvokePropertyChanged("DuplicateBusinessSeats");
             InvokePropertyChanged("HasNoDuplicateBusinessSeats");
+            InvokePropertyChanged("DuplicatePremiumSeats");
             InvokePropertyChanged("HasNoDuplicatePremiumSeats");
+            InvokePropertyChanged("DuplicateFirstClassSeats");
             InvokePropertyChanged("HasNoDuplicateFirstClassSeats");
+            InvokePropertyChanged("DuplicateSupersonicSeats");
             InvokePropertyChanged("HasNoDuplicateSupersonicSeats");
+            InvokePropertyChanged("DuplicateUnavailableSeats");
             InvokePropertyChanged("HasNoDuplicateUnavailableSeats");
+            InvokePropertyChanged("InvalidStairways");
             InvokePropertyChanged("StairwaysValid");
 
             InvokePropertyChanged("ProblemCountSum");

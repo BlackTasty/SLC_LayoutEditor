@@ -43,14 +43,18 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public bool HasNoDuplicateDoors
+        public IEnumerable<CabinSlot> DuplicateDoors
         {
             get
             {
-                var doorSlots = CabinSlots.Where(x => x.IsDoor);
-                return doorSlots.Count() == doorSlots.GroupBy(x => x.SlotNumber).Count();
+                return CabinSlots.Where(x => x.IsDoor)
+                    .GroupBy(x => x.SlotNumber)
+                    .Where(x => x.Count() > 1)
+                    .SelectMany(x => x);
             }
         }
+
+        public bool HasNoDuplicateDoors => DuplicateDoors.Count() == 0;
 
         public bool AreServicePointsValid =>
             mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint).Count() ==
@@ -182,6 +186,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged("AreServicePointsValid");
             InvokePropertyChanged("AreGalleysValid");
             InvokePropertyChanged("AreKitchensValid");
+            InvokePropertyChanged("DuplicateDoors");
             InvokePropertyChanged("AreDoorsValid");
             InvokePropertyChanged("AreToiletsAvailable");
             InvokePropertyChanged("AreSeatsReachableByService");

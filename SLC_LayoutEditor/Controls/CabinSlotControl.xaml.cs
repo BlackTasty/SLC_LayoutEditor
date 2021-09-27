@@ -23,8 +23,11 @@ namespace SLC_LayoutEditor.Controls
     public partial class CabinSlotControl : Canvas
     {
         private bool isSelected;
+        private bool isProblematic;
 
         public bool IsSelected => isSelected;
+
+        public bool IsProblematic => isProblematic;
 
         public CabinSlot CabinSlot
         {
@@ -49,6 +52,28 @@ namespace SLC_LayoutEditor.Controls
             if (isSelected)
             {
                 layout.Background = App.Current.FindResource("SlotSelectedColor") as SolidColorBrush;
+            }
+            else if (isProblematic)
+            {
+                SetProblematicHighlight(true);
+            }
+            else
+            {
+                layout.Background = Brushes.Transparent;
+            }
+        }
+
+        public void SetProblematicHighlight(bool isProblematic)
+        {
+            this.isProblematic = isProblematic;
+
+            if (isProblematic)
+            {
+                layout.Background = App.Current.FindResource("ErrorHighlightColor") as SolidColorBrush;
+            }
+            else if (isSelected)
+            {
+                SetSelected(true);
             }
             else
             {

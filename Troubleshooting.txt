@@ -1,0 +1,3 @@
+PROBLEM: SLC Layout Editor does not run, and no log file is created. 
+         Event log shows a DCOM error mentioning SmartScreen.
+SOLUTION: Check if "Check apps and files" is enabled in Windows Defender, if so disable it
