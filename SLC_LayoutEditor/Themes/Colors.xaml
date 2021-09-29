@@ -40,4 +40,8 @@
     <SolidColorBrush x:Key="ButtonRedBorderPressedColor">#AD5151</SolidColorBrush>
     <SolidColorBrush x:Key="ButtonRedBackgroundHoverColor">#44FF9E9E</SolidColorBrush>
     <SolidColorBrush x:Key="ButtonRedBackgroundPressedColor">#44AD5151</SolidColorBrush>
+
+    <SolidColorBrush x:Key="EyeForegroundColor">#CCCCCC</SolidColorBrush>
+    <SolidColorBrush x:Key="EyeForegroundHoverColor">#FFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="EyeForegroundPressedColor">#AAAAAA</SolidColorBrush>
 </ResourceDictionary>

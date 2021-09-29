@@ -392,6 +392,17 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource EyeForegroundHoverColor}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource EyeForegroundPressedColor}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <DataTemplate x:Key="IconButtonTemplate" DataType="{x:Type Button}">

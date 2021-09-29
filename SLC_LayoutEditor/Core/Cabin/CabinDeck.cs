@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,11 @@ namespace SLC_LayoutEditor.Core.Cabin
     public class CabinDeck : ViewModelBase
     {
         public event EventHandler<EventArgs> CabinSlotsChanged;
+        public event EventHandler<ProblematicSlotsCollectedEventArgs> ProblematicSlotsCollected;
 
         private VeryObservableCollection<CabinSlot> mCabinSlots = new VeryObservableCollection<CabinSlot>("CabinSlots");
         private int mFloor;
+        private bool mShowDuplicateDoorsProblems;
 
         public double Width { get; set; }
 
@@ -39,6 +42,16 @@ namespace SLC_LayoutEditor.Core.Cabin
             set
             {
                 mFloor = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowDuplicateDoorsProblems
+        {
+            get => mShowDuplicateDoorsProblems;
+            set
+            {
+                mShowDuplicateDoorsProblems = value;
                 InvokePropertyChanged();
             }
         }
@@ -81,7 +94,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         }
 
         public int ProblemCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreKitchensValid, 
-            AreServicePointsValid, AreSeatsReachableByService, AreToiletsAvailable);
+            AreServicePointsValid, AreSeatsReachableByService, AreToiletsAvailable, HasNoDuplicateDoors);
 
         public CabinDeck(int floor, int rows, int columns)
         {
@@ -96,12 +109,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        private void CabinSlots_ObserveChanges(object sender, EventArgs e)
+        /*private void CabinSlots_ObserveChanges(object sender, EventArgs e)
         {
             RefreshProblemChecks();
 
             OnCabinSlotsChanged(e);
-        }
+        }*/
 
         public CabinDeck(string deckData, int floor)
         {
@@ -119,6 +132,26 @@ namespace SLC_LayoutEditor.Core.Cabin
                     mCabinSlots.Add(cabinSlot);
                 }
             }
+        }
+
+        public void CollectProblematicSlots(List<CabinSlot> problematicSlots)
+        {
+            List<CabinSlot> problematicDeckSlots = new List<CabinSlot>();
+
+            foreach (CabinSlot problematicSlot in problematicSlots)
+            {
+                if (CabinSlots.Any(x => x.Guid == problematicSlot.Guid))
+                {
+                    problematicDeckSlots.Add(problematicSlot);
+                }
+            }
+
+            if (ShowDuplicateDoorsProblems)
+            {
+                problematicDeckSlots.AddRange(DuplicateDoors);
+            }
+
+            OnProblematicSlotsCollected(new ProblematicSlotsCollectedEventArgs(problematicDeckSlots));
         }
 
         public IEnumerable<int> GetRowsWithSeats()
@@ -176,11 +209,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             return cabinDeckRaw;
         }
 
-        protected virtual void OnCabinSlotsChanged(EventArgs e)
-        {
-            CabinSlotsChanged?.Invoke(this, e);
-        }
-
         private void RefreshProblemChecks()
         {
             InvokePropertyChanged("AreServicePointsValid");
@@ -188,9 +216,20 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged("AreKitchensValid");
             InvokePropertyChanged("DuplicateDoors");
             InvokePropertyChanged("AreDoorsValid");
+            InvokePropertyChanged("HasNoDuplicateDoors");
             InvokePropertyChanged("AreToiletsAvailable");
             InvokePropertyChanged("AreSeatsReachableByService");
             InvokePropertyChanged("ProblemCount");
+        }
+
+        protected virtual void OnCabinSlotsChanged(EventArgs e)
+        {
+            CabinSlotsChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnProblematicSlotsCollected(ProblematicSlotsCollectedEventArgs e)
+        {
+            ProblematicSlotsCollected?.Invoke(this, e);
         }
     }
 }

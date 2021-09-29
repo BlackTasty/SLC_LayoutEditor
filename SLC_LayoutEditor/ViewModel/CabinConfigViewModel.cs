@@ -24,7 +24,123 @@ namespace SLC_LayoutEditor.ViewModel
         private int mServiceAreasCount = 1;
         private int mSelectedMultiSlotTypeIndex = -1;
 
+        private bool mShowEconomyClassProblems;
+        private bool mShowPremiumClassProblems;
+        private bool mShowBusinessClassProblems;
+        private bool mShowFirstClassProblems;
+        private bool mShowSupersonicClassProblems;
+        private bool mShowUnavailableSeatsProblems;
+        private bool mShowStairwayProblems;
+
         private FrameworkElement mDialog;
+
+        #region Problem visibility properties
+        public bool ShowEconomyClassProblems
+        {
+            get => mShowEconomyClassProblems;
+            set
+            {
+                mShowEconomyClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowPremiumClassProblems
+        {
+            get => mShowPremiumClassProblems;
+            set
+            {
+                mShowPremiumClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowBusinessClassProblems
+        {
+            get => mShowBusinessClassProblems;
+            set
+            {
+                mShowBusinessClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowFirstClassProblems
+        {
+            get => mShowFirstClassProblems;
+            set
+            {
+                mShowFirstClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowSupersonicClassProblems
+        {
+            get => mShowSupersonicClassProblems;
+            set
+            {
+                mShowSupersonicClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowUnavailableSeatsProblems
+        {
+            get => mShowUnavailableSeatsProblems;
+            set
+            {
+                mShowUnavailableSeatsProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowStairwayProblems
+        {
+            get => mShowStairwayProblems;
+            set
+            {
+                mShowStairwayProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public void CollectProblematicSlots()
+        {
+            List<CabinSlot> problematicSlots = new List<CabinSlot>();
+
+            if (ShowEconomyClassProblems)
+            {
+                problematicSlots.AddRange(SelectedCabinLayout.DuplicateEconomySeats);
+            }
+            if (ShowPremiumClassProblems)
+            {
+                problematicSlots.AddRange(SelectedCabinLayout.DuplicatePremiumSeats);
+            }
+            if (ShowBusinessClassProblems)
+            {
+                problematicSlots.AddRange(SelectedCabinLayout.DuplicateBusinessSeats);
+            }
+            if (ShowFirstClassProblems)
+            {
+                problematicSlots.AddRange(SelectedCabinLayout.DuplicateFirstClassSeats);
+            }
+            if (ShowSupersonicClassProblems)
+            {
+                problematicSlots.AddRange(SelectedCabinLayout.DuplicateSupersonicSeats);
+            }
+            if (ShowUnavailableSeatsProblems)
+            {
+                problematicSlots.AddRange(SelectedCabinLayout.DuplicateUnavailableSeats);
+            }
+            if (ShowStairwayProblems)
+            {
+                problematicSlots.AddRange(SelectedCabinLayout.InvalidStairways);
+            }
+
+            SelectedCabinLayout.CabinDecks.ToList().ForEach(x => x.CollectProblematicSlots(problematicSlots));
+        }
+        #endregion
 
         public VeryObservableCollection<CabinLayoutSet> LayoutSets
         {

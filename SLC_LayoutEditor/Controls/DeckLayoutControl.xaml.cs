@@ -78,6 +78,8 @@ namespace SLC_LayoutEditor.Controls
                 return;
             }
 
+            CabinDeck.ProblematicSlotsCollected += CabinDeck_ProblematicSlotsCollected;
+
             GetRowAndColumnCount(out int rows, out int columns);
 
             #region Generate layout
@@ -164,6 +166,14 @@ namespace SLC_LayoutEditor.Controls
             Console.WriteLine("Total time generating deck: " + sw.ElapsedMilliseconds);
             sw.Stop();
 #endif
+        }
+
+        private void CabinDeck_ProblematicSlotsCollected(object sender, ProblematicSlotsCollectedEventArgs e)
+        {
+            foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
+            {
+                cabinSlotControl.SetProblematicHighlight(e.CollectedSlots.Any(x => x.Guid == cabinSlotControl.CabinSlot.Guid));
+            }
         }
 
         #region Column- and row add events

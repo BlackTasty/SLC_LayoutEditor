@@ -143,37 +143,44 @@
                                                     InvalidText="Duplicate Economy Class seats found!"
                                                     IsValid="{Binding SelectedCabinLayout.HasNoDuplicateEconomySeats}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.DuplicateEconomySeats}"
-                                                    ShowEye="True"/>
+                                                    ShowEye="True" ShowProblemsChanged="EconomyClass_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowEconomyClassProblems}"/>
                         <controls:LayoutProblemText ValidText="No duplicate Business Class seats"
                                                     InvalidText="Duplicate Business Class seats found!"
                                                     IsValid="{Binding SelectedCabinLayout.HasNoDuplicateBusinessSeats}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.DuplicateBusinessSeats}"
-                                                    ShowEye="True"/>
+                                                    ShowEye="True" ShowProblemsChanged="BusinessClass_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowBusinessClassProblems, UpdateSourceTrigger=PropertyChanged}"/>
                         <controls:LayoutProblemText ValidText="No duplicate Premium Class seats"
                                                     InvalidText="Duplicate Premium Class seats found!"
                                                     IsValid="{Binding SelectedCabinLayout.HasNoDuplicatePremiumSeats}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.DuplicatePremiumSeats}"
-                                                    ShowEye="True"/>
+                                                    ShowEye="True" ShowProblemsChanged="Premium_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowPremiumClassProblems}"/>
                         <controls:LayoutProblemText ValidText="No duplicate First Class seats"
                                                     InvalidText="Duplicate First Class seats found!"
                                                     IsValid="{Binding SelectedCabinLayout.HasNoDuplicateFirstClassSeats}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.DuplicateFirstClassSeats}"
-                                                    ShowEye="True"/>
+                                                    ShowEye="True" ShowProblemsChanged="FirstClass_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowFirstClassProblems}"/>
                         <controls:LayoutProblemText ValidText="No duplicate Supersonic Class seats"
                                                     InvalidText="Duplicate Supersonic Class seats found!"
                                                     IsValid="{Binding SelectedCabinLayout.HasNoDuplicateSupersonicSeats}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.DuplicateSupersonicSeats}"
-                                                    ShowEye="True"/>
+                                                    ShowEye="True" ShowProblemsChanged="SupersonicClass_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowSupersonicClassProblems}"/>
                         <controls:LayoutProblemText ValidText="No duplicate Unavailable seats"
                                                     InvalidText="Duplicate Unavailable seats found!"
                                                     IsValid="{Binding SelectedCabinLayout.HasNoDuplicateUnavailableSeats}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.DuplicateUnavailableSeats}"
-                                                    ShowEye="True"/>
+                                                    ShowEye="True" ShowProblemsChanged="UnavailableSeats_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowUnavailableSeatsProblems}"/>
                         <controls:LayoutProblemText ValidText="Stairway positions valid"
                                                     InvalidText="Invalid stairway positions!"
                                                     IsValid="{Binding SelectedCabinLayout.StairwaysValid}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.InvalidStairways}"
-                                                    ShowEye="True"/>
+                                                    ShowEye="True" ShowProblemsChanged="StairwayPositions_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowStairwayProblems}"/>
                         <TextBlock Text="Problems per deck" FontSize="18" Margin="0,16,0,0" Style="{StaticResource DefaultTextStyle}"/>
                         <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
                               GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
@@ -219,7 +226,10 @@
                                                                             InvalidText="Duplicate doors found!"
                                                                             IsValid="{Binding HasNoDuplicateDoors}"
                                                                             InvalidSlots="{Binding DuplicateDoors}"
-                                                                            ShowEye="True"/>
+                                                                            ShowEye="True"
+                                                                            Floor="{Binding Floor}"
+                                                                            ShowProblemsChanged="DuplicateDoors_ShowProblemsChanged"
+                                                                            ShowProblems="{Binding ShowDuplicateDoorsProblems}"/>
                                                 <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
                                                     InvalidText="Invalid service points!"
                                                     IsValid="{Binding AreServicePointsValid}"/>

@@ -20,6 +20,10 @@ namespace SLC_LayoutEditor.Core.Cabin
         private int mSlotNumber; // Only in use when SlotType is one of the seats or a door
         private char mSeatLetter; // Only in use when SlotType is one of the seats
 
+        private string guid;
+
+        public string Guid => guid;
+
         public int Row
         {
             get => mRow;
@@ -107,6 +111,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinSlot(string slotData, int row, int column)
         {
+            guid = System.Guid.NewGuid().ToString();
+
             mRow = row;
             mColumn = column;
 
@@ -184,6 +190,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinSlot(int row, int column, CabinSlotType type, int slotNumber)
         {
+            guid = System.Guid.NewGuid().ToString();
+
             mRow = row;
             mColumn = column;
             mType = type;

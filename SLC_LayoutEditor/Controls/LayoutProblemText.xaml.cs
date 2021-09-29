@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace SLC_LayoutEditor.Controls
     /// </summary>
     public partial class LayoutProblemText : StackPanel
     {
+        public event EventHandler<ShowProblemsChangedEventArgs> ShowProblemsChanged;
+
         #region ValidText property
         public string ValidText
         {
@@ -90,7 +93,29 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for ShowProblems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShowProblemsProperty =
-            DependencyProperty.Register("ShowProblems", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(false));
+            DependencyProperty.Register("ShowProblems", typeof(bool), typeof(LayoutProblemText), 
+                new PropertyMetadata(false, OnShowProblemsPropertyChanged));
+
+        private static void OnShowProblemsPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is LayoutProblemText control)
+            {
+                control.OnShowProblemsChanged(
+                    new ShowProblemsChangedEventArgs(control.ShowProblems, control.InvalidSlots, control.Floor));
+            }
+        }
+        #endregion
+
+        #region Floor property
+        public int Floor
+        {
+            get { return (int)GetValue(FloorProperty); }
+            set { SetValue(FloorProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Floor.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FloorProperty =
+            DependencyProperty.Register("Floor", typeof(int), typeof(LayoutProblemText), new PropertyMetadata(-1));
         #endregion
 
         public LayoutProblemText()
@@ -101,6 +126,11 @@ namespace SLC_LayoutEditor.Controls
         private void ToggleProblemVisibility_Click(object sender, RoutedEventArgs e)
         {
             ShowProblems = !ShowProblems;
+        }
+
+        protected virtual void OnShowProblemsChanged(ShowProblemsChangedEventArgs e)
+        {
+            ShowProblemsChanged?.Invoke(this, e);
         }
     }
 }

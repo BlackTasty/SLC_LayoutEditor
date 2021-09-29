@@ -78,7 +78,9 @@
     <Compile Include="Converter\StringNotEmptyConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />
     <Compile Include="Core\Events\AddDialogClosingEventArgs.cs" />
+    <Compile Include="Core\Events\ProblematicSlotsCollectedEventArgs.cs" />
     <Compile Include="Core\Events\RemoveCabinDeckEventArgs.cs" />
+    <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\Patcher\Server.cs" />
     <Compile Include="Core\Patcher\ServerList.cs" />

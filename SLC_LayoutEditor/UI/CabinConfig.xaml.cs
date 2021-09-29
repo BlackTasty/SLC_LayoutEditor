@@ -209,8 +209,8 @@ namespace SLC_LayoutEditor.UI
             }
 
             CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-            activeDeckControl.SetMultipleSlotsSelected(new List<CabinSlot>(), true);
             vm.SelectedCabinSlots = new List<CabinSlot>();
+            activeDeckControl.SetMultipleSlotsSelected(vm.SelectedCabinSlots, true);
             vm.SelectedCabinLayout.LoadCabinLayout();
         }
 
@@ -247,6 +247,47 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
             }
+        }
+
+        private void EconomyClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+
+        }
+
+        private void BusinessClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+            vm.CollectProblematicSlots();
+        }
+
+        private void Premium_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+
+        }
+
+        private void FirstClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+
+        }
+
+        private void SupersonicClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+
+        }
+
+        private void UnavailableSeats_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+
+        }
+
+        private void StairwayPositions_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+
+        }
+
+        private void DuplicateDoors_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        {
+
         }
     }
 }
