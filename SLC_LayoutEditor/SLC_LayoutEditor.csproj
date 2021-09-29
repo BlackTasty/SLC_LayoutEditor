@@ -44,6 +44,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -96,6 +97,7 @@
     <Compile Include="ViewModel\AddAirplaneDialogViewModel.cs" />
     <Compile Include="ViewModel\AddCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
+    <Compile Include="ViewModel\DesignTime\WelcomeScreenDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\WelcomeScreenViewModel.cs" />
     <Page Include="App.xaml">

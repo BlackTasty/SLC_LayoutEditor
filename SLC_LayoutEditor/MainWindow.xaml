@@ -12,7 +12,8 @@
         Background="{DynamicResource BackgroundColor}"
         mc:Ignorable="d"
         Title="SLC Layout Editor" MinHeight="450" MinWidth="920"
-        d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}" Icon="Resources/icon.ico">
+        d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
+        Icon="Resources/icon.ico">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>

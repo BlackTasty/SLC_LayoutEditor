@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -51,6 +52,39 @@ namespace SLC_LayoutEditor.UI
             await (DataContext as WelcomeScreenViewModel).RunCopy();
 
             OnWelcomeConfirmed(EventArgs.Empty);
+        }
+
+        private void SelectSLCPath_Click(object sender, RoutedEventArgs e)
+        {
+            App.Settings.CabinLayoutsReadoutPath = SelectFolder("Select SLC cabin layouts folder",
+                                                        App.Settings.CabinLayoutsReadoutPath,
+                                                        false);
+        }
+
+        private void SelectCopyTargetPath_Click(object sender, RoutedEventArgs e)
+        {
+            App.Settings.CabinLayoutsEditPath = SelectFolder("Select a folder to copy all layouts to",
+                                                        App.Settings.CabinLayoutsReadoutPath,
+                                                        true);
+        }
+
+        private string SelectFolder(string title, string currentFolder, bool showNewFolderButton)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog()
+            {
+                Description = title,
+                ShowNewFolderButton = showNewFolderButton,
+                SelectedPath = currentFolder
+            };
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                return dialog.SelectedPath;
+            }
+            else
+            {
+                return currentFolder;
+            }
         }
     }
 }

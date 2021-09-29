@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -92,6 +93,8 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged();
             }
         }
+
+        public AppSettings Settings => App.Settings;
 
         public async Task RunCopy()
         {

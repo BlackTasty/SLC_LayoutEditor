@@ -22,6 +22,7 @@ namespace SLC_LayoutEditor.Core
             {
                 mCabinLayoutsReadoutPath = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged("PathsValid");
             }
         }
 
@@ -32,8 +33,11 @@ namespace SLC_LayoutEditor.Core
             {
                 mCabinLayoutsEditPath = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged("PathsValid");
             }
         }
+
+        public bool PathsValid => Directory.Exists(CabinLayoutsReadoutPath) && Directory.Exists(CabinLayoutsEditPath);
 
         public bool WelcomeScreenShown
         {
