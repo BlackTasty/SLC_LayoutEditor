@@ -78,8 +78,6 @@ namespace SLC_LayoutEditor.Controls
                 return;
             }
 
-            CabinDeck.ProblematicSlotsCollected += CabinDeck_ProblematicSlotsCollected;
-
             GetRowAndColumnCount(out int rows, out int columns);
 
             #region Generate layout
@@ -166,14 +164,6 @@ namespace SLC_LayoutEditor.Controls
             Console.WriteLine("Total time generating deck: " + sw.ElapsedMilliseconds);
             sw.Stop();
 #endif
-        }
-
-        private void CabinDeck_ProblematicSlotsCollected(object sender, ProblematicSlotsCollectedEventArgs e)
-        {
-            foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
-            {
-                cabinSlotControl.SetProblematicHighlight(e.CollectedSlots.Any(x => x.Guid == cabinSlotControl.CabinSlot.Guid));
-            }
         }
 
         #region Column- and row add events
@@ -423,20 +413,6 @@ namespace SLC_LayoutEditor.Controls
             }
 
             SetMultipleSlotsSelected(selectedControls, clearCurrentSelection);
-        }
-
-        public void HighlightProblematicSlots(IEnumerable<CabinSlot> problematicSlots, bool isHighlighted)
-        {
-            foreach (CabinSlot cabinSlot in problematicSlots)
-            {
-                CabinSlotControl target = layout_deck.Children.OfType<CabinSlotControl>()
-                                            .FirstOrDefault(x => x.CabinSlot.Row == cabinSlot.Row && x.CabinSlot.Column == cabinSlot.Column);
-
-                if (target != null)
-                {
-                    target.SetProblematicHighlight(isHighlighted);
-                }
-            }
         }
 
         private void SetMultipleSlotsSelected(IEnumerable<CabinSlotControl> selectedSlots, bool clearCurrentSelection)

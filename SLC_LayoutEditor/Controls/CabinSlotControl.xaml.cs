@@ -23,11 +23,8 @@ namespace SLC_LayoutEditor.Controls
     public partial class CabinSlotControl : Canvas
     {
         private bool isSelected;
-        private bool isProblematic;
 
         public bool IsSelected => isSelected;
-
-        public bool IsProblematic => isProblematic;
 
         public CabinSlot CabinSlot
         {
@@ -38,7 +35,20 @@ namespace SLC_LayoutEditor.Controls
         // Using a DependencyProperty as the backing store for CabinSlot.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinSlotProperty =
             DependencyProperty.Register("CabinSlot", typeof(CabinSlot), typeof(CabinSlotControl), 
-                new PropertyMetadata(new CabinSlot(0,0, CabinSlotType.Wall, 0)));
+                new PropertyMetadata(new CabinSlot(0,0, CabinSlotType.Wall, 0), OnCabinSlotChanged));
+
+        private static void OnCabinSlotChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is CabinSlotControl control)
+            {
+                control.RegisterCabinSlotProblemEvent();
+            }
+        }
+
+        private void CabinSlot_ProblematicChanged(object sender, EventArgs e)
+        {
+            SetProblematicHighlight();
+        }
 
         public CabinSlotControl()
         {
@@ -51,11 +61,12 @@ namespace SLC_LayoutEditor.Controls
 
             if (isSelected)
             {
-                layout.Background = App.Current.FindResource("SlotSelectedColor") as SolidColorBrush;
+                layout.Background = App.Current
+                    .FindResource(!CabinSlot.IsProblematic ? "SlotSelectedColor" : "ErrorSelectedHighlightColor") as SolidColorBrush;
             }
-            else if (isProblematic)
+            else if (CabinSlot.IsProblematic)
             {
-                SetProblematicHighlight(true);
+                SetProblematicHighlight();
             }
             else
             {
@@ -63,21 +74,31 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
-        public void SetProblematicHighlight(bool isProblematic)
+        public void SetProblematicHighlight()
         {
-            this.isProblematic = isProblematic;
-
-            if (isProblematic)
-            {
-                layout.Background = App.Current.FindResource("ErrorHighlightColor") as SolidColorBrush;
-            }
-            else if (isSelected)
+            if (isSelected)
             {
                 SetSelected(true);
+            }
+            else if (CabinSlot.IsProblematic)
+            {
+                layout.Background = App.Current.FindResource("ErrorHighlightColor") as SolidColorBrush;
             }
             else
             {
                 layout.Background = Brushes.Transparent;
+            }
+        }
+
+        private void RegisterCabinSlotProblemEvent()
+        {
+            if (CabinSlot != null)
+            {
+                CabinSlot.ProblematicChanged += CabinSlot_ProblematicChanged;
+                if (CabinSlot.IsProblematic)
+                {
+                    SetProblematicHighlight();
+                }
             }
         }
     }

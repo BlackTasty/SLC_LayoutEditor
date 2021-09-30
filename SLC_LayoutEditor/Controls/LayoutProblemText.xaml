@@ -23,7 +23,7 @@
                                  Value="True">
                         <Setter Property="Content" Value="{StaticResource EyeOutline}"/>
                         <Setter Property="Padding" Value="1"/>
-                        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource ButtonYellowBorderColor}"/>
                     </DataTrigger>
 
                     <Trigger Property="IsMouseOver" Value="True">

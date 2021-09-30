@@ -19,7 +19,6 @@
                     </DataTrigger>
                     <DataTrigger Binding="{Binding ElementName=layout, Path=CabinSlot.Type}" Value="2">
                         <Setter Property="BorderBrush" Value="{StaticResource DoorColor}"/>
-                        <Setter Property="Background" Value="{StaticResource DoorColor}"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding ElementName=layout, Path=CabinSlot.Type}" Value="3">
                         <Setter Property="BorderBrush" Value="{StaticResource CockpitColor}"/>
@@ -28,7 +27,6 @@
                         <Setter Property="Background" Value="{StaticResource CrewAreaIcon}"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding ElementName=layout, Path=CabinSlot.Type}" Value="5">
-                        <Setter Property="BorderBrush" Value="{StaticResource ToiletColor}"/>
                         <Setter Property="Background" Value="{StaticResource ToiletIcon}"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding ElementName=layout, Path=CabinSlot.Type}" Value="6">

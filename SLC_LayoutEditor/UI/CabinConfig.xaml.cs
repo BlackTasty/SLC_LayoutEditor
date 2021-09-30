@@ -54,7 +54,7 @@ namespace SLC_LayoutEditor.UI
 
             if (vm.SelectedCabinLayout.ProblemCountSum > 0)
             {
-                if (MessageBox.Show("Seems like your layout has some problems, do you want to save anyway?", 
+                if (MessageBox.Show("Seems like your layout has some problems, which can cause unexpected behaviour with SLC!\n\nDo you want to save anyway?", 
                         "Layout problems detected", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 {
                     return;
@@ -251,43 +251,56 @@ namespace SLC_LayoutEditor.UI
 
         private void EconomyClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.EconomyClassSeat);
         }
 
         private void BusinessClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-            vm.CollectProblematicSlots();
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.BusinessClassSeat);
         }
 
         private void Premium_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.PremiumClassSeat);
         }
 
         private void FirstClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.FirstClassSeat);
         }
 
         private void SupersonicClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.SupersonicClassSeat);
         }
 
         private void UnavailableSeats_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.UnavailableSeat);
         }
 
         private void StairwayPositions_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Stairway);
         }
 
         private void DuplicateDoors_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Door);
+        }
 
+        private void ToggleProblemHighlight(bool showProblems, IEnumerable<CabinSlot> problematicSlots, CabinSlotType targetType)
+        {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+            if (vm.SelectedCabinLayout != null && vm.SelectedCabinLayout.CabinDecks != null)
+            {
+                foreach (CabinSlot cabinSlot in vm.SelectedCabinLayout.CabinDecks
+                                                    .SelectMany(x => x.CabinSlots)
+                                                    .Where(x => x.Type == targetType))
+                {
+                    cabinSlot.IsProblematic = showProblems && problematicSlots.Any(x => x.Guid == cabinSlot.Guid);
+                }
+            }
         }
     }
 }

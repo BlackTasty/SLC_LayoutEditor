@@ -134,26 +134,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public void CollectProblematicSlots(List<CabinSlot> problematicSlots)
-        {
-            List<CabinSlot> problematicDeckSlots = new List<CabinSlot>();
-
-            foreach (CabinSlot problematicSlot in problematicSlots)
-            {
-                if (CabinSlots.Any(x => x.Guid == problematicSlot.Guid))
-                {
-                    problematicDeckSlots.Add(problematicSlot);
-                }
-            }
-
-            if (ShowDuplicateDoorsProblems)
-            {
-                problematicDeckSlots.AddRange(DuplicateDoors);
-            }
-
-            OnProblematicSlotsCollected(new ProblematicSlotsCollectedEventArgs(problematicDeckSlots));
-        }
-
         public IEnumerable<int> GetRowsWithSeats()
         {
             return CabinSlots.Where(x => x.IsSeat).Select(x => x.Row).Distinct();

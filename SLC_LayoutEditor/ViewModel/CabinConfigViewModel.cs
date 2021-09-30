@@ -24,13 +24,13 @@ namespace SLC_LayoutEditor.ViewModel
         private int mServiceAreasCount = 1;
         private int mSelectedMultiSlotTypeIndex = -1;
 
-        private bool mShowEconomyClassProblems;
-        private bool mShowPremiumClassProblems;
-        private bool mShowBusinessClassProblems;
-        private bool mShowFirstClassProblems;
-        private bool mShowSupersonicClassProblems;
-        private bool mShowUnavailableSeatsProblems;
-        private bool mShowStairwayProblems;
+        private bool mShowEconomyClassProblems = true;
+        private bool mShowPremiumClassProblems = true;
+        private bool mShowBusinessClassProblems = true;
+        private bool mShowFirstClassProblems = true;
+        private bool mShowSupersonicClassProblems = true;
+        private bool mShowUnavailableSeatsProblems = true;
+        private bool mShowStairwayProblems = true;
 
         private FrameworkElement mDialog;
 
@@ -103,42 +103,6 @@ namespace SLC_LayoutEditor.ViewModel
                 mShowStairwayProblems = value;
                 InvokePropertyChanged();
             }
-        }
-
-        public void CollectProblematicSlots()
-        {
-            List<CabinSlot> problematicSlots = new List<CabinSlot>();
-
-            if (ShowEconomyClassProblems)
-            {
-                problematicSlots.AddRange(SelectedCabinLayout.DuplicateEconomySeats);
-            }
-            if (ShowPremiumClassProblems)
-            {
-                problematicSlots.AddRange(SelectedCabinLayout.DuplicatePremiumSeats);
-            }
-            if (ShowBusinessClassProblems)
-            {
-                problematicSlots.AddRange(SelectedCabinLayout.DuplicateBusinessSeats);
-            }
-            if (ShowFirstClassProblems)
-            {
-                problematicSlots.AddRange(SelectedCabinLayout.DuplicateFirstClassSeats);
-            }
-            if (ShowSupersonicClassProblems)
-            {
-                problematicSlots.AddRange(SelectedCabinLayout.DuplicateSupersonicSeats);
-            }
-            if (ShowUnavailableSeatsProblems)
-            {
-                problematicSlots.AddRange(SelectedCabinLayout.DuplicateUnavailableSeats);
-            }
-            if (ShowStairwayProblems)
-            {
-                problematicSlots.AddRange(SelectedCabinLayout.InvalidStairways);
-            }
-
-            SelectedCabinLayout.CabinDecks.ToList().ForEach(x => x.CollectProblematicSlots(problematicSlots));
         }
         #endregion
 

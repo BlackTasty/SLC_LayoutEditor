@@ -128,14 +128,24 @@ namespace SLC_LayoutEditor.Core.Cabin
                 mCabinDecks.Add(deck);
             }
 
-            InvokePropertyChanged("PassengerCapacity");
+            RefreshCapacities();
             RefreshProblemChecks();
         }
 
         private void Deck_CabinSlotsChanged(object sender, EventArgs e)
         {
-            InvokePropertyChanged("PassengerCapacity");
+            RefreshCapacities();
             RefreshProblemChecks();
+        }
+
+        private void RefreshCapacities()
+        {
+            InvokePropertyChanged("PassengerCapacity");
+            InvokePropertyChanged("EconomyCapacity");
+            InvokePropertyChanged("BusinessCapacity");
+            InvokePropertyChanged("PremiumCapacity");
+            InvokePropertyChanged("FirstClassCapacity");
+            InvokePropertyChanged("SupersonicCapacity");
         }
 
         public string ToLayoutFile()

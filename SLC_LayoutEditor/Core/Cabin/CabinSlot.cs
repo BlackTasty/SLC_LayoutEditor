@@ -19,6 +19,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private CabinSlotType mType;
         private int mSlotNumber; // Only in use when SlotType is one of the seats or a door
         private char mSeatLetter; // Only in use when SlotType is one of the seats
+        private bool mIsProblematic;
 
         private string guid;
 
@@ -103,6 +104,20 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool IsDoor => mType == CabinSlotType.Door;
 
         public string DisplayText => ToString();
+
+        public bool IsProblematic
+        {
+            get => mIsProblematic;
+            set
+            {
+                bool oldValue = mIsProblematic;
+                mIsProblematic = value;
+                if (oldValue != value)
+                {
+                    OnProblematicChanged(EventArgs.Empty);
+                }
+            }
+        }
 
         public CabinSlot(int row, int column) : this(row, column, CabinSlotType.Aisle, 0)
         {

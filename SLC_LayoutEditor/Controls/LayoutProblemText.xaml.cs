@@ -69,7 +69,17 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for InvalidSlots.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty InvalidSlotsProperty =
-            DependencyProperty.Register("InvalidSlots", typeof(IEnumerable<CabinSlot>), typeof(LayoutProblemText), new PropertyMetadata(new List<CabinSlot>()));
+            DependencyProperty.Register("InvalidSlots", typeof(IEnumerable<CabinSlot>), typeof(LayoutProblemText), 
+                new PropertyMetadata(new List<CabinSlot>(), OnInvalidSlotsChanged));
+
+        private static void OnInvalidSlotsChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is LayoutProblemText control)
+            {
+                control.OnShowProblemsChanged(
+                    new ShowProblemsChangedEventArgs(control.ShowProblems, e.NewValue as IEnumerable<CabinSlot>, control.Floor));
+            }
+        }
         #endregion
 
         #region ShowEye property
@@ -94,7 +104,7 @@ namespace SLC_LayoutEditor.Controls
         // Using a DependencyProperty as the backing store for ShowProblems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShowProblemsProperty =
             DependencyProperty.Register("ShowProblems", typeof(bool), typeof(LayoutProblemText), 
-                new PropertyMetadata(false, OnShowProblemsPropertyChanged));
+                new PropertyMetadata(true, OnShowProblemsPropertyChanged));
 
         private static void OnShowProblemsPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {

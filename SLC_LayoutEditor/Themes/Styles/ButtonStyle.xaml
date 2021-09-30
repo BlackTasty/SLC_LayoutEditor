@@ -213,8 +213,7 @@
                                 </PointCollection>
                             </controls:RoundedCornersPolygon.Points>
                         </controls:RoundedCornersPolygon>
-                        <TextBlock Text=">" Foreground="{TemplateBinding Foreground}" Margin="17,-4,0,0"
-                                       SnapsToDevicePixels="True"/>
+                        <Path Data="{DynamicResource ChevronRight}" Fill="{TemplateBinding Foreground}" Margin="11,-3,0,0"/>
                     </Canvas>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -336,8 +335,7 @@
                                 </PointCollection>
                             </controls:RoundedCornersPolygon.Points>
                         </controls:RoundedCornersPolygon>
-                        <TextBlock Text="v" Foreground="{TemplateBinding Foreground}" Margin="4,8,0,0"
-                                       SnapsToDevicePixels="True"/>
+                        <Path Data="{DynamicResource ChevronDown}" Fill="{TemplateBinding Foreground}" Margin="-3,10,0,0"/>
                     </Canvas>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">

@@ -19,7 +19,8 @@
     <SolidColorBrush x:Key="BackgroundColor">#111111</SolidColorBrush>
     <SolidColorBrush x:Key="ForegroundColor">#FFFFFF</SolidColorBrush>
     <SolidColorBrush x:Key="ErrorForegroundColor">#FFAAAA</SolidColorBrush>
-    <SolidColorBrush x:Key="ErrorHighlightColor">#44FFAAAA</SolidColorBrush>
+    <SolidColorBrush x:Key="ErrorHighlightColor">#44FF7777</SolidColorBrush>
+    <SolidColorBrush x:Key="ErrorSelectedHighlightColor">#99FFBBBB</SolidColorBrush>
     <SolidColorBrush x:Key="ValidForegroundColor">#CCFFCC</SolidColorBrush>
 
     <SolidColorBrush x:Key="SlotSelectedColor">#44FFFFFF</SolidColorBrush>
