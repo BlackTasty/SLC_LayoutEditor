@@ -17,8 +17,6 @@ namespace SLC_LayoutEditor.ViewModel
         private FrameworkElement mContent;
 
         #region Updater variables
-        private bool mShowDialog;
-        private FrameworkElement mDialog;
         private UpdateManager updateManager;
 
         private string mUpdateText = "Idle";
@@ -46,34 +44,6 @@ namespace SLC_LayoutEditor.ViewModel
         {
             get => updateManager?.Status ?? UpdateStatus.IDLE;
             set => updateManager.Status = value;
-        }
-
-        public bool ShowDialog
-        {
-            get => mShowDialog;
-            set
-            {
-                mShowDialog = value;
-                InvokePropertyChanged();
-                if (!value)
-                {
-                    Dialog = null;
-                }
-            }
-        }
-
-        public FrameworkElement Dialog
-        {
-            get => mDialog;
-            set
-            {
-                mDialog = value;
-                InvokePropertyChanged();
-                if (value != null)
-                {
-                    ShowDialog = true;
-                }
-            }
         }
 
         public string UpdateText

@@ -1,0 +1,411 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
+                    xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls">
+    <converter:StringToGeometryConverter x:Key="StringToGeometryConverter"/>
+
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColor}"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid x:Name="grid">
+                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="YellowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonYellowBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonYellowBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid x:Name="grid">
+                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonYellowBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonYellowBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RedButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonRedBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonRedBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid x:Name="grid">
+                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonRedBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonRedBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AddRowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Canvas>
+                        <controls:RoundedCornersPolygon x:Name="border" Fill="Transparent" 
+                                                            Stroke="{TemplateBinding BorderBrush}"
+                                                            StrokeThickness="1.5" IsClosed="True"
+                                                            ArcRoundness="2">
+                            <controls:RoundedCornersPolygon.Points>
+                                <PointCollection>
+                                    <Point X="0" Y="0"/>
+                                    <Point X="30" Y="0"/>
+                                    <Point X="30" Y="30"/>
+                                </PointCollection>
+                            </controls:RoundedCornersPolygon.Points>
+                        </controls:RoundedCornersPolygon>
+                        <TextBlock Text="+" Foreground="{TemplateBinding Foreground}" Margin="17,-4,0,0"
+                                       FontWeight="Bold" SnapsToDevicePixels="True"/>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Stroke" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AddColumnButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Canvas>
+                        <controls:RoundedCornersPolygon x:Name="border" Fill="Transparent" 
+                                                            Stroke="{TemplateBinding BorderBrush}" 
+                                                            StrokeThickness="1.5" IsClosed="True"
+                                                            ArcRoundness="2">
+                            <controls:RoundedCornersPolygon.Points>
+                                <PointCollection>
+                                    <Point X="0" Y="30"/>
+                                    <Point X="30" Y="30"/>
+                                    <Point X="0" Y="0"/>
+                                </PointCollection>
+                            </controls:RoundedCornersPolygon.Points>
+                        </controls:RoundedCornersPolygon>
+                        <TextBlock Text="+" Foreground="{TemplateBinding Foreground}" Margin="3,9,0,0"
+                                       FontWeight="Bold" SnapsToDevicePixels="True"/>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Stroke" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SelectRowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Canvas>
+                        <controls:RoundedCornersPolygon x:Name="border" Fill="Transparent" 
+                                                            Stroke="{TemplateBinding BorderBrush}"
+                                                            StrokeThickness="1.5" IsClosed="True"
+                                                            ArcRoundness="2">
+                            <controls:RoundedCornersPolygon.Points>
+                                <PointCollection>
+                                    <Point X="0" Y="0"/>
+                                    <Point X="30" Y="0"/>
+                                    <Point X="30" Y="30"/>
+                                </PointCollection>
+                            </controls:RoundedCornersPolygon.Points>
+                        </controls:RoundedCornersPolygon>
+                        <Path Data="{DynamicResource ChevronRight}" Fill="{TemplateBinding Foreground}" Margin="11,-3,0,0"/>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Stroke" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RemoveRowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonRedBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonRedBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Canvas>
+                        <controls:RoundedCornersPolygon x:Name="border" Fill="Transparent" 
+                                                            Stroke="{TemplateBinding BorderBrush}" 
+                                                            StrokeThickness="1.5" IsClosed="True"
+                                                            ArcRoundness="2">
+                            <controls:RoundedCornersPolygon.Points>
+                                <PointCollection>
+                                    <Point X="0" Y="30"/>
+                                    <Point X="30" Y="30"/>
+                                    <Point X="0" Y="0"/>
+                                </PointCollection>
+                            </controls:RoundedCornersPolygon.Points>
+                        </controls:RoundedCornersPolygon>
+                        <TextBlock Text="-" Foreground="{TemplateBinding Foreground}" Margin="5,9,0,0"
+                                       FontWeight="Bold" SnapsToDevicePixels="True"/>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonRedBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonRedBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Stroke" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RemoveColumnButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonRedBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonRedBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Canvas>
+                        <controls:RoundedCornersPolygon x:Name="border" Fill="Transparent" 
+                                                            Stroke="{TemplateBinding BorderBrush}"
+                                                            StrokeThickness="1.5" IsClosed="True"
+                                                            ArcRoundness="2">
+                            <controls:RoundedCornersPolygon.Points>
+                                <PointCollection>
+                                    <Point X="0" Y="0"/>
+                                    <Point X="30" Y="0"/>
+                                    <Point X="30" Y="30"/>
+                                </PointCollection>
+                            </controls:RoundedCornersPolygon.Points>
+                        </controls:RoundedCornersPolygon>
+                        <TextBlock Text="-" Foreground="{TemplateBinding Foreground}" Margin="18,-4,0,0"
+                                       FontWeight="Bold" SnapsToDevicePixels="True"/>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonRedBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonRedBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Stroke" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SelectColumnButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColor}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Canvas>
+                        <controls:RoundedCornersPolygon x:Name="border" Fill="Transparent" 
+                                                            Stroke="{TemplateBinding BorderBrush}" 
+                                                            StrokeThickness="1.5" IsClosed="True"
+                                                            ArcRoundness="2">
+                            <controls:RoundedCornersPolygon.Points>
+                                <PointCollection>
+                                    <Point X="0" Y="30"/>
+                                    <Point X="30" Y="30"/>
+                                    <Point X="0" Y="0"/>
+                                </PointCollection>
+                            </controls:RoundedCornersPolygon.Points>
+                        </controls:RoundedCornersPolygon>
+                        <Path Data="{DynamicResource ChevronDown}" Fill="{TemplateBinding Foreground}" Margin="-3,10,0,0"/>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Fill" TargetName="border" Value="{StaticResource ButtonBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Stroke" TargetName="border" Value="{StaticResource SlotSelectedColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}" 
+           BasedOn="{StaticResource {x:Type Button}}" 
+           x:Key="IconButton">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="ContentTemplate" Value="{DynamicResource IconButtonTemplate}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid x:Name="grid">
+                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ButtonBackgroundHoverColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ButtonBackgroundPressedColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource EyeForegroundHoverColor}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource EyeForegroundPressedColor}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <DataTemplate x:Key="IconButtonTemplate" DataType="{x:Type Button}">
+        <Path Name="path" Stretch="Uniform"
+              Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+              Data="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Content, Converter={StaticResource StringToGeometryConverter}}"/>
+    </DataTemplate>
+</ResourceDictionary>

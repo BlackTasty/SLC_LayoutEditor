@@ -12,12 +12,18 @@ namespace SLC_LayoutEditor.Core.Cabin
     public class CabinSlot : ViewModelBase
     {
         public event EventHandler<CabinSlotChangedEventArgs> CabinSlotChanged;
+        public event EventHandler<EventArgs> ProblematicChanged;
 
         private int mRow;
         private int mColumn;
         private CabinSlotType mType;
         private int mSlotNumber; // Only in use when SlotType is one of the seats or a door
         private char mSeatLetter; // Only in use when SlotType is one of the seats
+        private bool mIsProblematic;
+
+        private string guid;
+
+        public string Guid => guid;
 
         public int Row
         {
@@ -99,6 +105,20 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public string DisplayText => ToString();
 
+        public bool IsProblematic
+        {
+            get => mIsProblematic;
+            set
+            {
+                bool oldValue = mIsProblematic;
+                mIsProblematic = value;
+                if (oldValue != value)
+                {
+                    OnProblematicChanged(EventArgs.Empty);
+                }
+            }
+        }
+
         public CabinSlot(int row, int column) : this(row, column, CabinSlotType.Aisle, 0)
         {
 
@@ -106,6 +126,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinSlot(string slotData, int row, int column)
         {
+            guid = System.Guid.NewGuid().ToString();
+
             mRow = row;
             mColumn = column;
 
@@ -183,6 +205,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinSlot(int row, int column, CabinSlotType type, int slotNumber)
         {
+            guid = System.Guid.NewGuid().ToString();
+
             mRow = row;
             mColumn = column;
             mType = type;
@@ -235,6 +259,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         protected virtual void OnCabinSlotChanged(CabinSlotChangedEventArgs e)
         {
             CabinSlotChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnProblematicChanged(EventArgs e)
+        {
+            ProblematicChanged?.Invoke(this, e);
         }
     }
 }

@@ -66,8 +66,10 @@ namespace SLC_LayoutEditor.Controls
 
         public void RefreshCabinDeckLayout()
         {
+#if DEBUG
             Stopwatch sw = new Stopwatch();
             sw.Start();
+#endif
 
             layout_deck.Children.Clear();
 
@@ -157,8 +159,11 @@ namespace SLC_LayoutEditor.Controls
             #endregion
 
             RefreshControlSize();
+
+#if DEBUG
             Console.WriteLine("Total time generating deck: " + sw.ElapsedMilliseconds);
             sw.Stop();
+#endif
         }
 
         #region Column- and row add events

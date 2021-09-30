@@ -24,7 +24,87 @@ namespace SLC_LayoutEditor.ViewModel
         private int mServiceAreasCount = 1;
         private int mSelectedMultiSlotTypeIndex = -1;
 
+        private bool mShowEconomyClassProblems = true;
+        private bool mShowPremiumClassProblems = true;
+        private bool mShowBusinessClassProblems = true;
+        private bool mShowFirstClassProblems = true;
+        private bool mShowSupersonicClassProblems = true;
+        private bool mShowUnavailableSeatsProblems = true;
+        private bool mShowStairwayProblems = true;
+
         private FrameworkElement mDialog;
+
+        #region Problem visibility properties
+        public bool ShowEconomyClassProblems
+        {
+            get => mShowEconomyClassProblems;
+            set
+            {
+                mShowEconomyClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowPremiumClassProblems
+        {
+            get => mShowPremiumClassProblems;
+            set
+            {
+                mShowPremiumClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowBusinessClassProblems
+        {
+            get => mShowBusinessClassProblems;
+            set
+            {
+                mShowBusinessClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowFirstClassProblems
+        {
+            get => mShowFirstClassProblems;
+            set
+            {
+                mShowFirstClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowSupersonicClassProblems
+        {
+            get => mShowSupersonicClassProblems;
+            set
+            {
+                mShowSupersonicClassProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowUnavailableSeatsProblems
+        {
+            get => mShowUnavailableSeatsProblems;
+            set
+            {
+                mShowUnavailableSeatsProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowStairwayProblems
+        {
+            get => mShowStairwayProblems;
+            set
+            {
+                mShowStairwayProblems = value;
+                InvokePropertyChanged();
+            }
+        }
+        #endregion
 
         public VeryObservableCollection<CabinLayoutSet> LayoutSets
         {

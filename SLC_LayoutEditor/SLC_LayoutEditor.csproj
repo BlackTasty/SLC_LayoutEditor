@@ -77,8 +77,11 @@
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\StringNotEmptyConverter.cs" />
+    <Compile Include="Converter\StringToGeometryConverter.cs" />
     <Compile Include="Core\Events\AddDialogClosingEventArgs.cs" />
+    <Compile Include="Core\Events\ProblematicSlotsCollectedEventArgs.cs" />
     <Compile Include="Core\Events\RemoveCabinDeckEventArgs.cs" />
+    <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\Patcher\Server.cs" />
     <Compile Include="Core\Patcher\ServerList.cs" />
@@ -138,6 +141,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -159,6 +166,38 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Themes\Style.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\ButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Colors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\ComboBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\MenuStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\ProgressBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\TextBlockStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\TextBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\CabinConfig.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
