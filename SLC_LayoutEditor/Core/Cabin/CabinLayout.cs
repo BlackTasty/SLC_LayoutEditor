@@ -94,9 +94,10 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public string FilePath => layoutFile.FullName;
 
-        public CabinLayout(string layoutName)
+        public CabinLayout(string layoutName, string airplaneName)
         {
             mLayoutName = layoutName;
+            layoutFile = new FileInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, airplaneName, layoutName + ".txt"));
         }
 
         public CabinLayout(FileInfo layoutFile)

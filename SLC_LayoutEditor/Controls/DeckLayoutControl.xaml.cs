@@ -181,6 +181,7 @@ namespace SLC_LayoutEditor.Controls
             }
 
             AddRowSelectButton(newRow);
+            AddRowRemoveButton(newRow);
             RefreshControlSize();
         }
 
@@ -198,6 +199,7 @@ namespace SLC_LayoutEditor.Controls
             }
 
             AddColumnSelectButton(newColumn);
+            AddColumnRemoveButton(newColumn);
             RefreshControlSize();
         }
         #endregion

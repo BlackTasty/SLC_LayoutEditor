@@ -146,7 +146,7 @@ namespace SLC_LayoutEditor.UI
 
             if (e.IsCreate)
             {
-                CabinLayout layout = new CabinLayout(e.Name);
+                CabinLayout layout = new CabinLayout(e.Name, vm.SelectedLayoutSet.AirplaneName);
                 vm.SelectedLayoutSet.CabinLayouts.Add(layout);
                 vm.SelectedCabinLayout = layout;
             }
