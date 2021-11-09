@@ -293,6 +293,11 @@
                         <TextBlock Margin="0,0,0,4" Text="Seat letter(s)" Style="{StaticResource DefaultTextStyle}"/>
                         <TextBox Text="{Binding AutomationSeatLetters, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
+                    <StackPanel Margin="4" ToolTip="With which number should the automation start when numbering seats"
+                                Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=0}">
+                        <TextBlock Margin="0,0,0,4" Text="Starting number" Style="{StaticResource DefaultTextStyle}"/>
+                        <TextBox Text="{Binding AutomationSeatStartNumber, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
                     <StackPanel Margin="4"
                                 Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=1}">
                         <TextBlock Margin="0,0,0,4" Text="Service area count" Style="{StaticResource DefaultTextStyle}"/>

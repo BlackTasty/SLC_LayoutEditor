@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Tasty.ViewModel;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.ViewModel
 {
@@ -21,6 +23,7 @@ namespace SLC_LayoutEditor.ViewModel
         private int mSelectedCabinSlotFloor;
         private int mSelectedAutomationIndex = -1;
         private string mAutomationSeatLetters = "";
+        private int mAutomationSeatStartNumber = 1;
         private int mServiceAreasCount = 1;
         private int mSelectedMultiSlotTypeIndex = -1;
 
@@ -191,6 +194,16 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public int AutomationSeatStartNumber
+        {
+            get => mAutomationSeatStartNumber;
+            set
+            {
+                mAutomationSeatStartNumber = Math.Max(value, 1);
+                InvokePropertyChanged();
+            }
+        }
+
         public bool AutomationLettersValid
         {
             get
@@ -250,6 +263,16 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mLayoutSets.Add(new CabinLayoutSet(layoutSetFolder));
             }
+
+            Mediator.Instance.Register(o =>
+            {
+                Dialog = o as FrameworkElement;
+            }, ViewModelMessage.DialogOpening);
+
+            Mediator.Instance.Register(o =>
+            {
+                Dialog = null;
+            }, ViewModelMessage.DialogClosing);
         }
 
         private async void LoadLayouts()

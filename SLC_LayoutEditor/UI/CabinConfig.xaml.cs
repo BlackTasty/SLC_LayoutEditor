@@ -54,13 +54,29 @@ namespace SLC_LayoutEditor.UI
 
             if (vm.SelectedCabinLayout.ProblemCountSum > 0)
             {
-                if (MessageBox.Show("Seems like your layout has some problems, which can cause unexpected behaviour with SLC!\n\nDo you want to save anyway?", 
-                        "Layout problems detected", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
+                ConfirmationDialog dialog = new ConfirmationDialog("Layout problems detected", 
+                    "Seems like your layout has some problems, which can cause unexpected behaviour with SLC!\n\nDo you want to save anyway?",
+                    DialogType.YesNo);
 
+                dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
+                {
+                    vm.Dialog = null;
+                    if (_e.DialogResult == DialogResultType.Yes)
+                    {
+                        SaveLayout(vm);
+                    }
+                };
+
+                vm.Dialog = dialog;
+            }
+            else
+            {
+                SaveLayout(vm);
+            }
+        }
+
+        private void SaveLayout(CabinConfigViewModel vm)
+        {
             vm.SelectedCabinLayout.SaveLayout();
 
             FileInfo fi = new FileInfo(vm.SelectedCabinLayout.FilePath);
@@ -86,7 +102,17 @@ namespace SLC_LayoutEditor.UI
 
             Util.OpenFolderAndSelect(vm.SelectedCabinLayout.FilePath);
 
-            MessageBox.Show("I've opened the target layout folder + the edited cabin layout path for you in explorer, you just need to copy your edited file over :)", "Folders opened");
+            ConfirmationDialog dialog = new ConfirmationDialog("Folders opened", "I've opened the target layout folder + the edited cabin layout path for you in explorer, you just need to copy your edited file over :)",
+                DialogType.OK);
+
+            dialog.DialogClosing += FolersOpenedDialog_DialogClosing;
+
+            vm.Dialog = dialog;
+        }
+
+        private void FolersOpenedDialog_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            (DataContext as CabinConfigViewModel).Dialog = null;
         }
 
         private void layout_LayoutRegenerated(object sender, EventArgs e)
@@ -154,13 +180,21 @@ namespace SLC_LayoutEditor.UI
 
         private void layout_RemoveDeckClicked(object sender, RemoveCabinDeckEventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to delete this deck? This action cannot be undone!", 
-                "Confirm deletion", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            ConfirmationDialog dialog = new ConfirmationDialog("Confirm deletion", 
+                "Are you sure you want to delete this deck? This action cannot be undone!", DialogType.YesNo);
+
+            dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
             {
-                CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-                vm.SelectedCabinLayout.CabinDecks.Remove(e.Target);
-            }
-            
+                if (_e.DialogResult == DialogResultType.Yes)
+                {
+                    CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+                    vm.SelectedCabinLayout.CabinDecks.Remove(e.Target);
+                }
+
+                (DataContext as CabinConfigViewModel).Dialog = null;
+            };
+
+            (DataContext as CabinConfigViewModel).Dialog = dialog;
         }
 
         private void AddCabinDeck_Click(object sender, RoutedEventArgs e)
@@ -171,20 +205,30 @@ namespace SLC_LayoutEditor.UI
 
             if (vm.SelectedCabinLayout.CabinDecks.Count > 0)
             {
-                MessageBoxResult result = MessageBox.Show("Should the new deck have matching rows and columns?",
-                    "Match existing layout?", MessageBoxButton.YesNoCancel);
-                if (result == MessageBoxResult.Cancel)
-                {
-                    return;
-                }
-                else if (result == MessageBoxResult.Yes)
-                {
-                    CabinDeck lastDeck = vm.SelectedCabinLayout.CabinDecks.LastOrDefault();
-                    rows = lastDeck.Rows + 1;
-                    columns = lastDeck.Columns + 1;
-                }
+                ConfirmationDialog dialog = new ConfirmationDialog("Match existing layout?",
+                    "Should the new deck have matching rows and columns?", DialogType.YesNoCancel);
+                dialog.DialogClosing += delegate(object _sender, DialogClosingEventArgs _e) {
+                    if (_e.DialogResult == DialogResultType.No)
+                    {
+                        vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+                    }
+                    else if (_e.DialogResult == DialogResultType.Yes)
+                    {
+                        CabinDeck lastDeck = vm.SelectedCabinLayout.CabinDecks.LastOrDefault();
+                        rows = lastDeck.Rows + 1;
+                        columns = lastDeck.Columns + 1;
+                        vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+                    }
+
+                    vm.Dialog = null;
+                };
+
+                vm.Dialog = dialog;
             }
-            vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+            else
+            {
+                vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+            }
         }
 
         private void MultiSelect_SlotTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -202,16 +246,23 @@ namespace SLC_LayoutEditor.UI
 
         private void ReloadDeck_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Do you really want to reload this layout? Any unsaved changes are lost!", 
-                "Reload cabin layout", MessageBoxButton.YesNo) == MessageBoxResult.No)
-            {
-                return;
-            }
-
+            ConfirmationDialog dialog = new ConfirmationDialog("Reload cabin layout",
+                "Do you really want to reload this layout? Any unsaved changes are lost!", DialogType.YesNo);
             CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
-            vm.SelectedCabinSlots = new List<CabinSlot>();
-            activeDeckControl.SetMultipleSlotsSelected(vm.SelectedCabinSlots, true);
-            vm.SelectedCabinLayout.LoadCabinLayout();
+
+            dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
+            {
+                if (_e.DialogResult == DialogResultType.Yes)
+                {
+                    vm.SelectedCabinSlots = new List<CabinSlot>();
+                    activeDeckControl?.SetMultipleSlotsSelected(vm.SelectedCabinSlots, true);
+                    vm.SelectedCabinLayout.LoadCabinLayout();
+                }
+
+                vm.Dialog = null;
+            };
+
+            vm.Dialog = dialog;
         }
 
         private void Automate_Click(object sender, RoutedEventArgs e)
@@ -225,7 +276,7 @@ namespace SLC_LayoutEditor.UI
                     int currentLetterIndex = 0;
                     foreach (var group in seatRowGroups)
                     {
-                        int seatNumber = 1;
+                        int seatNumber = vm.AutomationSeatStartNumber;
                         foreach (CabinSlot cabinSlot in group)
                         {
                             cabinSlot.SeatLetter = seatLetters[currentLetterIndex][0];

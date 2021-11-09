@@ -1,0 +1,21 @@
+﻿<Window x:Class="SLC_LayoutEditor.StyleTester"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SLC_LayoutEditor"
+        mc:Ignorable="d"
+        Title="StyleTester" Height="450" Width="800"
+        TextElement.Foreground="{DynamicResource ForegroundColor}"
+        Background="{DynamicResource BackgroundColor}">
+    <Grid>
+        <Button Style="{StaticResource SelectRowButtonStyle}" Margin="48,0" HorizontalAlignment="Left"/>
+        <Button Style="{StaticResource SelectColumnButtonStyle}" Margin="48,60,48,0" HorizontalAlignment="Left"/>
+        <Button Style="{StaticResource AddRowButtonStyle}"/>
+        <Button Style="{StaticResource AddColumnButtonStyle}"/>
+        <Button Style="{StaticResource AddRowButtonLargeStyle}" Margin="0,68,0,0"/>
+        <Button Style="{StaticResource AddColumnButtonLargeStyle}" Margin="0,68,0,0"/>
+        <Button Style="{StaticResource RemoveRowButtonStyle}" Margin="96,0"/>
+        <Button Style="{StaticResource RemoveColumnButtonStyle}" Margin="96,0"/>
+    </Grid>
+</Window>
