@@ -177,7 +177,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public override string ToString()
         {
-            var ordered = mCabinSlots.GroupBy(x => x.Column);
+            var ordered = mCabinSlots.GroupBy(x => x.Column).OrderBy(x => x.Key);
 
             string cabinDeckRaw = "";
 
