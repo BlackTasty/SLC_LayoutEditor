@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.Enum;
+﻿using SLC_LayoutEditor.Core.AutoFix;
+using SLC_LayoutEditor.Core.Enum;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -110,6 +111,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public void RefreshCalculated()
+        {
+            DeepRefreshProblemChecks();
+            RefreshCapacities();
+        }
+
         public void LoadCabinLayout()
         {
             mCabinDecks.Clear();
@@ -131,6 +138,12 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             RefreshCapacities();
             RefreshProblemChecks();
+        }
+
+        public void RegisterCabinDeck(CabinDeck cabinDeck)
+        {
+            cabinDeck.CabinSlotsChanged += Deck_CabinSlotsChanged;
+            mCabinDecks.Add(cabinDeck);
         }
 
         private void Deck_CabinSlotsChanged(object sender, EventArgs e)
@@ -167,6 +180,50 @@ namespace SLC_LayoutEditor.Core.Cabin
         public void SaveLayout()
         {
             File.WriteAllText(FilePath, ToLayoutFile());
+        }
+
+        public AutoFixResult FixStairwayPositions()
+        {
+            CabinDeck deckWithStairs = CabinDecks.FirstOrDefault(x => x.CabinSlots.Any(y => y.Type == CabinSlotType.Stairway));
+
+            Dictionary<CabinSlot, int> stairwayMapping = deckWithStairs.GetStairways();
+            AutoFixResult autoFixResult = new AutoFixResult("Stairway fix applied.", "Amount of changed slots",
+                "Failed changes");
+
+            foreach (CabinDeck cabinDeck in CabinDecks)
+            {
+                if (cabinDeck.Equals(deckWithStairs))
+                {
+                    continue;
+                }
+
+                if (cabinDeck.Rows >= stairwayMapping.Max(x => x.Key.Row) &&
+                    cabinDeck.Columns >= stairwayMapping.Max(x => x.Key.Column))
+                {
+                    foreach (CabinSlot slot in cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
+                    {
+                        slot.Type = CabinSlotType.Aisle;
+                    }
+
+                    foreach (var stairMap in stairwayMapping)
+                    {
+                        CabinSlot targetSlot = cabinDeck.CabinSlots
+                            .FirstOrDefault(x => x.Row == stairMap.Key.Row && x.Column == stairMap.Key.Column);
+
+                        if (targetSlot != null)
+                        {
+                            targetSlot.Type = CabinSlotType.Stairway;
+                            autoFixResult.CountSuccess();
+                        }
+                        else
+                        {
+                            autoFixResult.CountFail();
+                        }
+                    }
+                }
+            }
+
+            return autoFixResult;
         }
 
         private IEnumerable<CabinSlot> GetDuplicateSeats(CabinSlotType seatType)
@@ -233,7 +290,17 @@ namespace SLC_LayoutEditor.Core.Cabin
             return inaccessibleStairways;
         }
 
-        private void RefreshProblemChecks()
+        public void DeepRefreshProblemChecks()
+        {
+            foreach (CabinDeck cabinDeck in mCabinDecks)
+            {
+                cabinDeck.RefreshProblemChecks();
+            }
+
+            RefreshProblemChecks();
+        }
+
+        public void RefreshProblemChecks()
         {
             InvokePropertyChanged("DuplicateEconomySeats");
             InvokePropertyChanged("HasNoDuplicateEconomySeats");

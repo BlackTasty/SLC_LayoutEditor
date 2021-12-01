@@ -119,6 +119,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public bool IsEvaluationActive { get; set; } = true;
+
         public CabinSlot(int row, int column) : this(row, column, CabinSlotType.Aisle, 0)
         {
 
@@ -133,59 +135,66 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             string slotDeclaration = slotData.Trim();
 
-            switch (slotDeclaration[0])
+            if (slotDeclaration.Length > 0)
             {
-                case '-':
-                    mType = CabinSlotType.Aisle;
-                    break;
-                case 'X':
-                    mType = CabinSlotType.Wall;
-                    break;
-                case 'D':
-                    mType = CabinSlotType.Door;
-                    break;
-                case 'C':
-                    mType = CabinSlotType.Cockpit;
-                    break;
-                case 'G':
-                    mType = CabinSlotType.Galley;
-                    break;
-                case 'T':
-                    mType = CabinSlotType.Toilet;
-                    break;
-                case 'S':
-                    mType = CabinSlotType.Stairway;
-                    break;
-                case 'K':
-                    mType = CabinSlotType.Kitchen;
-                    break;
-                case 'I':
-                    mType = CabinSlotType.Intercom;
-                    break;
-                case 'B':
-                    mType = CabinSlotType.BusinessClassSeat;
-                    break;
-                case 'E':
-                    mType = CabinSlotType.EconomyClassSeat;
-                    break;
-                case 'F':
-                    mType = CabinSlotType.FirstClassSeat;
-                    break;
-                case 'P':
-                    mType = CabinSlotType.PremiumClassSeat;
-                    break;
-                case 'R':
-                    mType = CabinSlotType.SupersonicClassSeat;
-                    break;
-                case 'U':
-                    mType = CabinSlotType.UnavailableSeat;
-                    break;
-                case '<':
-                    mType = CabinSlotType.ServiceStartPoint;
-                    break;
-                case '>':
-                    mType = CabinSlotType.ServiceEndPoint;
-                    break;
+                switch (slotDeclaration[0])
+                {
+                    case '-':
+                        mType = CabinSlotType.Aisle;
+                        break;
+                    case 'X':
+                        mType = CabinSlotType.Wall;
+                        break;
+                    case 'D':
+                        mType = CabinSlotType.Door;
+                        break;
+                    case 'C':
+                        mType = CabinSlotType.Cockpit;
+                        break;
+                    case 'G':
+                        mType = CabinSlotType.Galley;
+                        break;
+                    case 'T':
+                        mType = CabinSlotType.Toilet;
+                        break;
+                    case 'S':
+                        mType = CabinSlotType.Stairway;
+                        break;
+                    case 'K':
+                        mType = CabinSlotType.Kitchen;
+                        break;
+                    case 'I':
+                        mType = CabinSlotType.Intercom;
+                        break;
+                    case 'B':
+                        mType = CabinSlotType.BusinessClassSeat;
+                        break;
+                    case 'E':
+                        mType = CabinSlotType.EconomyClassSeat;
+                        break;
+                    case 'F':
+                        mType = CabinSlotType.FirstClassSeat;
+                        break;
+                    case 'P':
+                        mType = CabinSlotType.PremiumClassSeat;
+                        break;
+                    case 'R':
+                        mType = CabinSlotType.SupersonicClassSeat;
+                        break;
+                    case 'U':
+                        mType = CabinSlotType.UnavailableSeat;
+                        break;
+                    case '<':
+                        mType = CabinSlotType.ServiceStartPoint;
+                        break;
+                    case '>':
+                        mType = CabinSlotType.ServiceEndPoint;
+                        break;
+                }
+            }
+            else
+            {
+                mType = CabinSlotType.Aisle;
             }
 
             if (HasSlotNumber)
@@ -258,12 +267,18 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         protected virtual void OnCabinSlotChanged(CabinSlotChangedEventArgs e)
         {
-            CabinSlotChanged?.Invoke(this, e);
+            if (IsEvaluationActive)
+            {
+                CabinSlotChanged?.Invoke(this, e);
+            }
         }
 
         protected virtual void OnProblematicChanged(EventArgs e)
         {
-            ProblematicChanged?.Invoke(this, e);
+            if (IsEvaluationActive)
+            {
+                ProblematicChanged?.Invoke(this, e);
+            }
         }
     }
 }

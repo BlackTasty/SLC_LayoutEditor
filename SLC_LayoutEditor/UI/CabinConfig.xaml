@@ -179,8 +179,12 @@
                                                     InvalidText="Invalid stairway positions!"
                                                     IsValid="{Binding SelectedCabinLayout.StairwaysValid}"
                                                     InvalidSlots="{Binding SelectedCabinLayout.InvalidStairways}"
-                                                    ShowEye="True" ShowProblemsChanged="StairwayPositions_ShowProblemsChanged"
-                                                    ShowProblems="{Binding ShowStairwayProblems}"/>
+                                                    ShowEye="True" 
+                                                    ShowProblemsChanged="StairwayPositions_ShowProblemsChanged"
+                                                    ShowProblems="{Binding ShowStairwayProblems}"
+                                                    ShowAutoFix="True"
+                                                    AutoFixApplying="StairwayPositions_AutoFixApplying"
+                                                    AutoFixTarget="{Binding SelectedCabinLayout}"/>
                         <TextBlock Text="Problems per deck" FontSize="18" Margin="0,16,0,0" Style="{StaticResource DefaultTextStyle}"/>
                         <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
                               GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
@@ -203,7 +207,8 @@
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <DockPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}">
+                                            <DockPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
+                                                       >
                                                 <TextBlock FontSize="16" DockPanel.Dock="Top">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
@@ -245,6 +250,12 @@
                                                 <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
                                                     InvalidText="No toilets on this deck!"
                                                     IsValid="{Binding AreToiletsAvailable}"/>
+                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Deck slots valid"
+                                                    InvalidText="Invalid amount of deck slots!"
+                                                    IsValid="{Binding AreSlotsValid}"
+                                                    ShowAutoFix="True"
+                                                    AutoFixTarget="{Binding}"
+                                                    AutoFixApplying="Slots_AutoFixApplying"/>
                                             </DockPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -367,8 +378,10 @@
             </StackPanel>
             <DockPanel IsEnabled="{Binding SelectedCabinLayout, Converter={StaticResource NotNullToBooleanConverter}}">
                 <DockPanel DockPanel.Dock="Top">
-                    <Button DockPanel.Dock="Right" Content="Add deck" Padding="8,0" Click="AddCabinDeck_Click"/>
+                    <Button DockPanel.Dock="Right" Content="Add deck" Padding="8,0" Click="AddCabinDeck_Click"
+                            ToolTip="Add a new deck to your layout"/>
                     <Button DockPanel.Dock="Right" Content="Reload from disk" Padding="8,0" Click="ReloadDeck_Click"
+                            ToolTip="Force editor to reload this layout from file. Unsaved changes are lost!"
                             Margin="8,0" Style="{StaticResource YellowButtonStyle}"/>
                     <TextBlock Text="{Binding SelectedLayoutSet.AirplaneName, StringFormat={}Cabin layout for {0}}"
                                    FontSize="22" Style="{StaticResource DefaultTextStyle}"/>

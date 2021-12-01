@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.Enum;
+﻿using SLC_LayoutEditor.Core.AutoFix;
+using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace SLC_LayoutEditor.Core.Cabin
     {
         public event EventHandler<EventArgs> CabinSlotsChanged;
         public event EventHandler<ProblematicSlotsCollectedEventArgs> ProblematicSlotsCollected;
+
+        public event EventHandler<EventArgs> DeckSlotLayoutChanged;
 
         private VeryObservableCollection<CabinSlot> mCabinSlots = new VeryObservableCollection<CabinSlot>("CabinSlots");
         private int mFloor;
@@ -93,8 +96,28 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public bool AreSlotsValid
+        {
+            get
+            {
+                int expectedRowsCount = CabinSlots.Max(x => x.Row);
+
+                var ordered = mCabinSlots.GroupBy(x => x.Column).OrderBy(x => x.Key);
+
+                foreach (var column in ordered)
+                {
+                    if (!column.Any(x => x.Row == expectedRowsCount))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         public int ProblemCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreKitchensValid, 
-            AreServicePointsValid, AreSeatsReachableByService, AreToiletsAvailable, HasNoDuplicateDoors);
+            AreServicePointsValid, AreSeatsReachableByService, AreToiletsAvailable, HasNoDuplicateDoors, AreSlotsValid);
 
         public CabinDeck(int floor, int rows, int columns)
         {
@@ -104,7 +127,9 @@ namespace SLC_LayoutEditor.Core.Cabin
                 for (int row = 0; row < rows; row++)
                 {
                     CabinSlotType slotType = row == 0 || row == rows - 1 || column == 0 || column == columns - 1 ? CabinSlotType.Wall : CabinSlotType.Aisle;
-                    mCabinSlots.Add(new CabinSlot(row, column, slotType, 0));
+                    CabinSlot cabinSlot = new CabinSlot(row, column, slotType, 0);
+                    cabinSlot.CabinSlotChanged += CabinSlot_CabinSlotChanged;
+                    mCabinSlots.Add(cabinSlot);
                 }
             }
         }
@@ -134,6 +159,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        ~CabinDeck()
+        {
+            foreach (CabinSlot cabinSlot in mCabinSlots)
+            {
+                cabinSlot.CabinSlotChanged -= CabinSlot_CabinSlotChanged;
+            }
+        }
+
         public IEnumerable<int> GetRowsWithSeats()
         {
             return CabinSlots.Where(x => x.IsSeat).Select(x => x.Row).Distinct();
@@ -155,20 +188,52 @@ namespace SLC_LayoutEditor.Core.Cabin
             return CabinSlots.Max(x => x.Column) + 1;
         }
 
+        public AutoFixResult FixSlotCount()
+        {
+            AutoFixResult autoFixResult = new AutoFixResult("Slot fix applied.", "Amount of added slots",
+                "Failed changes");
+            int expectedRowsCount = CabinSlots.Max(x => x.Row);
+
+            var ordered = CabinSlots.GroupBy(x => x.Column).OrderBy(x => x.Key);
+
+            foreach (var deckColumn in ordered)
+            {
+                int columnRowsCount = deckColumn.Max(x => x.Row);
+                if (columnRowsCount < expectedRowsCount)
+                {
+                    do
+                    {
+                        columnRowsCount++;
+                        CabinSlot slot = new CabinSlot(columnRowsCount, deckColumn.Key);
+                        slot.CabinSlotChanged += CabinSlot_CabinSlotChanged;
+                        CabinSlots.Add(slot);
+                        autoFixResult.CountSuccess();
+                    } while (columnRowsCount < expectedRowsCount);
+                }
+            }
+
+            RefreshProblemChecks();
+            OnDeckSlotLayoutChanged(EventArgs.Empty);
+            return autoFixResult;
+        }
+
         private IEnumerable<int> GetRowsCoveredByService()
         {
             List<int> coveredRows = new List<int>();
             foreach (CabinSlot serviceStart in CabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint))
             {
                 CabinSlot serviceEnd = CabinSlots.FirstOrDefault(x => x.Type == CabinSlotType.ServiceEndPoint && x.Row > serviceStart.Row);
-                coveredRows.AddRange(CabinSlots.Where(x => x.Row >= serviceStart.Row && x.Row <= serviceEnd.Row)
-                                        .GroupBy(x => x.Row).Select(x => x.Key));
+                if (serviceEnd != null)
+                {
+                    coveredRows.AddRange(CabinSlots.Where(x => x.Row >= serviceStart.Row && x.Row <= serviceEnd.Row)
+                                            .GroupBy(x => x.Row).Select(x => x.Key));
+                }
             }
 
             return coveredRows.Distinct();
         } 
 
-        private void CabinSlot_CabinSlotChanged(object sender, Events.CabinSlotChangedEventArgs e)
+        private void CabinSlot_CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
         {
             RefreshProblemChecks();
 
@@ -189,7 +254,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             return cabinDeckRaw;
         }
 
-        private void RefreshProblemChecks()
+        public void RefreshProblemChecks()
         {
             InvokePropertyChanged("AreServicePointsValid");
             InvokePropertyChanged("AreGalleysValid");
@@ -199,6 +264,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged("HasNoDuplicateDoors");
             InvokePropertyChanged("AreToiletsAvailable");
             InvokePropertyChanged("AreSeatsReachableByService");
+            InvokePropertyChanged("AreSlotsValid");
             InvokePropertyChanged("ProblemCount");
         }
 
@@ -210,6 +276,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         protected virtual void OnProblematicSlotsCollected(ProblematicSlotsCollectedEventArgs e)
         {
             ProblematicSlotsCollected?.Invoke(this, e);
+        }
+
+        protected virtual void OnDeckSlotLayoutChanged(EventArgs e)
+        {
+            DeckSlotLayoutChanged?.Invoke(this, e);
         }
     }
 }

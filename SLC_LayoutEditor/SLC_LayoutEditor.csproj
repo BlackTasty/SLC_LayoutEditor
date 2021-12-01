@@ -79,9 +79,11 @@
     <Compile Include="Converter\StringNotEmptyConverter.cs" />
     <Compile Include="Converter\StringNotEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />
+    <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
     <Compile Include="Core\Events\AddDialogClosingEventArgs.cs" />
+    <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
     <Compile Include="Core\Events\DialogClosingEventArgs.cs" />
     <Compile Include="Core\Events\ProblematicSlotsCollectedEventArgs.cs" />
     <Compile Include="Core\Events\RemoveCabinDeckEventArgs.cs" />

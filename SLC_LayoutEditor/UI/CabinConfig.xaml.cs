@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Controls;
 using SLC_LayoutEditor.Core;
+using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
@@ -189,6 +190,7 @@ namespace SLC_LayoutEditor.UI
                 {
                     CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
                     vm.SelectedCabinLayout.CabinDecks.Remove(e.Target);
+                    vm.SelectedCabinLayout.RefreshCalculated();
                 }
 
                 (DataContext as CabinConfigViewModel).Dialog = null;
@@ -217,7 +219,8 @@ namespace SLC_LayoutEditor.UI
                         CabinDeck lastDeck = vm.SelectedCabinLayout.CabinDecks.LastOrDefault();
                         rows = lastDeck.Rows + 1;
                         columns = lastDeck.Columns + 1;
-                        vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+                        vm.SelectedCabinLayout.RegisterCabinDeck(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+                        vm.SelectedCabinLayout.RefreshCalculated();
                     }
 
                     vm.Dialog = null;
@@ -227,7 +230,8 @@ namespace SLC_LayoutEditor.UI
             }
             else
             {
-                vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+                vm.SelectedCabinLayout.RegisterCabinDeck(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
+                vm.SelectedCabinLayout.RefreshCalculated();
             }
         }
 
@@ -240,6 +244,11 @@ namespace SLC_LayoutEditor.UI
                 foreach (CabinSlot cabinSlot in vm.SelectedCabinSlots)
                 {
                     cabinSlot.Type = slotType;
+                }
+
+                if (slotType == CabinSlotType.Stairway)
+                {
+                    vm.SelectedCabinLayout.DeepRefreshProblemChecks();
                 }
             }
         }
@@ -274,14 +283,17 @@ namespace SLC_LayoutEditor.UI
                     var seatRowGroups = vm.SelectedCabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).OrderBy(x => x.Key);
                     string[] seatLetters = vm.AutomationSeatLetters.Split(',');
                     int currentLetterIndex = 0;
+                    //TODO: Set flag on cabin slot to stop re-evaluation during automation
                     foreach (var group in seatRowGroups)
                     {
                         int seatNumber = vm.AutomationSeatStartNumber;
-                        foreach (CabinSlot cabinSlot in group)
+                        foreach (CabinSlot cabinSlot in group.OrderBy(x => x.Row))
                         {
+                            cabinSlot.IsEvaluationActive = false;
                             cabinSlot.SeatLetter = seatLetters[currentLetterIndex][0];
                             cabinSlot.SlotNumber = seatNumber;
                             seatNumber++;
+                            cabinSlot.IsEvaluationActive = true;
                         }
 
                         if (currentLetterIndex + 1 < seatLetters.Length)
@@ -289,6 +301,8 @@ namespace SLC_LayoutEditor.UI
                             currentLetterIndex++;
                         }
                     }
+
+                    vm.SelectedCabinLayout.DeepRefreshProblemChecks();
                     break;
                 case 1: //Service points (WIP)
                     CabinDeck selectedCabinDeck = vm.SelectedCabinLayout.CabinDecks.FirstOrDefault(x => x.Floor == vm.SelectedCabinSlotFloor);
@@ -351,6 +365,62 @@ namespace SLC_LayoutEditor.UI
                 {
                     cabinSlot.IsProblematic = showProblems && problematicSlots.Any(x => x.Guid == cabinSlot.Guid);
                 }
+            }
+        }
+
+        private void StairwayPositions_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
+        {
+            if (e.Target is CabinLayout target)
+            {
+                target.FixStairwayPositions();
+            }
+            /*CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+            CabinDeck deckWithStairs = vm.SelectedCabinLayout.CabinDecks
+                .FirstOrDefault(x => x.CabinSlots.Any(y => y.Type == CabinSlotType.Stairway));
+
+            Dictionary<CabinSlot, int> stairwayMapping = deckWithStairs.GetStairways();
+            AutoFixResult autoFixResult = new AutoFixResult("Stairway fix applied.", "Amount of changed slots", 
+                "Failed changes");
+
+            foreach (CabinDeck cabinDeck in vm.SelectedCabinLayout.CabinDecks)
+            {
+                if (cabinDeck.Equals(deckWithStairs))
+                {
+                    continue;
+                }
+
+                if (cabinDeck.Rows >= stairwayMapping.Max(x => x.Key.Row) && 
+                    cabinDeck.Columns >= stairwayMapping.Max(x => x.Key.Column))
+                {
+                    foreach (CabinSlot slot in cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
+                    {
+                        slot.Type = CabinSlotType.Aisle;
+                    }
+
+                    foreach (var stairMap in stairwayMapping)
+                    {
+                        CabinSlot targetSlot = cabinDeck.CabinSlots
+                            .FirstOrDefault(x => x.Row == stairMap.Key.Row && x.Column == stairMap.Key.Column);
+                        
+                        if (targetSlot != null)
+                        {
+                            targetSlot.Type = CabinSlotType.Stairway;
+                            autoFixResult.CountSuccess();
+                        }
+                        else
+                        {
+                            autoFixResult.CountFail();
+                        }
+                    }
+                }
+            }*/
+        }
+
+        private void Slots_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
+        {
+            if (e.Target is CabinDeck target)
+            {
+                target.FixSlotCount();
             }
         }
     }

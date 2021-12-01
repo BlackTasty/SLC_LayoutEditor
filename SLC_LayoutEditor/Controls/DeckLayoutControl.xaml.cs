@@ -52,7 +52,6 @@ namespace SLC_LayoutEditor.Controls
             set { SetValue(CabinDeckProperty, value); }
         }
 
-        // DependencyProperty - StartAngle
         private static FrameworkPropertyMetadata cabinDeckMetadata =
                 new FrameworkPropertyMetadata(
                     null,     // Default value
@@ -639,7 +638,16 @@ namespace SLC_LayoutEditor.Controls
         private void container_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshCabinDeckLayout();
+            if (CabinDeck != null)
+            {
+                CabinDeck.DeckSlotLayoutChanged += CabinDeck_DeckSlotLayoutChanged;
+            }
             OnLayoutRegenerated(EventArgs.Empty);
+        }
+
+        private void CabinDeck_DeckSlotLayoutChanged(object sender, EventArgs e)
+        {
+            RefreshCabinDeckLayout();
         }
 
         private void RemoveDeck_Click(object sender, RoutedEventArgs e)

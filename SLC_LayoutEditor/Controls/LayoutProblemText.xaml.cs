@@ -1,5 +1,7 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.UI.Dialogs;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +16,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Controls
 {
     /// <summary>
     /// Interaction logic for LayoutProblemText.xaml
     /// </summary>
-    public partial class LayoutProblemText : StackPanel
+    public partial class LayoutProblemText : DockPanel
     {
         public event EventHandler<ShowProblemsChangedEventArgs> ShowProblemsChanged;
+        public event EventHandler<AutoFixApplyingEventArgs> AutoFixApplying;
 
         #region ValidText property
         public string ValidText
@@ -116,6 +120,30 @@ namespace SLC_LayoutEditor.Controls
         }
         #endregion
 
+        #region ShowAutoFix property
+        public bool ShowAutoFix
+        {
+            get { return (bool)GetValue(ShowAutoFixProperty); }
+            set { SetValue(ShowAutoFixProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowAutoFix.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowAutoFixProperty =
+            DependencyProperty.Register("ShowAutoFix", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(false));
+        #endregion
+
+        #region AutoFixTarget property
+        public object AutoFixTarget
+        {
+            get { return (object)GetValue(AutoFixTargetProperty); }
+            set { SetValue(AutoFixTargetProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for AutoFixTarget.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty AutoFixTargetProperty =
+            DependencyProperty.Register("AutoFixTarget", typeof(object), typeof(LayoutProblemText), new PropertyMetadata(null));
+        #endregion
+
         #region Floor property
         public int Floor
         {
@@ -141,6 +169,32 @@ namespace SLC_LayoutEditor.Controls
         protected virtual void OnShowProblemsChanged(ShowProblemsChangedEventArgs e)
         {
             ShowProblemsChanged?.Invoke(this, e);
+        }
+
+        private void ApplyAutoFix_Click(object sender, RoutedEventArgs e)
+        {
+            ConfirmationDialog dialog = new ConfirmationDialog("Apply auto fix", 
+                "This will try to fix the problem for you, but might change your layout.\nDo you wish to continue?", 
+                Core.Enum.DialogType.YesNo);
+
+            //string fixName = Tag.ToString();
+
+            dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
+            {
+                if (_e.DialogResult == Core.Enum.DialogResultType.Yes)
+                {
+                    OnAutoFixApplying(new AutoFixApplyingEventArgs(AutoFixTarget));
+                }
+
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogClosing, null);
+            };
+
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+        }
+
+        protected virtual void OnAutoFixApplying(AutoFixApplyingEventArgs e)
+        {
+            AutoFixApplying?.Invoke(this, e);
         }
     }
 }

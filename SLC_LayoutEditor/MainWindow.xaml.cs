@@ -32,6 +32,10 @@ namespace SLC_LayoutEditor
             CheckCleanupFile();
 
             Title += string.Format(" (v{0})", (DataContext as MainViewModel).UpdateManager.Version);
+
+#if DEBUG
+            Title += " - TEST BUILD";
+#endif
         }
 
         private void CheckCleanupFile()

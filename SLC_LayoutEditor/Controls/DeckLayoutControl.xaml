@@ -25,6 +25,7 @@
             </TextBlock.Style>
         </TextBlock>
         <Button DockPanel.Dock="Right" Content="Remove deck" Padding="8,0"
+                ToolTip="Removes this deck from the layout. Cannot be undone!"
                 Style="{StaticResource RedButtonStyle}" Margin="32,0,0,0" Click="RemoveDeck_Click"/>
     </StackPanel>
     <Canvas x:Name="layout_deck">
