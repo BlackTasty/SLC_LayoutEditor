@@ -350,7 +350,7 @@
                     <StackPanel Margin="4">
                         <TextBlock Text="Slot type" Margin="0,0,0,4" Style="{StaticResource DefaultTextStyle}"/>
                         <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
-                                          SelectedIndex="{Binding SelectedCabinSlot.TypeId}"/>
+                                  SelectedIndex="{Binding SelectedCabinSlot.TypeId}"/>
                     </StackPanel>
                     <StackPanel Margin="4">
                         <TextBlock Margin="0,0,0,4">
@@ -386,14 +386,14 @@
                     <TextBlock Text="{Binding SelectedLayoutSet.AirplaneName, StringFormat={}Cabin layout for {0}}"
                                    FontSize="22" Style="{StaticResource DefaultTextStyle}"/>
                 </DockPanel>
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-                                      Margin="4,8">
+                <ScrollViewer x:Name="deck_scroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                              Margin="4,8">
                     <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
                                       ItemsSource="{Binding SelectedCabinLayout.CabinDecks}"
                                       x:Name="layout_decks" GridLinesVisibility="None"
                                       VerticalScrollBarVisibility="Hidden" BorderBrush="Transparent" 
                                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
-                                      CanUserResizeColumns="False" CanUserSortColumns="False">
+                                      CanUserResizeColumns="False" CanUserSortColumns="False" PreviewMouseWheel="layout_decks_PreviewMouseWheel">
                         <DataGrid.Resources>
                             <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                             <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />

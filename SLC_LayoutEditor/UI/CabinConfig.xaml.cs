@@ -423,5 +423,18 @@ namespace SLC_LayoutEditor.UI
                 target.FixSlotCount();
             }
         }
+
+        private void layout_decks_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Util.IsShiftDown())
+            {
+                deck_scroll.ScrollToHorizontalOffset(deck_scroll.HorizontalOffset- e.Delta);
+            }
+            else
+            {
+                deck_scroll.ScrollToVerticalOffset(deck_scroll.VerticalOffset - e.Delta);
+            }
+            e.Handled = true;
+        }
     }
 }

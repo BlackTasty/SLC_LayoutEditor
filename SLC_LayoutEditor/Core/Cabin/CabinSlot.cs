@@ -54,6 +54,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 InvokePropertyChanged();
                 InvokePropertyChanged("TypeId");
                 InvokePropertyChanged("DisplayText");
+                InvokePropertyChanged("HasSlotNumber");
+                InvokePropertyChanged("IsSeat");
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
             }
         }

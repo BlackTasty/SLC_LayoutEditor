@@ -5,6 +5,9 @@
         <ResourceDictionary Source="Styles/TextBoxStyle.xaml"/>
         <ResourceDictionary Source="Styles/MenuStyle.xaml"/>
         <ResourceDictionary Source="Styles/ProgressBarStyle.xaml"/>
+        <ResourceDictionary Source="Styles/ScrollBarStyle.xaml"/>
+        <ResourceDictionary Source="Styles/ScrollViewerStyle.xaml"/>
         <ResourceDictionary Source="Styles/TextBlockStyle.xaml"/>
+        <ResourceDictionary Source="Styles/ToolTipStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
