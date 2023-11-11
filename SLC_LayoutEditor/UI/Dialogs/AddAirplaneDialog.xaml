@@ -6,17 +6,18 @@
            xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
            xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
            mc:Ignorable="d" 
-           Height="170" Width="300" LastChildFill="False">
+           Height="170" Width="300" LastChildFill="False"
+           Background="{StaticResource BackgroundColor}">
     <DockPanel.DataContext>
         <vm:AddAirplaneDialogViewModel/>
     </DockPanel.DataContext>
-    <TextBlock DockPanel.Dock="Top" Text="Create a new airplane" Margin="4"
-               Style="{StaticResource Title1TextStyle}"/>
+    <TextBlock DockPanel.Dock="Top" Text="Create a new airplane" FontSize="20" Margin="4"
+               Style="{StaticResource DefaultTextStyle}"/>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Airplane name"
                Style="{StaticResource DefaultTextStyle}"/>
     <TextBox DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"/>
     <TextBlock DockPanel.Dock="Top" Margin="8,2,8,8" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"
-               Foreground="{StaticResource ErrorForegroundColorBrush}"/>
+               Foreground="{StaticResource ErrorForegroundColor}"/>
 
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">

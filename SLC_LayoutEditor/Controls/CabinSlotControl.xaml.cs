@@ -61,8 +61,8 @@ namespace SLC_LayoutEditor.Controls
 
             if (isSelected)
             {
-                error_highlight.Background = App.Current
-                    .FindResource(!CabinSlot.IsProblematic ? "DisabledColorBrush" : "ErrorSelectedHighlightColorBrush") as Brush;
+                layout.Background = App.Current
+                    .FindResource(!CabinSlot.IsProblematic ? "SlotSelectedColor" : "ErrorSelectedHighlightColor") as SolidColorBrush;
             }
             else if (CabinSlot.IsProblematic)
             {
@@ -70,7 +70,7 @@ namespace SLC_LayoutEditor.Controls
             }
             else
             {
-                error_highlight.Background = Brushes.Transparent;
+                layout.Background = Brushes.Transparent;
             }
         }
 
@@ -82,11 +82,11 @@ namespace SLC_LayoutEditor.Controls
             }
             else if (CabinSlot.IsProblematic)
             {
-                error_highlight.Background = App.Current.FindResource("ErrorHighlightColorBrush") as Brush;
+                layout.Background = App.Current.FindResource("ErrorHighlightColor") as SolidColorBrush;
             }
             else
             {
-                error_highlight.Background = Brushes.Transparent;
+                layout.Background = Brushes.Transparent;
             }
         }
 

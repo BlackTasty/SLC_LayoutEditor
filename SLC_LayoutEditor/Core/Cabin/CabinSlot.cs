@@ -1,6 +1,5 @@
 ﻿using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
-using SLC_LayoutEditor.Core.Memento;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
-    public class CabinSlot : ViewModelBase, IHistorical
+    public class CabinSlot : ViewModelBase
     {
         public event EventHandler<CabinSlotChangedEventArgs> CabinSlotChanged;
         public event EventHandler<EventArgs> ProblematicChanged;
@@ -51,27 +50,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             get => mType;
             set
             {
-                bool wasSeat = IsSeat;
-                bool wasDoor = IsDoor;
-
                 mType = value;
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(TypeId));
-                InvokePropertyChanged(nameof(DisplayText));
-                InvokePropertyChanged(nameof(HasSlotNumber));
-                InvokePropertyChanged(nameof(IsSeat));
-                InvokePropertyChanged(nameof(IsDoor));
-                InvokePropertyChanged(nameof(MaxSlotNumber));
-
-                if (IsSeat && !wasSeat)
-                {
-                    SlotNumber = 1;
-                    SeatLetter = 'A';
-                }
-                else if (IsDoor && !wasDoor)
-                {
-                    SlotNumber = 0;
-                }
+                InvokePropertyChanged("TypeId");
+                InvokePropertyChanged("DisplayText");
+                InvokePropertyChanged("HasSlotNumber");
+                InvokePropertyChanged("IsSeat");
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
             }
         }
@@ -87,14 +71,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             get => mSlotNumber;
             set
             {
-                mSlotNumber = Math.Min(Math.Max(value, 0), MaxSlotNumber);
+                mSlotNumber = Math.Min(value, 99);
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(DisplayText));
+                InvokePropertyChanged("DisplayText");
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
             }
         }
-
-        public int MaxSlotNumber => Type != CabinSlotType.CateringDoor ? 99 : 9;
 
         public char SeatLetter
         {
@@ -110,7 +92,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     mSeatLetter = 'Z';
                 }
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(DisplayText));
+                InvokePropertyChanged("DisplayText");
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
             }
         }
@@ -121,9 +103,9 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool HasSlotNumber => IsSeat || IsDoor;
 
-        public bool IsDoor => mType == CabinSlotType.Door || mType == CabinSlotType.LoadingBay || mType == CabinSlotType.CateringDoor;
+        public bool IsDoor => mType == CabinSlotType.Door;
 
-        public string DisplayText => ToString().Trim();
+        public string DisplayText => ToString();
 
         public bool IsProblematic
         {
@@ -153,87 +135,82 @@ namespace SLC_LayoutEditor.Core.Cabin
             mRow = row;
             mColumn = column;
 
-            string trimmedSlotData = slotData.Trim();
+            string slotDeclaration = slotData.Trim();
 
-            if (trimmedSlotData != "-")
+            if (slotDeclaration.Length > 0)
             {
-                string[] slotDeclaration = trimmedSlotData.Split('-');
-
                 switch (slotDeclaration[0])
                 {
-                    case "X":
+                    case '-':
+                        mType = CabinSlotType.Aisle;
+                        break;
+                    case 'X':
                         mType = CabinSlotType.Wall;
                         break;
-                    case "D":
+                    case 'D':
                         mType = CabinSlotType.Door;
                         break;
-                    case "CAT":
-                        mType = CabinSlotType.CateringDoor;
-                        break;
-                    case "LB":
-                        mType = CabinSlotType.LoadingBay;
-                        break;
-                    case "C":
+                    case 'C':
                         mType = CabinSlotType.Cockpit;
                         break;
-                    case "G":
+                    case 'G':
                         mType = CabinSlotType.Galley;
                         break;
-                    case "T":
+                    case 'T':
                         mType = CabinSlotType.Toilet;
                         break;
-                    case "S":
+                    case 'S':
                         mType = CabinSlotType.Stairway;
                         break;
-                    case "K":
+                    case 'K':
                         mType = CabinSlotType.Kitchen;
                         break;
-                    case "I":
+                    case 'I':
                         mType = CabinSlotType.Intercom;
                         break;
-                    case "B":
+                    case 'B':
                         mType = CabinSlotType.BusinessClassSeat;
                         break;
-                    case "E":
+                    case 'E':
                         mType = CabinSlotType.EconomyClassSeat;
                         break;
-                    case "F":
+                    case 'F':
                         mType = CabinSlotType.FirstClassSeat;
                         break;
-                    case "P":
+                    case 'P':
                         mType = CabinSlotType.PremiumClassSeat;
                         break;
-                    case "R":
+                    case 'R':
                         mType = CabinSlotType.SupersonicClassSeat;
                         break;
-                    case "U":
+                    case 'U':
                         mType = CabinSlotType.UnavailableSeat;
                         break;
-                    case "<":
+                    case '<':
                         mType = CabinSlotType.ServiceStartPoint;
                         break;
-                    case ">":
+                    case '>':
                         mType = CabinSlotType.ServiceEndPoint;
                         break;
-                }
-
-                if (HasSlotNumber)
-                {
-                    string slotNumberRaw = new string(slotDeclaration[1].TakeWhile(x => char.IsDigit(x)).ToArray());
-                    if (int.TryParse(slotNumberRaw, out int slotNumber))
-                    {
-                        mSlotNumber = slotNumber;
-                    }
-
-                    if (!IsDoor)
-                    {
-                        mSeatLetter = slotDeclaration[1].Last();
-                    }
                 }
             }
             else
             {
                 mType = CabinSlotType.Aisle;
+            }
+
+            if (HasSlotNumber)
+            {
+                string slotNumberRaw = new string(slotDeclaration.Skip(2).TakeWhile(x => char.IsDigit(x)).ToArray());
+                if (int.TryParse(slotNumberRaw, out int slotNumber))
+                {
+                    mSlotNumber = slotNumber;
+                }
+
+                if (!IsDoor)
+                {
+                    mSeatLetter = slotDeclaration.Last();
+                }
             }
         }
 
@@ -256,11 +233,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 case CabinSlotType.Wall:
                     return "  X  ";
                 case CabinSlotType.Door:
-                    return string.Format(" D-{0}{1}", mSlotNumber, mSlotNumber < 10 ? " " : "");
-                case CabinSlotType.LoadingBay:
-                    return string.Format("{0}LB-{1}", mSlotNumber < 10 ? " " : "", mSlotNumber);
-                case CabinSlotType.CateringDoor:
-                    return string.Format("CAT-{0}", mSlotNumber);
+                    return string.Format(" D-{0} ", mSlotNumber);
                 case CabinSlotType.Cockpit:
                     return "  C  ";
                 case CabinSlotType.Galley:
@@ -308,12 +281,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 ProblematicChanged?.Invoke(this, e);
             }
-        }
-
-        public void ApplyChanges(HistoryStep historyStep)
-        {
-            //TODO: Implement undo/redo system
-            throw new NotImplementedException();
         }
     }
 }

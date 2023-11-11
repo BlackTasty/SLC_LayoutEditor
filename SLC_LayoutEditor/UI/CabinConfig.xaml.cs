@@ -25,59 +25,20 @@ using System.Windows.Navigation;
 namespace SLC_LayoutEditor.UI
 {
     /// <summary>
-    /// Interaction logic for LayoutEditor.xaml
+    /// Interaction logic for CabinConfig.xaml
     /// </summary>
-    public partial class LayoutEditor : Grid
+    public partial class CabinConfig : Grid
     {
-        public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
-        public event EventHandler<ChangedEventArgs> Changed;
-
         DeckLayoutControl activeDeckControl;
-        LayoutEditorViewModel vm;
 
-        public LayoutEditor()
+        public CabinConfig()
         {
             InitializeComponent();
-            vm = DataContext as LayoutEditorViewModel;
-            vm.CabinLayoutSelected += Vm_CabinLayoutSelected;
-            vm.Changed += Vm_CabinLayoutChanged;
-            vm.SelectionRollback += Vm_SelectionRollback;
-        }
-
-        public bool CheckUnsavedChanges(bool isClosing)
-        {
-            return vm.CheckUnsavedChanges(null, isClosing);
-        }
-
-        public void ShowChangelog()
-        {
-            vm.ShowChangelog();
-        }
-
-        private void Vm_SelectionRollback(object sender, SelectionRollbackEventArgs e)
-        {
-            if (e.RollbackValue is CabinLayoutSet)
-            {
-                combo_layoutSets.SelectedIndex = e.RollbackIndex;
-            }
-            else if (e.RollbackValue is CabinLayout)
-            {
-                combo_layouts.SelectedIndex = e.RollbackIndex;
-            }
-        }
-
-        private void Vm_CabinLayoutChanged(object sender, ChangedEventArgs e)
-        {
-            OnChanged(e);
-        }
-
-        private void Vm_CabinLayoutSelected(object sender, CabinLayoutSelectedEventArgs e)
-        {
-            OnCabinLayoutSelected(e);
         }
 
         private void layout_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
         {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             if (activeDeckControl != null && e.Selected.Count == 0)
             {
                 activeDeckControl.SetSlotSelected(null);
@@ -90,7 +51,9 @@ namespace SLC_LayoutEditor.UI
 
         private void SaveLayout_Click(object sender, RoutedEventArgs e)
         {
-            if (App.Settings.ShowWarningWhenIssuesPresent && vm.SelectedCabinLayout.SevereIssuesCountSum > 0)
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+
+            if (vm.SelectedCabinLayout.ProblemCountSum > 0)
             {
                 ConfirmationDialog dialog = new ConfirmationDialog("Layout problems detected", 
                     "Seems like your layout has some problems, which can cause unexpected behaviour with SLC!\n\nDo you want to save anyway?",
@@ -113,79 +76,58 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void SaveLayout(LayoutEditorViewModel vm)
+        private void SaveLayout(CabinConfigViewModel vm)
         {
             vm.SelectedCabinLayout.SaveLayout();
 
             FileInfo fi = new FileInfo(vm.SelectedCabinLayout.FilePath);
             DirectoryInfo aircraftLayoutsFolder = fi.Directory;
             string targetAircraftReadoutFolder = Path.Combine(App.Settings.CabinLayoutsReadoutPath, aircraftLayoutsFolder.Name);
-
-            if (App.Settings.CopyLayoutsAfterSave)
+            if (Directory.Exists(targetAircraftReadoutFolder))
             {
-                Util.CopyLayoutToSLC(fi.FullName, Path.Combine(targetAircraftReadoutFolder, fi.Name));
+                string targetLayoutPath = Path.Combine(targetAircraftReadoutFolder, fi.Name);
+
+                if (File.Exists(targetLayoutPath))
+                {
+                    Util.OpenFolderAndSelect(targetLayoutPath);
+                }
+                else
+                {
+                    Util.OpenFolderAndSelect(targetAircraftReadoutFolder);
+                }
+            }
+            else
+            {
+                Process.Start(App.Settings.CabinLayoutsReadoutPath);
             }
 
-            if (App.Settings.OpenFoldersAfterSaving)
-            {
-                if (App.Settings.OpenSLCTargetFolder)
-                {
-                    if (Directory.Exists(targetAircraftReadoutFolder))
-                    {
-                        string targetLayoutPath = Path.Combine(targetAircraftReadoutFolder, fi.Name);
+            Util.OpenFolderAndSelect(vm.SelectedCabinLayout.FilePath);
 
-                        if (File.Exists(targetLayoutPath))
-                        {
-                            Util.OpenFolder(targetLayoutPath);
-                        }
-                        else
-                        {
-                            Util.OpenFolder(targetAircraftReadoutFolder);
-                        }
-                    }
-                    else
-                    {
-                        Process.Start(App.Settings.CabinLayoutsReadoutPath);
-                    }
-                }
+            ConfirmationDialog dialog = new ConfirmationDialog("Folders opened", "I've opened the target layout folder + the edited cabin layout path for you in explorer, you just need to copy your edited file over :)",
+                DialogType.OK);
 
-                if (App.Settings.OpenFolderWithEditedLayout)
-                {
-                    Util.OpenFolder(vm.SelectedCabinLayout.FilePath);
-                }
+            dialog.DialogClosing += FolersOpenedDialog_DialogClosing;
 
-                string folderText = App.Settings.OpenFolderWithEditedLayout && App.Settings.OpenSLCTargetFolder ? "Folders" : "Folder";
-                ConfirmationDialog dialog = new ConfirmationDialog(folderText + " opened", 
-                    string.Format("{0} {1} been opened!\n\nYou just need to copy your edited layout file over :)", folderText, folderText.EndsWith("s") ? "have" : "has"),
-                    DialogType.OK);
-
-                dialog.DialogClosing += FolersOpenedDialog_DialogClosing;
-
-                vm.Dialog = dialog;
-            }
+            vm.Dialog = dialog;
         }
 
         private void FolersOpenedDialog_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            vm.Dialog = null;
+            (DataContext as CabinConfigViewModel).Dialog = null;
         }
 
         private void layout_LayoutRegenerated(object sender, EventArgs e)
         {
-            vm.IsLoadingLayout = false;
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             if (sender is DeckLayoutControl deckLayout && vm.SelectedCabinSlots != null)
             {
                 deckLayout.SetMultipleSlotsSelected(vm.SelectedCabinSlots, false);
             }
         }
 
-        private void layout_LayoutLoading(object sender, EventArgs e)
-        {
-            vm.IsLoadingLayout = true;
-        }
-
         private void AddAirplane_Click(object sender, RoutedEventArgs e)
         {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             AddAirplaneDialog dialog = new AddAirplaneDialog(vm.LayoutSets.Select(x => x.AirplaneName));
             dialog.DialogClosing += AddAirplane_DialogClosing;
 
@@ -194,6 +136,7 @@ namespace SLC_LayoutEditor.UI
 
         private void AddAirplane_DialogClosing(object sender, AddDialogClosingEventArgs e)
         {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             if (sender is AddAirplaneDialog dialog)
             {
                 dialog.DialogClosing -= AddAirplane_DialogClosing;
@@ -211,6 +154,7 @@ namespace SLC_LayoutEditor.UI
 
         private void AddCabinLayout_Click(object sender, RoutedEventArgs e)
         {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             AddCabinLayoutDialog dialog = new AddCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName));
             dialog.DialogClosing += AddCabinLayout_DialogClosing;
 
@@ -219,6 +163,7 @@ namespace SLC_LayoutEditor.UI
 
         private void AddCabinLayout_DialogClosing(object sender, AddDialogClosingEventArgs e)
         {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             if (sender is AddCabinLayoutDialog dialog)
             {
                 dialog.DialogClosing -= AddCabinLayout_DialogClosing;
@@ -243,18 +188,20 @@ namespace SLC_LayoutEditor.UI
             {
                 if (_e.DialogResult == DialogResultType.Yes)
                 {
-                    vm.SelectedCabinLayout.RemoveCabinDeck(e.Target);
+                    CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+                    vm.SelectedCabinLayout.CabinDecks.Remove(e.Target);
                     vm.SelectedCabinLayout.RefreshCalculated();
                 }
 
-                vm.Dialog = null;
+                (DataContext as CabinConfigViewModel).Dialog = null;
             };
 
-            vm.Dialog = dialog;
+            (DataContext as CabinConfigViewModel).Dialog = dialog;
         }
 
         private void AddCabinDeck_Click(object sender, RoutedEventArgs e)
         {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             int rows = 1;
             int columns = 1;
 
@@ -292,6 +239,8 @@ namespace SLC_LayoutEditor.UI
         {
             if (sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
             {
+                CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+
                 foreach (CabinSlot cabinSlot in vm.SelectedCabinSlots)
                 {
                     cabinSlot.Type = slotType;
@@ -308,6 +257,7 @@ namespace SLC_LayoutEditor.UI
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Reload cabin layout",
                 "Do you really want to reload this layout? Any unsaved changes are lost!", DialogType.YesNo);
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
 
             dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
             {
@@ -326,6 +276,7 @@ namespace SLC_LayoutEditor.UI
 
         private void Automate_Click(object sender, RoutedEventArgs e)
         {
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             switch (vm.SelectedAutomationIndex)
             {
                 case 0: // Seat numeration
@@ -353,16 +304,7 @@ namespace SLC_LayoutEditor.UI
 
                     vm.SelectedCabinLayout.DeepRefreshProblemChecks();
                     break;
-                case 1: // Wall generator
-                    IEnumerable<CabinSlot> wallSlots = vm.SelectedCabinDeck.CabinSlots
-                        .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.SelectedCabinDeck.Rows || x.Column == vm.SelectedCabinDeck.Columns) && !x.IsDoor && x.Type != CabinSlotType.Wall);
-
-                    foreach (CabinSlot wallSlot in wallSlots)
-                    {
-                        wallSlot.Type = CabinSlotType.Wall;
-                    }
-                    break;
-                case 2: //Service points (WIP)
+                case 1: //Service points (WIP)
                     CabinDeck selectedCabinDeck = vm.SelectedCabinLayout.CabinDecks.FirstOrDefault(x => x.Floor == vm.SelectedCabinSlotFloor);
                     if (selectedCabinDeck != null)
                     {
@@ -409,18 +351,17 @@ namespace SLC_LayoutEditor.UI
 
         private void DuplicateDoors_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
+            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Door);
         }
 
-        private void ToggleProblemHighlight(bool showProblems, IEnumerable<CabinSlot> problematicSlots, params CabinSlotType[] targetTypes)
+        private void ToggleProblemHighlight(bool showProblems, IEnumerable<CabinSlot> problematicSlots, CabinSlotType targetType)
         {
-            List<CabinSlotType> targetTypesList = targetTypes.ToList();
-
+            CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
             if (vm.SelectedCabinLayout != null && vm.SelectedCabinLayout.CabinDecks != null)
             {
                 foreach (CabinSlot cabinSlot in vm.SelectedCabinLayout.CabinDecks
                                                     .SelectMany(x => x.CabinSlots)
-                                                    .Where(x => targetTypesList.Contains(x.Type)))
+                                                    .Where(x => x.Type == targetType))
                 {
                     cabinSlot.IsProblematic = showProblems && problematicSlots.Any(x => x.Guid == cabinSlot.Guid);
                 }
@@ -433,6 +374,46 @@ namespace SLC_LayoutEditor.UI
             {
                 target.FixStairwayPositions();
             }
+            /*CabinConfigViewModel vm = DataContext as CabinConfigViewModel;
+            CabinDeck deckWithStairs = vm.SelectedCabinLayout.CabinDecks
+                .FirstOrDefault(x => x.CabinSlots.Any(y => y.Type == CabinSlotType.Stairway));
+
+            Dictionary<CabinSlot, int> stairwayMapping = deckWithStairs.GetStairways();
+            AutoFixResult autoFixResult = new AutoFixResult("Stairway fix applied.", "Amount of changed slots", 
+                "Failed changes");
+
+            foreach (CabinDeck cabinDeck in vm.SelectedCabinLayout.CabinDecks)
+            {
+                if (cabinDeck.Equals(deckWithStairs))
+                {
+                    continue;
+                }
+
+                if (cabinDeck.Rows >= stairwayMapping.Max(x => x.Key.Row) && 
+                    cabinDeck.Columns >= stairwayMapping.Max(x => x.Key.Column))
+                {
+                    foreach (CabinSlot slot in cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
+                    {
+                        slot.Type = CabinSlotType.Aisle;
+                    }
+
+                    foreach (var stairMap in stairwayMapping)
+                    {
+                        CabinSlot targetSlot = cabinDeck.CabinSlots
+                            .FirstOrDefault(x => x.Row == stairMap.Key.Row && x.Column == stairMap.Key.Column);
+                        
+                        if (targetSlot != null)
+                        {
+                            targetSlot.Type = CabinSlotType.Stairway;
+                            autoFixResult.CountSuccess();
+                        }
+                        else
+                        {
+                            autoFixResult.CountFail();
+                        }
+                    }
+                }
+            }*/
         }
 
         private void Slots_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
@@ -454,35 +435,6 @@ namespace SLC_LayoutEditor.UI
                 deck_scroll.ScrollToVerticalOffset(deck_scroll.VerticalOffset - e.Delta);
             }
             e.Handled = true;
-        }
-
-        private void DuplicateDoors_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
-        {
-            if (e.Target is CabinLayout target)
-            {
-                target.FixDuplicateDoors();
-            }
-        }
-
-        private void DeckProblemsList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            list_scroll.ScrollToVerticalOffset(list_scroll.VerticalOffset - e.Delta);
-            e.Handled = true;
-        }
-
-        private void CateringAndLoadingBays_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
-        }
-
-        protected virtual void OnCabinLayoutSelected(CabinLayoutSelectedEventArgs e)
-        {
-            CabinLayoutSelected?.Invoke(this, e);
-        }
-
-        protected virtual void OnChanged(ChangedEventArgs e)
-        {
-            Changed?.Invoke(this, e);
         }
     }
 }

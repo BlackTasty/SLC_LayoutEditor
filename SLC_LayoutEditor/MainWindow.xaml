@@ -8,67 +8,41 @@
         xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
         xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
         xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
-        TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
-        Background="{DynamicResource BackgroundColorBrush}"
-        mc:Ignorable="d" Closing="Window_Closing"
-        Title="{Binding Title}" MinHeight="450" MinWidth="920"
+        TextElement.Foreground="{DynamicResource ForegroundColor}"
+        Background="{DynamicResource BackgroundColor}"
+        mc:Ignorable="d"
+        Title="SLC Layout Editor" MinHeight="450" MinWidth="920"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
         Icon="Resources/icon.ico">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         <converter:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
     </Window.Resources>
     <DockPanel>
-        <DockPanel DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}">
-            <DockPanel.Style>
-                <Style TargetType="DockPanel">
-                    <Setter Property="Effect" Value="{x:Null}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsDialogOpen}" Value="True">
-                            <Setter Property="Effect" Value="{StaticResource DisableBlur}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DockPanel.Style>
-            <DockPanel LastChildFill="False" Background="{DynamicResource MenuBackgroundBrush}">
-                <Menu Foreground="{StaticResource ForegroundColorBrush}">
-                    <MenuItem Header="File" Background="Transparent" Height="34">
-                        <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
-                    </MenuItem>
-                    <MenuItem Header="System" Background="Transparent" Height="34">
-                        <MenuItem Header="Settings" Click="Settings_Click"/>
-                        <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
+        <Grid DockPanel.Dock="Top" Background="#66000000">
+            <Menu Foreground="{StaticResource ForegroundColor}">
+                <MenuItem Header="File" Background="Transparent" Height="34">
+                    <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
+                </MenuItem>
+                <MenuItem Header="System" Background="Transparent" Height="34">
+                    <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
                               IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
-                        <MenuItem Header="What's new?" Click="Changelog_Click"/>
-                    </MenuItem>
-                </Menu>
-                <Border BorderThickness=".75,0" CornerRadius=".75" Margin="16,6"
-                        BorderBrush="{DynamicResource SeparatorColorBrush}"
-                        Visibility="Collapsed"/>
-                <DockPanel Margin="0,0,12,0" Visibility="Collapsed">
-                    <Button Style="{StaticResource IconButton}" Content="{StaticResource Undo}" Margin="4,0" ToolTip="Undo"
-                        Click="Undo_Click" IsEnabled="{Binding History.CanUndo}"/>
-                    <Button Style="{StaticResource IconButton}" Content="{StaticResource Redo}" Margin="4,0" ToolTip="Redo"
-                        Click="Redo_Click" IsEnabled="{Binding History.CanRedo}"/>
-                </DockPanel>
+                </MenuItem>
+            </Menu>
+            <DockPanel HorizontalAlignment="Right" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button Content="Download &amp; install" Visibility="{Binding IsUpdateReady, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="DownloadAndInstallUpdate_Click" Margin="2"/>
+                <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="{Binding IsDownloading, Converter={StaticResource InverseBooleanConverter}}"
+                             Value="{Binding DownloadCurrent}" Maximum="{Binding DownloadSize}" 
+                             Visibility="{Binding IsUpdateReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                <TextBlock Text="{Binding UpdateText}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,6,0"
+                             Visibility="{Binding IsUpdateReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
             </DockPanel>
-            <DockPanel LastChildFill="False" HorizontalAlignment="Right">
-                <DockPanel Margin="32,0" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Button Content="Download &amp; install" Visibility="{Binding IsUpdateReady, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Click="DownloadAndInstallUpdate_Click" Margin="2"/>
-                    <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="{Binding IsDownloading, Converter={StaticResource InverseBooleanConverter}}"
-                                 Value="{Binding DownloadCurrent}" Maximum="{Binding DownloadSize}" 
-                                 Visibility="{Binding IsUpdateReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                    <TextBlock Text="{Binding UpdateText}" VerticalAlignment="Center" TextAlignment="Right" Margin="4,0"
-                                 Visibility="{Binding IsUpdateReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                </DockPanel>
-                <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
-                        Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            </DockPanel>
-        </DockPanel>
+        </Grid>
         <ContentPresenter Content="{Binding Content}"/>
     </DockPanel>
 </Window>

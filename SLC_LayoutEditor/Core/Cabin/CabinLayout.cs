@@ -12,15 +12,10 @@ namespace SLC_LayoutEditor.Core.Cabin
 {
     class CabinLayout : ViewModelBase
     {
-        public event EventHandler<EventArgs> CabinSlotsChanged;
-        public event EventHandler<EventArgs> CabinDeckCountChanged;
-
         private FileInfo layoutFile;
 
         private string mLayoutName; //e.g. Default
         private VeryObservableCollection<CabinDeck> mCabinDecks = new VeryObservableCollection<CabinDeck>("CabinDecks");
-
-        private bool mShowDuplicateDoorsIssues;
 
         public string LayoutName
         {
@@ -88,82 +83,14 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool HasNoDuplicateUnavailableSeats => DuplicateUnavailableSeats.Count() == 0;
         #endregion
 
-        #region Door checks
-
-        public bool ShowDuplicateDoorsIssues
-        {
-            get => mShowDuplicateDoorsIssues;
-            set
-            {
-                mShowDuplicateDoorsIssues = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public IEnumerable<CabinSlot> DuplicateDoors
-        {
-            get
-            {
-                return CabinDecks.Where(x => x.HasDoors)
-                    .SelectMany(x => x.DoorSlots)
-                    .GroupBy(x => x.SlotNumber)
-                    .Where(x => x.Count() > 1)
-                    .SelectMany(x => x);
-            }
-        }
-
-        public bool HasNoDuplicateDoors => DuplicateDoors.Count() == 0;
-        #endregion
-
         public IEnumerable<CabinSlot> InvalidStairways => GetInvalidStairways();
 
         public bool StairwaysValid => InvalidStairways.Count() == 0;
 
-        public bool HasMultipleDecks => mCabinDecks.Count > 1;
-
-        public int SevereIssuesCountSum => Util.GetProblemCount(CabinDecks.Sum(x => x.SevereIssuesCount), 
+        public int ProblemCountSum => Util.GetProblemCount(CabinDecks.Sum(x => x.ProblemCount), 
             HasNoDuplicateBusinessSeats, HasNoDuplicateEconomySeats, 
             HasNoDuplicateFirstClassSeats, HasNoDuplicatePremiumSeats, HasNoDuplicateSupersonicSeats, 
-            HasNoDuplicateUnavailableSeats, StairwaysValid, HasNoDuplicateDoors);
-
-        public bool HasSevereIssues => SevereIssuesCountSum > 0;
-
-        public int MinorIssuesCountSum => Util.GetProblemCount(CabinDecks.Sum(x => x.MinorIssuesCount));
-
-        public bool HasMinorIssues => MinorIssuesCountSum > 0;
-
-        public bool HasAnyIssues => HasMinorIssues || HasSevereIssues;
-
-        public string IssuesCountText
-        {
-            get
-            {
-                if (HasAnyIssues)
-                {
-                    StringBuilder sb = new StringBuilder();
-
-                    if (HasMinorIssues)
-                    {
-                        sb.Append(string.Format("{0} minor", MinorIssuesCountSum));
-                    }
-
-                    if (HasSevereIssues)
-                    {
-                        if (sb.Length > 0)
-                        {
-                            sb.Append(", ");
-                        }
-                        sb.Append(string.Format("{0} severe", SevereIssuesCountSum));
-                    }
-
-                    return sb.ToString();
-                }
-                else
-                {
-                    return "All clear!";
-                }
-            }
-        }
+            HasNoDuplicateUnavailableSeats, StairwaysValid);
         #endregion
 
         public string FilePath => layoutFile.FullName;
@@ -190,36 +117,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             RefreshCapacities();
         }
 
-        public AutoFixResult FixDuplicateDoors()
-        {
-            AutoFixResult autoFixResult = new AutoFixResult("Duplicate doors fix applied.", "Door numbers adjusted",
-                "Failed to adjust door numbers");
-            int doorsCount = mCabinDecks.Select(x => x.CabinSlots.Where(y => y.IsDoor).Count()).Sum();
-
-            int slotNumber = 1;
-            bool isZeroDoorSet = false;
-            bool handleCateringDoorsSeparately = doorsCount > 9;
-
-            if (handleCateringDoorsSeparately) // Prioritize numbering catering doors over other doors
-            {
-                foreach (CabinDeck cabinDeck in mCabinDecks.Where(x => x.DoorSlots.Any(y => y.Type == CabinSlotType.CateringDoor)).OrderByDescending(x => x.Floor))
-                {
-                    slotNumber = cabinDeck.FixDuplicateCateringDoors(slotNumber, out int successes, out int fails);
-                    autoFixResult.CountSuccesses(successes);
-                    autoFixResult.CountFails(fails);
-                }
-            }
-
-            foreach (CabinDeck cabinDeck in mCabinDecks.Where(x => x.HasDoors).OrderByDescending(x => x.Floor))
-            {
-                slotNumber = cabinDeck.FixDuplicateDoors(slotNumber, isZeroDoorSet, handleCateringDoorsSeparately, out int successes, out int fails, out isZeroDoorSet);
-                autoFixResult.CountSuccesses(successes);
-                autoFixResult.CountFails(fails);
-            }
-
-            return autoFixResult;
-        }
-
         public void LoadCabinLayout()
         {
             mCabinDecks.Clear();
@@ -227,7 +124,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
             string[] decks = File.ReadAllText(layoutFile.FullName)
                                     .Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
-
             for (int floor = 0; floor < decks.Length; floor++)
             {
                 if (string.IsNullOrWhiteSpace(decks[floor]))
@@ -248,32 +144,22 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             cabinDeck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(cabinDeck);
-            OnCabinDeckCountChanged(EventArgs.Empty);
-        }
-
-        public void RemoveCabinDeck(CabinDeck cabinDeck)
-        {
-            cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
-            mCabinDecks.Remove(cabinDeck);
-            OnCabinDeckCountChanged(EventArgs.Empty);
         }
 
         private void Deck_CabinSlotsChanged(object sender, EventArgs e)
         {
             RefreshCapacities();
             RefreshProblemChecks();
-
-            OnCabinSlotsChanged(e);
         }
 
         private void RefreshCapacities()
         {
-            InvokePropertyChanged(nameof(PassengerCapacity));
-            InvokePropertyChanged(nameof(EconomyCapacity));
-            InvokePropertyChanged(nameof(BusinessCapacity));
-            InvokePropertyChanged(nameof(PremiumCapacity));
-            InvokePropertyChanged(nameof(FirstClassCapacity));
-            InvokePropertyChanged(nameof(SupersonicCapacity));
+            InvokePropertyChanged("PassengerCapacity");
+            InvokePropertyChanged("EconomyCapacity");
+            InvokePropertyChanged("BusinessCapacity");
+            InvokePropertyChanged("PremiumCapacity");
+            InvokePropertyChanged("FirstClassCapacity");
+            InvokePropertyChanged("SupersonicCapacity");
         }
 
         public string ToLayoutFile()
@@ -300,54 +186,40 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             CabinDeck deckWithStairs = CabinDecks.FirstOrDefault(x => x.CabinSlots.Any(y => y.Type == CabinSlotType.Stairway));
 
+            Dictionary<CabinSlot, int> stairwayMapping = deckWithStairs.GetStairways();
             AutoFixResult autoFixResult = new AutoFixResult("Stairway fix applied.", "Amount of changed slots",
                 "Failed changes");
 
-            if (HasMultipleDecks)
+            foreach (CabinDeck cabinDeck in CabinDecks)
             {
-                Dictionary<CabinSlot, int> stairwayMapping = deckWithStairs.GetStairways();
-
-                foreach (CabinDeck cabinDeck in CabinDecks)
+                if (cabinDeck.Equals(deckWithStairs))
                 {
-                    if (cabinDeck.Equals(deckWithStairs))
-                    {
-                        continue;
-                    }
-
-                    if (cabinDeck.Rows >= stairwayMapping.Max(x => x.Key.Row) &&
-                        cabinDeck.Columns >= stairwayMapping.Max(x => x.Key.Column))
-                    {
-                        foreach (CabinSlot slot in cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
-                        {
-                            slot.Type = CabinSlotType.Aisle;
-                        }
-
-                        foreach (var stairMap in stairwayMapping)
-                        {
-                            CabinSlot targetSlot = cabinDeck.CabinSlots
-                                .FirstOrDefault(x => x.Row == stairMap.Key.Row && x.Column == stairMap.Key.Column);
-
-                            if (targetSlot != null)
-                            {
-                                targetSlot.Type = CabinSlotType.Stairway;
-                                targetSlot.IsProblematic = false;
-                                autoFixResult.CountSuccess();
-                            }
-                            else
-                            {
-                                autoFixResult.CountFail();
-                            }
-                        }
-                    }
+                    continue;
                 }
-            }
-            else
-            {
-                foreach (CabinSlot cabinSlot in deckWithStairs.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
+
+                if (cabinDeck.Rows >= stairwayMapping.Max(x => x.Key.Row) &&
+                    cabinDeck.Columns >= stairwayMapping.Max(x => x.Key.Column))
                 {
-                    cabinSlot.Type = CabinSlotType.Aisle;
-                    cabinSlot.IsProblematic = false;
-                    autoFixResult.CountSuccess();
+                    foreach (CabinSlot slot in cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
+                    {
+                        slot.Type = CabinSlotType.Aisle;
+                    }
+
+                    foreach (var stairMap in stairwayMapping)
+                    {
+                        CabinSlot targetSlot = cabinDeck.CabinSlots
+                            .FirstOrDefault(x => x.Row == stairMap.Key.Row && x.Column == stairMap.Key.Column);
+
+                        if (targetSlot != null)
+                        {
+                            targetSlot.Type = CabinSlotType.Stairway;
+                            autoFixResult.CountSuccess();
+                        }
+                        else
+                        {
+                            autoFixResult.CountFail();
+                        }
+                    }
                 }
             }
 
@@ -430,45 +302,27 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void RefreshProblemChecks()
         {
-            InvokePropertyChanged(nameof(DuplicateEconomySeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateEconomySeats));
-            InvokePropertyChanged(nameof(DuplicateBusinessSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateBusinessSeats));
-            InvokePropertyChanged(nameof(DuplicatePremiumSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicatePremiumSeats));
-            InvokePropertyChanged(nameof(DuplicateFirstClassSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateFirstClassSeats));
-            InvokePropertyChanged(nameof(DuplicateSupersonicSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateSupersonicSeats));
-            InvokePropertyChanged(nameof(DuplicateUnavailableSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateUnavailableSeats));
-            InvokePropertyChanged(nameof(InvalidStairways));
-            InvokePropertyChanged(nameof(StairwaysValid));
-            InvokePropertyChanged(nameof(DuplicateDoors));
-            InvokePropertyChanged(nameof(HasNoDuplicateDoors));
+            InvokePropertyChanged("DuplicateEconomySeats");
+            InvokePropertyChanged("HasNoDuplicateEconomySeats");
+            InvokePropertyChanged("DuplicateBusinessSeats");
+            InvokePropertyChanged("HasNoDuplicateBusinessSeats");
+            InvokePropertyChanged("DuplicatePremiumSeats");
+            InvokePropertyChanged("HasNoDuplicatePremiumSeats");
+            InvokePropertyChanged("DuplicateFirstClassSeats");
+            InvokePropertyChanged("HasNoDuplicateFirstClassSeats");
+            InvokePropertyChanged("DuplicateSupersonicSeats");
+            InvokePropertyChanged("HasNoDuplicateSupersonicSeats");
+            InvokePropertyChanged("DuplicateUnavailableSeats");
+            InvokePropertyChanged("HasNoDuplicateUnavailableSeats");
+            InvokePropertyChanged("InvalidStairways");
+            InvokePropertyChanged("StairwaysValid");
 
-            InvokePropertyChanged(nameof(MinorIssuesCountSum));
-            InvokePropertyChanged(nameof(HasMinorIssues));
-            InvokePropertyChanged(nameof(SevereIssuesCountSum));
-            InvokePropertyChanged(nameof(HasSevereIssues));
-            InvokePropertyChanged(nameof(HasAnyIssues));
-            InvokePropertyChanged(nameof(IssuesCountText));
+            InvokePropertyChanged("ProblemCountSum");
         }
 
         public override string ToString()
         {
             return mLayoutName;
-        }
-
-        protected virtual void OnCabinDeckCountChanged(EventArgs e)
-        {
-            CabinDeckCountChanged?.Invoke(this, e);
-            InvokePropertyChanged(nameof(HasMultipleDecks));
-        }
-
-        protected virtual void OnCabinSlotsChanged(EventArgs e)
-        {
-            CabinSlotsChanged?.Invoke(this, e);
         }
     }
 }

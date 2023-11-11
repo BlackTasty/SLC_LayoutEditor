@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:SLC_LayoutEditor"
         mc:Ignorable="d"
         Title="StyleTester" Height="450" Width="800"
-        TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
-        Background="{DynamicResource BackgroundColorBrush}">
+        TextElement.Foreground="{DynamicResource ForegroundColor}"
+        Background="{DynamicResource BackgroundColor}">
     <Grid>
         <Button Style="{StaticResource SelectRowButtonStyle}" Margin="48,0" HorizontalAlignment="Left"/>
         <Button Style="{StaticResource SelectColumnButtonStyle}" Margin="48,60,48,0" HorizontalAlignment="Left"/>

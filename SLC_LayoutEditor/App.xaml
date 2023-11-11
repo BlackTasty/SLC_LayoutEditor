@@ -11,11 +11,7 @@
                 <ResourceDictionary Source="Themes/Style.xaml"/>
                 <ResourceDictionary Source="Icons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <converter:EnumInRangeConverter x:Key="EnumInRangeConverter"/>
-            <converter:GreaterThanConverter x:Key="GreaterThanConverter"/>
-
+            
             <ImageBrush x:Key="CrewAreaIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_galley.png"/>
             <ImageBrush x:Key="FirstClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_first_class.png"/>
             <ImageBrush x:Key="BusinessClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_business_class.png"/>

@@ -19,8 +19,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private VeryObservableCollection<CabinSlot> mCabinSlots = new VeryObservableCollection<CabinSlot>("CabinSlots");
         private int mFloor;
-
-        private bool mShowCateringAndLoadingBayIssues = true;
+        private bool mShowDuplicateDoorsProblems;
 
         public double Width { get; set; }
 
@@ -50,12 +49,28 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public bool HasDoors => mCabinSlots.Any(x => x.IsDoor);
+        public bool ShowDuplicateDoorsProblems
+        {
+            get => mShowDuplicateDoorsProblems;
+            set
+            {
+                mShowDuplicateDoorsProblems = value;
+                InvokePropertyChanged();
+            }
+        }
 
-        public IEnumerable<CabinSlot> DoorSlots => mCabinSlots.Where(x => x.IsDoor);
+        public IEnumerable<CabinSlot> DuplicateDoors
+        {
+            get
+            {
+                return CabinSlots.Where(x => x.IsDoor)
+                    .GroupBy(x => x.SlotNumber)
+                    .Where(x => x.Count() > 1)
+                    .SelectMany(x => x);
+            }
+        }
 
-        public IEnumerable<CabinSlot> InvalidCateringDoorsAndLoadingBays => mCabinSlots.Where(x => (x.Type == CabinSlotType.CateringDoor || x.Type == CabinSlotType.LoadingBay)
-                                            && x.Column != 0);
+        public bool HasNoDuplicateDoors => DuplicateDoors.Count() == 0;
 
         public bool AreServicePointsValid =>
             mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint).Count() ==
@@ -68,8 +83,6 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool AreKitchensValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Kitchen).Count() > 0;
 
         public bool AreDoorsValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Door).Count() > 0;
-
-        public bool AreCateringAndLoadingBaysValid => InvalidCateringDoorsAndLoadingBays.Count() == 0;
 
         public bool AreToiletsAvailable => mCabinSlots.Where(x => x.Type == CabinSlotType.Toilet).Count() > 0;
 
@@ -103,19 +116,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public int SevereIssuesCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreServicePointsValid, AreSlotsValid);
-
-        public int MinorIssuesCount => Util.GetProblemCount(0, AreCateringAndLoadingBaysValid, AreSeatsReachableByService, AreToiletsAvailable, AreKitchensValid);
-
-        public bool ShowCateringAndLoadingBayIssues
-        {
-            get => mShowCateringAndLoadingBayIssues;
-            set
-            {
-                mShowCateringAndLoadingBayIssues = value;
-                InvokePropertyChanged();
-            }
-        }
+        public int ProblemCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreKitchensValid, 
+            AreServicePointsValid, AreSeatsReachableByService, AreToiletsAvailable, HasNoDuplicateDoors, AreSlotsValid);
 
         public CabinDeck(int floor, int rows, int columns)
         {
@@ -163,29 +165,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 cabinSlot.CabinSlotChanged -= CabinSlot_CabinSlotChanged;
             }
-        }
-
-        public bool ContainsCabinSlots(IEnumerable<CabinSlot> targets)
-        {
-            if (targets == null)
-            {
-                return false;
-            }
-
-            foreach (CabinSlot target in targets)
-            {
-                if (!ContainsCabinSlot(target))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public bool ContainsCabinSlot(CabinSlot target)
-        {
-            return target != null && mCabinSlots.Any(x => x.Guid == target.Guid);
         }
 
         public IEnumerable<int> GetRowsWithSeats()
@@ -238,80 +217,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             return autoFixResult;
         }
 
-        public int FixDuplicateDoors(int slotNumber, bool isZeroDoorSet, bool ignoreCateringDoors, out int successes, out int fails, out bool wasZeroDoorSet)
-        {
-            CabinSlot zeroDoor = null;
-            wasZeroDoorSet = isZeroDoorSet;
-            IEnumerable<CabinSlot> doorSlots = DoorSlots.OrderBy(x => x.Row).ThenByDescending(x => x.Column);
-
-            successes = 0;
-            fails = 0;
-
-            if (ignoreCateringDoors)
-            {
-                doorSlots = doorSlots.Where(x => x.Type != CabinSlotType.CateringDoor);
-            }
-
-            if (!isZeroDoorSet)
-            {
-                zeroDoor = doorSlots.FirstOrDefault(x => x.Type == CabinSlotType.Door);
-
-                if (zeroDoor != null)
-                {
-                    zeroDoor.SlotNumber = 0;
-                    wasZeroDoorSet = true;
-
-                    doorSlots = doorSlots.Where(x => x.Guid != zeroDoor.Guid);
-                    successes++;
-                }
-            }
-
-            foreach (CabinSlot doorSlot in doorSlots)
-            {
-                if (doorSlot.Type != CabinSlotType.CateringDoor || slotNumber < 10)
-                {
-                    doorSlot.SlotNumber = slotNumber;
-                    slotNumber++;
-                    successes++;
-                }
-                else
-                {
-                    fails++;
-                }
-            }
-
-            RefreshProblemChecks();
-            return slotNumber;
-        }
-
-        public int FixDuplicateCateringDoors(int slotNumber, out int successes, out int fails)
-        {
-            successes = 0;
-            fails = 0;
-
-            foreach (CabinSlot doorSlot in DoorSlots.Where(x => x.Type == CabinSlotType.CateringDoor)
-                .OrderBy(x => x.Row).ThenByDescending(x => x.Column))
-            {
-                if (slotNumber < 10)
-                {
-                    doorSlot.SlotNumber = slotNumber;
-                    slotNumber++;
-                    successes++;
-                }
-                else
-                {
-                    fails++;
-                }
-            }
-
-            return slotNumber;
-        }
-
-        public void RegisterCabinSlotEvents(CabinSlot cabinSlot)
-        {
-            cabinSlot.CabinSlotChanged += CabinSlot_CabinSlotChanged;
-        }
-
         private IEnumerable<int> GetRowsCoveredByService()
         {
             List<int> coveredRows = new List<int>();
@@ -344,23 +249,23 @@ namespace SLC_LayoutEditor.Core.Cabin
             foreach (var deckColumn in ordered)
             {
                 var columnData = deckColumn.OrderBy(x => x.Row);
-                cabinDeckRaw += string.Join(",", columnData) + ",\r\n";
+                cabinDeckRaw += string.Join(",", columnData) + "\r\n";
             }
             return cabinDeckRaw;
         }
 
         public void RefreshProblemChecks()
         {
-            InvokePropertyChanged(nameof(AreServicePointsValid));
-            InvokePropertyChanged(nameof(AreGalleysValid));
-            InvokePropertyChanged(nameof(AreKitchensValid));
-            InvokePropertyChanged(nameof(AreDoorsValid));
-            InvokePropertyChanged(nameof(AreToiletsAvailable));
-            InvokePropertyChanged(nameof(AreSeatsReachableByService));
-            InvokePropertyChanged(nameof(AreSlotsValid));
-            InvokePropertyChanged(nameof(SevereIssuesCount));
-            InvokePropertyChanged(nameof(AreCateringAndLoadingBaysValid));
-            InvokePropertyChanged(nameof(InvalidCateringDoorsAndLoadingBays));
+            InvokePropertyChanged("AreServicePointsValid");
+            InvokePropertyChanged("AreGalleysValid");
+            InvokePropertyChanged("AreKitchensValid");
+            InvokePropertyChanged("DuplicateDoors");
+            InvokePropertyChanged("AreDoorsValid");
+            InvokePropertyChanged("HasNoDuplicateDoors");
+            InvokePropertyChanged("AreToiletsAvailable");
+            InvokePropertyChanged("AreSeatsReachableByService");
+            InvokePropertyChanged("AreSlotsValid");
+            InvokePropertyChanged("ProblemCount");
         }
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)

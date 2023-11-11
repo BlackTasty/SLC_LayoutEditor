@@ -62,7 +62,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public async Task LoadCabinLayouts()
+        public async Task LoadCabinLayout()
         {
             if (!layoutSetFolder.Exists)
             {

@@ -19,8 +19,8 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mName = value;
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(IsValid));
-                InvokePropertyChanged(nameof(ErrorMessage));
+                InvokePropertyChanged("IsValid");
+                InvokePropertyChanged("ErrorMessage");
             }
         }
 

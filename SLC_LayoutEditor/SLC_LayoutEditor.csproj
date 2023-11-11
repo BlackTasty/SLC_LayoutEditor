@@ -14,8 +14,6 @@
     <WarningLevel>4</WarningLevel>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -71,15 +69,10 @@
     <Compile Include="Controls\LayoutProblemText.xaml.cs">
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Patchnote.xaml.cs">
-      <DependentUpon>Patchnote.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\RefinedExpander.cs" />
     <Compile Include="Controls\RoundedCornersPolygon.cs" />
     <Compile Include="Controls\SeatCapacityBox.xaml.cs">
       <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converter\EnumInRangeConverter.cs" />
     <Compile Include="Converter\EqualsToVisibilityConverter.cs" />
     <Compile Include="Converter\GreaterThanConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
@@ -90,23 +83,13 @@
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
-    <Compile Include="Core\Enum\StateChangeType.cs" />
     <Compile Include="Core\Events\AddDialogClosingEventArgs.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
-    <Compile Include="Core\Events\ChangedEventArgs.cs" />
-    <Compile Include="Core\Events\CabinLayoutSelectedEventArgs.cs" />
     <Compile Include="Core\Events\DialogClosingEventArgs.cs" />
     <Compile Include="Core\Events\ProblematicSlotsCollectedEventArgs.cs" />
     <Compile Include="Core\Events\RemoveCabinDeckEventArgs.cs" />
-    <Compile Include="Core\Events\SelectionRollbackEventArgs.cs" />
     <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
-    <Compile Include="Core\Memento\Change.cs" />
-    <Compile Include="Core\Memento\History.cs" />
-    <Compile Include="Core\Memento\HistoryStack.cs" />
-    <Compile Include="Core\Memento\HistoryStep.cs" />
-    <Compile Include="Core\Memento\IHistorical.cs" />
-    <Compile Include="Core\Patcher\ChangelogEntry.cs" />
     <Compile Include="Core\Patcher\Server.cs" />
     <Compile Include="Core\Patcher\ServerList.cs" />
     <Compile Include="Core\Patcher\UpdateFailedEventArgs.cs" />
@@ -118,12 +101,6 @@
     <Compile Include="StyleTester.xaml.cs">
       <DependentUpon>StyleTester.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\About.xaml.cs">
-      <DependentUpon>About.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\ChangelogDialog.xaml.cs">
-      <DependentUpon>ChangelogDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Dialogs\AddAirplaneDialog.xaml.cs">
       <DependentUpon>AddAirplaneDialog.xaml</DependentUpon>
     </Compile>
@@ -133,17 +110,12 @@
     <Compile Include="UI\Dialogs\ConfirmationDialog.xaml.cs">
       <DependentUpon>ConfirmationDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Settings.xaml.cs">
-      <DependentUpon>Settings.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\AddAirplaneDialogViewModel.cs" />
     <Compile Include="ViewModel\AddCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\WelcomeScreenDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\MementoViewModel.cs" />
-    <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="ViewModel\WelcomeScreenViewModel.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -160,13 +132,13 @@
     <Compile Include="Core\Events\CabinSlotClickedEventArgs.cs" />
     <Compile Include="Core\JsonFile.cs" />
     <Compile Include="Core\Util.cs" />
-    <Compile Include="UI\LayoutEditor.xaml.cs">
-      <DependentUpon>LayoutEditor.xaml</DependentUpon>
+    <Compile Include="UI\CabinConfig.xaml.cs">
+      <DependentUpon>CabinConfig.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WelcomeScreen.xaml.cs">
       <DependentUpon>WelcomeScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\LayoutEditorViewModel.cs" />
+    <Compile Include="ViewModel\CabinConfigViewModel.cs" />
     <Page Include="Controls\DeckLayoutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -176,10 +148,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LayoutProblemText.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Patchnote.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -228,15 +196,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\Styles\CheckBoxStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Themes\Styles\ComboBoxStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Styles\ExpanderStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -268,15 +228,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\About.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Dialogs\ChangelogDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\LayoutEditor.xaml">
+    <Page Include="UI\CabinConfig.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -289,10 +241,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\ConfirmationDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -345,12 +293,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\icon_about.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\patchnotes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
