@@ -9,6 +9,7 @@ namespace SLC_LayoutEditor.ViewModel.Communication
     public enum ViewModelMessage
     {
         DialogOpening,
-        DialogClosing
+        DialogClosing,
+        UnsavedChangesDialogClosed
     }
 }

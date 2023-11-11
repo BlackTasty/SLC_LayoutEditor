@@ -19,9 +19,19 @@ namespace SLC_LayoutEditor
     /// </summary>
     public partial class App : Application
     {
-        private static readonly string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SLC Layout Editor");
+        private static readonly string oldDefaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+            "SLC Layout Editor");
+        private static readonly string defaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+            "Tasty Apps", "SLC Layout Editor");
+
+        private static readonly string defaultSLCLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                "Lanilogic", "Self Loading Cargo");
 
         public static bool IsDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
+
+        public static string DefaultEditorLayoutsPath => defaultEditorLayoutsPath;
+
+        public static string DefaultSLCLayoutsPath => defaultSLCLayoutsPath;
 
         public static AppSettings Settings { get; set; } = new AppSettings();
 
@@ -42,6 +52,7 @@ namespace SLC_LayoutEditor
                     Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
                 }
 
+                RunMigrations();
 
                 if (args.Contains("-clean"))
                 {
@@ -73,11 +84,53 @@ namespace SLC_LayoutEditor
                 Logger.Default.WriteLog("SLC Layout Editor crashed with a fatal exception! Version {0}", LogType.FATAL, ex,
                     PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3));
             }
+
+            Util.KillLayoutTransferScript();
         }
 
         public static void SaveAppSettings()
         {
             Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
+        }
+
+        internal static string GetVersionText(bool versionNumberOnly = false)
+        {
+            string version = PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3);
+
+            if (!versionNumberOnly)
+            {
+                string versionText = string.Format(" v{0}", version);
+
+#if DEBUG
+                versionText += "dev";
+#endif
+
+                return versionText;
+            }
+            else
+            {
+                return version;
+            }
+        }
+
+        private static void RunMigrations()
+        {
+            #region Migrate layout folder from default path to new path
+            if (Directory.Exists(oldDefaultEditorLayoutsPath))
+            {
+                Logger.Default.WriteLog("Migrating directory for layouts edited with the editor...");
+                Directory.Delete(defaultEditorLayoutsPath, true);
+                Directory.Move(oldDefaultEditorLayoutsPath, defaultEditorLayoutsPath);
+
+                Logger.Default.WriteLog("Layout editor directory migrated!");
+            }
+
+            if (Settings.CabinLayoutsEditPath == oldDefaultEditorLayoutsPath)
+            {
+                Logger.Default.WriteLog("Adjusting {0} property in app settings...", nameof(Settings.CabinLayoutsEditPath));
+                Settings.CabinLayoutsEditPath = defaultEditorLayoutsPath;
+            }
+            #endregion
         }
     }
 }

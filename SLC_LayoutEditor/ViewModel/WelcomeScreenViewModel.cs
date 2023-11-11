@@ -10,7 +10,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.ViewModel
 {
-    class WelcomeScreenViewModel : ViewModelBase
+    class WelcomeScreenViewModel : SettingsViewModel
     {
         public event EventHandler<EventArgs> CopyDone;
 
@@ -93,8 +93,6 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged();
             }
         }
-
-        public AppSettings Settings => App.Settings;
 
         public async Task RunCopy()
         {

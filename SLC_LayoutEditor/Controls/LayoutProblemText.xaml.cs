@@ -120,6 +120,18 @@ namespace SLC_LayoutEditor.Controls
         }
         #endregion
 
+        #region IsSevereProblem property
+        public bool IsSevereProblem
+        {
+            get { return (bool)GetValue(IsSevereProblemProperty); }
+            set { SetValue(IsSevereProblemProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsSevereProblem.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsSevereProblemProperty =
+            DependencyProperty.Register("IsSevereProblem", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(true));
+        #endregion
+
         #region ShowAutoFix property
         public bool ShowAutoFix
         {
@@ -154,6 +166,42 @@ namespace SLC_LayoutEditor.Controls
         // Using a DependencyProperty as the backing store for Floor.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FloorProperty =
             DependencyProperty.Register("Floor", typeof(int), typeof(LayoutProblemText), new PropertyMetadata(-1));
+        #endregion
+
+        #region Description property
+        public string Description
+        {
+            get { return (string)GetValue(DescriptionProperty); }
+            set { SetValue(DescriptionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Description.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DescriptionProperty =
+            DependencyProperty.Register("Description", typeof(string), typeof(LayoutProblemText), new PropertyMetadata(null));
+        #endregion
+
+        #region IsRequired property
+        public bool IsRequired
+        {
+            get { return (bool)GetValue(IsRequiredProperty); }
+            set { SetValue(IsRequiredProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsRequired.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsRequiredProperty =
+            DependencyProperty.Register("IsRequired", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(true));
+        #endregion
+
+        #region NotRequiredText property
+        public string NotRequiredText
+        {
+            get { return (string)GetValue(NotRequiredTextProperty); }
+            set { SetValue(NotRequiredTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for NotRequiredText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NotRequiredTextProperty =
+            DependencyProperty.Register("NotRequiredText", typeof(string), typeof(LayoutProblemText), new PropertyMetadata("Not required text"));
         #endregion
 
         public LayoutProblemText()

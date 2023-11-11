@@ -5,16 +5,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
         mc:Ignorable="d" x:Name="container"
-        Height="40" Width="46"
+        Height="52" Width="52"
         BorderBrush="{Binding ElementName=container, Path=BoxBackground, FallbackValue=White}"
-        BorderThickness="1" CornerRadius="2" Padding="2">
+        BorderThickness="1.5" CornerRadius="18,18,2,2" Padding="2,5,2,2">
     <Border.Background>
-        <SolidColorBrush Color="{Binding ElementName=container, Path=BoxBackground.Color}" Opacity=".2"/>
+        <SolidColorBrush Color="{Binding ElementName=container, Path=BoxBackground.Color}" Opacity=".1"/>
     </Border.Background>
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{Binding ElementName=container, Path=SeatTypeLetter,FallbackValue=E}"
-                   TextAlignment="Center" FontSize="12"/>
+                   HorizontalAlignment="Center" FontSize="12" FontWeight="Bold"/>
         <TextBlock Text="{Binding ElementName=container, Path=Capacity, FallbackValue=100}"
-                   TextAlignment="Center" VerticalAlignment="Center" FontSize="12"/>
+                   HorizontalAlignment="Center">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
+                    <Setter Property="FontSize" Value="20"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=container, Path=Capacity, Converter={StaticResource GreaterThanConverter}, ConverterParameter=999}"
+                                     Value="True">
+                            <Setter Property="FontSize" Value="16"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </DockPanel>
 </Border>

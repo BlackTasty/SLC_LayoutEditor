@@ -1,8 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
     <Style TargetType="ProgressBar">
-        <Setter Property="Background" Value="{StaticResource BackdropColor}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BackdropColor}"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackdropColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackdropColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Height" Value="2"/>
     </Style>
 </ResourceDictionary>

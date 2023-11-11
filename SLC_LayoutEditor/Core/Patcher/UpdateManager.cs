@@ -18,7 +18,7 @@ namespace SLC_LayoutEditor.Core.Patcher
     {
         private Stopwatch downloadSpeedStopWatch = new Stopwatch();
         private string currentVersion;
-        private int currentVersionNumber;
+        private int versionNumber;
         private string newVersion;
 
         private bool updatesReady;
@@ -45,9 +45,11 @@ namespace SLC_LayoutEditor.Core.Patcher
             set
             {
                 currentVersion = value;
-                currentVersionNumber = PatcherUtil.ParseVersion(value, 0);
+                versionNumber = PatcherUtil.ParseVersion(value, 0);
             }
         }
+
+        internal int VersionNumber => versionNumber;
 
         internal bool UpdatesReady
         {
@@ -75,7 +77,11 @@ namespace SLC_LayoutEditor.Core.Patcher
 
             Version = PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3);
             Status = UpdateStatus.IDLE;
-            CheckForUpdates();
+
+            if (App.Settings.AutoSearchForUpdates)
+            {
+                CheckForUpdates();
+            }
         }
 
         internal void RetryLastAction()
@@ -93,11 +99,6 @@ namespace SLC_LayoutEditor.Core.Patcher
                     InstallUpdate();
                     break;
             }
-        }
-
-        private void CheckForUpdates(object sender, EventArgs e)
-        {
-            CheckForUpdates();
         }
 
         /// <summary>
@@ -300,7 +301,7 @@ namespace SLC_LayoutEditor.Core.Patcher
             if (deleteFile)
                 File.Delete(versionFilePath);
 
-            return PatcherUtil.ParseVersion(newVersion, 0) > currentVersionNumber;
+            return PatcherUtil.ParseVersion(newVersion, 0) > versionNumber;
         }
 
         /// <summary>

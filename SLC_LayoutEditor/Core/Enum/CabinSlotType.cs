@@ -17,18 +17,22 @@ namespace SLC_LayoutEditor.Core.Enum
         Wall, // "  X  "
         [Description("Door")]
         Door, // " D-X " e.g. " D-1 "
+        [Description("Loading bay")]
+        LoadingBay, // " LB-X" e.g. " LB-6"
+        [Description("Catering door")]
+        CateringDoor, // "CAT-X" e.g. "CAT-4"
         [Description("Cockpit")]
         Cockpit, // "  C  "
         [Description("Galley")]
         Galley, // "  G  "
         [Description("Toilet")]
         Toilet, // "  T  "
-        [Description("Stairway")]
-        Stairway, // "  S  "
         [Description("Kitchen")]
         Kitchen, // "  K  "
         [Description("Intercom")]
         Intercom, // "  I  "
+        [Description("Stairway")]
+        Stairway, // "  S  "
         [Description("Business Class")]
         BusinessClassSeat, // "B-XXX" - e.g. "B-12A"
         [Description("Economy Class")]

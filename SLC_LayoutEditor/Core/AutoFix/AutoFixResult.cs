@@ -22,9 +22,19 @@ namespace SLC_LayoutEditor.Core.AutoFix
             successCount++;
         }
 
+        public void CountSuccesses(int amount)
+        {
+            successCount += amount;
+        }
+
         public void CountFail()
         {
             failCount++;
+        }
+
+        public void CountFails(int amount)
+        {
+            failCount += amount;
         }
 
         public AutoFixResult(string resultText, string successText, string failText)

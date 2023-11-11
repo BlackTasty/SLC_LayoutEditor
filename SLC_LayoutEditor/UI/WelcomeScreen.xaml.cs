@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.ViewModel;
+﻿using SLC_LayoutEditor.Core;
+using SLC_LayoutEditor.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,35 +57,34 @@ namespace SLC_LayoutEditor.UI
 
         private void SelectSLCPath_Click(object sender, RoutedEventArgs e)
         {
-            App.Settings.CabinLayoutsReadoutPath = SelectFolder("Select SLC cabin layouts folder",
+            string path = Util.SelectFolder("Select SLC cabin layouts folder",
                                                         App.Settings.CabinLayoutsReadoutPath,
                                                         false);
+            if (path != null)
+            {
+                App.Settings.CabinLayoutsReadoutPath = path;
+            }
         }
 
         private void SelectCopyTargetPath_Click(object sender, RoutedEventArgs e)
         {
-            App.Settings.CabinLayoutsEditPath = SelectFolder("Select a folder to copy all layouts to",
-                                                        App.Settings.CabinLayoutsReadoutPath,
+            string path = Util.SelectFolder("Select a folder to copy all layouts to",
+                                                        App.Settings.CabinLayoutsEditPath,
                                                         true);
+            if (path != null)
+            {
+                App.Settings.CabinLayoutsEditPath = path;
+            }
         }
 
-        private string SelectFolder(string title, string currentFolder, bool showNewFolderButton)
+        private void OpenReadoutFolder_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog()
-            {
-                Description = title,
-                ShowNewFolderButton = showNewFolderButton,
-                SelectedPath = currentFolder
-            };
+            Util.OpenFolder(App.Settings.CabinLayoutsReadoutPath, false);
+        }
 
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.SelectedPath;
-            }
-            else
-            {
-                return currentFolder;
-            }
+        private void OpenEditFolder_Click(object sender, RoutedEventArgs e)
+        {
+            Util.OpenFolder(App.Settings.CabinLayoutsEditPath, false);
         }
     }
 }

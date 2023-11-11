@@ -6,6 +6,7 @@ using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,7 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<CabinSlotClickedEventArgs> CabinSlotClicked;
         public event EventHandler<EventArgs> LayoutRegenerated;
         public event EventHandler<RemoveCabinDeckEventArgs> RemoveDeckClicked;
+        public event EventHandler<EventArgs> LayoutLoading;
 
         private List<CabinSlotControl> selectedSlots = new List<CabinSlotControl>();
 
@@ -76,87 +78,89 @@ namespace SLC_LayoutEditor.Controls
             sw.Start();
 #endif
 
-            layout_deck.Children.Clear();
-
-            if (CabinDeck == null)
+            layout_deck.Dispatcher.Invoke(() =>
             {
-                return;
-            }
+                layout_deck.Children.Clear();
 
-            GetRowAndColumnCount(out int rows, out int columns);
+                if (CabinDeck == null)
+                {
+                    return;
+                }
 
-            #region Generate layout
-            foreach (CabinSlot cabinSlot in CabinDeck.CabinSlots)
-            {
-                AddCabinSlotControl(cabinSlot);
-            }
-            #endregion
+                GetRowAndColumnCount(out int rows, out int columns);
 
-            #region Generate layout row- and column buttons
-            
-            for (int row = 0; row < rows; row++)
-            {
-                AddRowSelectButton(row);
-                AddRowRemoveButton(row);
-                AddRowInsertButton(row);
-            }
+                #region Generate layout
+                foreach (CabinSlot cabinSlot in CabinDeck.CabinSlots)
+                {
+                    AddCabinSlotControl(cabinSlot);
+                }
+                #endregion
 
-            for (int column = 0; column < columns; column++)
-            {
-                AddColumnSelectButton(column);
-                AddColumnRemoveButton(column);
-                AddColumnInsertButton(column);
-            }
-            #endregion
+                #region Generate layout row- and column buttons
+                for (int row = 0; row < rows; row++)
+                {
+                    AddRowSelectButton(row);
+                    AddRowRemoveButton(row);
+                    AddRowInsertButton(row);
+                }
 
-            #region Generate buttons to add rows and columns
-            Button addRowButton = new Button()
-            {
-                Style = App.Current.FindResource("AddRowButtonStyle") as Style,
-                ToolTip = string.Format("Add new column"),
-                Margin = new Thickness(30, 30, 0, 0),
-                Width = SIDE_BUTTON_WIDTH,
-                Height = SIDE_BUTTON_HEIGHT
-            };
-            addRowButton.Click += AddRowButton_Click;
+                for (int column = 0; column < columns; column++)
+                {
+                    AddColumnSelectButton(column);
+                    AddColumnRemoveButton(column);
+                    AddColumnInsertButton(column);
+                }
+                #endregion
 
-            layout_deck.Children.Add(addRowButton);
-            Button addColumnButton = new Button()
-            {
-                Style = App.Current.FindResource("AddColumnButtonStyle") as Style,
-                ToolTip = string.Format("Add new row"),
-                Margin = new Thickness(30, 30, 0, 0),
-                Width = SIDE_BUTTON_WIDTH,
-                Height = SIDE_BUTTON_HEIGHT
-            };
-            addColumnButton.Click += AddColumnButton_Click;
+                #region Generate buttons to add rows and columns
+                Button addRowButton = new Button()
+                {
+                    Style = App.Current.FindResource("AddRowButtonStyle") as Style,
+                    ToolTip = string.Format("Add new column"),
+                    Margin = new Thickness(30, 30, 0, 0),
+                    Width = SIDE_BUTTON_WIDTH,
+                    Height = SIDE_BUTTON_HEIGHT
+                };
+                addRowButton.Click += AddRowButton_Click;
 
-            layout_deck.Children.Add(addColumnButton);
-            #endregion
+                layout_deck.Children.Add(addRowButton);
+                Button addColumnButton = new Button()
+                {
+                    Style = App.Current.FindResource("AddColumnButtonStyle") as Style,
+                    ToolTip = string.Format("Add new row"),
+                    Margin = new Thickness(30, 30, 0, 0),
+                    Width = SIDE_BUTTON_WIDTH,
+                    Height = SIDE_BUTTON_HEIGHT
+                };
+                addColumnButton.Click += AddColumnButton_Click;
 
-            #region Generate dividers between layout and buttons
-            horizontalDivider = new Border()
-            {
-                Width = CabinDeck.Width + 8,
-                Height = 1,
-                Background = App.Current.FindResource("SlotSelectedColor") as SolidColorBrush
-            };
+                layout_deck.Children.Add(addColumnButton);
+                #endregion
 
-            layout_deck.Children.Add(horizontalDivider);
-            Canvas.SetTop(horizontalDivider, LAYOUT_OFFSET_Y + 4);
+                #region Generate dividers between layout and buttons
+                horizontalDivider = new Border()
+                {
+                    Width = CabinDeck.Width + 8,
+                    Height = 1,
+                    Background = App.Current.FindResource("DisabledColorBrush") as SolidColorBrush
+                };
 
-            verticalDivider = new Border()
-            {
-                Width = 1,
-                Height = CabinDeck.Height + 8,
-                Background = App.Current.FindResource("SlotSelectedColor") as SolidColorBrush
-            };
+                layout_deck.Children.Add(horizontalDivider);
+                Canvas.SetTop(horizontalDivider, LAYOUT_OFFSET_Y + 4);
 
-            layout_deck.Children.Add(verticalDivider);
-            Canvas.SetLeft(verticalDivider, LAYOUT_OFFSET_X + 4);
-            #endregion
+                verticalDivider = new Border()
+                {
+                    Width = 1,
+                    Height = CabinDeck.Height + 8,
+                    Background = App.Current.FindResource("DisabledColorBrush") as SolidColorBrush
+                };
 
-            RefreshControlSize();
+                layout_deck.Children.Add(verticalDivider);
+                Canvas.SetLeft(verticalDivider, LAYOUT_OFFSET_X + 4);
+                #endregion
+
+                RefreshControlSize();
+            });
 
 #if DEBUG
             Console.WriteLine("Total time generating deck: " + sw.ElapsedMilliseconds);
@@ -179,6 +183,7 @@ namespace SLC_LayoutEditor.Controls
             }
 
             AddRowSelectButton(newRow);
+            AddRowInsertButton(newRow);
             AddRowRemoveButton(newRow);
             RefreshControlSize();
         }
@@ -197,6 +202,7 @@ namespace SLC_LayoutEditor.Controls
             }
 
             AddColumnSelectButton(newColumn);
+            AddColumnInsertButton(newColumn);
             AddColumnRemoveButton(newColumn);
             RefreshControlSize();
         }
@@ -210,6 +216,7 @@ namespace SLC_LayoutEditor.Controls
             };
 
             slotLayout.PreviewMouseDown += SlotLayout_PreviewMouseDown;
+            CabinDeck.RegisterCabinSlotEvents(cabinSlot);
 
             layout_deck.Children.Add(slotLayout);
 
@@ -635,9 +642,25 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
+        private BackgroundWorker layoutLoader;
+
         private void container_Loaded(object sender, RoutedEventArgs e)
         {
+            OnLayoutLoading(EventArgs.Empty);
+            layoutLoader = new BackgroundWorker();
+            layoutLoader.DoWork += LayoutLoader_DoWork;
+            layoutLoader.RunWorkerCompleted += LayoutLoader_RunWorkerCompleted;
+
+            layoutLoader.RunWorkerAsync();
+        }
+
+        private void LayoutLoader_DoWork(object sender, DoWorkEventArgs e)
+        {
             RefreshCabinDeckLayout();
+        }
+
+        private void LayoutLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
             if (CabinDeck != null)
             {
                 CabinDeck.DeckSlotLayoutChanged += CabinDeck_DeckSlotLayoutChanged;
@@ -663,6 +686,11 @@ namespace SLC_LayoutEditor.Controls
         protected virtual void OnLayoutRegenerated(EventArgs e)
         {
             LayoutRegenerated?.Invoke(this, e);
+        }
+
+        protected virtual void OnLayoutLoading(EventArgs e)
+        {
+            LayoutLoading?.Invoke(this, e);
         }
 
         protected virtual void OnRemoveDeckClicked(RemoveCabinDeckEventArgs e)

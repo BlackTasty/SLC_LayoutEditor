@@ -1,6 +1,7 @@
 ﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.ViewModel;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor
 {
@@ -26,16 +28,25 @@ namespace SLC_LayoutEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainViewModel vm;
+        private bool forceClose;
+
         public MainWindow()
         {
             InitializeComponent();
+            vm = DataContext as MainViewModel;
+
             CheckCleanupFile();
+            vm.ShowChangelogIfUpdated();
 
-            Title += string.Format(" (v{0})", (DataContext as MainViewModel).UpdateManager.Version);
-
-#if DEBUG
-            Title += " - TEST BUILD";
-#endif
+            Mediator.Instance.Register(o =>
+            {
+                if ((bool)o)
+                {
+                    forceClose = true;
+                    Close();
+                }
+            }, ViewModelMessage.UnsavedChangesDialogClosed);
         }
 
         private void CheckCleanupFile()
@@ -84,17 +95,49 @@ namespace SLC_LayoutEditor
 
         private void OpenWelcomeScreen_Click(object sender, RoutedEventArgs e)
         {
-            (DataContext as MainViewModel).ShowWelcomeScreen();
+            vm.ShowWelcomeScreen();
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            vm.ShowSettings();
+        }
+
+        private void ReturnToEditor_Click(object sender, RoutedEventArgs e)
+        {
+            vm.ReturnToEditor();
         }
 
         private void SearchUpdates_Click(object sender, RoutedEventArgs e)
         {
-            (DataContext as MainViewModel).UpdateManager.CheckForUpdates();
+            vm.UpdateManager.CheckForUpdates();
         }
 
         private void DownloadAndInstallUpdate_Click(object sender, RoutedEventArgs e)
         {
-            (DataContext as MainViewModel).UpdateManager.DownloadUpdate();
+            vm.UpdateManager.DownloadUpdate();
+        }
+
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!forceClose && vm.CheckUnsavedChanges(true))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void Changelog_Click(object sender, RoutedEventArgs e)
+        {
+            vm.ShowChangelog();
         }
     }
 }

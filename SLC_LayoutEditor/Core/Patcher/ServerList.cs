@@ -13,7 +13,7 @@ namespace SLC_LayoutEditor.Core.Patcher
 #if DEBUG
             new Server("http://localhost/slc_le/"), 
 #endif
-            new Server("http://blacktasty.bplaced.net/slc_le/"),
+            new Server("http://tasty-apps.bplaced.net/patch/slc_le/"),
             new Server("https://vibrance.lima-city.de/slc_le/")
         };
     }

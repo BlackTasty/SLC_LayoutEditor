@@ -15,7 +15,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource BackgroundColor}" Grid.Row="1"/>
+            <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource BackgroundColorBrush}" Grid.Row="1"/>
             <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" 
                                     CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" 
                                     Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>

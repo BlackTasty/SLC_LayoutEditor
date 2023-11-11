@@ -11,7 +11,7 @@ namespace SLC_LayoutEditor.Converter
         {
             if (value is bool visible)
             {
-                return visible ? Visibility.Collapsed : Visibility.Visible;
+                return visible ? GetHidingMode(parameter) : Visibility.Visible;
             }
             else
             {
@@ -25,6 +25,18 @@ namespace SLC_LayoutEditor.Converter
                 return false;
             else
                 return true;
+        }
+
+        private Visibility GetHidingMode(object parameter)
+        {
+            if (parameter is string paramString)
+            {
+                return paramString == "hide" ? Visibility.Hidden : Visibility.Collapsed;
+            }
+            else
+            {
+                return Visibility.Collapsed;
+            }
         }
     }
 }

@@ -10,7 +10,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Border x:Name="Border" Margin="1" CornerRadius="2" BorderThickness="0"
-                            Background="{DynamicResource BackgroundColor}">
+                            Background="{DynamicResource BackgroundColorBrush}">
                         <Border.BorderBrush>
                             <LinearGradientBrush StartPoint="0,0"
                                  EndPoint="0,1">
@@ -30,7 +30,7 @@
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                 Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ForegroundColor}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ForegroundColorBrush}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -46,7 +46,7 @@
                         </VisualStateManager.VisualStateGroups>
                         <Path x:Name="Arrow" HorizontalAlignment="Center" VerticalAlignment="Center"
                               Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" 
-                              Fill="{DynamicResource ForegroundColor}">
+                              Fill="{DynamicResource ForegroundColorBrush}">
                         </Path>
                     </Border>
                 </ControlTemplate>
@@ -70,7 +70,7 @@
     </Style>
 
     <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
-        <Setter Property="Background" Value="{StaticResource ForegroundColor}"/>
+        <Setter Property="Background" Value="{StaticResource ForegroundColorBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
@@ -87,13 +87,13 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource ButtonBorderColor}"/>
+                <Setter Property="Background" Value="{DynamicResource ButtonBorderColorBrush}"/>
             </Trigger>
             <Trigger Property="IsDragging" Value="True">
-                <Setter Property="Background" Value="{DynamicResource ButtonBorderPressedColor}"/>
+                <Setter Property="Background" Value="{DynamicResource ButtonBorderPressedColorBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="{DynamicResource SlotSelectedColor}"/>
+                <Setter Property="Background" Value="{DynamicResource DisabledColorBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

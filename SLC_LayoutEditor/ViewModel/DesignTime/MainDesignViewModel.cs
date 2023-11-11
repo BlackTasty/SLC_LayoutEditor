@@ -11,7 +11,7 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
     {
         public MainDesignViewModel() : base()
         {
-            Content = new CabinConfig();
+            Content = new LayoutEditor();
         }
     }
 }

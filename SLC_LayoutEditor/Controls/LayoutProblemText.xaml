@@ -1,14 +1,15 @@
 ﻿<DockPanel x:Class="SLC_LayoutEditor.Controls.LayoutProblemText"
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-            xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
-            mc:Ignorable="d"
-            d:DesignHeight="20" d:DesignWidth="240">
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
+           xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
+           mc:Ignorable="d"
+           d:DesignHeight="20" d:DesignWidth="240">
     <DockPanel.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converter:GreaterThanConverter x:Key="GreaterThanConverter"/>
+        <converter:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
     </DockPanel.Resources>
     <Button Click="ToggleProblemVisibility_Click"
             ToolTip="Toggle visibility of detected problem in layout"
@@ -17,55 +18,68 @@
         <Button.Style>
             <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
                 <Setter Property="Content" Value="{StaticResource EyeOffOutline}"/>
-                <Setter Property="Padding" Value="1,1.7,1,.3"/>
-                <Setter Property="Foreground" Value="{StaticResource EyeForegroundColor}"/>
+                <Setter Property="Padding" Value="1,1.5,1,.5"/>
+                <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=ShowProblems}"
                                  Value="True">
                         <Setter Property="Content" Value="{StaticResource EyeOutline}"/>
                         <Setter Property="Padding" Value="1"/>
-                        <Setter Property="Foreground" Value="{StaticResource ButtonYellowBorderColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource ButtonWarnBorderColorBrush}"/>
                     </DataTrigger>
 
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundHoverColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundHoverColorBrush}"/>
                     </Trigger>
                     <Trigger Property="IsPressed" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundPressedColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundPressedColorBrush}"/>
                     </Trigger>
                     <Trigger Property="IsEnabled" Value="False">
-                        <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
         </Button.Style>
     </Button>
+    <Button DockPanel.Dock="Right" Margin="8,0,0,0"
+            ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=Description}"
+            ToolTipService.InitialShowDelay="250"
+            ToolTipService.Placement="Right"
+            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=Description, Converter={StaticResource NotNullToVisibilityConverter}}">
+        <Button.Style>
+            <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
+                <Setter Property="Content" Value="{StaticResource HelpCircle}"/>
+                <Setter Property="Padding" Value="2"/>
+                <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
+            </Style>
+        </Button.Style>
+    </Button>
     <Button Click="ApplyAutoFix_Click" DockPanel.Dock="Right"
             ToolTip="Try to automatically fix this problem"
-            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=ShowAutoFix, Converter={StaticResource BooleanToVisibilityConverter}}">
+            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=ShowAutoFix, Converter={StaticResource BooleanToVisibilityConverter}}">
         <Button.Style>
             <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
                 <Setter Property="Content" Value="{StaticResource WrenchOutline}"/>
-                <Setter Property="Padding" Value="1,1.7,1,.3"/>
-                <Setter Property="Foreground" Value="{StaticResource EyeForegroundColor}"/>
+                <Setter Property="Padding" Value="1"/>
+                <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
                 <Setter Property="IsEnabled" Value="False"/>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=IsValid}"
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsValid}"
                                  Value="False">
                         <Setter Property="Content" Value="{StaticResource Wrench}"/>
                         <Setter Property="Padding" Value="1"/>
-                        <Setter Property="Foreground" Value="{StaticResource ButtonYellowBorderColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
                         <Setter Property="IsEnabled" Value="True"/>
                     </DataTrigger>
 
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundHoverColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundHoverColorBrush}"/>
                     </Trigger>
                     <Trigger Property="IsPressed" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundPressedColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundPressedColorBrush}"/>
                     </Trigger>
                     <Trigger Property="IsEnabled" Value="False">
-                        <Setter Property="Foreground" Value="{StaticResource SlotSelectedColor}"/>
+                        <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -76,11 +90,31 @@
             <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
                 <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=ValidText}"/>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=IsValid, UpdateSourceTrigger=PropertyChanged}"
-                                                     Value="False">
-                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=InvalidText}"/>
-                        <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColor}"/>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsRequired, UpdateSourceTrigger=PropertyChanged}"
+                                 Value="False">
+                        <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
+                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=NotRequiredText}"/>
                     </DataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsValid, UpdateSourceTrigger=PropertyChanged}"
+                                       Value="False"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsSevereProblem, UpdateSourceTrigger=PropertyChanged}"
+                                       Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
+                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=InvalidText}"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsValid, UpdateSourceTrigger=PropertyChanged}"
+                                       Value="False"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsSevereProblem, UpdateSourceTrigger=PropertyChanged}"
+                                       Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Foreground" Value="{StaticResource WarnForegroundColorBrush}"/>
+                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=InvalidText}"/>
+                    </MultiDataTrigger>
                 </Style.Triggers>
             </Style>
         </TextBlock.Style>
