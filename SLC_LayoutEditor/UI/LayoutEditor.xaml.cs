@@ -117,50 +117,15 @@ namespace SLC_LayoutEditor.UI
         {
             vm.SelectedCabinLayout.SaveLayout();
 
-            FileInfo fi = new FileInfo(vm.SelectedCabinLayout.FilePath);
-            DirectoryInfo aircraftLayoutsFolder = fi.Directory;
-            string targetAircraftReadoutFolder = Path.Combine(App.Settings.CabinLayoutsReadoutPath, aircraftLayoutsFolder.Name);
-
-            if (App.Settings.CopyLayoutsAfterSave)
+            if (App.Settings.OpenFolderWithEditedLayout)
             {
-                Util.CopyLayoutToSLC(fi.FullName, Path.Combine(targetAircraftReadoutFolder, fi.Name));
-            }
+                Util.OpenFolder(vm.SelectedCabinLayout.FilePath);
 
-            if (App.Settings.OpenFoldersAfterSaving)
-            {
-                if (App.Settings.OpenSLCTargetFolder)
-                {
-                    if (Directory.Exists(targetAircraftReadoutFolder))
-                    {
-                        string targetLayoutPath = Path.Combine(targetAircraftReadoutFolder, fi.Name);
-
-                        if (File.Exists(targetLayoutPath))
-                        {
-                            Util.OpenFolder(targetLayoutPath);
-                        }
-                        else
-                        {
-                            Util.OpenFolder(targetAircraftReadoutFolder);
-                        }
-                    }
-                    else
-                    {
-                        Process.Start(App.Settings.CabinLayoutsReadoutPath);
-                    }
-                }
-
-                if (App.Settings.OpenFolderWithEditedLayout)
-                {
-                    Util.OpenFolder(vm.SelectedCabinLayout.FilePath);
-                }
-
-                string folderText = App.Settings.OpenFolderWithEditedLayout && App.Settings.OpenSLCTargetFolder ? "Folders" : "Folder";
-                ConfirmationDialog dialog = new ConfirmationDialog(folderText + " opened", 
-                    string.Format("{0} {1} been opened!\n\nYou just need to copy your edited layout file over :)", folderText, folderText.EndsWith("s") ? "have" : "has"),
+                ConfirmationDialog dialog = new ConfirmationDialog("Folder opened",
+                    string.Format("The folder with your layout has been opened!"),
                     DialogType.OK);
 
                 dialog.DialogClosing += FolersOpenedDialog_DialogClosing;
-
                 vm.Dialog = dialog;
             }
         }

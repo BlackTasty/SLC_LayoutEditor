@@ -31,11 +31,6 @@ namespace SLC_LayoutEditor.UI
             InitializeComponent();
         }
 
-        private void WelcomeScreen_CopyDone(object sender, EventArgs e)
-        {
-            OnWelcomeConfirmed(EventArgs.Empty);
-        }
-
         protected virtual void OnWelcomeConfirmed(EventArgs e)
         {
             App.Settings.WelcomeScreenShown = true;
@@ -46,45 +41,6 @@ namespace SLC_LayoutEditor.UI
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
             OnWelcomeConfirmed(EventArgs.Empty);
-        }
-
-        private async void CopyLayouts_Click(object sender, RoutedEventArgs e)
-        {
-            await (DataContext as WelcomeScreenViewModel).RunCopy();
-
-            OnWelcomeConfirmed(EventArgs.Empty);
-        }
-
-        private void SelectSLCPath_Click(object sender, RoutedEventArgs e)
-        {
-            string path = Util.SelectFolder("Select SLC cabin layouts folder",
-                                                        App.Settings.CabinLayoutsReadoutPath,
-                                                        false);
-            if (path != null)
-            {
-                App.Settings.CabinLayoutsReadoutPath = path;
-            }
-        }
-
-        private void SelectCopyTargetPath_Click(object sender, RoutedEventArgs e)
-        {
-            string path = Util.SelectFolder("Select a folder to copy all layouts to",
-                                                        App.Settings.CabinLayoutsEditPath,
-                                                        true);
-            if (path != null)
-            {
-                App.Settings.CabinLayoutsEditPath = path;
-            }
-        }
-
-        private void OpenReadoutFolder_Click(object sender, RoutedEventArgs e)
-        {
-            Util.OpenFolder(App.Settings.CabinLayoutsReadoutPath, false);
-        }
-
-        private void OpenEditFolder_Click(object sender, RoutedEventArgs e)
-        {
-            Util.OpenFolder(App.Settings.CabinLayoutsEditPath, false);
         }
     }
 }

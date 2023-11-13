@@ -24,31 +24,6 @@
 
     <StackPanel DockPanel.Dock="Top" Margin="8">
         <TextBlock Text="Directories" Style="{StaticResource Title2TextStyle}"/>
-        <StackPanel Margin="8,4" ToolTip="This is were the editor will look for existing cabin layouts.">
-            <TextBlock Text="SLC cabin layouts path"/>
-            <DockPanel>
-                <Button DockPanel.Dock="Right" Style="{StaticResource FilledIconButton}" Height="30" Width="30" Padding="5"
-                        IsEnabled="{Binding Settings.ReadoutPathValid}" ToolTip="Open folder in explorer"
-                        Content="{StaticResource OpenFolder}"
-                        Click="OpenReadoutFolder_Click"/>
-                <Button DockPanel.Dock="Right" Content="..." Padding="12,0" Margin="8,0"
-                            Click="SelectSLCPath_Click"/>
-                <TextBox Text="{Binding Settings.CabinLayoutsReadoutPath, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Settings.ReadoutPathValid}" Value="False">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource ErrorForegroundColorBrush}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </DockPanel>
-            <TextBlock DockPanel.Dock="Bottom" Text="The path does not exist!" FontSize="12"
-                               Foreground="{DynamicResource ErrorForegroundColorBrush}"
-                               Visibility="{Binding Settings.ReadoutPathValid, Converter={StaticResource InverseBooleanToVisibilityConverter}, ConverterParameter=hide}"/>
-        </StackPanel>
         <StackPanel Margin="8,4" ToolTip="The path were all layouts are copied to for editing. You have to manually copy the files to SLC in order for them to work.">
             <TextBlock Text="Layout editor - layouts path"/>
             <DockPanel>
@@ -78,68 +53,7 @@
     <StackPanel Margin="8" DockPanel.Dock="Top">
         <TextBlock Text="Utilities" Style="{StaticResource Title2TextStyle}"/>
         <CheckBox IsChecked="{Binding Settings.ShowWarningWhenIssuesPresent}" Content="Show warning dialog when severe issues are present"/>
-        <CheckBox IsChecked="{Binding Settings.OpenFoldersAfterSaving}" Content="Open folders after saving layout" Margin="16,16,8,8"/>
-        <StackPanel Margin="8,0" IsEnabled="{Binding Settings.OpenFoldersAfterSaving}">
-            <CheckBox IsChecked="{Binding Settings.OpenFolderWithEditedLayout}" Content="Open folder with edited layout"/>
-            <CheckBox IsChecked="{Binding Settings.OpenSLCTargetFolder}" Content="Open SLC target folder"/>
-        </StackPanel>
-
-        <StackPanel Orientation="Horizontal" Margin="0,8,0,0" Visibility="Collapsed">
-            <CheckBox IsChecked="{Binding Settings.CopyLayoutsAfterSave}"
-                      Margin="16,8,4,8"
-                      Content="Automatically copy saved layouts back to the SLC layouts folder (requires admin privileges)"/>
-            <Button Width="24" Height="24"
-                    ToolTip="As of now the SLC layout folder is located in the ProgramFiles folder, which requires admin privileges to write to.&#x0a;In case you activate this feature, the editor will prompt you for elevated permissions in order to copy your changes to SLC."
-                    ToolTipService.InitialShowDelay="250"
-                    Padding="2"
-                    Foreground="{StaticResource EyeForegroundColorBrush}">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
-                        <Setter Property="Content" Value="{StaticResource HelpCircle}"/>
-                        <Setter Property="Padding" Value="2"/>
-                        <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-        <StackPanel Margin="8,0" IsEnabled="{Binding Settings.CopyLayoutsAfterSave}" Visibility="Collapsed">
-            <StackPanel Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding Settings.RunCommandPromptHidden}"
-                          Margin="16,4,4,8"
-                          Content="Run command window hidden"/>
-                <Button Width="24" Height="24"
-                        ToolTip="This option opens the command prompt copying your saved layout hidden."
-                        ToolTipService.InitialShowDelay="250"
-                        Padding="2"
-                        Foreground="{StaticResource EyeForegroundColorBrush}">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
-                            <Setter Property="Content" Value="{StaticResource HelpCircle}"/>
-                            <Setter Property="Padding" Value="2"/>
-                            <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
-                        </Style>
-                    </Button.Style>
-                </Button>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding Settings.OpenFolderWithEditedLayout}"
-                          Margin="16,4,4,8"
-                          Content="Only prompt me once for admin privileges"/>
-                <Button Width="24" Height="24"
-                        ToolTip="When activated, the command prompt running with admin privileges will stay open in the background. This way you won't get prompted for admin privileges each time you save a layout."
-                        ToolTipService.InitialShowDelay="250"
-                        Padding="2"
-                        Foreground="{StaticResource EyeForegroundColorBrush}">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
-                            <Setter Property="Content" Value="{StaticResource HelpCircle}"/>
-                            <Setter Property="Padding" Value="2"/>
-                            <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
-                        </Style>
-                    </Button.Style>
-                </Button>
-            </StackPanel>
-        </StackPanel>
+        <CheckBox IsChecked="{Binding Settings.OpenFolderWithEditedLayout}" Content="Open folder with edited layout after saving"/>
     </StackPanel>
     <StackPanel Margin="8" DockPanel.Dock="Top">
         <TextBlock Text="Updates" Style="{StaticResource Title2TextStyle}"/>

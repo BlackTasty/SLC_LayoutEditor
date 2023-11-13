@@ -24,14 +24,9 @@ namespace SLC_LayoutEditor
         private static readonly string defaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "Tasty Apps", "SLC Layout Editor");
 
-        private static readonly string defaultSLCLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                "Lanilogic", "Self Loading Cargo");
-
         public static bool IsDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
         public static string DefaultEditorLayoutsPath => defaultEditorLayoutsPath;
-
-        public static string DefaultSLCLayoutsPath => defaultSLCLayoutsPath;
 
         public static AppSettings Settings { get; set; } = new AppSettings();
 
@@ -84,8 +79,6 @@ namespace SLC_LayoutEditor
                 Logger.Default.WriteLog("SLC Layout Editor crashed with a fatal exception! Version {0}", LogType.FATAL, ex,
                     PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3));
             }
-
-            Util.KillLayoutTransferScript();
         }
 
         public static void SaveAppSettings()
@@ -120,6 +113,7 @@ namespace SLC_LayoutEditor
             {
                 Logger.Default.WriteLog("Migrating directory for layouts edited with the editor...");
                 Directory.Delete(defaultEditorLayoutsPath, true);
+                Directory.CreateDirectory(defaultEditorLayoutsPath);
                 Directory.Move(oldDefaultEditorLayoutsPath, defaultEditorLayoutsPath);
 
                 Logger.Default.WriteLog("Layout editor directory migrated!");

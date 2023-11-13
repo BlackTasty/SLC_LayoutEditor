@@ -35,14 +35,16 @@
             </DockPanel.Style>
             <DockPanel LastChildFill="False" Background="{DynamicResource MenuBackgroundBrush}">
                 <Menu Foreground="{StaticResource ForegroundColorBrush}">
-                    <MenuItem Header="File" Background="Transparent" Height="34">
+                    <MenuItem Header="File" Height="34">
                         <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
                     </MenuItem>
-                    <MenuItem Header="System" Background="Transparent" Height="34">
+                    <MenuItem Header="System" Height="34">
                         <MenuItem Header="Settings" Click="Settings_Click"/>
+                        <Separator Style="{StaticResource MenuSeparatorStyle}"/>
                         <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
                               IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
                         <MenuItem Header="What's new?" Click="Changelog_Click"/>
+                        <MenuItem Header="Roadmap" Click="Roadmap_Click"/>
                     </MenuItem>
                 </Menu>
                 <Border BorderThickness=".75,0" CornerRadius=".75" Margin="16,6"

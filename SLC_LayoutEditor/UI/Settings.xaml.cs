@@ -30,25 +30,9 @@ namespace SLC_LayoutEditor.UI
             vm = DataContext as SettingsViewModel;
         }
 
-        private void OpenReadoutFolder_Click(object sender, RoutedEventArgs e)
-        {
-            Util.OpenFolder(App.Settings.CabinLayoutsReadoutPath, false);
-        }
-
         private void OpenEditFolder_Click(object sender, RoutedEventArgs e)
         {
             Util.OpenFolder(App.Settings.CabinLayoutsEditPath, false);
-        }
-
-        private void SelectSLCPath_Click(object sender, RoutedEventArgs e)
-        {
-            string path = Util.SelectFolder("Select SLC cabin layouts folder",
-                                                        App.Settings.CabinLayoutsReadoutPath,
-                                                        false);
-            if (path != null)
-            {
-                App.Settings.CabinLayoutsReadoutPath = path;
-            }
         }
 
         private void SelectCopyTargetPath_Click(object sender, RoutedEventArgs e)

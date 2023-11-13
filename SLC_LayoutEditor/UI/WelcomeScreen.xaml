@@ -4,20 +4,9 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:local="clr-namespace:SLC_LayoutEditor.UI"
-           xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
-           xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
-           xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
-           xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls"
            mc:Ignorable="d" 
-           d:DesignHeight="550" d:DesignWidth="800" Margin="8"
-           d:DataContext="{d:DesignInstance {x:Type dvm:WelcomeScreenDesignViewModel}, IsDesignTimeCreatable=True}">
-    <DockPanel.DataContext>
-        <vm:WelcomeScreenViewModel/>
-    </DockPanel.DataContext>
+           d:DesignHeight="550" d:DesignWidth="800" Margin="8">
     <DockPanel.Resources>
-        <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-        <converter:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
-
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="FontSize" Value="16"/>
@@ -28,87 +17,8 @@
         <Run Text="Please read carefully!" FontWeight="Bold" Foreground="{DynamicResource ButtonErrorBorderColorBrush}"/>
         <Run Text="Seems like you're using the editor for the first time. There are some things you need to keep in mind when using this software:"/>
     </TextBlock>
-    <UniformGrid Columns="2" DockPanel.Dock="Bottom" IsEnabled="{Binding Settings.PathsValid}">
-        <Button Height="40" Content="Copy layouts first" Margin="16" FontSize="20" Click="CopyLayouts_Click"
-                IsEnabled="{Binding IsCopying, Converter={StaticResource InverseBooleanConverter}}"/>
-        <Button Height="40" Content="Continue without copying" Margin="16" FontSize="20" Click="Continue_Click"
-                IsEnabled="{Binding IsCopying, Converter={StaticResource InverseBooleanConverter}}"
-                Style="{StaticResource YellowButtonStyle}"/>
-    </UniformGrid>
-    <controls:RefinedExpander DockPanel.Dock="Bottom" ExpandDirection="Up" IsExpanded="True" Margin="8,16,8,0"
-                              Foreground="{StaticResource ForegroundColorBrush}"
-                              Visibility="{Binding IsCopying, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                              Description="Change default directories for storing layouts">
-        <Expander.Header>
-            <TextBlock Text="Directories" FontSize="16" FontWeight="Bold"/>
-        </Expander.Header>
-        <StackPanel>
-            <StackPanel Margin="8,4" ToolTip="This is were the editor will look for existing cabin layouts.">
-                <TextBlock Text="SLC cabin layouts path"/>
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource FilledIconButton}" Height="30" Width="30" Padding="5"
-                        IsEnabled="{Binding Settings.ReadoutPathValid}" ToolTip="Open folder in explorer"
-                        Content="{StaticResource OpenFolder}"
-                        Click="OpenReadoutFolder_Click"/>
-                    <Button DockPanel.Dock="Right" Content="..." Padding="12,0" Margin="8,0"
-                            Click="SelectSLCPath_Click"/>
-                    <TextBox Text="{Binding Settings.CabinLayoutsReadoutPath, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Settings.ReadoutPathValid}" Value="False">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource ErrorForegroundColorBrush}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
-                </DockPanel>
-                <TextBlock DockPanel.Dock="Bottom" Text="The path does not exist!" FontSize="12"
-                               Foreground="{DynamicResource ErrorForegroundColorBrush}"
-                               Visibility="{Binding Settings.ReadoutPathValid, Converter={StaticResource InverseBooleanToVisibilityConverter}, ConverterParameter=hide}"/>
-            </StackPanel>
-            <StackPanel Margin="8,4" ToolTip="The path were all layouts are copied to for editing. You have to manually copy the files to SLC in order for them to work.">
-                <TextBlock Text="Layout editor - layouts path"/>
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource FilledIconButton}" Height="30" Width="30" Padding="5"
-                        IsEnabled="{Binding Settings.EditPathValid}" ToolTip="Open folder in explorer"
-                        Content="{StaticResource OpenFolder}"
-                        Click="OpenEditFolder_Click"/>
-                    <Button DockPanel.Dock="Right" Content="..." Padding="12,0" Margin="8,0"
-                            Click="SelectCopyTargetPath_Click"/>
-                    <TextBox Text="{Binding Settings.CabinLayoutsEditPath, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Settings.EditPathValid}" Value="False">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource ErrorForegroundColorBrush}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style></TextBox>
-                </DockPanel>
-                <TextBlock DockPanel.Dock="Bottom" Text="The path does not exist!" FontSize="12"
-                               Foreground="{DynamicResource ErrorForegroundColorBrush}"
-                               Visibility="{Binding Settings.EditPathValid, Converter={StaticResource InverseBooleanToVisibilityConverter}, ConverterParameter=hide}"/>
-            </StackPanel>
-        </StackPanel>
-    </controls:RefinedExpander>
-    <StackPanel DockPanel.Dock="Bottom" Margin="8"
-                Visibility="{Binding IsCopying, Converter={StaticResource BooleanToVisibilityConverter}}">
-        <TextBlock Margin="0,4,0,2">
-            <Run Text="{Binding CurrentAirplane, StringFormat={}Current airplane: {0}}"/>
-            <Run Text="{Binding CopiedAirplanesCount, StringFormat={}({0} /}"/>
-            <Run Text="{Binding AirplanesCount, StringFormat={}{0})}"/>
-        </TextBlock>
-        <ProgressBar Value="{Binding CopiedAirplanesCount}" Maximum="{Binding AirplanesCount}"/>
-        <TextBlock Margin="0,4,0,2">
-            <Run Text="{Binding CurrentLayout, StringFormat={}Current cabin layout: {0}}"/>
-            <Run Text="{Binding CopiedLayoutsCount, StringFormat={}({0} /}"/>
-            <Run Text="{Binding LayoutsCount, StringFormat={}{0})}"/>
-        </TextBlock>
-        <ProgressBar Value="{Binding CopiedLayoutsCount}" Maximum="{Binding LayoutsCount}"/>
-    </StackPanel>
+    <Button Height="40" Content="Understood!" Margin="16" FontSize="20" Click="Continue_Click"
+            DockPanel.Dock="Bottom"/>
     <ScrollViewer Padding="8,4" DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <DockPanel Margin="0,12,0,0">
@@ -117,37 +27,22 @@
                     <TextBlock>
                         <Run Text="Cabin layouts created with the editor are"/>
                         <Run Text="not" FontWeight="Bold"/>
-                        <Run Text="saved into the layout directory of SLC, they are instead saved in a separate location."/>
-                    </TextBlock>
-                    <TextBlock Text="The reason for this is that the folder where SLC stores layouts is located in ProgramFiles, which is read-only without administrator privileges."
-                               Margin="0,8,0,0">
-                        
+                        <Run Text="uploaded to the SLC website, they are instead saved locally."/>
                     </TextBlock>
                     <TextBlock>
-                        <Run Text="So once you're done with your cabin layout"/>
-                        <Run Text="don't forget" FontWeight="Bold"/>
-                        <Run Text="to copy it to the SLC layout directory. The editor navigates by default to both the edited file and the target folder to assist you."/>
+                        <Run Text="As of now the step of uploading your layout to the website has to be done manually."/>
                     </TextBlock>
                 </StackPanel>
             </DockPanel>
             <DockPanel Margin="0,12,0,0">
                 <TextBlock Text="2. " FontWeight="Bold" FontSize="20" Margin="0,0,8,0"/>
                 <StackPanel>
-                    <TextBlock Text="The editor will copy all existing layouts to its own directory, but you can skip this step below if you like."/>
-                    <TextBlock>
-                        <Run Text="By default you will find these in your documents folder under &quot;"/><Run Text="Tasty Apps/SLC Layout Editor/CabinLayouts" FontWeight="Bold"/><Run Text="&quot;"/>
-                    </TextBlock>
-                </StackPanel>
-            </DockPanel>
-            <DockPanel Margin="0,12,0,0">
-                <TextBlock Text="3. " FontWeight="Bold" FontSize="20" Margin="0,0,8,0"/>
-                <StackPanel>
                     <TextBlock>
                         <Run Text="This program is"/>
                         <Run Text="not" FontWeight="Bold"/>
                         <Run Text="developed or maintained by FPVSteve as it is a fan project of mine, so if you run into bugs, problems, etc. send a PM to"/>
                         <Run Text="Midnight Bagel" FontWeight="Bold"/>
-                        <Run Text="via the Discord server &quot;FPVSteve&quot; ;)"/>
+                        <Run Text="via Discord ;)"/>
                     </TextBlock>
                 </StackPanel>
             </DockPanel>

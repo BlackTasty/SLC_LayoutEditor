@@ -139,5 +139,10 @@ namespace SLC_LayoutEditor
         {
             vm.ShowChangelog();
         }
+
+        private void Roadmap_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://trello.com/b/vJMbqwXb/slc-layout-editor-roadmap");
+        }
     }
 }

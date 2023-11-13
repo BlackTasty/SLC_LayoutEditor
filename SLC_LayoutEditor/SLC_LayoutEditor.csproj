@@ -136,15 +136,16 @@
     <Compile Include="UI\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WelcomeScreen.xaml.cs">
+      <DependentUpon>WelcomeScreen.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\AddAirplaneDialogViewModel.cs" />
     <Compile Include="ViewModel\AddCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
-    <Compile Include="ViewModel\DesignTime\WelcomeScreenDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MementoViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
-    <Compile Include="ViewModel\WelcomeScreenViewModel.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -162,9 +163,6 @@
     <Compile Include="Core\Util.cs" />
     <Compile Include="UI\LayoutEditor.xaml.cs">
       <DependentUpon>LayoutEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\WelcomeScreen.xaml.cs">
-      <DependentUpon>WelcomeScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\LayoutEditorViewModel.cs" />
     <Page Include="Controls\DeckLayoutControl.xaml">
@@ -298,7 +296,7 @@
     </Page>
     <Page Include="UI\WelcomeScreen.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -66,78 +66,6 @@ namespace SLC_LayoutEditor.Core
             return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : null;
         }
 
-
-        private static Process pipeClient = new Process();
-
-        public static void CopyLayoutToSLC(string sourcePath, string destPath)
-        {
-            new Thread(() =>
-            {
-                Logger.Default.WriteLog("Initializing LayoutTransfer script... (keep running: {0})", App.Settings.OnlyPromptOnceForPrivileges);
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = "LayoutTransfer.exe",
-                    Arguments = string.Format("\"-sourcePath={0}\" \"-destPath={1}\"{2}", sourcePath, destPath, App.Settings.RunCommandPromptHidden ? " -silent" : ""),
-                    WindowStyle = App.Settings.RunCommandPromptHidden ? ProcessWindowStyle.Hidden : ProcessWindowStyle.Normal,
-                    CreateNoWindow = App.Settings.RunCommandPromptHidden
-                };
-
-                if (!App.Settings.OnlyPromptOnceForPrivileges)
-                {
-                    Process.Start(startInfo);
-                }
-                else
-                {
-                    if (!IsLayoutTransferScriptRunning())
-                    {
-                        pipeClient.StartInfo = startInfo;
-                    }
-
-                    using (AnonymousPipeServerStream pipeServer = new AnonymousPipeServerStream(PipeDirection.Out,
-                        HandleInheritability.Inheritable))
-                    {
-                        Logger.Default.WriteLog("[PIPE] CurrentTransmissionMode: {0}", pipeServer.TransmissionMode);
-
-                        // Pass the client process a handle to the server.
-                        if (!IsLayoutTransferScriptRunning())
-                        {
-                            pipeClient.StartInfo.Arguments = string.Format("{0} {1}",
-                                pipeServer.GetClientHandleAsString(), pipeClient.StartInfo.Arguments);
-                            pipeClient.StartInfo.UseShellExecute = false;
-                            pipeClient.Start();
-
-                            pipeServer.DisposeLocalCopyOfClientHandle();
-                        }
-
-                        try
-                        {
-                            // Read user input and send that to the client process.
-                            using (StreamWriter sw = new StreamWriter(pipeServer))
-                            {
-                                sw.AutoFlush = true;
-                                // Send a 'sync message' and wait for client to receive it.
-                                sw.WriteLine("SYNC");
-                                pipeServer.WaitForPipeDrain();
-                                // Send the console input to the client process.
-                                Logger.Default.WriteLog("[PIPE] Sending source- and destPath...");
-                                sw.WriteLine(string.Format("-sourcePath={0} -destPath={1}{2}", sourcePath, destPath, App.Settings.RunCommandPromptHidden ? " -silent" : ""));
-                            }
-                        }
-                        // Catch the IOException that is raised if the pipe is broken
-                        // or disconnected.
-                        catch (IOException ex)
-                        {
-                            Logger.Default.WriteLog("[PIPE] Error sending message to pipe client", ex);
-                        }
-                    }
-
-                    pipeClient.WaitForExit();
-                    pipeClient.Close();
-                    Console.WriteLine("[PIPE] Client quit, session terminated.");
-                }
-            }).Start();
-        }
-
         public static bool CompareLayoutHashes(string originalFilePath, string current)
         {
             if (!File.Exists(originalFilePath))
@@ -170,19 +98,5 @@ namespace SLC_LayoutEditor.Core
                   .Select(item => item.ToString("x2")));
             }
         }
-
-        public static void KillLayoutTransferScript()
-        {
-            foreach (Process process in Process.GetProcessesByName("LayoutTransfer"))
-            {
-                process.Kill();
-            }
-        }
-
-        private static bool IsLayoutTransferScriptRunning()
-        {
-            return Process.GetProcessesByName("LayoutTransfer").Any();
-        }
-
     }
 }
