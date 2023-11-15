@@ -49,4 +49,15 @@
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight" Value="Bold"/>
     </Style>
+
+    <Style x:Key="CabinLayoutTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource Subtitle3TextStyle}">
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,4,0,0"/>
+    </Style>
+
+    <Style x:Key="CabinLayoutNameStyle" TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="8,0,8,4"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
 </ResourceDictionary>

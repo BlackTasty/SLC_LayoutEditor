@@ -14,3 +14,4 @@ Fixed: Slots that have the issue highlighting and are selected would keep the hi
 Fixed: Reloading from disk now properly resets the unsaved changes state
 Fixed: Fixed an issue where lowercase letters on a cabin layout would let the editor fall back to the aisle slot type when reading from file
 Fixed: The changelog would only show when the editor was the active view
+Fixed: There was an issue where switching layouts with unsaved changes would close the editor after confirming the dialog with "Yes" or "No"

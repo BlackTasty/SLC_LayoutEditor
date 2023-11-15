@@ -29,6 +29,7 @@ namespace SLC_LayoutEditor
     public partial class MainWindow : Window
     {
         private MainViewModel vm;
+        private bool isClosing;
         private bool forceClose;
 
         public MainWindow()
@@ -41,7 +42,7 @@ namespace SLC_LayoutEditor
 
             Mediator.Instance.Register(o =>
             {
-                if ((bool)o)
+                if (isClosing && (bool)o)
                 {
                     forceClose = true;
                     Close();
@@ -131,6 +132,7 @@ namespace SLC_LayoutEditor
         {
             if (!forceClose && vm.CheckUnsavedChanges(true))
             {
+                isClosing = true;
                 e.Cancel = true;
             }
         }

@@ -28,7 +28,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinLayoutControl.xaml
     /// </summary>
-    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged
+    public partial class CabinLayoutControl : Grid, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -98,8 +98,8 @@ namespace SLC_LayoutEditor.Controls
         #endregion
 
         public string LayoutOverviewTitle => CabinLayout != null ?
-            string.Format("Cabin layout \"{0}\"{1}", CabinLayout.LayoutName, HasUnsavedChanges ? " *" : "") :
-            "No cabin layout loaded";
+            string.Format("{0} {1}", CabinLayout.LayoutName, HasUnsavedChanges ? "*" : "") :
+            "No layout selected";
 
         public bool HasUnsavedChanges => Util.HasLayoutChanged(CabinLayout);
 
@@ -217,10 +217,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void CabinDeckControl_LayoutRegenerated(object sender, EventArgs e)
         {
-            /*if (sender is DeckLayoutControl deckLayout && SelectedCabinSlots != null)
-            {
-                deckLayout.SetMultipleSlotsSelected(SelectedCabinSlots, false);
-            }*/
+            OnChanged(new ChangedEventArgs(Util.HasLayoutChanged(CabinLayout)));
             RefreshState();
         }
 
@@ -330,7 +327,7 @@ namespace SLC_LayoutEditor.Controls
         {
             SelectedCabinSlots.Clear();
             activeDeckControl?.SetMultipleSlotsSelected(SelectedCabinSlots, true);
-            CabinLayout.LoadCabinLayout();
+            CabinLayout.LoadCabinLayoutFromFile();
             RefreshCabinLayout();
         }
 
@@ -361,11 +358,6 @@ namespace SLC_LayoutEditor.Controls
             InvokePropertyChanged(nameof(HasUnsavedChanges));
         }
 
-        private void Reset()
-        {
-            SelectedCabinSlots.Clear();
-        }
-
         protected virtual void OnLayoutRegenerated(EventArgs e)
         {
             LayoutRegenerated?.Invoke(this, e);
@@ -385,6 +377,11 @@ namespace SLC_LayoutEditor.Controls
         protected virtual void OnChanged(ChangedEventArgs e)
         {
             Changed?.Invoke(this, e);
+        }
+
+        private void MakeTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            CabinLayout template = CabinLayout.MakeTemplate();
         }
     }
 }

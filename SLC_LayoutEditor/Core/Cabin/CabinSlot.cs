@@ -263,6 +263,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             mSlotNumber = slotNumber;
         }
 
+        public void Validate()
+        {
+            OnProblematicChanged(EventArgs.Empty);
+            //OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
+        }
+
         public void ApplyChanges(HistoryStep historyStep)
         {
             //TODO: Implement undo/redo system

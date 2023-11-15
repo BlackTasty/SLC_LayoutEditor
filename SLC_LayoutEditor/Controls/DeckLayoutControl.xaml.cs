@@ -783,6 +783,9 @@ namespace SLC_LayoutEditor.Controls
             layoutLoader.RunWorkerCompleted += LayoutLoader_RunWorkerCompleted;
 
             layoutLoader.RunWorkerAsync();
+
+            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(card_deckTitle);
+            adornerLayer.Add(new CabinDeckCardAdorner(card_deckTitle));
         }
 
         private void LayoutLoader_DoWork(object sender, DoWorkEventArgs e)

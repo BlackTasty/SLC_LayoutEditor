@@ -68,6 +68,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\CabinDeckCardAdorner.cs" />
     <Compile Include="Controls\CabinLayoutControl.xaml.cs">
       <DependentUpon>CabinLayoutControl.xaml</DependentUpon>
     </Compile>
@@ -365,8 +366,44 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\patchnotes.txt" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Resources\LayoutTemplates\" />
+    <Resource Include="Resources\LayoutTemplates\A20N - Airbus A320neo.txt" />
+    <Resource Include="Resources\LayoutTemplates\A310 - Airbus A310-300.txt" />
+    <Resource Include="Resources\LayoutTemplates\A318 - Airbus A318.txt" />
+    <Resource Include="Resources\LayoutTemplates\A319 - Airbus A319.txt" />
+    <Resource Include="Resources\LayoutTemplates\A320 - Airbus A320.txt" />
+    <Resource Include="Resources\LayoutTemplates\A321 - Airbus A321.txt" />
+    <Resource Include="Resources\LayoutTemplates\A333 - Airbus A330-300.txt" />
+    <Resource Include="Resources\LayoutTemplates\A359 - Airbus A350-900.txt" />
+    <Resource Include="Resources\LayoutTemplates\AT46 - ATR 42-600.txt" />
+    <Resource Include="Resources\LayoutTemplates\AT76 - ATR 72-600.txt" />
+    <Resource Include="Resources\LayoutTemplates\B733 - Boeing 737-300.txt" />
+    <Resource Include="Resources\LayoutTemplates\B736 - Boeing 737-600.txt" />
+    <Resource Include="Resources\LayoutTemplates\B737 - Boeing 737-700.txt" />
+    <Resource Include="Resources\LayoutTemplates\B738 - Boeing 737-800.txt" />
+    <Resource Include="Resources\LayoutTemplates\B739 - Boeing 737-900.txt" />
+    <Resource Include="Resources\LayoutTemplates\B73X - Boeing 737-MAX.txt" />
+    <Resource Include="Resources\LayoutTemplates\B752 - Boeing 757-200.txt" />
+    <Resource Include="Resources\LayoutTemplates\B773 - Boeing 777-300.txt" />
+    <Resource Include="Resources\LayoutTemplates\B789 - Boeing 787-9.txt" />
+    <Resource Include="Resources\LayoutTemplates\B78X - Boeing 787-10.txt" />
+    <Resource Include="Resources\LayoutTemplates\CONC - Concorde.txt" />
+    <Resource Include="Resources\LayoutTemplates\CRJ2 - Bombardier CRJ-200.txt" />
+    <Resource Include="Resources\LayoutTemplates\CRJ7 - Bombardier CRJ-700.txt" />
+    <Resource Include="Resources\LayoutTemplates\CRJ9 - Bombardier CRJ-900.txt" />
+    <Resource Include="Resources\LayoutTemplates\DC3 - McDonnell Douglas DC-3.txt" />
+    <Resource Include="Resources\LayoutTemplates\DEF - Medium AIrliner 3x2.txt" />
+    <Resource Include="Resources\LayoutTemplates\DEF - Medium AIrliner 3x3.txt" />
+    <Resource Include="Resources\LayoutTemplates\DH8D - Bombardier Q400 Dash-8.txt" />
+    <Resource Include="Resources\LayoutTemplates\E145 - Embraer ERJ-145.txt" />
+    <Resource Include="Resources\LayoutTemplates\E170 - Embraer ERJ-170.txt" />
+    <Resource Include="Resources\LayoutTemplates\E175 - Embraer ERJ-175.txt" />
+    <Resource Include="Resources\LayoutTemplates\E190 - Embraer ERJ-190.txt" />
+    <Resource Include="Resources\LayoutTemplates\E195 - Embraer ERJ-195.txt" />
+    <Resource Include="Resources\LayoutTemplates\GLF4 - Gulfstream G-IV SP.txt" />
+    <Resource Include="Resources\LayoutTemplates\L101 - Lockheed L1011.txt" />
+    <Resource Include="Resources\LayoutTemplates\MD11 - McDonnell Douglas MD-11.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

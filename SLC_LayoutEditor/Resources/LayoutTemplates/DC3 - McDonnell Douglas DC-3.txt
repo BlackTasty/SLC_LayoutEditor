@@ -1,0 +1,8 @@
+DC3 - McDonnell Douglas DC-3
+  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,
+  X  ,  I  ,  -  ,  X  ,  -  ,  X  ,  -  ,  X  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  X  ,
+  C  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  X  ,
+  C  ,  -  ,  -  ,  X  ,  -  ,  X  ,  -  ,  X  ,  -  ,  -  ,  -  ,  -  ,  -  ,  T  ,  X  ,
+  X  ,  X  ,  -  ,  X  ,  -  ,  X  ,  -  ,  X  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  X  ,
+  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  , D-0 ,  X  ,  X  ,
+@

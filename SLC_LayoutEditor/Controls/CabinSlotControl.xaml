@@ -134,5 +134,5 @@
     </Border>
     <Border BorderThickness="2" CornerRadius="3"
             Height="40" Width="40" Margin="1" IsHitTestVisible="False"
-            x:Name="error_highlight"/>
+            x:Name="error_highlight" Opacity=".55"/>
 </Canvas>

@@ -10,7 +10,8 @@
             Loaded="container_Loaded">
     <Border Padding="64,0,0,0" Height="75"
             Background="{DynamicResource BackgroundLightBrush}"
-            HorizontalAlignment="Left" CornerRadius="0,40,40,0">
+            HorizontalAlignment="Left" CornerRadius="0,40,40,0"
+            x:Name="card_deckTitle">
         <Border.Effect>
             <DropShadowEffect Color="{DynamicResource BackgroundDark}" Opacity=".4"
                               ShadowDepth="4" BlurRadius="10"/>

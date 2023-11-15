@@ -451,7 +451,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
             else if (e.DialogResult == DialogResultType.No)
             {
-                SelectedCabinLayout.LoadCabinLayout();
+                SelectedCabinLayout.LoadCabinLayoutFromFile();
             }
 
             if (storedNewValue != null)

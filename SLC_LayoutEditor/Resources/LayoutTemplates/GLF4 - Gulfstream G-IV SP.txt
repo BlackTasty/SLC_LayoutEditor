@@ -1,0 +1,7 @@
+GLF4 - Gulfstream G-IV SP
+  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,
+  C  ,  X  ,  I  ,  -  ,  X  ,  -  ,  X  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  X  ,  -  ,  -  ,  -  ,  X  ,
+  C  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  X  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  -  ,  X  ,
+  C  ,  X  ,  -  ,  -  ,  X  ,  -  ,  X  ,  -  ,  X  ,  -  ,  X  ,  -  ,  -  ,  X  ,  -  ,  -  ,  -  ,  X  ,  T  ,  X  ,
+  X  ,  X  ,  X  , D-0 ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,
+@

@@ -180,8 +180,13 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 this.layoutFile = layoutFile;
 
-                LoadCabinLayout();
+                LoadCabinLayoutFromFile();
             }
+        }
+
+        private CabinLayout(string layout)
+        {
+            LoadCabinLayout(layout);
         }
 
         public void RefreshCalculated()
@@ -220,13 +225,17 @@ namespace SLC_LayoutEditor.Core.Cabin
             return autoFixResult;
         }
 
-        public void LoadCabinLayout()
+        public void LoadCabinLayoutFromFile()
         {
             mCabinDecks.Clear();
 
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
-            string[] decks = File.ReadAllText(layoutFile.FullName).ToUpper()
-                                    .Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
+            LoadCabinLayout(File.ReadAllText(layoutFile.FullName));
+        }
+
+        private void LoadCabinLayout(string layout)
+        {
+            string[] decks = layout.ToUpper().Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int floor = 0; floor < decks.Length; floor++)
             {
@@ -270,6 +279,45 @@ namespace SLC_LayoutEditor.Core.Cabin
             OnCabinDeckCountChanged(EventArgs.Empty);
         }
 
+        public CabinLayout MakeTemplate()
+        {
+            CabinLayout template = new CabinLayout(ToLayoutFile())
+            {
+                LayoutName = LayoutName + " - Template"
+            };
+
+            // TODO: Change "this.CabinDecks" to "template.CabinDecks"
+            foreach (CabinSlot cabinSlot in this.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => !IsBasicSlotType(x)))
+            {
+                cabinSlot.IsEvaluationActive = false;
+                cabinSlot.Type = CabinSlotType.Aisle;
+                cabinSlot.IsEvaluationActive = true;
+            }
+
+            // TODO: Change "this.CabinDecks" to "template.CabinDecks"
+            foreach (CabinSlot cabinSlot in this.CabinDecks.SelectMany(x => x.CabinSlots))
+            {
+                cabinSlot.Validate();
+            }
+
+            DeepRefreshProblemChecks();
+            RefreshCapacities();
+
+            OnCabinSlotsChanged(EventArgs.Empty);
+
+            return template;
+        }
+
+        private bool IsBasicSlotType(CabinSlot cabinSlot)
+        {
+            return cabinSlot.Type == CabinSlotType.Wall ||
+                cabinSlot.Type == CabinSlotType.Aisle ||
+                cabinSlot.Type == CabinSlotType.Toilet ||
+                cabinSlot.Type == CabinSlotType.Intercom ||
+                cabinSlot.Type == CabinSlotType.Cockpit ||
+                cabinSlot.IsDoor;
+        }
+
         private void Deck_CabinSlotsChanged(object sender, EventArgs e)
         {
             RefreshCapacities();
@@ -306,6 +354,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public void SaveLayout()
         {
             File.WriteAllText(FilePath, ToLayoutFile());
+            OnCabinSlotsChanged(EventArgs.Empty);
         }
 
         public AutoFixResult FixStairwayPositions()
