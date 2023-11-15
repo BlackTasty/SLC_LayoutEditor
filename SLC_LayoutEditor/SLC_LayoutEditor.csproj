@@ -365,5 +365,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\patchnotes.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\LayoutTemplates\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

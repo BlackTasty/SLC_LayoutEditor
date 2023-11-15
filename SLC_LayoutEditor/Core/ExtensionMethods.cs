@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -22,6 +23,15 @@ namespace SLC_LayoutEditor.Core
                 if (str != "")
                     b.Replace(str, newValue);
             return b.ToString();
+        }
+
+        public static bool ExceedsSelectionThreshold(this Point start, Point current, int minSizeThreshold,
+            int minTotalPxThreshold)
+        {
+            Rect selectionRect = new Rect(start, current);
+            return Math.Abs(start.X - current.X) >= minSizeThreshold &&
+                Math.Abs(start.Y - current.Y) >= minSizeThreshold &&
+                selectionRect.Width * selectionRect.Height > minTotalPxThreshold;
         }
     }
 }

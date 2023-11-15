@@ -20,7 +20,7 @@ namespace SLC_LayoutEditor.Core.Events
 
         public CabinSlotClickedEventArgs(List<CabinSlotControl> selected, int floor, DeckLayoutControl deckControl)
         {
-            this.selected = selected != null && selected.Count > 0 ? selected.Select(x => x.CabinSlot).ToList() : new List<CabinSlot>();
+            this.selected = selected != null && selected.Count > 0 ? selected.Where(x => x?.CabinSlot != null).Select(x => x.CabinSlot).ToList() : new List<CabinSlot>();
             this.floor = floor;
             this.deckControl = deckControl;
         }

@@ -8,6 +8,7 @@
         Height="42" Width="42"
         Background="Transparent"
         x:Name="layout"
+        IsHitTestVisible="{Binding ElementName=layout, Path=CabinSlot.IsHitTestVisible}"
         ToolTip="{Binding ElementName=layout, Path=CabinSlot.Type, Converter={StaticResource EnumDescriptionConverter}}"
         ToolTipService.InitialShowDelay="1000">
     <Border BorderThickness="2" CornerRadius="3"

@@ -14,7 +14,7 @@
     </Grid.DataContext>
     <DockPanel>
         <DockPanel Width="340" Margin="8" LastChildFill="False">
-            <TextBlock Text="Airplane" Style="{StaticResource Title3TextStyle}" DockPanel.Dock="Top" Margin="2,0"/>
+            <TextBlock Text="Aircraft" Style="{StaticResource Title3TextStyle}" DockPanel.Dock="Top" Margin="2,0"/>
             <DockPanel DockPanel.Dock="Top">
                 <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add new airplane"
                     Click="AddAirplane_Click" Style="{StaticResource BorderedIconButton}" Content="{StaticResource Add}">

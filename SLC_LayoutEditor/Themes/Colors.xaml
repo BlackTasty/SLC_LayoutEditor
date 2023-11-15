@@ -8,7 +8,7 @@
     <Color x:Key="BusinessClassColor">#0094ff</Color>
     <Color x:Key="PremiumClassColor">#ffffff</Color>
     <Color x:Key="EconomyClassColor">#808080</Color>
-    <Color x:Key="SupersonicClassColor">#6D5310</Color>
+    <Color x:Key="SupersonicClassColor">#daa520</Color>
     <Color x:Key="UnavailableSeatColor">#333333</Color>
     <Color x:Key="ToiletColor">#663399</Color>
     <Color x:Key="StairwellColor">#60ffab00</Color>

@@ -87,7 +87,12 @@
             </StackPanel>
         </Grid>
     </Border>
-    <Canvas x:Name="layout_deck" Margin="24">
+    <Canvas x:Name="layout_deck" Margin="24" 
+            PreviewMouseLeftButtonDown="MultiSelect_PreviewMouseLeftButtonDown"
+            PreviewMouseLeftButtonUp="MultiSelect_PreviewMouseLeftButtonUp"
+            PreviewMouseMove="MultiSelect_PreviewMouseMove"
+            MouseLeave="MultiSelect_MouseLeave"
+            Background="Transparent">
             
     </Canvas>
 </StackPanel>

@@ -90,10 +90,16 @@ namespace SLC_LayoutEditor.Controls
             InitializeComponent();
         }
 
-        public void SetSelected(bool isSelected)
+        public bool SetSelected(bool isSelected)
         {
-            IsSelected = isSelected;
-            RefreshHighlighting();
+            bool hasChanged = IsSelected != isSelected;
+            if (hasChanged)
+            {
+                IsSelected = isSelected;
+                RefreshHighlighting();
+            }
+
+            return hasChanged;
         }
 
         public void RefreshHighlighting()
@@ -106,6 +112,15 @@ namespace SLC_LayoutEditor.Controls
             {
                 error_highlight.Background = Brushes.Transparent;
             }
+        }
+
+        public bool IsInSelectionRect(Rect selection)
+        {
+            double x = Canvas.GetLeft(this);
+            double y = Canvas.GetTop(this);
+            Rect currentRect = new Rect(x, y, Width, Height);
+
+            return selection.IntersectsWith(currentRect);
         }
 
         private void RegisterCabinSlotProblemEvent()

@@ -22,6 +22,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private int mSlotNumber; // Only in use when SlotType is one of the seats or a door
         private char mSeatLetter; // Only in use when SlotType is one of the seats
         private bool mIsProblematic;
+        private bool mIsHitTestVisible = true;
 
         private string guid;
 
@@ -143,6 +144,18 @@ namespace SLC_LayoutEditor.Core.Cabin
         }
 
         public bool IsEvaluationActive { get; set; } = true;
+
+
+        public bool IsHitTestVisible
+        {
+            get => mIsHitTestVisible;
+            set
+            {
+                mIsHitTestVisible = value;
+                InvokePropertyChanged();
+            }
+        }
+
 
         public CabinSlot(int row, int column) : this(row, column, CabinSlotType.Aisle, 0)
         {

@@ -356,6 +356,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             cabinSlot.CabinSlotChanged += CabinSlot_CabinSlotChanged;
         }
 
+        public void ToggleIsHitTestVisible(bool isHitTestVisible)
+        {
+            foreach (CabinSlot cabinSlot in mCabinSlots)
+            {
+                cabinSlot.IsHitTestVisible = isHitTestVisible;
+            }
+        }
+
         private IEnumerable<int> GetRowsCoveredByService()
         {
             List<int> coveredRows = new List<int>();

@@ -50,6 +50,10 @@ namespace SLC_LayoutEditor.Controls
         private Border horizontalDivider;
         private Border verticalDivider;
 
+        private Point dragStartPoint;
+        private Rectangle selectionBox;
+        private bool isMouseDown;
+
         #region CabinDeck property
         public CabinDeck CabinDeck
         {
@@ -683,7 +687,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void UnsetMultipleSlotsSelected(IEnumerable<CabinSlotControl> unselectedSlots)
         {
-            foreach (CabinSlotControl unselectedSlot in unselectedSlots)
+            foreach (CabinSlotControl unselectedSlot in unselectedSlots.Where(x => x != null))
             {
                 RemoveSelectionHighlight(unselectedSlot, true);
             }
@@ -693,7 +697,7 @@ namespace SLC_LayoutEditor.Controls
         {
             if (clearCurrentSelection)
             {
-                foreach (CabinSlotControl selectedSlot in this.selectedSlots)
+                foreach (CabinSlotControl selectedSlot in this.selectedSlots.Where(x => x != null))
                 {
                     RemoveSelectionHighlight(selectedSlot, false);
                 }
@@ -701,7 +705,7 @@ namespace SLC_LayoutEditor.Controls
                 this.selectedSlots.Clear();
             }
 
-            foreach (CabinSlotControl selectedSlot in selectedSlots)
+            foreach (CabinSlotControl selectedSlot in selectedSlots.Where(x => x != null))
             {
                 if (selectedSlot != null)
                 {
@@ -712,7 +716,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void SetSelectionHighlight(CabinSlotControl target)
         {
-            foreach (CabinSlotControl selectedSlot in selectedSlots)
+            foreach (CabinSlotControl selectedSlot in selectedSlots.Where(x => x != null))
             {
                 if (selectedSlot == null)
                 {
@@ -833,6 +837,139 @@ namespace SLC_LayoutEditor.Controls
         protected virtual void OnColumnsChanged(EventArgs e)
         {
             ColumnsChanged?.Invoke(this, e);
+        }
+
+        private void MultiSelect_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isMouseDown = true;
+            //CabinDeck.ToggleIsHitTestVisible(false);
+            dragStartPoint = e.GetPosition(layout_deck);
+        }
+
+        private void MultiSelect_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            RemoveSelectionBox();
+        }
+
+        private void MultiSelect_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMouseDown)
+            {
+                Point currentPosition = e.GetPosition(layout_deck);
+                if (currentPosition.X >= 65 && currentPosition.Y >= 65)
+                {
+                    if (dragStartPoint.ExceedsSelectionThreshold(currentPosition, 10, 150))
+                    {
+                        Rect selectionRect = new Rect(dragStartPoint, currentPosition);
+                        if (selectionBox == null)
+                        {
+                            selectionBox = new Rectangle()
+                            {
+                                Fill = (Brush)App.Current.FindResource("DisabledColorBrush"),
+                                Stroke = (Brush)App.Current.FindResource("BackdropColorBrush"),
+                                StrokeThickness = 1.5,
+                                RadiusX = 2,
+                                RadiusY = 2,
+                                Width = selectionRect.Width,
+                                Height = selectionRect.Height,
+                                IsHitTestVisible = false
+                            };
+
+                            Canvas.SetZIndex(selectionBox, 1000);
+                            layout_deck.Children.Add(selectionBox);
+                        }
+                        else
+                        {
+                            selectionBox.Width = selectionRect.Width;
+                            selectionBox.Height = selectionRect.Height;
+                        }
+
+                        if (selectionBox.Visibility == Visibility.Collapsed)
+                        {
+                            selectionBox.Visibility = Visibility.Visible;
+                        }
+
+                        Canvas.SetLeft(selectionBox, selectionRect.Left);
+                        Canvas.SetTop(selectionBox, selectionRect.Top);
+
+                        DragHighlightSlots(selectionRect);
+                    }
+                    else if (selectionBox?.Visibility == Visibility.Visible)
+                    {
+                        selectionBox.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else if (selectionBox?.Visibility == Visibility.Visible)
+                {
+                    selectionBox.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        private void DragHighlightSlots(Rect selectionRect)
+        {
+            List<CabinSlotControl> selected = new List<CabinSlotControl>();
+            List<CabinSlotControl> unselected = new List<CabinSlotControl>();
+
+            foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
+            {
+                bool isInSelection = cabinSlotControl.IsInSelectionRect(selectionRect);
+
+                if (Util.IsControlDown())
+                {
+                    if (isInSelection)
+                    {
+                        cabinSlotControl.SetSelected(false);
+                        unselected.Add(cabinSlotControl);
+                    }
+                }
+                else
+                {
+                    if (!Util.IsShiftDown())
+                    {
+                        if (cabinSlotControl.SetSelected(isInSelection) && !Util.IsShiftDown() && !isInSelection)
+                        {
+                            unselected.Add(cabinSlotControl);
+                        }
+                    }
+                    else if (isInSelection)
+                    {
+                        cabinSlotControl.SetSelected(true);
+                    }
+
+                    if (isInSelection)
+                    {
+                        selected.Add(cabinSlotControl);
+                    }
+                }
+            }
+
+            if (Util.IsControlDown())
+            {
+                UnsetMultipleSlotsSelected(unselected);
+            }
+            else
+            {
+                if (Util.IsShiftDown())
+                {
+                    selected = layout_deck.Children.OfType<CabinSlotControl>().Where(x => x.IsSelected).ToList();
+                }
+                SetMultipleSlotsSelected(selected, !Util.IsShiftDown());
+            }
+            OnCabinSlotClicked(new CabinSlotClickedEventArgs(selectedSlots, CabinDeck.Floor, this));
+        }
+
+        private void MultiSelect_MouseLeave(object sender, MouseEventArgs e)
+        {
+            RemoveSelectionBox();
+        }
+
+        private void RemoveSelectionBox()
+        {
+            isMouseDown = false;
+            //CabinDeck.ToggleIsHitTestVisible(true);
+            layout_deck.Children.Remove(selectionBox);
+            selectionBox = null;
         }
     }
 }
