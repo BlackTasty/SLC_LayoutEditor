@@ -10,7 +10,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
-    class CabinLayout : ViewModelBase
+    public class CabinLayout : ViewModelBase
     {
         public event EventHandler<EventArgs> CabinSlotsChanged;
         public event EventHandler<EventArgs> CabinDeckCountChanged;
@@ -225,7 +225,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             mCabinDecks.Clear();
 
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
-            string[] decks = File.ReadAllText(layoutFile.FullName)
+            string[] decks = File.ReadAllText(layoutFile.FullName).ToUpper()
                                     .Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int floor = 0; floor < decks.Length; floor++)
@@ -244,17 +244,29 @@ namespace SLC_LayoutEditor.Core.Cabin
             RefreshProblemChecks();
         }
 
-        public void RegisterCabinDeck(CabinDeck cabinDeck)
+        public CabinDeck RegisterCabinDeck(CabinDeck cabinDeck)
         {
             cabinDeck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(cabinDeck);
             OnCabinDeckCountChanged(EventArgs.Empty);
+
+            return cabinDeck;
         }
 
         public void RemoveCabinDeck(CabinDeck cabinDeck)
         {
+            int index = mCabinDecks.IndexOf(cabinDeck);
+
             cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
             mCabinDecks.Remove(cabinDeck);
+
+            if (index < mCabinDecks.Count) // Shift floor numbers for each deck after the removed
+            {
+                for (int floor = index; floor < mCabinDecks.Count; floor++)
+                {
+                    mCabinDecks[floor].Floor = floor + 1;
+                }
+            }
             OnCabinDeckCountChanged(EventArgs.Empty);
         }
 

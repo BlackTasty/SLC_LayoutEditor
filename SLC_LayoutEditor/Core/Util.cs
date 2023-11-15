@@ -14,6 +14,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.Reflection;
+using SLC_LayoutEditor.Core.Cabin;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -66,13 +67,9 @@ namespace SLC_LayoutEditor.Core
             return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : null;
         }
 
-        public static bool CompareLayoutHashes(string originalFilePath, string current)
+        public static bool HasLayoutChanged(CabinLayout layout)
         {
-            if (!File.Exists(originalFilePath))
-            {
-                return false;
-            }
-            return !GetSHA256Hash(File.ReadAllText(originalFilePath)).Equals(GetSHA256Hash(current));
+            return layout != null ? CompareLayoutHashes(layout.FilePath, layout.ToLayoutFile()) : false;
         }
 
         public static string ReadTextResource(string name)
@@ -87,6 +84,15 @@ namespace SLC_LayoutEditor.Core
             {
                 return reader.ReadToEnd();
             }
+        }
+
+        private static bool CompareLayoutHashes(string originalFilePath, string current)
+        {
+            if (!File.Exists(originalFilePath))
+            {
+                return false;
+            }
+            return !GetSHA256Hash(File.ReadAllText(originalFilePath).ToUpper()).Equals(GetSHA256Hash(current));
         }
 
         private static string GetSHA256Hash(string value)

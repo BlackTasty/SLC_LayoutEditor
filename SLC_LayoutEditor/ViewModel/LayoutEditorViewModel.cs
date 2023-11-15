@@ -34,11 +34,14 @@ namespace SLC_LayoutEditor.ViewModel
 
         private List<CabinSlot> mSelectedCabinSlots = new List<CabinSlot>();
         private int mSelectedCabinSlotFloor;
+        private int mSelectedMultiSlotTypeIndex = -1;
+
         private int mSelectedAutomationIndex = -1;
         private string mAutomationSeatLetters = "";
         private int mAutomationSeatStartNumber = 1;
         private int mServiceAreasCount = 1;
-        private int mSelectedMultiSlotTypeIndex = -1;
+
+        private bool mIsLoadingLayout = false;
 
         private bool mShowEconomyClassIssues = true;
         private bool mShowPremiumClassIssues = true;
@@ -48,9 +51,6 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mShowUnavailableSeatsIssues = true;
         private bool mShowStairwayIssues = true;
 
-        private bool mIsLoadingLayout = false;
-
-        private FrameworkElement mDialog;
 
         #region Problem visibility properties
         public bool ShowEconomyClassIssues
@@ -188,6 +188,100 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public List<CabinSlot> SelectedCabinSlots
+        {
+            get => mSelectedCabinSlots;
+            set
+            {
+                mSelectedCabinSlots = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
+
+                if (value.Count <= 1)
+                {
+                    InvokePropertyChanged(nameof(SelectedCabinSlot));
+                    InvokePropertyChanged(nameof(SelectedCabinSlotTypeId));
+                }
+
+                SelectedMultiSlotTypeIndex = -1;
+            }
+        }
+
+        public CabinSlot SelectedCabinSlot => mSelectedCabinSlots.FirstOrDefault();
+
+        #region SelectedCabinSlot nested properties
+        public int SelectedCabinSlotTypeId
+        {
+            get => SelectedCabinSlot?.TypeId ?? -1;
+            set
+            {
+                if (SelectedCabinSlot != null)
+                {
+                    SelectedCabinSlot.TypeId = value;
+                }
+
+                InvokePropertyChanged();
+            }
+        }
+
+        #endregion
+
+        public bool IsSingleCabinSlotSelected => SelectedCabinSlots.Count <= 1;
+
+        public int SelectedCabinSlotFloor
+        {
+            get => mSelectedCabinSlotFloor;
+            set
+            {
+                mSelectedCabinSlotFloor = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(SelectedFloorText));
+            }
+        }
+
+        public string SelectedFloorText
+        {
+            get
+            {
+                switch (mSelectedCabinSlotFloor)
+                {
+                    case 1:
+                        return "Lower deck";
+                    case 2:
+                        return "Upper deck";
+                    default:
+                        string suffix;
+                        switch (int.Parse(mSelectedCabinSlotFloor.ToString().LastOrDefault().ToString()))
+                        {
+                            case 1:
+                                suffix = "st";
+                                break;
+                            case 2:
+                                suffix = "nd";
+                                break;
+                            case 3:
+                                suffix = "rd";
+                                break;
+                            default:
+                                suffix = "th";
+                                break;
+                        }
+
+                        return string.Format("{0}{1} deck", mSelectedCabinSlotFloor, suffix);
+                }
+            }
+        }
+
+        public int SelectedMultiSlotTypeIndex
+        {
+            get => mSelectedMultiSlotTypeIndex;
+            set
+            {
+                mSelectedMultiSlotTypeIndex = value;
+                InvokePropertyChanged();
+            }
+        }
+
         public string LayoutOverviewTitle => SelectedCabinLayout != null ? 
             string.Format("Cabin layout \"{0}\"{1}", SelectedCabinLayout.LayoutName, hasUnsavedChanges ? "*" : "") : 
             "No cabin layout loaded";
@@ -207,9 +301,7 @@ namespace SLC_LayoutEditor.ViewModel
         {
             InvokePropertyChanged(nameof(StairwayErrorMessage));
             OnChanged(new ChangedEventArgs(
-                Util.CompareLayoutHashes(
-                    mSelectedCabinLayout.FilePath, 
-                    mSelectedCabinLayout.ToLayoutFile()))
+                Util.HasLayoutChanged(mSelectedCabinLayout))
                 );
         }
 
@@ -220,72 +312,14 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedCabinDeck = value;
                 InvokePropertyChanged();
-
-                if (value == null || !value.ContainsCabinSlots(mSelectedCabinSlots))
-                {
-                    SelectedCabinSlots = new List<CabinSlot>();
-                }
-            }
-        }
-
-        public List<CabinSlot> SelectedCabinSlots
-        {
-            get => mSelectedCabinSlots;
-            set
-            {
-
-                mSelectedCabinSlots = value;
-                InvokePropertyChanged();
-                InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
-
-                if (value.Count <= 1)
-                {
-                    InvokePropertyChanged(nameof(SelectedCabinSlot));
-                    InvokePropertyChanged(nameof(SelectedCabinSlotTypeId));
-                }
-
-                SelectedMultiSlotTypeIndex = -1;
             }
         }
 
         private void CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
         {
             OnChanged(new ChangedEventArgs(
-                Util.CompareLayoutHashes(
-                    mSelectedCabinLayout.FilePath,
-                    mSelectedCabinLayout.ToLayoutFile()))
+                Util.HasLayoutChanged(mSelectedCabinLayout))
                 );
-        }
-
-        public CabinSlot SelectedCabinSlot => SelectedCabinSlots.FirstOrDefault();
-
-        #region SelectedCabinSlot nested properties
-        public int SelectedCabinSlotTypeId
-        {
-            get => SelectedCabinSlot?.TypeId ?? -1;
-            set
-            {
-                if (SelectedCabinSlot != null)
-                {
-                    SelectedCabinSlot.TypeId = value;
-                }
-
-                InvokePropertyChanged();
-            }
-        }
-
-        #endregion
-
-        public bool IsSingleCabinSlotSelected => mSelectedCabinSlots.Count <= 1;
-
-        public int SelectedCabinSlotFloor
-        {
-            get => mSelectedCabinSlotFloor;
-            set
-            {
-                mSelectedCabinSlotFloor = value;
-                InvokePropertyChanged();
-            }
         }
 
         public int SelectedAutomationIndex
@@ -347,29 +381,6 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public int SelectedMultiSlotTypeIndex
-        {
-            get => mSelectedMultiSlotTypeIndex;
-            set
-            {
-                mSelectedMultiSlotTypeIndex = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public FrameworkElement Dialog
-        {
-            get => mDialog;
-            set
-            {
-                mDialog = value;
-                InvokePropertyChanged();
-                InvokePropertyChanged(nameof(IsDialogOpen));
-            }
-        }
-
-        public bool IsDialogOpen => mDialog != null;
-
         public bool IsLoadingLayout
         {
             get => mIsLoadingLayout;
@@ -391,16 +402,6 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mLayoutSets.Add(new CabinLayoutSet(layoutSetFolder));
             }
-
-            Mediator.Instance.Register(o =>
-            {
-                Dialog = o as FrameworkElement;
-            }, ViewModelMessage.DialogOpening);
-
-            Mediator.Instance.Register(o =>
-            {
-                Dialog = null;
-            }, ViewModelMessage.DialogClosing);
         }
 
         private async void LoadLayouts()
@@ -442,19 +443,6 @@ namespace SLC_LayoutEditor.ViewModel
             return hasUnsavedChanges;
         }
 
-        public void ShowChangelog()
-        {
-            ChangelogDialog dialog = new ChangelogDialog();
-            dialog.DialogClosing += ChangelogDialog_DialogClosing;
-
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
-        }
-
-        private void ChangelogDialog_DialogClosing(object sender, DialogClosingEventArgs e)
-        {
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogClosing, null);
-        }
-
         private void UnsavedChangesDialog_DialogClosing(object sender, DialogClosingEventArgs e)
         {
             if (e.DialogResult == DialogResultType.Yes)
@@ -493,7 +481,6 @@ namespace SLC_LayoutEditor.ViewModel
                 }
             }
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogClosing, null);
             Mediator.Instance.NotifyColleagues(ViewModelMessage.UnsavedChangesDialogClosed, e.DialogResult != DialogResultType.Cancel);
         }   
 

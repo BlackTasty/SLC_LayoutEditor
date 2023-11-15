@@ -3,14 +3,9 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-           xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
            xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
            mc:Ignorable="d"
            d:DesignHeight="20" d:DesignWidth="240">
-    <DockPanel.Resources>
-        <converter:GreaterThanConverter x:Key="GreaterThanConverter"/>
-        <converter:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
-    </DockPanel.Resources>
     <Button Click="ToggleProblemVisibility_Click"
             ToolTip="Toggle visibility of detected problem in layout"
             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=ShowEye, Converter={StaticResource BooleanToVisibilityConverter}}"

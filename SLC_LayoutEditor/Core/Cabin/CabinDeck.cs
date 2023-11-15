@@ -47,6 +47,40 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 mFloor = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(FloorName));
+            }
+        }
+
+        public string FloorName
+        {
+            get
+            {
+                switch (mFloor)
+                {
+                    case 1:
+                        return "Lower deck";
+                    case 2:
+                        return "Upper deck";
+                    default:
+                        string suffix;
+                        switch (int.Parse(mFloor.ToString().LastOrDefault().ToString()))
+                        {
+                            case 1:
+                                suffix = "st";
+                                break;
+                            case 2:
+                                suffix = "nd";
+                                break;
+                            case 3:
+                                suffix = "rd";
+                                break;
+                            default:
+                                suffix = "th";
+                                break;
+                        }
+
+                        return string.Format("{0}{1} deck", mFloor, suffix);
+                }
             }
         }
 
@@ -103,9 +137,19 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public bool HasSevereIssues => SevereIssuesCount > 0;
+
+        public bool HasMinorIssues => SevereIssuesCount > 0;
+
+        public bool HasAnyIssues => HasSevereIssues || HasMinorIssues;
+
         public int SevereIssuesCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreServicePointsValid, AreSlotsValid);
 
         public int MinorIssuesCount => Util.GetProblemCount(0, AreCateringAndLoadingBaysValid, AreSeatsReachableByService, AreToiletsAvailable, AreKitchensValid);
+
+        public string MinorIssuesText => HasMinorIssues ? string.Format("{0} minor", MinorIssuesCount) : "";
+
+        public string SevereIssuesText => HasSevereIssues ? string.Format("{0} severe", SevereIssuesCount) : "";
 
         public bool ShowCateringAndLoadingBayIssues
         {
@@ -330,8 +374,6 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void CabinSlot_CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
         {
-            RefreshProblemChecks();
-
             OnCabinSlotsChanged(e);
         }
 
@@ -358,9 +400,16 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged(nameof(AreToiletsAvailable));
             InvokePropertyChanged(nameof(AreSeatsReachableByService));
             InvokePropertyChanged(nameof(AreSlotsValid));
-            InvokePropertyChanged(nameof(SevereIssuesCount));
             InvokePropertyChanged(nameof(AreCateringAndLoadingBaysValid));
             InvokePropertyChanged(nameof(InvalidCateringDoorsAndLoadingBays));
+
+            InvokePropertyChanged(nameof(MinorIssuesCount));
+            InvokePropertyChanged(nameof(HasMinorIssues));
+            InvokePropertyChanged(nameof(SevereIssuesCount));
+            InvokePropertyChanged(nameof(HasSevereIssues));
+            InvokePropertyChanged(nameof(HasAnyIssues));
+            InvokePropertyChanged(nameof(MinorIssuesText));
+            InvokePropertyChanged(nameof(SevereIssuesText));
         }
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)

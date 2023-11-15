@@ -4,13 +4,9 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
-           xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
            xmlns:local="clr-namespace:SLC_LayoutEditor.UI"
            mc:Ignorable="d" 
-            d:DesignWidth="800">
-    <DockPanel.Resources>
-        <converter:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
-    </DockPanel.Resources>
+           d:DesignWidth="800">
     <DockPanel.DataContext>
         <vm:SettingsViewModel/>
     </DockPanel.DataContext>

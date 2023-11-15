@@ -7,10 +7,14 @@
         mc:Ignorable="d"
         Height="42" Width="42"
         Background="Transparent"
-        x:Name="layout">
+        x:Name="layout"
+        ToolTip="{Binding ElementName=layout, Path=CabinSlot.Type, Converter={StaticResource EnumDescriptionConverter}}"
+        ToolTipService.InitialShowDelay="1000">
     <Border BorderThickness="2" CornerRadius="3"
             Height="40" Width="40" Margin="1" IsHitTestVisible="False"
-            x:Name="error_highlight"/>
+            Background="{StaticResource DisabledColorBrush}"
+            BorderBrush="{StaticResource DisabledColorBrush}"
+            Visibility="{Binding ElementName=layout, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     <Border BorderThickness="2" CornerRadius="3"
             x:Name="content" IsHitTestVisible="False">
         <Border.Style>
@@ -117,7 +121,7 @@
                                      Value="True">
                             <Setter Property="Background" Value="{DynamicResource BackdropColorBrush}"/>
                             <Setter Property="Padding" Value="2"/>
-                            <Setter Property="Margin" Value="-2,0"/>
+                            <Setter Property="Margin" Value="-2.5,0"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding ElementName=layout, Path=CabinSlot.Type}" Value="14">
                             <Setter Property="Background" Value="{DynamicResource BackdropDarkColorBrush}"/>
@@ -127,4 +131,7 @@
             </TextBlock.Style>
         </TextBlock>
     </Border>
+    <Border BorderThickness="2" CornerRadius="3"
+            Height="40" Width="40" Margin="1" IsHitTestVisible="False"
+            x:Name="error_highlight"/>
 </Canvas>

@@ -2,7 +2,9 @@
 using SLC_LayoutEditor.Core.Enum;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,11 +22,44 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinSlotControl.xaml
     /// </summary>
-    public partial class CabinSlotControl : Canvas
+    public partial class CabinSlotControl : Canvas, INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged implementation
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Fires the "PropertyChanged" event for the given property name.
+        /// </summary>
+        /// <param name="propertyName">Can be left empty when called from inside the target property. The display name of the property which changed.</param>
+        protected void InvokePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Fires the "PropertyChanged" event for every given property name.
+        /// </summary>
+        /// <param name="propertyName">A list of display names for properties which changed.</param>
+        protected void InvokePropertyChanged(params string[] propertyNames)
+        {
+            for (int i = 0; i < propertyNames.Length; i++)
+            {
+                InvokePropertyChanged(propertyNames[i]);
+            }
+        }
+        #endregion
+
         private bool isSelected;
 
-        public bool IsSelected => isSelected;
+        public bool IsSelected
+        {
+            get => isSelected;
+            private set
+            {
+                isSelected = value;
+                InvokePropertyChanged();
+            }
+        }
 
         public CabinSlot CabinSlot
         {
@@ -47,7 +82,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void CabinSlot_ProblematicChanged(object sender, EventArgs e)
         {
-            SetProblematicHighlight();
+            RefreshHighlighting();
         }
 
         public CabinSlotControl()
@@ -57,32 +92,15 @@ namespace SLC_LayoutEditor.Controls
 
         public void SetSelected(bool isSelected)
         {
-            this.isSelected = isSelected;
-
-            if (isSelected)
-            {
-                error_highlight.Background = App.Current
-                    .FindResource(!CabinSlot.IsProblematic ? "DisabledColorBrush" : "ErrorSelectedHighlightColorBrush") as Brush;
-            }
-            else if (CabinSlot.IsProblematic)
-            {
-                SetProblematicHighlight();
-            }
-            else
-            {
-                error_highlight.Background = Brushes.Transparent;
-            }
+            IsSelected = isSelected;
+            RefreshHighlighting();
         }
 
-        public void SetProblematicHighlight()
+        public void RefreshHighlighting()
         {
-            if (isSelected)
+            if (CabinSlot.IsProblematic)
             {
-                SetSelected(true);
-            }
-            else if (CabinSlot.IsProblematic)
-            {
-                error_highlight.Background = App.Current.FindResource("ErrorHighlightColorBrush") as Brush;
+                error_highlight.Background = App.Current.FindResource(isSelected ? "ErrorSelectedHighlightColorBrush" : "ErrorHighlightColorBrush") as Brush;
             }
             else
             {
@@ -97,7 +115,7 @@ namespace SLC_LayoutEditor.Controls
                 CabinSlot.ProblematicChanged += CabinSlot_ProblematicChanged;
                 if (CabinSlot.IsProblematic)
                 {
-                    SetProblematicHighlight();
+                    RefreshHighlighting();
                 }
             }
         }

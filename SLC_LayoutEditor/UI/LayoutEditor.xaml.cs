@@ -2,10 +2,12 @@
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +23,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.UI
 {
@@ -40,7 +43,7 @@ namespace SLC_LayoutEditor.UI
             InitializeComponent();
             vm = DataContext as LayoutEditorViewModel;
             vm.CabinLayoutSelected += Vm_CabinLayoutSelected;
-            vm.Changed += Vm_CabinLayoutChanged;
+            vm.Changed += CabinLayoutChanged;
             vm.SelectionRollback += Vm_SelectionRollback;
         }
 
@@ -49,11 +52,7 @@ namespace SLC_LayoutEditor.UI
             return vm.CheckUnsavedChanges(null, isClosing);
         }
 
-        public void ShowChangelog()
-        {
-            vm.ShowChangelog();
-        }
-
+        // Workaround to force-restore the previously selected index
         private void Vm_SelectionRollback(object sender, SelectionRollbackEventArgs e)
         {
             if (e.RollbackValue is CabinLayoutSet)
@@ -66,7 +65,7 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void Vm_CabinLayoutChanged(object sender, ChangedEventArgs e)
+        private void CabinLayoutChanged(object sender, ChangedEventArgs e)
         {
             OnChanged(e);
         }
@@ -76,38 +75,26 @@ namespace SLC_LayoutEditor.UI
             OnCabinLayoutSelected(e);
         }
 
-        private void layout_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
-        {
-            if (activeDeckControl != null && e.Selected.Count == 0)
-            {
-                activeDeckControl.SetSlotSelected(null);
-            }
-
-            vm.SelectedCabinSlots = e.Selected;
-            vm.SelectedCabinSlotFloor = e.Floor;
-            activeDeckControl = e.DeckControl;
-        }
-
         private void SaveLayout_Click(object sender, RoutedEventArgs e)
         {
             if (App.Settings.ShowWarningWhenIssuesPresent && vm.SelectedCabinLayout.SevereIssuesCountSum > 0)
             {
-                ConfirmationDialog dialog = new ConfirmationDialog("Layout problems detected", 
+                ConfirmationDialog dialog = new ConfirmationDialog("Layout issues detected", 
                     "Seems like your layout has some problems, which can cause unexpected behaviour with SLC!\n\nDo you want to save anyway?",
                     DialogType.YesNo);
 
-                dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
-                {
-                    vm.Dialog = null;
-                    if (_e.DialogResult == DialogResultType.Yes)
-                    {
-                        SaveLayout(vm);
-                    }
-                };
-
-                vm.Dialog = dialog;
+                dialog.DialogClosing += LayoutIssues_DialogClosing;
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
             }
             else
+            {
+                SaveLayout(vm);
+            }
+        }
+
+        private void LayoutIssues_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.Yes)
             {
                 SaveLayout(vm);
             }
@@ -125,22 +112,7 @@ namespace SLC_LayoutEditor.UI
                     string.Format("The folder with your layout has been opened!"),
                     DialogType.OK);
 
-                dialog.DialogClosing += FolersOpenedDialog_DialogClosing;
-                vm.Dialog = dialog;
-            }
-        }
-
-        private void FolersOpenedDialog_DialogClosing(object sender, DialogClosingEventArgs e)
-        {
-            vm.Dialog = null;
-        }
-
-        private void layout_LayoutRegenerated(object sender, EventArgs e)
-        {
-            vm.IsLoadingLayout = false;
-            if (sender is DeckLayoutControl deckLayout && vm.SelectedCabinSlots != null)
-            {
-                deckLayout.SetMultipleSlotsSelected(vm.SelectedCabinSlots, false);
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
             }
         }
 
@@ -154,21 +126,19 @@ namespace SLC_LayoutEditor.UI
             AddAirplaneDialog dialog = new AddAirplaneDialog(vm.LayoutSets.Select(x => x.AirplaneName));
             dialog.DialogClosing += AddAirplane_DialogClosing;
 
-            vm.Dialog = dialog;
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
         }
 
-        private void AddAirplane_DialogClosing(object sender, AddDialogClosingEventArgs e)
+        private void AddAirplane_DialogClosing(object sender, DialogClosingEventArgs e)
         {
             if (sender is AddAirplaneDialog dialog)
             {
                 dialog.DialogClosing -= AddAirplane_DialogClosing;
             }
 
-            vm.Dialog = null;
-
-            if (e.IsCreate)
+            if (e.Data is AddDialogResult result && result.IsCreate)
             {
-                CabinLayoutSet layoutSet = new CabinLayoutSet(e.Name);
+                CabinLayoutSet layoutSet = new CabinLayoutSet(result.Name);
                 vm.LayoutSets.Add(layoutSet);
                 vm.SelectedLayoutSet = layoutSet;
             }
@@ -179,77 +149,21 @@ namespace SLC_LayoutEditor.UI
             AddCabinLayoutDialog dialog = new AddCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName));
             dialog.DialogClosing += AddCabinLayout_DialogClosing;
 
-            vm.Dialog = dialog;
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
         }
 
-        private void AddCabinLayout_DialogClosing(object sender, AddDialogClosingEventArgs e)
+        private void AddCabinLayout_DialogClosing(object sender, DialogClosingEventArgs e)
         {
             if (sender is AddCabinLayoutDialog dialog)
             {
                 dialog.DialogClosing -= AddCabinLayout_DialogClosing;
             }
 
-            vm.Dialog = null;
-
-            if (e.IsCreate)
+            if (e.Data is AddDialogResult result && result.IsCreate)
             {
-                CabinLayout layout = new CabinLayout(e.Name, vm.SelectedLayoutSet.AirplaneName);
+                CabinLayout layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AirplaneName);
                 vm.SelectedLayoutSet.CabinLayouts.Add(layout);
                 vm.SelectedCabinLayout = layout;
-            }
-        }
-
-        private void layout_RemoveDeckClicked(object sender, RemoveCabinDeckEventArgs e)
-        {
-            ConfirmationDialog dialog = new ConfirmationDialog("Confirm deletion", 
-                "Are you sure you want to delete this deck? This action cannot be undone!", DialogType.YesNo);
-
-            dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
-            {
-                if (_e.DialogResult == DialogResultType.Yes)
-                {
-                    vm.SelectedCabinLayout.RemoveCabinDeck(e.Target);
-                    vm.SelectedCabinLayout.RefreshCalculated();
-                }
-
-                vm.Dialog = null;
-            };
-
-            vm.Dialog = dialog;
-        }
-
-        private void AddCabinDeck_Click(object sender, RoutedEventArgs e)
-        {
-            int rows = 1;
-            int columns = 1;
-
-            if (vm.SelectedCabinLayout.CabinDecks.Count > 0)
-            {
-                ConfirmationDialog dialog = new ConfirmationDialog("Match existing layout?",
-                    "Should the new deck have matching rows and columns?", DialogType.YesNoCancel);
-                dialog.DialogClosing += delegate(object _sender, DialogClosingEventArgs _e) {
-                    if (_e.DialogResult == DialogResultType.No)
-                    {
-                        vm.SelectedCabinLayout.CabinDecks.Add(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
-                    }
-                    else if (_e.DialogResult == DialogResultType.Yes)
-                    {
-                        CabinDeck lastDeck = vm.SelectedCabinLayout.CabinDecks.LastOrDefault();
-                        rows = lastDeck.Rows + 1;
-                        columns = lastDeck.Columns + 1;
-                        vm.SelectedCabinLayout.RegisterCabinDeck(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
-                        vm.SelectedCabinLayout.RefreshCalculated();
-                    }
-
-                    vm.Dialog = null;
-                };
-
-                vm.Dialog = dialog;
-            }
-            else
-            {
-                vm.SelectedCabinLayout.RegisterCabinDeck(new CabinDeck(vm.SelectedCabinLayout.CabinDecks.Count + 1, rows, columns));
-                vm.SelectedCabinLayout.RefreshCalculated();
             }
         }
 
@@ -257,7 +171,7 @@ namespace SLC_LayoutEditor.UI
         {
             if (sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
             {
-                foreach (CabinSlot cabinSlot in vm.SelectedCabinSlots)
+                foreach (CabinSlot cabinSlot in control_layout.SelectedCabinSlots)
                 {
                     cabinSlot.Type = slotType;
                 }
@@ -269,32 +183,12 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void ReloadDeck_Click(object sender, RoutedEventArgs e)
-        {
-            ConfirmationDialog dialog = new ConfirmationDialog("Reload cabin layout",
-                "Do you really want to reload this layout? Any unsaved changes are lost!", DialogType.YesNo);
-
-            dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
-            {
-                if (_e.DialogResult == DialogResultType.Yes)
-                {
-                    vm.SelectedCabinSlots = new List<CabinSlot>();
-                    activeDeckControl?.SetMultipleSlotsSelected(vm.SelectedCabinSlots, true);
-                    vm.SelectedCabinLayout.LoadCabinLayout();
-                }
-
-                vm.Dialog = null;
-            };
-
-            vm.Dialog = dialog;
-        }
-
         private void Automate_Click(object sender, RoutedEventArgs e)
         {
             switch (vm.SelectedAutomationIndex)
             {
                 case 0: // Seat numeration
-                    var seatRowGroups = vm.SelectedCabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).OrderBy(x => x.Key);
+                    var seatRowGroups = control_layout.SelectedCabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).OrderBy(x => x.Key);
                     string[] seatLetters = vm.AutomationSeatLetters.Split(',');
                     int currentLetterIndex = 0;
                     //TODO: Set flag on cabin slot to stop re-evaluation during automation
@@ -320,7 +214,8 @@ namespace SLC_LayoutEditor.UI
                     break;
                 case 1: // Wall generator
                     IEnumerable<CabinSlot> wallSlots = vm.SelectedCabinDeck.CabinSlots
-                        .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.SelectedCabinDeck.Rows || x.Column == vm.SelectedCabinDeck.Columns) && !x.IsDoor && x.Type != CabinSlotType.Wall);
+                        .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.SelectedCabinDeck.Rows || x.Column == vm.SelectedCabinDeck.Columns) && 
+                            !x.IsDoor && x.Type != CabinSlotType.Wall);
 
                     foreach (CabinSlot wallSlot in wallSlots)
                     {
@@ -328,7 +223,7 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
                 case 2: //Service points (WIP)
-                    CabinDeck selectedCabinDeck = vm.SelectedCabinLayout.CabinDecks.FirstOrDefault(x => x.Floor == vm.SelectedCabinSlotFloor);
+                    CabinDeck selectedCabinDeck = vm.SelectedCabinLayout.CabinDecks.FirstOrDefault();
                     if (selectedCabinDeck != null)
                     {
                         var seatRows = selectedCabinDeck.GetRowsWithSeats();
@@ -408,19 +303,6 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void layout_decks_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (Util.IsShiftDown())
-            {
-                deck_scroll.ScrollToHorizontalOffset(deck_scroll.HorizontalOffset- e.Delta);
-            }
-            else
-            {
-                deck_scroll.ScrollToVerticalOffset(deck_scroll.VerticalOffset - e.Delta);
-            }
-            e.Handled = true;
-        }
-
         private void DuplicateDoors_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
         {
             if (e.Target is CabinLayout target)
@@ -440,6 +322,12 @@ namespace SLC_LayoutEditor.UI
             ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
         }
 
+        private void CabinLayout_SelectedSlotsChanged(object sender, CabinSlotClickedEventArgs e)
+        {
+            vm.SelectedCabinSlots = e.Selected;
+            vm.SelectedCabinSlotFloor = e.Floor;
+        }
+
         protected virtual void OnCabinLayoutSelected(CabinLayoutSelectedEventArgs e)
         {
             CabinLayoutSelected?.Invoke(this, e);
@@ -448,6 +336,11 @@ namespace SLC_LayoutEditor.UI
         protected virtual void OnChanged(ChangedEventArgs e)
         {
             Changed?.Invoke(this, e);
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //vm.SelectedCabinLayout.DeepRefreshProblemChecks();
         }
     }
 }

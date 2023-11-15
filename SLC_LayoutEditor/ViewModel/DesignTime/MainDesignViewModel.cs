@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.UI;
+using SLC_LayoutEditor.UI.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
         public MainDesignViewModel() : base()
         {
             Content = new LayoutEditor();
+            Dialog = new ChangelogDialog();
         }
     }
 }

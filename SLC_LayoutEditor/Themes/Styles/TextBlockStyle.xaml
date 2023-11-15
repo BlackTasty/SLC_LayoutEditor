@@ -14,7 +14,6 @@
         <Setter Property="FontSize" Value="22"/>
         <Setter Property="Margin" Value="8,4"/>
         <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
     </Style>
 
     <Style x:Key="Title2TextStyle" TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
@@ -43,5 +42,11 @@
 
     <Style x:Key="Subtitle3TextStyle" TargetType="TextBlock" BasedOn="{StaticResource Subtitle2TextStyle}">
         <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}"/>
+    </Style>
+
+    <Style x:Key="CardTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundDarkBrush}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 </ResourceDictionary>

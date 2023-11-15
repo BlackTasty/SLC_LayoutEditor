@@ -1,4 +1,6 @@
-﻿using SLC_LayoutEditor.Core.Enum;
+﻿using SLC_LayoutEditor.Core;
+using SLC_LayoutEditor.Core.Dialogs;
+using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using System;
 using System.Collections.Generic;
@@ -20,7 +22,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
     /// <summary>
     /// Interaction logic for ConfirmationDialog.xaml
     /// </summary>
-    public partial class ConfirmationDialog : DockPanel
+    public partial class ConfirmationDialog : DockPanel, IDialog
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 

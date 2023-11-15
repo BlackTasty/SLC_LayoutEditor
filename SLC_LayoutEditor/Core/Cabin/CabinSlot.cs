@@ -13,6 +13,7 @@ namespace SLC_LayoutEditor.Core.Cabin
     public class CabinSlot : ViewModelBase, IHistorical
     {
         public event EventHandler<CabinSlotChangedEventArgs> CabinSlotChanged;
+        public event EventHandler<EventArgs> SlotTypeChanged;
         public event EventHandler<EventArgs> ProblematicChanged;
 
         private int mRow;
@@ -73,6 +74,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                     SlotNumber = 0;
                 }
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
+                OnSlotTypeChanged(EventArgs.Empty);
+                IsProblematic = false;
             }
         }
 
@@ -247,6 +250,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             mSlotNumber = slotNumber;
         }
 
+        public void ApplyChanges(HistoryStep historyStep)
+        {
+            //TODO: Implement undo/redo system
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             switch (mType)
@@ -310,10 +319,9 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public void ApplyChanges(HistoryStep historyStep)
+        protected virtual void OnSlotTypeChanged(EventArgs e)
         {
-            //TODO: Implement undo/redo system
-            throw new NotImplementedException();
+            SlotTypeChanged?.Invoke(this, e);
         }
     }
 }

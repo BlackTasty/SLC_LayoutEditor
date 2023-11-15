@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.Events;
+﻿using SLC_LayoutEditor.Core.Dialogs;
+using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.UI.Dialogs;
@@ -18,6 +19,8 @@ namespace SLC_LayoutEditor.ViewModel
 {
     class MainViewModel : MementoViewModel
     {
+        private IDialog mDialog;
+
         private FrameworkElement mContent;
         private LayoutEditor editor;
         private string mCabinLayoutName;
@@ -60,6 +63,33 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public IDialog Dialog
+        {
+            get => mDialog;
+            set
+            {
+                if (mDialog != null)
+                {
+                    mDialog.DialogClosing -= Dialog_DialogClosing;
+                }
+                mDialog = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(IsDialogOpen));
+
+                if (mDialog != null)
+                {
+                    mDialog.DialogClosing += Dialog_DialogClosing;
+                }
+            }
+        }
+
+        private void Dialog_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            Dialog = null;
+        }
+
+        public bool IsDialogOpen => mDialog != null;
+
         public FrameworkElement Content
         {
             get => mContent;
@@ -81,16 +111,6 @@ namespace SLC_LayoutEditor.ViewModel
 
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsViewNotEditor));
-            }
-        }
-        
-        public bool IsDialogOpen
-        {
-            get => mIsDialogOpen;
-            private set
-            {
-                mIsDialogOpen = value;
-                InvokePropertyChanged();
             }
         }
 
@@ -219,16 +239,17 @@ namespace SLC_LayoutEditor.ViewModel
                 updateManager.StatusChanged += UpdateManager_StatusChanged;
             }
 
-
             Mediator.Instance.Register(o =>
             {
-                IsDialogOpen = true;
+                if (o is IDialog dialog)
+                {
+                    Dialog = dialog;
+                }
+                else
+                {
+                    Dialog = new ConfirmationDialog("Error setting dialog!", "The supplied dialog control does not inherit from IDialog!", Core.Enum.DialogType.OK);
+                }
             }, ViewModelMessage.DialogOpening);
-
-            Mediator.Instance.Register(o =>
-            {
-                IsDialogOpen = false;
-            }, ViewModelMessage.DialogClosing);
         }
 
         public void ShowWelcomeScreen()
@@ -251,10 +272,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void ShowChangelog()
         {
-            if (mContent is LayoutEditor editor)
-            {
-                editor.ShowChangelog();
-            }
+            Dialog = new ChangelogDialog();
         }
 
         public void ShowChangelogIfUpdated()
@@ -263,10 +281,9 @@ namespace SLC_LayoutEditor.ViewModel
                 App.Settings.ShowChangesAfterUpdate)
             {
                 ShowChangelog();
+                App.Settings.LastVersionChangelogShown = UpdateManager.VersionNumber;
+                App.SaveAppSettings();
             }
-
-            App.Settings.LastVersionChangelogShown = UpdateManager.VersionNumber;
-            App.SaveAppSettings();
         }
 
         public bool CheckUnsavedChanges(bool isClosing)
@@ -349,6 +366,11 @@ namespace SLC_LayoutEditor.ViewModel
                 " (" + updateManager.CalculateSpeed(e.BytesReceived) + ")";
             DownloadSize = e.TotalBytesToReceive;
             DownloadCurrent = e.BytesReceived;
+        }
+
+        private void ShowDialog(IDialog dialog)
+        {
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
         }
     }
 }

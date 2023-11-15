@@ -15,6 +15,13 @@
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converter:EnumInRangeConverter x:Key="EnumInRangeConverter"/>
             <converter:GreaterThanConverter x:Key="GreaterThanConverter"/>
+            <converter:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+            <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+            <converter:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+            <converter:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
+            <converter:NotNullToBooleanConverter x:Key="NotNullToBooleanConverter"/>
+            <converter:EqualsToVisibilityConverter x:Key="EqualsToVisibilityConverter"/>
+            <converter:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
 
             <ImageBrush x:Key="CrewAreaIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_galley.png"/>
             <ImageBrush x:Key="FirstClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_first_class.png"/>

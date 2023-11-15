@@ -68,6 +68,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\CabinLayoutControl.xaml.cs">
+      <DependentUpon>CabinLayoutControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LayoutProblemText.xaml.cs">
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
@@ -79,6 +82,7 @@
     <Compile Include="Controls\SeatCapacityBox.xaml.cs">
       <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\EnumDescriptionConverter.cs" />
     <Compile Include="Converter\EnumInRangeConverter.cs" />
     <Compile Include="Converter\EqualsToVisibilityConverter.cs" />
     <Compile Include="Converter\GreaterThanConverter.cs" />
@@ -91,16 +95,18 @@
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
     <Compile Include="Core\Enum\StateChangeType.cs" />
-    <Compile Include="Core\Events\AddDialogClosingEventArgs.cs" />
+    <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
     <Compile Include="Core\Events\ChangedEventArgs.cs" />
     <Compile Include="Core\Events\CabinLayoutSelectedEventArgs.cs" />
     <Compile Include="Core\Events\DialogClosingEventArgs.cs" />
     <Compile Include="Core\Events\ProblematicSlotsCollectedEventArgs.cs" />
     <Compile Include="Core\Events\RemoveCabinDeckEventArgs.cs" />
+    <Compile Include="Core\Events\SelectedSlotsChangedEventArgs.cs" />
     <Compile Include="Core\Events\SelectionRollbackEventArgs.cs" />
     <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
+    <Compile Include="Core\Dialogs\IDialog.cs" />
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
     <Compile Include="Core\Memento\HistoryStack.cs" />
@@ -141,6 +147,7 @@
     </Compile>
     <Compile Include="ViewModel\AddAirplaneDialogViewModel.cs" />
     <Compile Include="ViewModel\AddCabinLayoutDialogViewModel.cs" />
+    <Compile Include="ViewModel\CabinLayoutControlViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -165,6 +172,10 @@
       <DependentUpon>LayoutEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\LayoutEditorViewModel.cs" />
+    <Page Include="Controls\CabinLayoutControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\DeckLayoutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -215,6 +226,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Style.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\BorderStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

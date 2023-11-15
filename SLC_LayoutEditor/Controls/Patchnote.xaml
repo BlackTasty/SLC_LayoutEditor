@@ -7,15 +7,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="150" d:DesignWidth="360" x:Name="patchnote">
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-        <TextBlock Text="SLC Layout Editor" FontSize="24" Margin="4,0"
+        <TextBlock Text="SLC Layout Editor" FontSize="28" Margin="4,0"
                    FontStyle="{Binding Nightly, ElementName=patchnote}"/>
-        <Border Background="{DynamicResource AccentColorBrush}" VerticalAlignment="Top" CornerRadius="6" Padding="6,1" Margin="4">
-            <TextBlock FontSize="12" Foreground="{DynamicResource BackgroundColorBrush}" FontWeight="Bold"
+        <Border Style="{DynamicResource CardStyle}" VerticalAlignment="Top">
+            <TextBlock Style="{DynamicResource CardTextStyle}"
                        Text="{Binding PatchNumber, ElementName=patchnote, FallbackValue=v1.0.0.0}"/>
         </Border>
-        <Border Background="{DynamicResource ErrorForegroundColorBrush}" VerticalAlignment="Top" CornerRadius="6" Padding="6,1" Margin="4"
+        <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource ErrorForegroundColorBrush}" VerticalAlignment="Top"
                 Visibility="{Binding IsHotfix, ElementName=patchnote, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock FontSize="11" Foreground="{DynamicResource BackgroundColorBrush}" Text="Hotfix" FontWeight="Bold"/>
+            <TextBlock Style="{DynamicResource CardTextStyle}" Text="Hotfix"/>
         </Border>
     </StackPanel>
     <TextBlock Text="{Binding PatchDate, ElementName=patchnote, FallbackValue=Release date}" Margin="12,0" FontSize="10.667" 

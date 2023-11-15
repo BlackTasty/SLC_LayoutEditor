@@ -233,8 +233,6 @@ namespace SLC_LayoutEditor.Controls
                 {
                     OnAutoFixApplying(new AutoFixApplyingEventArgs(AutoFixTarget));
                 }
-
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogClosing, null);
             };
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);

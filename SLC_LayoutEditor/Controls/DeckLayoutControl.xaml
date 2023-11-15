@@ -4,31 +4,90 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
-            mc:Ignorable="d" 
+            mc:Ignorable="d"
             d:DesignHeight="450" d:DesignWidth="800"
             x:Name="container" Margin="0,0,0,8"
             Loaded="container_Loaded">
-    <StackPanel Orientation="Horizontal" Margin="4,4,4,8">
-        <TextBlock FontSize="20" FontWeight="Bold">
-            <TextBlock.Style>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
-                    <Setter Property="Text" Value="{Binding Floor, StringFormat={}Floor {0}}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Floor}" Value="1">
-                            <Setter Property="Text" Value="Lower deck"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Floor}" Value="2">
-                            <Setter Property="Text" Value="Upper deck"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
-        <Button DockPanel.Dock="Right" Content="Remove deck" Padding="8,0"
-                ToolTip="Removes this deck from the layout. Cannot be undone!"
-                Style="{StaticResource RedButtonStyle}" Margin="32,0,0,0" Click="RemoveDeck_Click"/>
-    </StackPanel>
-    <Canvas x:Name="layout_deck">
+    <Border Padding="64,0,0,0" Height="75"
+            Background="{DynamicResource BackgroundLightBrush}"
+            HorizontalAlignment="Left" CornerRadius="0,40,40,0">
+        <Border.Effect>
+            <DropShadowEffect Color="{DynamicResource BackgroundDark}" Opacity=".4"
+                              ShadowDepth="4" BlurRadius="10"/>
+        </Border.Effect>
+        <Grid VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition SharedSizeGroup="deckTitle" Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="{StaticResource Trash}"  DockPanel.Dock="Right"
+                    Grid.Column="1"
+                    ToolTip="Removes this deck from the layout. Cannot be undone!"
+                    Style="{StaticResource RemoveDeckButtonStyle}" Margin="32,0,0,0" Click="RemoveDeck_Click"/>
+            <StackPanel Margin="0,8">
+                <TextBlock FontSize="20" FontWeight="Bold"
+                           Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.FloorName}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
+                            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor, StringFormat={}Floor {0}}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor}" Value="1">
+                                    <Setter Property="Text" Value="Lower deck"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor}" Value="2">
+                                    <Setter Property="Text" Value="Upper deck"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource WarnForegroundColorBrush}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource ErrorForegroundColorBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" Margin="16,4,16,0">
+                    <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
+                                    <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.MinorIssuesCount, StringFormat={}{0} minor issues}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.MinorIssuesCount}" Value="1">
+                                            <Setter Property="Text" Value="1 minor issue"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Border>
+                    <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
+                                    <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.SevereIssuesCount, StringFormat={}{0} severe issues}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.SevereIssuesCount}" Value="1">
+                                            <Setter Property="Text" Value="1 severe issue"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Border>
+                    <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource ButtonBorderColorBrush}"
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
+
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+    <Canvas x:Name="layout_deck" Margin="24">
             
     </Canvas>
 </StackPanel>

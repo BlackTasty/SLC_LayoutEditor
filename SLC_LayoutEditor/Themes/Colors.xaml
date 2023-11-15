@@ -31,12 +31,13 @@
     <Color x:Key="AccentColor">#d8b4f0</Color>
 
     <Color x:Key="WarnColor">#FDFF9E</Color>
+    <Color x:Key="WarnLightColor">#feffc5</Color>
     <Color x:Key="ButtonWarnBorderPressedColor">#AAAD51</Color>
     <Color x:Key="ButtonWarnBackgroundHoverColor">#44FDFF9E</Color>
     <Color x:Key="ButtonWarnBackgroundPressedColor">#44AAAD51</Color>
 
     <Color x:Key="ErrorColor">#FF9E9E</Color>
-    <Color x:Key="ErrorLightColor">#44FF9E9E</Color>
+    <Color x:Key="ErrorLightColor">#ffb9b9</Color>
     <Color x:Key="ErrorDarkColor">#AD5151</Color>
     <Color x:Key="ButtonErrorBackgroundPressedColor">#44AD5151</Color>
 
@@ -80,10 +81,20 @@
 
     <SolidColorBrush x:Key="SeparatorColorBrush" Color="{StaticResource SeparatorColor}"/>
 
+
+    <SolidColorBrush x:Key="RemoveDeckButtonBackgroundBrush" Color="{StaticResource BackgroundColor}" Opacity=".24"/>
+    <SolidColorBrush x:Key="RemoveDeckButtonHoverBackgroundBrush" Color="{StaticResource BackgroundLight}" Opacity=".24"/>
+    <SolidColorBrush x:Key="RemoveDeckButtonPressedBackgroundBrush" Color="{StaticResource BackgroundDark}" Opacity=".24"/>
+    <SolidColorBrush x:Key="AddDeckButtonBackgroundBrush" Color="{StaticResource BackgroundColor}" Opacity=".48"/>
+    <SolidColorBrush x:Key="AddDeckButtonHoverBackgroundBrush" Color="{StaticResource BackgroundLight}" Opacity=".48"/>
+    <SolidColorBrush x:Key="AddDeckButtonPressedBackgroundBrush" Color="{StaticResource BackgroundDark}" Opacity=".48"/>
+
     <SolidColorBrush x:Key="ForegroundSecondaryColorBrush" Color="{StaticResource ForegroundSecondaryColor}"/>
     
     <SolidColorBrush x:Key="ErrorForegroundColorBrush" Color="{StaticResource ErrorColor}"/>
     <SolidColorBrush x:Key="WarnForegroundColorBrush" Color="{StaticResource WarnColor}"/>
+    <SolidColorBrush x:Key="ValidForegroundColorBrush" Color="{StaticResource ButtonBorderColor}"/>
+
     <LinearGradientBrush x:Key="ErrorHighlightColorBrush" EndPoint="16,0" StartPoint="0,16" 
                          MappingMode="Absolute" SpreadMethod="Repeat">
         <GradientStop Color="Transparent" Offset="0"/>
@@ -98,7 +109,6 @@
         <GradientStop Color="{StaticResource ErrorColor}" Offset="1"/>
         <GradientStop Color="{StaticResource ErrorColor}" Offset=".5"/>
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="ValidForegroundColorBrush">#CCFFCC</SolidColorBrush>
 
     <SolidColorBrush x:Key="DisabledColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".27"/>
     <SolidColorBrush x:Key="BackdropColorBrush" Color="{StaticResource BackgroundColor}" Opacity=".6"/>
@@ -115,14 +125,17 @@
     <SolidColorBrush x:Key="AccentColorBrush" Color="{StaticResource AccentColor}"/>
 
     <SolidColorBrush x:Key="ButtonWarnBorderColorBrush" Color="{StaticResource WarnColor}"/>
+    <SolidColorBrush x:Key="ButtonWarnBorderHoverColorBrush" Color="{StaticResource WarnLightColor}"/>
     <SolidColorBrush x:Key="ButtonWarnBorderPressedColorBrush" Color="{StaticResource ButtonWarnBorderPressedColor}"/>
     <SolidColorBrush x:Key="ButtonWarnBackgroundHoverColorBrush" Color="{StaticResource ButtonWarnBackgroundHoverColor}"/>
     <SolidColorBrush x:Key="ButtonWarnBackgroundPressedColorBrush" Color="{StaticResource ButtonWarnBackgroundPressedColor}"/>
 
     <SolidColorBrush x:Key="ButtonErrorBorderColorBrush" Color="{StaticResource ErrorColor}"/>
     <SolidColorBrush x:Key="ButtonErrorBorderPressedColorBrush" Color="{StaticResource ErrorDarkColor}"/>
-    <SolidColorBrush x:Key="ButtonErrorBackgroundHoverColorBrush" Color="{StaticResource ErrorLightColor}"/>
+    <SolidColorBrush x:Key="ButtonErrorBackgroundHoverColorBrush" Color="{StaticResource ErrorLightColor}" Opacity=".24"/>
     <SolidColorBrush x:Key="ButtonErrorBackgroundPressedColorBrush" Color="{StaticResource ButtonErrorBackgroundPressedColor}"/>
+    
+    <SolidColorBrush x:Key="RemoveDeckHoverBrush" Color="{StaticResource ErrorLightColor}"/>
 
     <SolidColorBrush x:Key="EyeForegroundColorBrush">#CCCCCC</SolidColorBrush>
     <SolidColorBrush x:Key="EyeForegroundHoverColorBrush" Color="{StaticResource ForegroundColor}"/>
