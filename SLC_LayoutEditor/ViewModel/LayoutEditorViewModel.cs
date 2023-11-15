@@ -174,6 +174,9 @@ namespace SLC_LayoutEditor.ViewModel
                     mSelectedCabinLayout.CabinDeckCountChanged -= SelectedCabinLayout_LayoutChanged;
                     mSelectedCabinLayout.CabinSlotsChanged -= SelectedCabinLayout_LayoutChanged;
                 }
+
+                value?.LoadCabinLayoutFromFile();
+
                 mSelectedCabinLayout = value;
                 InvokePropertyChanged();
                 SelectedCabinDeck = null;

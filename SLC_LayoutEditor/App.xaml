@@ -22,6 +22,7 @@
             <converter:NotNullToBooleanConverter x:Key="NotNullToBooleanConverter"/>
             <converter:EqualsToVisibilityConverter x:Key="EqualsToVisibilityConverter"/>
             <converter:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+            <converter:OffsetConverter x:Key="OffsetConverter"/>
 
             <ImageBrush x:Key="CrewAreaIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_galley.png"/>
             <ImageBrush x:Key="FirstClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_first_class.png"/>

@@ -12,11 +12,6 @@
         ToolTip="{Binding ElementName=layout, Path=CabinSlot.Type, Converter={StaticResource EnumDescriptionConverter}}"
         ToolTipService.InitialShowDelay="1000">
     <Border BorderThickness="2" CornerRadius="3"
-            Height="40" Width="40" Margin="1" IsHitTestVisible="False"
-            Background="{StaticResource DisabledColorBrush}"
-            BorderBrush="{StaticResource DisabledColorBrush}"
-            Visibility="{Binding ElementName=layout, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-    <Border BorderThickness="2" CornerRadius="3"
             x:Name="content" IsHitTestVisible="False">
         <Border.Style>
             <Style TargetType="Border">
@@ -111,7 +106,7 @@
         </Border.Style>
         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
             <TextBlock.Style>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                     <Setter Property="Text" Value="{Binding ElementName=layout, Path=CabinSlot.DisplayText, UpdateSourceTrigger=PropertyChanged}"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=layout, Path=CabinSlot.TypeId, Converter={StaticResource EnumInRangeConverter}, ConverterParameter=1;5;6;7;8;9;10;17;18}" 
@@ -132,6 +127,11 @@
             </TextBlock.Style>
         </TextBlock>
     </Border>
+    <Border BorderThickness="2" CornerRadius="3"
+            Height="40" Width="40" Margin="1" IsHitTestVisible="False"
+            Background="{StaticResource DisabledColorBrush}"
+            BorderBrush="{StaticResource DisabledColorBrush}"
+            Visibility="{Binding ElementName=layout, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     <Border BorderThickness="2" CornerRadius="3"
             Height="40" Width="40" Margin="1" IsHitTestVisible="False"
             x:Name="error_highlight" Opacity=".55"/>

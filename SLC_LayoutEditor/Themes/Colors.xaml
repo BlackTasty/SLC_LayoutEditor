@@ -29,6 +29,8 @@
     <Color x:Key="ButtonBackgroundPressedColor">#44538255</Color>
 
     <Color x:Key="AccentColor">#d8b4f0</Color>
+    <Color x:Key="AccentHoverColor">#dfc5f0</Color>
+    <Color x:Key="AccentPressedColor">#c89ae7</Color>
 
     <Color x:Key="WarnColor">#FDFF9E</Color>
     <Color x:Key="WarnLightColor">#feffc5</Color>
@@ -123,6 +125,12 @@
     <SolidColorBrush x:Key="ButtonBackgroundPressedColorBrush" Color="{StaticResource ButtonBackgroundPressedColor}"/>
 
     <SolidColorBrush x:Key="AccentColorBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentHoverColorBrush" Color="{StaticResource AccentHoverColor}"/>
+    <SolidColorBrush x:Key="AccentPressedColorBrush" Color="{StaticResource AccentPressedColor}"/>
+
+    <SolidColorBrush x:Key="AccentBackColorBrush" Color="{StaticResource AccentColor}" Opacity=".6"/>
+    <SolidColorBrush x:Key="AccentBackHoverColorBrush" Color="{StaticResource AccentHoverColor}" Opacity=".6"/>
+    <SolidColorBrush x:Key="AccentBackPressedColorBrush" Color="{StaticResource AccentPressedColor}" Opacity=".6"/>
 
     <SolidColorBrush x:Key="ButtonWarnBorderColorBrush" Color="{StaticResource WarnColor}"/>
     <SolidColorBrush x:Key="ButtonWarnBorderHoverColorBrush" Color="{StaticResource WarnLightColor}"/>

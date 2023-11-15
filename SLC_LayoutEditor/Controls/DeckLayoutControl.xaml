@@ -8,10 +8,8 @@
             d:DesignHeight="450" d:DesignWidth="800"
             x:Name="container" Margin="0,0,0,8"
             Loaded="container_Loaded">
-    <Border Padding="64,0,0,0" Height="75"
-            Background="{DynamicResource BackgroundLightBrush}"
-            HorizontalAlignment="Left" CornerRadius="0,40,40,0"
-            x:Name="card_deckTitle">
+    <Border x:Name="card_deckTitle" Padding="64,0,0,0" Height="75" Style="{DynamicResource CardStyle}"
+            HorizontalAlignment="Left" CornerRadius="0,40,40,0">
         <Border.Effect>
             <DropShadowEffect Color="{DynamicResource BackgroundDark}" Opacity=".4"
                               ShadowDepth="4" BlurRadius="10"/>
@@ -29,7 +27,7 @@
                 <TextBlock FontSize="20" FontWeight="Bold"
                            Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.FloorName}">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                             <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor, StringFormat={}Floor {0}}"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor}" Value="1">
@@ -49,7 +47,7 @@
                     </TextBlock.Style>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal" Margin="16,4,16,0">
-                    <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
+                    <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
@@ -64,7 +62,7 @@
                             </TextBlock.Style>
                         </TextBlock>
                     </Border>
-                    <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
+                    <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
@@ -79,7 +77,7 @@
                             </TextBlock.Style>
                         </TextBlock>
                     </Border>
-                    <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource ButtonBorderColorBrush}"
+                    <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonBorderColorBrush}"
                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                         <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
 

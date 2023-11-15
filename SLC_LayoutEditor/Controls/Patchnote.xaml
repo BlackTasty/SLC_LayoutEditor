@@ -9,11 +9,11 @@
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
         <TextBlock Text="SLC Layout Editor" FontSize="28" Margin="4,0"
                    FontStyle="{Binding Nightly, ElementName=patchnote}"/>
-        <Border Style="{DynamicResource CardStyle}" VerticalAlignment="Top">
+        <Border Style="{DynamicResource ChipStyle}" VerticalAlignment="Top">
             <TextBlock Style="{DynamicResource CardTextStyle}"
                        Text="{Binding PatchNumber, ElementName=patchnote, FallbackValue=v1.0.0.0}"/>
         </Border>
-        <Border Style="{DynamicResource CardStyle}" Background="{DynamicResource ErrorForegroundColorBrush}" VerticalAlignment="Top"
+        <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}" VerticalAlignment="Top"
                 Visibility="{Binding IsHotfix, ElementName=patchnote, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Style="{DynamicResource CardTextStyle}" Text="Hotfix"/>
         </Border>

@@ -75,10 +75,12 @@
     <Compile Include="Controls\LayoutProblemText.xaml.cs">
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LayoutSelectorInnerCardAdorner.cs" />
     <Compile Include="Controls\Patchnote.xaml.cs">
       <DependentUpon>Patchnote.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\RefinedExpander.cs" />
+    <Compile Include="Controls\RefinedToggleButton.cs" />
     <Compile Include="Controls\RoundedCornersPolygon.cs" />
     <Compile Include="Controls\SeatCapacityBox.xaml.cs">
       <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
@@ -89,6 +91,7 @@
     <Compile Include="Converter\GreaterThanConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converter\OffsetConverter.cs" />
     <Compile Include="Converter\StringNotEmptyConverter.cs" />
     <Compile Include="Converter\StringNotEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />
@@ -148,7 +151,6 @@
     </Compile>
     <Compile Include="ViewModel\AddAirplaneDialogViewModel.cs" />
     <Compile Include="ViewModel\AddCabinLayoutDialogViewModel.cs" />
-    <Compile Include="ViewModel\CabinLayoutControlViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -275,6 +277,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Styles\TextBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\ToggleButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

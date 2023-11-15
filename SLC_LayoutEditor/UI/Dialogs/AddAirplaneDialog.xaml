@@ -12,8 +12,7 @@
     </DockPanel.DataContext>
     <TextBlock DockPanel.Dock="Top" Text="Create a new airplane" Margin="4"
                Style="{StaticResource Title1TextStyle}"/>
-    <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Airplane name"
-               Style="{StaticResource DefaultTextStyle}"/>
+    <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Airplane name"/>
     <TextBox DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"/>
     <TextBlock DockPanel.Dock="Top" Margin="8,2,8,8" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"
                Foreground="{StaticResource ErrorForegroundColorBrush}"/>

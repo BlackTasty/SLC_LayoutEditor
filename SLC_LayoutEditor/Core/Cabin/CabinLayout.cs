@@ -21,6 +21,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private VeryObservableCollection<CabinDeck> mCabinDecks = new VeryObservableCollection<CabinDeck>("CabinDecks");
 
         private bool mShowDuplicateDoorsIssues;
+        private bool isLoaded;
 
         public string LayoutName
         {
@@ -168,6 +169,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public string FilePath => layoutFile.FullName;
 
+        public bool IsLoaded => isLoaded;
+
         public CabinLayout(string layoutName, string airplaneName)
         {
             mLayoutName = layoutName;
@@ -179,8 +182,9 @@ namespace SLC_LayoutEditor.Core.Cabin
             if (layoutFile.Exists)
             {
                 this.layoutFile = layoutFile;
+                mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
 
-                LoadCabinLayoutFromFile();
+                //LoadCabinLayoutFromFile();
             }
         }
 
@@ -227,10 +231,13 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void LoadCabinLayoutFromFile()
         {
-            mCabinDecks.Clear();
+            if (!isLoaded)
+            {
+                mCabinDecks.Clear();
 
-            mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
-            LoadCabinLayout(File.ReadAllText(layoutFile.FullName));
+                mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
+                LoadCabinLayout(File.ReadAllText(layoutFile.FullName));
+            }
         }
 
         private void LoadCabinLayout(string layout)
@@ -251,6 +258,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             RefreshCapacities();
             RefreshProblemChecks();
+            isLoaded = true;
         }
 
         public CabinDeck RegisterCabinDeck(CabinDeck cabinDeck)

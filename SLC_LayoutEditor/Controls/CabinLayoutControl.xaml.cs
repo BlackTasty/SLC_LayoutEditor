@@ -28,7 +28,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinLayoutControl.xaml
     /// </summary>
-    public partial class CabinLayoutControl : Grid, INotifyPropertyChanged
+    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -103,6 +103,8 @@ namespace SLC_LayoutEditor.Controls
 
         public bool HasUnsavedChanges => Util.HasLayoutChanged(CabinLayout);
 
+        public bool IsHorizontalScrollBarVisible => deck_scroll.ComputedHorizontalScrollBarVisibility == Visibility.Visible;
+
         #region SelectedCabinSlotFloor property
         public int SelectedCabinSlotFloor
         {
@@ -162,6 +164,7 @@ namespace SLC_LayoutEditor.Controls
 
             OnLayoutRegenerated(EventArgs.Empty);
             RefreshState();
+            InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
         }
 
         private void AddCabinDeckToUI(CabinDeck cabinDeck)
@@ -382,6 +385,11 @@ namespace SLC_LayoutEditor.Controls
         private void MakeTemplate_Click(object sender, RoutedEventArgs e)
         {
             CabinLayout template = CabinLayout.MakeTemplate();
+        }
+
+        private void deck_scroll_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
         }
     }
 }

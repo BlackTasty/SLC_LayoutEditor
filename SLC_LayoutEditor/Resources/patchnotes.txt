@@ -8,6 +8,7 @@ Changed: Improved the visual appearance of the deck title
 Changed: The slot configurator at the bottom of the editor is now centered and put into a card
 Changed: The title in the slot configurator now shows the deck name instead of the floor number
 Changed: Adjusted color for supersonic seats to match that of the editor on the SLC website
+Changed: Increased highlight opacity for selected slots
 Fixed: Clicking any slot in a layout would cause the UI to re-render the whole deck when it was not required
 Fixed: Adding or removing rows/columns now trigger the check for unsaved changes
 Fixed: Slots that have the issue highlighting and are selected would keep the highlight even after changing the slot type

@@ -20,6 +20,5 @@
                 Visibility="{Binding ElementName=dialog, Path=RightButtonVisible}"/>
     </StackPanel>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="{Binding ElementName=dialog, Path=Message}"
-               TextWrapping="Wrap" FontSize="14"
-               Style="{StaticResource DefaultTextStyle}"/>
+               TextWrapping="Wrap" FontSize="14"/>
 </DockPanel>

@@ -17,7 +17,7 @@
         <TextBlock Text="{Binding ElementName=container, Path=Capacity, FallbackValue=100}"
                    HorizontalAlignment="Center">
             <TextBlock.Style>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextStyle}">
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                     <Setter Property="FontSize" Value="20"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=container, Path=Capacity, Converter={StaticResource GreaterThanConverter}, ConverterParameter=999}"
