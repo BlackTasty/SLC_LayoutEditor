@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tasty.ViewModel;
+using Tasty.ViewModel.Core.Enums;
+using Tasty.ViewModel.Core.Events;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
@@ -13,9 +15,13 @@ namespace SLC_LayoutEditor.Core.Cabin
         private DirectoryInfo layoutSetFolder;
 
         private bool mIsLoadingLayouts;
+        private bool mIsTemplatingMode;
+
         private string mAirplaneName; //e.g. Airbus A320
-        private VeryObservableCollection<CabinLayout> mCabinLayouts = new VeryObservableCollection<CabinLayout>("CabinLayouts");
+        private VeryObservableCollection<CabinLayout> mCabinLayouts = new VeryObservableCollection<CabinLayout>(nameof(CabinLayouts));
+        private VeryObservableCollection<CabinLayout> mTemplates = new VeryObservableCollection<CabinLayout>(nameof(Templates));
         private int mLayoutCount;
+        private int mTemplateCount;
 
         public bool IsLoadingLayouts
         {
@@ -28,7 +34,19 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public bool IsCabinLayoutSelectionEnabled => !IsLoadingLayouts && LayoutCount > 0;
+        public bool IsTemplatingMode
+        {
+            get => mIsTemplatingMode;
+            set
+            {
+                mIsTemplatingMode = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(IsCabinLayoutSelectionEnabled));
+            }
+        }
+
+
+        public bool IsCabinLayoutSelectionEnabled => !IsLoadingLayouts && !mIsTemplatingMode ? LayoutCount > 0 : TemplateCount > 0;
 
         public string AirplaneName
         {
@@ -37,11 +55,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 mAirplaneName = value;
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(DisplayText));
             }
         }
-
-        public string DisplayText => string.Format("{0} ({1} layouts)", mAirplaneName, mLayoutCount);
 
         public VeryObservableCollection<CabinLayout> CabinLayouts
         {
@@ -53,6 +68,16 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public VeryObservableCollection<CabinLayout> Templates
+        {
+            get => mTemplates;
+            set
+            {
+                mTemplates = value;
+                InvokePropertyChanged();
+            }
+        }
+
         public int LayoutCount
         {
             get => mLayoutCount;
@@ -60,8 +85,30 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 mLayoutCount = value;
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(DisplayText));
-                InvokePropertyChanged(nameof(IsCabinLayoutSelectionEnabled));
+                if (!mIsTemplatingMode)
+                {
+                    InvokePropertyChanged(nameof(CurrentCountText));
+                    InvokePropertyChanged(nameof(IsCabinLayoutSelectionEnabled));
+                }
+            }
+        }
+
+        public string CurrentCountText => !mIsTemplatingMode ? (mLayoutCount != 1 ? string.Format("{0} layouts", mLayoutCount) : "1 layout") :
+                                                mTemplateCount != 1 ? string.Format("{0} templates", mTemplateCount) : "1 template";
+
+        public int TemplateCount
+        {
+            get => mTemplateCount;
+            private set
+            {
+                mTemplateCount = value;
+                InvokePropertyChanged();
+
+                if (mIsTemplatingMode)
+                {
+                    InvokePropertyChanged(nameof(CurrentCountText));
+                    InvokePropertyChanged(nameof(IsCabinLayoutSelectionEnabled));
+                }
             }
         }
 
@@ -71,8 +118,12 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinLayoutSet(DirectoryInfo layoutSetFolder)
         {
+            mCabinLayouts.CollectionUpdated += CabinLayouts_CollectionUpdated;
+            mTemplates.CollectionUpdated += Templates_CollectionUpdated; ;
+
             this.layoutSetFolder = layoutSetFolder;
             mAirplaneName = layoutSetFolder.Name;
+            DirectoryInfo templateFolder = new DirectoryInfo(App.GetTemplatePath(mAirplaneName));
 
             if (!layoutSetFolder.Exists)
             {
@@ -80,7 +131,14 @@ namespace SLC_LayoutEditor.Core.Cabin
                 //mCabinLayouts.Add(new CabinLayout("Default"));
             }
 
+            if (!templateFolder.Exists)
+            {
+                Directory.CreateDirectory(templateFolder.FullName);
+            }
+
+
             LayoutCount = layoutSetFolder.EnumerateFiles("*.txt").Count();
+            TemplateCount = templateFolder.EnumerateFiles("*.txt").Count();
         }
 
         public async Task LoadCabinLayouts()
@@ -91,6 +149,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
 
             List<CabinLayout> cabinLayouts = new List<CabinLayout>();
+            List<CabinLayout> templates = new List<CabinLayout>();
 
             await Task.Run(() =>
             {
@@ -99,18 +158,40 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     cabinLayouts.Add(new CabinLayout(cabinLayoutFile));
                 }
+
+                foreach (FileInfo templateFile in new DirectoryInfo(App.GetTemplatePath(mAirplaneName)).EnumerateFiles("*.txt"))
+                {
+                    templates.Add(new CabinLayout(templateFile));
+                }
+
                 IsLoadingLayouts = false;
-                InvokePropertyChanged(nameof(DisplayText));
             });
 
             mCabinLayouts.Clear();
+            mTemplates.Clear();
+
             mCabinLayouts.AddRange(cabinLayouts);
-            LayoutCount = mCabinLayouts.Count;
+            mTemplates.AddRange(templates);
+        }
+
+        public void ToggleTemplatingMode(bool showTemplates)
+        {
+            IsTemplatingMode = showTemplates;
         }
 
         public override string ToString()
         {
             return mAirplaneName;
+        }
+
+        private void Templates_CollectionUpdated(object sender, CollectionUpdatedEventArgs<CabinLayout> e)
+        {
+            TemplateCount = e.ChangedCollection.Count;
+        }
+
+        private void CabinLayouts_CollectionUpdated(object sender, CollectionUpdatedEventArgs<CabinLayout> e)
+        {
+            LayoutCount = mCabinLayouts.Count;
         }
     }
 }

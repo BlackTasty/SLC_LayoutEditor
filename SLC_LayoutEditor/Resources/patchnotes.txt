@@ -1,4 +1,4 @@
-﻿13.11.2023
+﻿16.11.2023
 Added: Hovering over any slot now shows the type as a tooltip
 Added: A new menu item "Roadmap" has been added to "System"
 Added: The deck issue count is now visible below the deck title
@@ -19,3 +19,4 @@ Fixed: Reloading from disk now properly resets the unsaved changes state
 Fixed: Fixed an issue where lowercase letters on a cabin layout would let the editor fall back to the aisle slot type when reading from file
 Fixed: The changelog would only show when the editor was the active view
 Fixed: There was an issue where switching layouts with unsaved changes would close the editor after confirming the dialog with "Yes" or "No"
+Fixed: The text on some confirmation dialogs was cut off

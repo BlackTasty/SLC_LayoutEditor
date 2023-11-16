@@ -5,7 +5,7 @@
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
            mc:Ignorable="d" Name="dialog"
-           Height="170" Width="350">
+           MinHeight="170" Width="370">
     <TextBlock DockPanel.Dock="Top" Text="{Binding ElementName=dialog, Path=Title}" Style="{DynamicResource Title1TextStyle}" Margin="4"/>
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">

@@ -76,6 +76,7 @@
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LayoutSelectorInnerCardAdorner.cs" />
+    <Compile Include="Controls\Material\ShadowAssist.cs" />
     <Compile Include="Controls\Patchnote.xaml.cs">
       <DependentUpon>Patchnote.xaml</DependentUpon>
     </Compile>
@@ -86,6 +87,7 @@
     <Compile Include="Controls\SeatCapacityBox.xaml.cs">
       <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Material\ToggleButtonAssist.cs" />
     <Compile Include="Converter\AircraftListSortConverter.cs" />
     <Compile Include="Converter\EnumDescriptionConverter.cs" />
     <Compile Include="Converter\EnumInRangeConverter.cs" />
@@ -126,10 +128,12 @@
     <Compile Include="Core\Patcher\UpdateManager.cs" />
     <Compile Include="Core\Patcher\UpdateStatus.cs" />
     <Compile Include="Core\Patcher\PatcherUtil.cs" />
+    <Compile Include="Core\Patcher\VersionData.cs" />
     <Compile Include="FixedValues.cs" />
     <Compile Include="StyleTester.xaml.cs">
       <DependentUpon>StyleTester.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TemplateSelector\AircraftItemTemplateSelector.cs" />
     <Compile Include="UI\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
@@ -145,6 +149,9 @@
     <Compile Include="UI\Dialogs\ConfirmationDialog.xaml.cs">
       <DependentUpon>ConfirmationDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\MakeTemplateDialog.xaml.cs">
+      <DependentUpon>MakeTemplateDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -153,9 +160,11 @@
     </Compile>
     <Compile Include="ViewModel\AddAirplaneDialogViewModel.cs" />
     <Compile Include="ViewModel\AddCabinLayoutDialogViewModel.cs" />
+    <Compile Include="ViewModel\AddDialogViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\MakeTemplateDialogViewModel.cs" />
     <Compile Include="ViewModel\MementoViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Page Include="App.xaml">
@@ -295,6 +304,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\ChangelogDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\MakeTemplateDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

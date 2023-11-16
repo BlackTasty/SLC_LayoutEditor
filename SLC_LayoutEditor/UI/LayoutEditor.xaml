@@ -20,7 +20,24 @@
         <DockPanel Width="346" Margin="8" LastChildFill="False">
             <Border DockPanel.Dock="Top" Style="{DynamicResource CardStyle}">
                 <StackPanel>
-                    <TextBlock Text="Aircraft" Margin="4,0" Style="{StaticResource Title3TextStyle}"/>
+                    <DockPanel Margin="0,0,0,4">
+                        <ToggleButton Style="{StaticResource TemplateSwitchToggleButton}" DockPanel.Dock="Right"
+                                      IsChecked="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Setter Property="Text" Value="Layout mode"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <Setter Property="Text" Value="Template mode"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="Aircraft" Margin="4,0" Style="{StaticResource Title3TextStyle}"/>
+                    </DockPanel>
                     <DockPanel Margin="4,0">
                         <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add new airplane"
                                 Click="AddAirplane_Click" Style="{StaticResource BorderedIconButton}" Content="{StaticResource Add}">
@@ -29,7 +46,6 @@
                                                   ItemsSource="{Binding LayoutSets, Converter={StaticResource AircraftListSortConverter}}"
                                                   SelectedItem="{Binding SelectedLayoutSet}" Grid.IsSharedSizeScope="True"
                                                   Watermark="{Binding SelectedLayoutSetText}"
-                                                  DisplayMemberPath="AirplaneName"
                                                   Text="{Binding SelectedLayoutSet.AirplaneName}"
                                                   AlternationCount="2">
                             <controls:RefinedComboBox.Style>
@@ -46,16 +62,27 @@
                                                     <TextBlock Text="{Binding AirplaneName}" Margin="0,0,8,0"/>
                                                     <Border BorderThickness="1,0" BorderBrush="{DynamicResource AccentColorBrush}"
                                                             DockPanel.Dock="Right" Grid.Column="1" Margin="0,-4,0,-16"/>
-                                                    <TextBlock Text="{Binding LayoutCount, StringFormat={}{0} layouts}"
-                                                               DockPanel.Dock="Right" FontStyle="Italic" Margin="8,0,0,0"
-                                                               Grid.Column="2" TextAlignment="Right">
+                                                    <TextBlock DockPanel.Dock="Right" FontStyle="Italic" Margin="8,0,0,0"
+                                                               Grid.Column="2" TextAlignment="Right"
+                                                               Text="{Binding CurrentCountText}">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Foreground" Value="{DynamicResource ForegroundSecondaryColorBrush}"/>
                                                                 <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding LayoutCount}" Value="0">
+                                                                    <MultiDataTrigger>
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding IsTemplatingMode}" Value="False"/>
+                                                                            <Condition Binding="{Binding LayoutCount}" Value="0"/>
+                                                                        </MultiDataTrigger.Conditions>
                                                                         <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
-                                                                    </DataTrigger>
+                                                                    </MultiDataTrigger>
+                                                                    <MultiDataTrigger>
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding IsTemplatingMode}" Value="True"/>
+                                                                            <Condition Binding="{Binding TemplateCount}" Value="0"/>
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
+                                                                    </MultiDataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </TextBlock.Style>
@@ -73,17 +100,27 @@
                             IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}">
                         <Grid>
                             <StackPanel Margin="4,0">
-                                <TextBlock Text="Cabin layout" Style="{StaticResource Title3TextStyle}"/>
+                                <TextBlock Text="Cabin layout" Style="{StaticResource Title3TextStyle}" Margin="0,0,0,4"/>
                                 <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True"
                                              Margin="4,0" Visibility="{Binding SelectedLayoutSet.IsLoadingLayouts, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}"/>
                                 <DockPanel DockPanel.Dock="Top" IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}">
                                     <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add new layout" Content="{StaticResource Add}"
                                             Click="AddCabinLayout_Click" Style="{StaticResource BorderedIconButton}"/>
-                                    <controls:RefinedComboBox x:Name="combo_layouts" Margin="0,4,8,4" ItemsSource="{Binding SelectedLayoutSet.CabinLayouts, UpdateSourceTrigger=PropertyChanged}"
+                                    <controls:RefinedComboBox x:Name="combo_layouts" Margin="0,4,8,4"
                                                               SelectedItem="{Binding SelectedCabinLayout}"
                                                               Watermark="{Binding SelectedLayoutText}"
-                                                              IsEnabled="{Binding SelectedLayoutSet.IsCabinLayoutSelectionEnabled}"/>
-
+                                                              IsEnabled="{Binding SelectedLayoutSet.IsCabinLayoutSelectionEnabled}">
+                                        <controls:RefinedComboBox.Style>
+                                            <Style TargetType="controls:RefinedComboBox" BasedOn="{StaticResource {x:Type controls:RefinedComboBox}}">
+                                                <Setter Property="ItemsSource" Value="{Binding SelectedLayoutSet.CabinLayouts, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedLayoutSet.IsTemplatingMode}">
+                                                        <Setter Property="ItemsSource" Value="{Binding SelectedLayoutSet.Templates, UpdateSourceTrigger=PropertyChanged}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </controls:RefinedComboBox.Style>
+                                    </controls:RefinedComboBox>
                                 </DockPanel>
                             </StackPanel>
                         </Grid>
@@ -346,17 +383,24 @@
                 <controls:CabinLayoutControl x:Name="control_layout" IsEnabled="{Binding SelectedCabinLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                                              CabinLayout="{Binding SelectedCabinLayout, UpdateSourceTrigger=PropertyChanged}"
                                              SelectedSlotsChanged="CabinLayout_SelectedSlotsChanged"
-                                             Changed="CabinLayoutChanged">
+                                             Changed="CabinLayoutChanged"
+                                             TemplatingModeToggled="TemplatingModeToggled">
                 </controls:CabinLayoutControl>
-                <Border VerticalAlignment="Bottom" Padding="12,8" CornerRadius="12,12,0,0"
+                <Border VerticalAlignment="Bottom" CornerRadius="12,12,0,0"
                         HorizontalAlignment="Center" MinWidth="500"
                         Background="{DynamicResource BackgroundDarkBrush}">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Margin" Value="0,0,0,7"/>
+                            <Setter Property="Margin" Value="0,0,0,0"/>
+                            <Setter Property="Padding" Value="12,8"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                    <Setter Property="Margin" Value="0,0,0,0"/>
+                                <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                    <Setter Property="Margin" Value="0,0,0,7"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
+                                    <Setter Property="BorderThickness" Value="1.5,1.5,1.5,0"/>
+                                    <Setter Property="Padding" Value="10.5,8"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

@@ -15,7 +15,10 @@ namespace SLC_LayoutEditor.Converter
         {
             if (value is IEnumerable<CabinLayoutSet> layoutSets)
             {
-                return layoutSets.OrderByDescending(x => x.LayoutCount).ThenBy(x => x.AirplaneName);
+                bool isTemplatingMode = layoutSets.FirstOrDefault()?.IsTemplatingMode ?? false;
+
+                return !isTemplatingMode ? layoutSets.OrderByDescending(x => x.LayoutCount > 0).ThenBy(x => x.AirplaneName) :
+                    layoutSets.OrderByDescending(x => x.TemplateCount > 0).ThenBy(x => x.AirplaneName);
             }
 
             return value;

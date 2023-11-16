@@ -103,6 +103,7 @@ namespace SLC_LayoutEditor.UI
         private void SaveLayout(LayoutEditorViewModel vm)
         {
             vm.SelectedCabinLayout.SaveLayout();
+            control_layout.GenerateThumbnailForLayout(true);
 
             if (App.Settings.OpenFolderWithEditedLayout)
             {
@@ -342,6 +343,11 @@ namespace SLC_LayoutEditor.UI
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //vm.SelectedCabinLayout.DeepRefreshProblemChecks();
+        }
+
+        private void TemplatingModeToggled(object sender, EventArgs e)
+        {
+            vm.IsTemplatingMode = control_layout.IsTemplatingMode;
         }
     }
 }

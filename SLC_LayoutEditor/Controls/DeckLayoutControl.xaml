@@ -91,6 +91,8 @@
             PreviewMouseLeftButtonUp="MultiSelect_PreviewMouseLeftButtonUp"
             PreviewMouseMove="MultiSelect_PreviewMouseMove"
             MouseLeave="MultiSelect_MouseLeave"
+            Loaded="layout_deck_Loaded"
+            SizeChanged="layout_deck_SizeChanged"
             Background="Transparent">
             
     </Canvas>

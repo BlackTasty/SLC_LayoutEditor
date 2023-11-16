@@ -24,9 +24,13 @@ namespace SLC_LayoutEditor
         private static readonly string defaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "Tasty Apps", "SLC Layout Editor");
 
+        private static readonly string thumbnailsPath = Path.Combine(Path.GetTempPath(), "Tasty Apps", "SLC Layout Editor", "thumbnails");
+
         public static bool IsDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
         public static string DefaultEditorLayoutsPath => defaultEditorLayoutsPath;
+
+        public static string ThumbnailsPath => thumbnailsPath;
 
         public static AppSettings Settings { get; set; } = new AppSettings();
 
@@ -61,6 +65,11 @@ namespace SLC_LayoutEditor
         internal static string GetVersionText(bool versionNumberOnly = false)
         {
             string version = PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3);
+
+            if (version.EndsWith(".0"))
+            {
+                version = version.Substring(0, version.Length - 2);
+            }
 
             if (!versionNumberOnly)
             {

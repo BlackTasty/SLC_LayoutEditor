@@ -123,6 +123,39 @@ namespace SLC_LayoutEditor.Controls
             return selection.IntersectsWith(currentRect);
         }
 
+        public void Dispose()
+        {
+            if (CabinSlot != null)
+            {
+                CabinSlot.ProblematicChanged -= CabinSlot_ProblematicChanged;
+            }
+        }
+
+        private Brush storedHoverBrush;
+        private Brush storedErrorBrush;
+        private bool storedSelectedFlag;
+
+        public void DisableEffects()
+        {
+            storedErrorBrush = error_highlight.Background;
+            storedHoverBrush = layout.Background;
+            storedSelectedFlag = isSelected;
+
+            error_highlight.Background = Brushes.Transparent;
+            layout.Background = Brushes.Transparent;
+            IsSelected = false;
+        }
+
+        public void RestoreEffects()
+        {
+            error_highlight.Background = storedErrorBrush;
+            layout.Background = storedHoverBrush;
+            IsSelected = storedSelectedFlag;
+
+            storedErrorBrush = null;
+            storedHoverBrush = null;
+        }
+
         private void RegisterCabinSlotProblemEvent()
         {
             if (CabinSlot != null)
@@ -132,14 +165,6 @@ namespace SLC_LayoutEditor.Controls
                 {
                     RefreshHighlighting();
                 }
-            }
-        }
-
-        public void Dispose()
-        {
-            if (CabinSlot != null)
-            {
-                CabinSlot.ProblematicChanged -= CabinSlot_ProblematicChanged;
             }
         }
 

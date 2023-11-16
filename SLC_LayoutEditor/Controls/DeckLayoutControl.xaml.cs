@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +42,8 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<RemoveCabinDeckEventArgs> RemoveDeckClicked;
         public event EventHandler<EventArgs> LayoutRegenerated;
         public event EventHandler<EventArgs> LayoutLoading;
+
+        public event EventHandler<EventArgs> DeckRendered;
 
         public event EventHandler<EventArgs> RowsChanged;
         public event EventHandler<EventArgs> ColumnsChanged;
@@ -177,6 +180,85 @@ namespace SLC_LayoutEditor.Controls
             Console.WriteLine("Total time generating deck: " + sw.ElapsedMilliseconds);
             sw.Stop();
 #endif
+        }
+
+        public void GenerateThumbnailForDeck(string thumbnailPath, bool overwrite = false)
+        {
+            string deckThumbnailPath = System.IO.Path.Combine(thumbnailPath, CabinDeck.Floor + ".png");
+
+            if (!File.Exists(deckThumbnailPath) || overwrite)
+            {
+                int offsetX = 91;
+                int offsetY = 165;
+
+                if (layout_deck.ActualWidth <= 0 || layout_deck.ActualHeight <= 0)
+                {
+                    return;
+                }
+
+                int width = (int)layout_deck.ActualWidth + 106;
+                int height = (int)layout_deck.ActualHeight + 98;
+
+                #region Temporarily disable highlighting on slots
+                foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
+                {
+                    cabinSlotControl.DisableEffects();
+                }
+                #endregion
+
+                RenderTargetBitmap bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+                bitmap.Render(this);
+                CroppedBitmap croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(offsetX, offsetY, width - offsetX - 83, height - offsetY));
+
+                double scalingFactor = .5;
+                TransformedBitmap transformedBitmap = new TransformedBitmap(croppedBitmap, new ScaleTransform(scalingFactor, scalingFactor));
+
+                PngBitmapEncoder pngImage = new PngBitmapEncoder();
+                pngImage.Frames.Add(BitmapFrame.Create(transformedBitmap));
+
+                File.Delete(deckThumbnailPath);
+                using (Stream fileStream = File.Create(deckThumbnailPath))
+                {
+                    pngImage.Save(fileStream);
+                }
+
+                #region Restore highlighting on slots
+                foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
+                {
+                    cabinSlotControl.RestoreEffects();
+                }
+                #endregion
+            }
+        }
+
+        public void Dispose()
+        {
+            if (CabinDeck != null)
+            {
+                CabinDeck.DeckSlotLayoutChanged -= CabinDeck_DeckSlotLayoutChanged;
+
+                foreach (CabinSlotControl cabinSlotControl in layout_deck?.Children.OfType<CabinSlotControl>())
+                {
+                    cabinSlotControl.PreviewMouseDown -= SlotLayout_PreviewMouseDown;
+                }
+
+                foreach (Button button in layout_deck?.Children.OfType<Button>())
+                {
+                    button.Click -= AddColumnButton_Click;
+                    button.Click -= SelectColumnButton_Click;
+                    button.Click -= RemoveColumnButton_Click;
+                }
+            }
+
+            if (addColumnButton != null)
+            {
+                addColumnButton.Click -= AddColumnButton_Click;
+            }
+
+            if (addRowButton != null)
+            {
+                addRowButton.Click -= AddRowButton_Click;
+            }
         }
 
         #region Column- and row add events
@@ -833,36 +915,6 @@ namespace SLC_LayoutEditor.Controls
             OnRemoveDeckClicked(new RemoveCabinDeckEventArgs(CabinDeck));
         }
 
-        protected virtual void OnCabinSlotClicked(CabinSlotClickedEventArgs e)
-        {
-            CabinSlotClicked?.Invoke(this, e);
-        }
-
-        protected virtual void OnLayoutRegenerated(EventArgs e)
-        {
-            LayoutRegenerated?.Invoke(this, e);
-        }
-
-        protected virtual void OnLayoutLoading(EventArgs e)
-        {
-            LayoutLoading?.Invoke(this, e);
-        }
-
-        protected virtual void OnRemoveDeckClicked(RemoveCabinDeckEventArgs e)
-        {
-            RemoveDeckClicked?.Invoke(this, e);
-        }
-
-        protected virtual void OnRowsChanged(EventArgs e)
-        {
-            RowsChanged?.Invoke(this, e);
-        }
-
-        protected virtual void OnColumnsChanged(EventArgs e)
-        {
-            ColumnsChanged?.Invoke(this, e);
-        }
-
         private void MultiSelect_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isMouseDown = true;
@@ -996,34 +1048,49 @@ namespace SLC_LayoutEditor.Controls
             selectionBox = null;
         }
 
-        public void Dispose()
+        private void layout_deck_Loaded(object sender, RoutedEventArgs e)
         {
-            if (CabinDeck != null)
-            {
-                CabinDeck.DeckSlotLayoutChanged -= CabinDeck_DeckSlotLayoutChanged;
+            OnDeckRendered(EventArgs.Empty);
+        }
 
-                foreach (CabinSlotControl cabinSlotControl in layout_deck?.Children.OfType<CabinSlotControl>())
-                {
-                    cabinSlotControl.PreviewMouseDown -= SlotLayout_PreviewMouseDown;
-                }
+        protected virtual void OnCabinSlotClicked(CabinSlotClickedEventArgs e)
+        {
+            CabinSlotClicked?.Invoke(this, e);
+        }
 
-                foreach (Button button in layout_deck?.Children.OfType<Button>())
-                {
-                    button.Click -= AddColumnButton_Click;
-                    button.Click -= SelectColumnButton_Click;
-                    button.Click -= RemoveColumnButton_Click;
-                }
-            }
-            
-            if (addColumnButton != null)
-            {
-                addColumnButton.Click -= AddColumnButton_Click;
-            }
+        protected virtual void OnLayoutRegenerated(EventArgs e)
+        {
+            LayoutRegenerated?.Invoke(this, e);
+        }
 
-            if (addRowButton != null)
-            {
-                addRowButton.Click -= AddRowButton_Click;
-            }
+        protected virtual void OnLayoutLoading(EventArgs e)
+        {
+            LayoutLoading?.Invoke(this, e);
+        }
+
+        protected virtual void OnRemoveDeckClicked(RemoveCabinDeckEventArgs e)
+        {
+            RemoveDeckClicked?.Invoke(this, e);
+        }
+
+        protected virtual void OnRowsChanged(EventArgs e)
+        {
+            RowsChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnColumnsChanged(EventArgs e)
+        {
+            ColumnsChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnDeckRendered(EventArgs e)
+        {
+            DeckRendered?.Invoke(this, e);
+        }
+
+        private void layout_deck_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            DeckRendered?.Invoke(this, e);
         }
     }
 }

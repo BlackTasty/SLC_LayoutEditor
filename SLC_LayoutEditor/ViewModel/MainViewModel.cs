@@ -277,11 +277,11 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void ShowChangelogIfUpdated()
         {
-            if (App.Settings.LastVersionChangelogShown < UpdateManager.VersionNumber &&
+            if (App.Settings.LastVersionChangelogShown < UpdateManager.VersionData.VersionNumber &&
                 App.Settings.ShowChangesAfterUpdate)
             {
                 ShowChangelog();
-                App.Settings.LastVersionChangelogShown = UpdateManager.VersionNumber;
+                App.Settings.LastVersionChangelogShown = UpdateManager.VersionData.VersionNumber;
                 App.SaveAppSettings();
             }
         }

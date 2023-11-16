@@ -18,7 +18,7 @@ namespace SLC_LayoutEditor.Core.Patcher
     {
         private Stopwatch downloadSpeedStopWatch = new Stopwatch();
         private string currentVersion;
-        private int versionNumber;
+        private VersionData versionData;
         private string newVersion;
 
         private bool updatesReady;
@@ -45,11 +45,11 @@ namespace SLC_LayoutEditor.Core.Patcher
             set
             {
                 currentVersion = value;
-                versionNumber = PatcherUtil.ParseVersion(value, 0);
+                versionData = new VersionData(value);
             }
         }
 
-        internal int VersionNumber => versionNumber;
+        internal VersionData VersionData => versionData;
 
         internal bool UpdatesReady
         {
@@ -301,7 +301,7 @@ namespace SLC_LayoutEditor.Core.Patcher
             if (deleteFile)
                 File.Delete(versionFilePath);
 
-            return PatcherUtil.ParseVersion(newVersion, 0) > versionNumber;
+            return versionData.IsOlder(newVersion);
         }
 
         /// <summary>

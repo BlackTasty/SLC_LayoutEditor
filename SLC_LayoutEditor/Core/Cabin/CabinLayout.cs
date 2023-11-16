@@ -15,7 +15,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         public event EventHandler<EventArgs> CabinSlotsChanged;
         public event EventHandler<EventArgs> CabinDeckCountChanged;
 
-        private FileInfo layoutFile;
+        private readonly FileInfo layoutFile;
+        private readonly bool isTemplate;
 
         private string mLayoutName; //e.g. Default
         private VeryObservableCollection<CabinDeck> mCabinDecks = new VeryObservableCollection<CabinDeck>("CabinDecks");
@@ -62,7 +63,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                                         .Where(x => x.Type == CabinSlotType.SupersonicClassSeat).Count();
         #endregion
 
-        #region Problem checking
+        #region Issue flags
         #region Seat checks
         public IEnumerable<CabinSlot> DuplicateEconomySeats => GetDuplicateSeats(CabinSlotType.EconomyClassSeat);
 
@@ -171,7 +172,12 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool IsLoaded => isLoaded;
 
-        public CabinLayout(string layoutName, string airplaneName)
+        public bool IsTemplate => isTemplate;
+
+        public string ThumbnailDirectory => !IsTemplate ? Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName) :
+            Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName, "templates");
+
+        public CabinLayout(string layoutName, string airplaneName) : this(new FileInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, airplaneName, layoutName + ".txt")))
         {
             mLayoutName = layoutName;
             #region Generate default layout
@@ -180,15 +186,15 @@ namespace SLC_LayoutEditor.Core.Cabin
             deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(deck);
             #endregion
-
-            layoutFile = new FileInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, airplaneName, layoutName + ".txt"));
         }
 
         public CabinLayout(FileInfo layoutFile)
         {
+            this.layoutFile = layoutFile;
+            isTemplate = layoutFile.Directory.Name.Equals("templates", StringComparison.OrdinalIgnoreCase);
+
             if (layoutFile.Exists)
             {
-                this.layoutFile = layoutFile;
                 mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
 
                 //LoadCabinLayoutFromFile();
@@ -268,8 +274,9 @@ namespace SLC_LayoutEditor.Core.Cabin
             isLoaded = true;
         }
 
-        public CabinDeck RegisterCabinDeck(CabinDeck cabinDeck)
+        public CabinDeck AddCabinDeck(CabinDeck cabinDeck)
         {
+            //cabinDeck.IsTemplate = isTemplate;
             cabinDeck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(cabinDeck);
             OnCabinDeckCountChanged(EventArgs.Empty);
@@ -282,6 +289,13 @@ namespace SLC_LayoutEditor.Core.Cabin
             int index = mCabinDecks.IndexOf(cabinDeck);
 
             cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
+
+            string thumbnailPath = Path.Combine(ThumbnailDirectory, cabinDeck.Floor + ".png");
+
+            if (File.Exists(thumbnailPath))
+            {
+                File.Delete(thumbnailPath);
+            }
             mCabinDecks.Remove(cabinDeck);
 
             if (index < mCabinDecks.Count) // Shift floor numbers for each deck after the removed
@@ -301,16 +315,14 @@ namespace SLC_LayoutEditor.Core.Cabin
                 LayoutName = LayoutName + " - Template"
             };
 
-            // TODO: Change "this.CabinDecks" to "template.CabinDecks"
-            foreach (CabinSlot cabinSlot in this.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => !IsBasicSlotType(x)))
+            foreach (CabinSlot cabinSlot in template.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => !IsBasicSlotType(x)))
             {
                 cabinSlot.IsEvaluationActive = false;
                 cabinSlot.Type = CabinSlotType.Aisle;
                 cabinSlot.IsEvaluationActive = true;
             }
 
-            // TODO: Change "this.CabinDecks" to "template.CabinDecks"
-            foreach (CabinSlot cabinSlot in this.CabinDecks.SelectMany(x => x.CabinSlots))
+            foreach (CabinSlot cabinSlot in template.CabinDecks.SelectMany(x => x.CabinSlots))
             {
                 cabinSlot.Validate();
             }

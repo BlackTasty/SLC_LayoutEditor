@@ -49,6 +49,10 @@
     <Color x:Key="ForegroundColor">#FFFFFF</Color>
     <Color x:Key="ForegroundSecondaryColor">#C9C9C9</Color>
 
+    <Color x:Key="TemplatingModeColor">#ffc89e</Color>
+    <Color x:Key="TemplatingModeHoverColor">#ffd9bc</Color>
+    <Color x:Key="TemplatingModePressedColor">#e7a573</Color>
+
     <Color x:Key="SeparatorColor">#424052</Color>
 
     <SolidColorBrush x:Key="CockpitColorBrush" Color="{StaticResource CockpitColor}"/>
@@ -108,8 +112,8 @@
                          MappingMode="Absolute" SpreadMethod="Repeat">
         <GradientStop Color="#45FFFFFF" Offset="0"/>
         <GradientStop Color="#45FFFFFF" Offset=".5"/>
-        <GradientStop Color="{StaticResource ErrorColor}" Offset="1"/>
         <GradientStop Color="{StaticResource ErrorColor}" Offset=".5"/>
+        <GradientStop Color="{StaticResource ErrorColor}" Offset="1"/>
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="DisabledColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".27"/>
@@ -159,4 +163,16 @@
     <SolidColorBrush x:Key="PatchFixedBrush" Color="{DynamicResource WarnColor}"/>
     <SolidColorBrush x:Key="PatchRemovedBrush" Color="{DynamicResource ErrorColor}"/>
     <SolidColorBrush x:Key="PatchDisabledBrush" Color="{DynamicResource ForegroundColor}" Opacity=".45"/>
+
+    <SolidColorBrush x:Key="TemplatingModeBrush" Color="{StaticResource TemplatingModeColor}"/>
+    <SolidColorBrush x:Key="TemplatingModeHoverBrush" Color="{StaticResource TemplatingModeHoverColor}"/>
+    <SolidColorBrush x:Key="TemplatingModePressedBrush" Color="{StaticResource TemplatingModePressedColor}"/>
+    
+    <LinearGradientBrush x:Key="TemplatingModeBackBrush" EndPoint="16,0" StartPoint="0,16" Opacity=".035"
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="#45FFFFFF" Offset="0"/>
+        <GradientStop Color="#45FFFFFF" Offset=".5"/>
+        <GradientStop Color="{StaticResource TemplatingModeColor}" Offset=".5"/>
+        <GradientStop Color="{StaticResource TemplatingModeColor}" Offset="1"/>
+    </LinearGradientBrush>
 </ResourceDictionary>

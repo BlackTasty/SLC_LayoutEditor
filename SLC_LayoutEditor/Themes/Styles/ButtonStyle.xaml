@@ -733,12 +733,14 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource RemoveDeckButtonHoverBackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource ButtonBorderHoverColorBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="{StaticResource RemoveDeckButtonPressedBackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource ButtonBorderPressedColorBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
@@ -747,7 +749,7 @@
     </Style>
 
     <Style x:Key="MakeTemplateButtonStyle" TargetType="Button" BasedOn="{StaticResource AddDeckButtonStyle}">
-        <Setter Property="Foreground" Value="{StaticResource AccentColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TemplatingModeBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -771,10 +773,10 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource AccentHoverColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource TemplatingModeHoverBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource AccentPressedColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource TemplatingModePressedBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -801,13 +803,13 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource RemoveDeckButtonHoverBackgroundBrush}"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource RemoveDeckButtonHoverBackgroundBrush}"/>
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
                             <Setter Property="Foreground" Value="{StaticResource RemoveDeckHoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource RemoveDeckButtonPressedBackgroundBrush}"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource RemoveDeckButtonPressedBackgroundBrush}"/>
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
                             <Setter Property="Foreground" Value="{StaticResource ButtonErrorBackgroundPressedColorBrush}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">

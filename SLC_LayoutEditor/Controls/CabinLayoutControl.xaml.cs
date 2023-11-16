@@ -8,9 +8,11 @@ using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,7 +30,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinLayoutControl.xaml
     /// </summary>
-    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged, IDisposable
+    public partial class CabinLayoutControl : Grid, INotifyPropertyChanged, IDisposable
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -59,10 +61,12 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<EventArgs> LayoutLoading;
         public event EventHandler<CabinSlotClickedEventArgs> SelectedSlotsChanged;
         public event EventHandler<ChangedEventArgs> Changed;
+        public event EventHandler<EventArgs> TemplatingModeToggled;
 
         private DeckLayoutControl activeDeckControl;
-
         private CabinDeck currentRemoveTarget;
+
+        private BackgroundWorker thumbnailGenerator;
 
         #region CabinLayout property
         public CabinLayout CabinLayout
@@ -131,9 +135,59 @@ namespace SLC_LayoutEditor.Controls
             DependencyProperty.Register("SelectedMultiSlotTypeIndex", typeof(int), typeof(CabinLayoutControl), new PropertyMetadata(-1));
         #endregion
 
+        public bool IsTemplatingMode
+        {
+            get { return (bool)GetValue(IsTemplatingModeProperty); }
+            set { SetValue(IsTemplatingModeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsTemplatingMode.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsTemplatingModeProperty =
+            DependencyProperty.Register("IsTemplatingMode", typeof(bool), typeof(CabinLayoutControl), new PropertyMetadata(false, OnIsTemplatingModeChanged));
+
+        private static void OnIsTemplatingModeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is CabinLayoutControl control)
+            {
+                control.OnTemplatingModeToggled(EventArgs.Empty);
+            }
+        }
+
         public CabinLayoutControl()
         {
             InitializeComponent();
+        }
+
+        public void GenerateThumbnailForLayout(bool overwrite = false)
+        {
+            if (CabinLayout != null)
+            {
+                Directory.CreateDirectory(CabinLayout.ThumbnailDirectory);
+
+                foreach (DeckLayoutControl deckLayoutControl in container_decks.Children.OfType<DeckLayoutControl>())
+                {
+                    deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory, overwrite);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (CabinLayout != null)
+            {
+                CabinLayout.CabinSlotsChanged -= CabinLayout_CabinSlotsChanged;
+                CabinLayout.CabinDeckCountChanged -= CabinLayout_CabinDeckCountChanged;
+
+                foreach (DeckLayoutControl deckLayoutControl in container_decks?.Children.OfType<DeckLayoutControl>())
+                {
+                    deckLayoutControl.CabinSlotClicked -= CabinDeckControl_CabinSlotClicked;
+                    deckLayoutControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
+                    deckLayoutControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
+
+                    deckLayoutControl.RowsChanged -= CabinDeckControl_RowOrColumnsChanged;
+                    deckLayoutControl.ColumnsChanged -= CabinDeckControl_RowOrColumnsChanged;
+                }
+            }
         }
 
         private void RefreshCabinLayout()
@@ -150,6 +204,7 @@ namespace SLC_LayoutEditor.Controls
 
                 cabinDeckControl.RowsChanged -= CabinDeckControl_RowOrColumnsChanged;
                 cabinDeckControl.ColumnsChanged -= CabinDeckControl_RowOrColumnsChanged;
+                cabinDeckControl.DeckRendered -= CabinDeckControl_DeckRendered;
             }
             container_decks.Children.Clear();
 
@@ -184,7 +239,17 @@ namespace SLC_LayoutEditor.Controls
 
             cabinDeckControl.RowsChanged += CabinDeckControl_RowOrColumnsChanged;
             cabinDeckControl.ColumnsChanged += CabinDeckControl_RowOrColumnsChanged;
+            cabinDeckControl.DeckRendered += CabinDeckControl_DeckRendered;
             container_decks.Children.Add(cabinDeckControl);
+        }
+
+        private void CabinDeckControl_DeckRendered(object sender, EventArgs e)
+        {
+            Directory.CreateDirectory(CabinLayout.ThumbnailDirectory);
+            if (sender is DeckLayoutControl deckLayoutControl)
+            {
+                deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory);
+            }
         }
 
         private void CabinLayout_CabinDeckCountChanged(object sender, EventArgs e)
@@ -298,7 +363,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void CreateCabinDeck(int rows, int columns)
         {
-            CabinDeck createdDeck = CabinLayout.RegisterCabinDeck(new CabinDeck(CabinLayout.CabinDecks.Count + 1, rows, columns));
+            CabinDeck createdDeck = CabinLayout.AddCabinDeck(new CabinDeck(CabinLayout.CabinDecks.Count + 1, rows, columns));
             AddCabinDeckToUI(createdDeck);
 
             CabinLayout.RefreshCalculated();
@@ -364,6 +429,42 @@ namespace SLC_LayoutEditor.Controls
             InvokePropertyChanged(nameof(HasUnsavedChanges));
         }
 
+        private void MakeTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsTemplatingMode)
+            {
+                string templatesPath = App.GetTemplatePath(CabinLayout.LayoutName);
+                IEnumerable<string> existingTemplates = Directory.Exists(templatesPath) ?
+                    new DirectoryInfo(templatesPath).EnumerateFiles("*.txt").Select(x => x.Name.Replace(".txt", "")) :
+                    new List<string>();
+
+                MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, CabinLayout.LayoutName + " - Template");
+                dialog.DialogClosing += MakeTemplate_DialogClosing;
+
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            }
+        }
+
+        private void MakeTemplate_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.OK)
+            {
+                Directory.CreateDirectory(App.GetTemplatePath(CabinLayout.LayoutName));
+
+                //CabinLayout template = CabinLayout.MakeTemplate();
+            }
+            else
+            {
+                IsTemplatingMode = false;
+            }
+        }
+
+        private void deck_scroll_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
+            InvokePropertyChanged(nameof(IsVerticalScrollBarVisible));
+        }
+
         protected virtual void OnLayoutRegenerated(EventArgs e)
         {
             LayoutRegenerated?.Invoke(this, e);
@@ -385,34 +486,14 @@ namespace SLC_LayoutEditor.Controls
             Changed?.Invoke(this, e);
         }
 
-        private void MakeTemplate_Click(object sender, RoutedEventArgs e)
+        protected virtual void OnTemplatingModeToggled(EventArgs e)
         {
-            CabinLayout template = CabinLayout.MakeTemplate();
+            TemplatingModeToggled?.Invoke(this, e);
         }
 
-        private void deck_scroll_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void container_decks_Loaded(object sender, RoutedEventArgs e)
         {
-            InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
-            InvokePropertyChanged(nameof(IsVerticalScrollBarVisible));
-        }
-
-        public void Dispose()
-        {
-            if (CabinLayout != null)
-            {
-                CabinLayout.CabinSlotsChanged -= CabinLayout_CabinSlotsChanged;
-                CabinLayout.CabinDeckCountChanged -= CabinLayout_CabinDeckCountChanged;
-
-                foreach (DeckLayoutControl deckLayoutControl in container_decks?.Children.OfType<DeckLayoutControl>())
-                {
-                    deckLayoutControl.CabinSlotClicked -= CabinDeckControl_CabinSlotClicked;
-                    deckLayoutControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
-                    deckLayoutControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
-
-                    deckLayoutControl.RowsChanged -= CabinDeckControl_RowOrColumnsChanged;
-                    deckLayoutControl.ColumnsChanged -= CabinDeckControl_RowOrColumnsChanged;
-                }
-            }
+            GenerateThumbnailForLayout();
         }
     }
 }

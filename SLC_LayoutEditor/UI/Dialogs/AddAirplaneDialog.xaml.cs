@@ -30,12 +30,12 @@ namespace SLC_LayoutEditor.UI.Dialogs
         public AddAirplaneDialog(IEnumerable<string> airplaneNames)
         {
             InitializeComponent();
-            (DataContext as AddAirplaneDialogViewModel).ExistingNames.AddRange(airplaneNames);
+            (DataContext as AddDialogViewModel).ExistingNames.AddRange(airplaneNames);
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddAirplaneDialogViewModel).Name)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddDialogViewModel).Name)));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

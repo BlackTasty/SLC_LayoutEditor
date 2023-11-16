@@ -45,7 +45,8 @@ namespace SLC_LayoutEditor.ViewModel
         private int mAutomationSeatStartNumber = 1;
         private int mServiceAreasCount = 1;
 
-        private bool mIsLoadingLayout = false;
+        private bool mIsLoadingLayout;
+        private bool mIsTemplatingMode;
 
         private bool mShowEconomyClassIssues = true;
         private bool mShowPremiumClassIssues = true;
@@ -159,7 +160,11 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged(nameof(IsAddCabinLayoutButtonEnabled));
                 InvokePropertyChanged(nameof(SelectedLayoutSetText));
                 InvokePropertyChanged(nameof(SelectedLayoutText));
-                LoadLayouts();
+
+                if (mSelectedLayoutSet != null)
+                {
+                    LoadLayouts();
+                }
             }
         }
 
@@ -408,6 +413,25 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public bool IsTemplatingMode
+        {
+            get => mIsTemplatingMode;
+            set
+            {
+                if (value != mIsTemplatingMode)
+                {
+                    mIsTemplatingMode = value;
+                    foreach (CabinLayoutSet layoutSet in mLayoutSets)
+                    {
+                        layoutSet.IsTemplatingMode = value;
+                    }
+
+                    InvokePropertyChanged();
+                    InvokePropertyChanged(nameof(LayoutSets));
+                }
+            }
+        }
+
         public LayoutEditorViewModel()
         {
             if (App.Settings == null)
@@ -419,6 +443,13 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mLayoutSets.Add(new CabinLayoutSet(layoutSetFolder));
             }
+
+            mLayoutSets.CollectionUpdated += LayoutSets_CollectionUpdated;
+        }
+
+        private void LayoutSets_CollectionUpdated(object sender, Tasty.ViewModel.Core.Events.CollectionUpdatedEventArgs<CabinLayoutSet> e)
+        {
+            InvokePropertyChanged(nameof(LayoutSets));
         }
 
         private async void LoadLayouts()
