@@ -277,28 +277,40 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SelectRowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Style x:Key="SelectButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="Height" Value="30"/>
-        <Setter Property="Width" Value="22"/>
-        <Setter Property="Content">
-            <Setter.Value>
-                <Path Data="{DynamicResource ChevronRight}" Fill="{StaticResource ButtonBorderColorBrush}" Margin="-4,-1,4,4"/>
-            </Setter.Value>
-        </Setter>
-    </Style>
+        <Setter Property="Padding" Value="5.5"/>
 
-    <Style x:Key="SelectColumnButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="Height" Value="22"/>
-        <Setter Property="Width" Value="30"/>
-        <Setter Property="Content">
+        <Setter Property="ContentTemplate" Value="{DynamicResource IconButtonTemplate}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
             <Setter.Value>
-                <Path Data="{DynamicResource ChevronDown}" Fill="{StaticResource ButtonBorderColorBrush}" Margin="-2,-5,4,6"/>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid x:Name="grid">
+                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverColorBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressedColorBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="{StaticResource DisabledColorBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>

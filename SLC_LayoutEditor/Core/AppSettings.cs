@@ -25,6 +25,7 @@ namespace SLC_LayoutEditor.Core
         #endregion
 
         private bool mWelcomeScreenShown;
+        private bool mTemplatesCopied;
 
         public string CabinLayoutsEditPath
         {
@@ -64,6 +65,8 @@ namespace SLC_LayoutEditor.Core
             }
         }
 
+        public bool TemplatesCopied { get; set; }
+
         #region Editor toggles
         public bool OpenFolderWithEditedLayout
         {
@@ -101,12 +104,13 @@ namespace SLC_LayoutEditor.Core
         #endregion
 
         [JsonConstructor]
-        public AppSettings(string cabinLayoutsEditPath, bool welcomeScreenShown,
+        public AppSettings(string cabinLayoutsEditPath, bool welcomeScreenShown, bool templatesCopied,
             bool showWarningWhenIssuesPresent, bool openFolderWithEditedLayout,
             bool autoSearchForUpdates, bool showChangesAfterUpdate, int lastVersionChangelogShown) : this()
         {
             mCabinLayoutsEditPath = cabinLayoutsEditPath;
             mWelcomeScreenShown = welcomeScreenShown;
+            TemplatesCopied = templatesCopied;
             mShowWarningWhenIssuesPresent = showWarningWhenIssuesPresent;
 
             mOpenFolderWithEditedLayout = openFolderWithEditedLayout;

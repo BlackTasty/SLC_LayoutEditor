@@ -6,8 +6,10 @@
         xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
         mc:Ignorable="d"
         Height="42" Width="42"
-        Background="Transparent"
         x:Name="layout"
+        Background="Transparent"
+        MouseEnter="layout_MouseEnter"
+        MouseLeave="layout_MouseLeave"
         IsHitTestVisible="{Binding ElementName=layout, Path=CabinSlot.IsHitTestVisible}"
         ToolTip="{Binding ElementName=layout, Path=CabinSlot.Type, Converter={StaticResource EnumDescriptionConverter}}"
         ToolTipService.InitialShowDelay="1000">

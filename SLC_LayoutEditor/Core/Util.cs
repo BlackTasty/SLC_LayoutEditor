@@ -67,9 +67,19 @@ namespace SLC_LayoutEditor.Core
             return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : null;
         }
 
+        public static IEnumerable<string> GetBakedTemplates()
+        {
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            string folderName = string.Format("{0}.Resources.LayoutTemplates", executingAssembly.GetName().Name);
+            return executingAssembly
+                .GetManifestResourceNames()
+                .Where(r => r.StartsWith(folderName) && r.EndsWith(".txt"));
+                //.Select(r => r.Substring(folderName.Length + 1));
+        }
+
         public static bool HasLayoutChanged(CabinLayout layout)
         {
-            return layout != null ? CompareLayoutHashes(layout.FilePath, layout.ToLayoutFile()) : false;
+            return layout != null && CompareLayoutHashes(layout.FilePath, layout.ToLayoutFile());
         }
 
         public static string ReadTextResource(string name)

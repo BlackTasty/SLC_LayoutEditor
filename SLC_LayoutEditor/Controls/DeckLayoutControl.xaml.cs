@@ -27,7 +27,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for DeckLayoutControl.xaml
     /// </summary>
-    public partial class DeckLayoutControl : StackPanel
+    public partial class DeckLayoutControl : StackPanel //, IDisposable
     {
         private const double LAYOUT_OFFSET_X = 60;
         private const double LAYOUT_OFFSET_Y = 60;
@@ -49,6 +49,8 @@ namespace SLC_LayoutEditor.Controls
 
         private Border horizontalDivider;
         private Border verticalDivider;
+        private Button addRowButton;
+        private Button addColumnButton;
 
         private Point dragStartPoint;
         private Rectangle selectionBox;
@@ -72,6 +74,12 @@ namespace SLC_LayoutEditor.Controls
         public static readonly DependencyProperty CabinDeckProperty =
             DependencyProperty.Register("CabinDeck", typeof(CabinDeck), typeof(DeckLayoutControl), cabinDeckMetadata);
         #endregion
+
+        public bool HasAnyIssues => CabinDeck?.HasAnyIssues ?? false;
+
+        public bool HasMinorIssues => CabinDeck?.HasMinorIssues ?? false;
+
+        public bool HasSevereIssues => CabinDeck?.HasSevereIssues?? false;
 
         public DeckLayoutControl()
         {
@@ -116,7 +124,7 @@ namespace SLC_LayoutEditor.Controls
                 #endregion
 
                 #region Generate corner buttons to add rows and columns
-                Button addRowButton = new Button()
+                addRowButton = new Button()
                 {
                     Style = App.Current.FindResource("AddRowButtonStyle") as Style,
                     ToolTip = string.Format("Add new column"),
@@ -127,7 +135,7 @@ namespace SLC_LayoutEditor.Controls
                 addRowButton.Click += AddRowButton_Click;
 
                 layout_deck.Children.Add(addRowButton);
-                Button addColumnButton = new Button()
+                addColumnButton = new Button()
                 {
                     Style = App.Current.FindResource("AddColumnButtonStyle") as Style,
                     ToolTip = string.Format("Add new row"),
@@ -235,13 +243,13 @@ namespace SLC_LayoutEditor.Controls
         private void AddRowSelectButton(int row)
         {
             Button rowButton = GetSelectButton(true, row);
-            rowButton.Click += SelectRow_Click;
+            rowButton.Click += SelectRowButton_Click;
 
             layout_deck.Children.Add(rowButton);
             Canvas.SetLeft(rowButton, row * SLOT_WIDTH + LAYOUT_OFFSET_X);
         }
 
-        private void SelectRow_Click(object sender, RoutedEventArgs e)
+        private void SelectRowButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && int.TryParse(button.Tag.ToString().Split('-')[1], out int row))
             {
@@ -287,7 +295,7 @@ namespace SLC_LayoutEditor.Controls
                     {
                         foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Row == currentRow))
                         {
-                            slot.Row = slot.Row + 1;
+                            slot.Row++;
                         }
                     }
 
@@ -332,74 +340,80 @@ namespace SLC_LayoutEditor.Controls
         private void AddRowRemoveButton(int row)
         {
             Button rowButton = GetRemoveButton(true, row);
-            rowButton.Click += RowRemoveButton_Click;
+            rowButton.Click += RemoveRowButton_Click;
 
             layout_deck.Children.Add(rowButton);
             Canvas.SetLeft(rowButton, row * SLOT_WIDTH + LAYOUT_OFFSET_X);
         }
 
-        private void RowRemoveButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveRowButton_Click(object sender, RoutedEventArgs e)
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Confirm column removal",
                 "Are you sure you want to remove this column? This cannot be undone!", DialogType.YesNo);
 
-            dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
-            {
-                if (_e.DialogResult == DialogResultType.Yes)
-                {
-                    if (sender is Button button && int.TryParse(button.Tag.ToString().Split('-')[1], out int targetRow))
-                    {
-                        int currentRowCount = CabinDeck.Rows;
-
-                        foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
-                                    .Where(x => x.CabinSlot.Row == targetRow).ToList())
-                        {
-                            layout_deck.Children.Remove(cabinSlotControl);
-                            CabinDeck.CabinSlots.Remove(cabinSlotControl.CabinSlot);
-                        }
-
-                        foreach (Button rowButton in layout_deck.Children.OfType<Button>()
-                            .Where(x => x.Tag?.ToString().Equals("column-" + targetRow) ?? false).ToList())
-                        {
-                            layout_deck.Children.Remove(rowButton);
-                        }
-
-                        for (int row = targetRow + 1; row < currentRowCount + 1; row++)
-                        {
-                            foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Row == row))
-                            {
-                                slot.Row = row - 1;
-                            }
-                        }
-
-                        if (targetRow < CabinDeck.Rows) // Shift all existing rows + row buttons to the left
-                        {
-                            for (int rowToMove = targetRow; rowToMove <= CabinDeck.Rows + 1; rowToMove++)
-                            {
-                                int newRow = rowToMove - 1;
-
-                                foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
-                                    .Where(x => x.CabinSlot.Row == rowToMove))
-                                {
-                                    Canvas.SetLeft(cabinSlotControl, cabinSlotControl.CabinSlot.Row * SLOT_WIDTH + LAYOUT_OFFSET_X + 8);
-                                }
-
-                                foreach (Button rowButton in layout_deck.Children.OfType<Button>()
-                                    .Where(x => x.Tag?.ToString().Equals("column-" + rowToMove) ?? false))
-                                {
-                                    rowButton.Tag = "column-" + newRow;
-                                    Canvas.SetLeft(rowButton, newRow * SLOT_WIDTH + LAYOUT_OFFSET_X);
-                                }
-                            }
-                        }
-
-                        RefreshControlSize();
-                        OnColumnsChanged(EventArgs.Empty);
-                    }
-                }
-            };
+            dialog.DialogClosing += RemoveRow_DialogClosing;
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+        }
+
+        private void RemoveRow_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.Yes)
+            {
+                if (sender is Button button && int.TryParse(button.Tag.ToString().Split('-')[1], out int targetRow))
+                {
+                    int currentRowCount = CabinDeck.Rows;
+
+                    foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
+                                .Where(x => x.CabinSlot.Row == targetRow).ToList())
+                    {
+                        cabinSlotControl.PreviewMouseDown -= SlotLayout_PreviewMouseDown;
+                        layout_deck.Children.Remove(cabinSlotControl);
+                        CabinDeck.CabinSlots.Remove(cabinSlotControl.CabinSlot);
+                    }
+
+                    foreach (Button rowButton in layout_deck.Children.OfType<Button>()
+                        .Where(x => x.Tag?.ToString().Equals("column-" + targetRow) ?? false).ToList())
+                    {
+                        rowButton.Click -= AddRowButton_Click;
+                        rowButton.Click -= SelectRowButton_Click;
+                        rowButton.Click -= RemoveRowButton_Click;
+                        layout_deck.Children.Remove(rowButton);
+                    }
+
+                    for (int row = targetRow + 1; row < currentRowCount + 1; row++)
+                    {
+                        foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Row == row))
+                        {
+                            slot.Row = row - 1;
+                        }
+                    }
+
+                    if (targetRow < CabinDeck.Rows) // Shift all existing rows + row buttons to the left
+                    {
+                        for (int rowToMove = targetRow; rowToMove <= CabinDeck.Rows + 1; rowToMove++)
+                        {
+                            int newRow = rowToMove - 1;
+
+                            foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
+                                .Where(x => x.CabinSlot.Row == rowToMove))
+                            {
+                                Canvas.SetLeft(cabinSlotControl, cabinSlotControl.CabinSlot.Row * SLOT_WIDTH + LAYOUT_OFFSET_X + 8);
+                            }
+
+                            foreach (Button rowButton in layout_deck.Children.OfType<Button>()
+                                .Where(x => x.Tag?.ToString().Equals("column-" + rowToMove) ?? false))
+                            {
+                                rowButton.Tag = "column-" + newRow;
+                                Canvas.SetLeft(rowButton, newRow * SLOT_WIDTH + LAYOUT_OFFSET_X);
+                            }
+                        }
+                    }
+
+                    RefreshControlSize();
+                    OnColumnsChanged(EventArgs.Empty);
+                }
+            }
         }
         #endregion
         #endregion
@@ -416,13 +430,13 @@ namespace SLC_LayoutEditor.Controls
         private void AddColumnSelectButton(int column)
         {
             Button columnButton = GetSelectButton(false, column);
-            columnButton.Click += SelectColumn_Click;
+            columnButton.Click += SelectColumnButton_Click;
 
             layout_deck.Children.Add(columnButton);
             Canvas.SetTop(columnButton, column * SLOT_HEIGHT + LAYOUT_OFFSET_Y);
         }
 
-        private void SelectColumn_Click(object sender, RoutedEventArgs e)
+        private void SelectColumnButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && int.TryParse(button.Tag.ToString().Split('-')[1], out int column))
             {
@@ -467,7 +481,7 @@ namespace SLC_LayoutEditor.Controls
                     {
                         foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Column == currentColumn))
                         {
-                            slot.Column = slot.Column + 1;
+                            slot.Column++;
                         }
                     }
 
@@ -513,74 +527,80 @@ namespace SLC_LayoutEditor.Controls
         private void AddColumnRemoveButton(int column)
         {
             Button columnButton = GetRemoveButton(false, column);
-            columnButton.Click += ColumnRemoveButton_Click;
+            columnButton.Click += RemoveColumnButton_Click;
 
             layout_deck.Children.Add(columnButton);
             Canvas.SetTop(columnButton, column * SLOT_HEIGHT + LAYOUT_OFFSET_Y);
         }
 
-        private void ColumnRemoveButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveColumnButton_Click(object sender, RoutedEventArgs e)
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Confirm row removal",
                 "Are you sure you want to remove this row? This cannot be undone!", DialogType.YesNo);
 
-            dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
-            {
-                if (_e.DialogResult == DialogResultType.Yes)
-                {
-                    if (sender is Button button && int.TryParse(button.Tag.ToString().Split('-')[1], out int targetColumn))
-                    {
-                        int currentColumnCount = CabinDeck.Columns;
-
-                        foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
-                                    .Where(x => x.CabinSlot.Column == targetColumn).ToList())
-                        {
-                            layout_deck.Children.Remove(cabinSlotControl);
-                            CabinDeck.CabinSlots.Remove(cabinSlotControl.CabinSlot);
-                        }
-
-                        foreach (Button columnButton in layout_deck.Children.OfType<Button>()
-                            .Where(x => x.Tag?.ToString().Equals("row-" + targetColumn) ?? false).ToList())
-                        {
-                            layout_deck.Children.Remove(columnButton);
-                        }
-
-                        for (int column = targetColumn + 1; column < currentColumnCount + 1; column++)
-                        {
-                            foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Column == column))
-                            {
-                                slot.Column = column - 1;
-                            }
-                        }
-
-                        if (targetColumn < CabinDeck.Columns) // Shift all existing columns + column buttons up
-                        {
-                            for (int columnToMove = targetColumn; columnToMove <= currentColumnCount; columnToMove++)
-                            {
-                                int newColumn = columnToMove - 1;
-
-                                foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
-                                    .Where(x => x.CabinSlot.Column == columnToMove))
-                                {
-                                    Canvas.SetTop(cabinSlotControl, cabinSlotControl.CabinSlot.Column * SLOT_HEIGHT + LAYOUT_OFFSET_Y + 8);
-                                }
-
-                                foreach (Button columnButton in layout_deck.Children.OfType<Button>()
-                                    .Where(x => x.Tag?.ToString().Equals("row-" + columnToMove) ?? false))
-                                {
-                                    columnButton.Tag = "row-" + newColumn;
-                                    Canvas.SetTop(columnButton, newColumn * SLOT_HEIGHT + LAYOUT_OFFSET_Y);
-                                }
-                            }
-                        }
-
-                        RefreshControlSize();
-                        OnRowsChanged(EventArgs.Empty);
-                    }
-                }
-            };
+            dialog.DialogClosing += RemoveColumn_DialogClosing;
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+        }
+
+        private void RemoveColumn_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.Yes)
+            {
+                if (sender is Button button && int.TryParse(button.Tag.ToString().Split('-')[1], out int targetColumn))
+                {
+                    int currentColumnCount = CabinDeck.Columns;
+
+                    foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
+                                .Where(x => x.CabinSlot.Column == targetColumn).ToList())
+                    {
+                        cabinSlotControl.PreviewMouseDown -= SlotLayout_PreviewMouseDown;
+                        layout_deck.Children.Remove(cabinSlotControl);
+                        CabinDeck.CabinSlots.Remove(cabinSlotControl.CabinSlot);
+                    }
+
+                    foreach (Button columnButton in layout_deck.Children.OfType<Button>()
+                        .Where(x => x.Tag?.ToString().Equals("row-" + targetColumn) ?? false).ToList())
+                    {
+                        columnButton.Click -= AddColumnButton_Click;
+                        columnButton.Click -= SelectColumnButton_Click;
+                        columnButton.Click -= RemoveColumnButton_Click;
+                        layout_deck.Children.Remove(columnButton);
+                    }
+
+                    for (int column = targetColumn + 1; column < currentColumnCount + 1; column++)
+                    {
+                        foreach (CabinSlot slot in CabinDeck.CabinSlots.Where(x => x.Column == column))
+                        {
+                            slot.Column = column - 1;
+                        }
+                    }
+
+                    if (targetColumn < CabinDeck.Columns) // Shift all existing columns + column buttons up
+                    {
+                        for (int columnToMove = targetColumn; columnToMove <= currentColumnCount; columnToMove++)
+                        {
+                            int newColumn = columnToMove - 1;
+
+                            foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>()
+                                .Where(x => x.CabinSlot.Column == columnToMove))
+                            {
+                                Canvas.SetTop(cabinSlotControl, cabinSlotControl.CabinSlot.Column * SLOT_HEIGHT + LAYOUT_OFFSET_Y + 8);
+                            }
+
+                            foreach (Button columnButton in layout_deck.Children.OfType<Button>()
+                                .Where(x => x.Tag?.ToString().Equals("row-" + columnToMove) ?? false))
+                            {
+                                columnButton.Tag = "row-" + newColumn;
+                                Canvas.SetTop(columnButton, newColumn * SLOT_HEIGHT + LAYOUT_OFFSET_Y);
+                            }
+                        }
+                    }
+
+                    RefreshControlSize();
+                    OnRowsChanged(EventArgs.Empty);
+                }
+            }
         }
         #endregion
         #endregion
@@ -592,13 +612,13 @@ namespace SLC_LayoutEditor.Controls
 
             return new Button()
             {
-                Content = isRow ? "v" : ">",
-                FontWeight = FontWeights.Bold,
-                Style = App.Current.FindResource(!isRow ? "SelectRowButtonStyle" : "SelectColumnButtonStyle") as Style,
+                Width = !isRow ? 22 : 30,
+                Height = !isRow ? 30 : 22,
+                Content = App.Current.FindResource(!isRow ? "SelectRow" : "SelectColumn"),
+                Style = App.Current.FindResource("SelectButtonStyle") as Style,
                 ToolTip = string.Format("Select {0}", type),
                 Tag = string.Format("{0}-{1}", type, index),
-                Margin = isRow ? new Thickness(PADDING, 0, PADDING, 0) : new Thickness(0, PADDING, 0, PADDING),
-                Padding = new Thickness()
+                Margin = isRow ? new Thickness(PADDING, 0, PADDING, 0) : new Thickness(0, PADDING, 0, PADDING)
             };
         }
 
@@ -611,8 +631,7 @@ namespace SLC_LayoutEditor.Controls
                 Style = App.Current.FindResource(isRow ? "AddColumnButtonStyle" : "AddRowButtonStyle") as Style,
                 ToolTip = string.Format("Add {0}", type),
                 Tag =  string.Format("{0}-{1}", type, index),
-                Margin = isRow ? new Thickness(PADDING, 30, PADDING, 0) : new Thickness(30, PADDING, 0, PADDING),
-                Padding = new Thickness()
+                Margin = isRow ? new Thickness(PADDING, 30, PADDING, 0) : new Thickness(30, PADDING, 0, PADDING)
             };
         }
 
@@ -622,7 +641,6 @@ namespace SLC_LayoutEditor.Controls
 
             return new Button()
             {
-                Content = "-",
                 Style = App.Current.FindResource(!isRow ? "RemoveRowButtonStyle" : "RemoveColumnButtonStyle") as Style,
                 FontWeight = FontWeights.Bold,
                 //ToolTip = string.Format("Remove {0}", type),
@@ -799,6 +817,9 @@ namespace SLC_LayoutEditor.Controls
             {
                 CabinDeck.DeckSlotLayoutChanged += CabinDeck_DeckSlotLayoutChanged;
             }
+
+            layoutLoader.DoWork -= LayoutLoader_DoWork;
+            layoutLoader.RunWorkerCompleted -= LayoutLoader_RunWorkerCompleted;
             OnLayoutRegenerated(EventArgs.Empty);
         }
 
@@ -973,6 +994,36 @@ namespace SLC_LayoutEditor.Controls
             //CabinDeck.ToggleIsHitTestVisible(true);
             layout_deck.Children.Remove(selectionBox);
             selectionBox = null;
+        }
+
+        public void Dispose()
+        {
+            if (CabinDeck != null)
+            {
+                CabinDeck.DeckSlotLayoutChanged -= CabinDeck_DeckSlotLayoutChanged;
+
+                foreach (CabinSlotControl cabinSlotControl in layout_deck?.Children.OfType<CabinSlotControl>())
+                {
+                    cabinSlotControl.PreviewMouseDown -= SlotLayout_PreviewMouseDown;
+                }
+
+                foreach (Button button in layout_deck?.Children.OfType<Button>())
+                {
+                    button.Click -= AddColumnButton_Click;
+                    button.Click -= SelectColumnButton_Click;
+                    button.Click -= RemoveColumnButton_Click;
+                }
+            }
+            
+            if (addColumnButton != null)
+            {
+                addColumnButton.Click -= AddColumnButton_Click;
+            }
+
+            if (addRowButton != null)
+            {
+                addRowButton.Click -= AddRowButton_Click;
+            }
         }
     }
 }

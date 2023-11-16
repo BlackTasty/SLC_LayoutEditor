@@ -19,6 +19,10 @@ namespace SLC_LayoutEditor.ViewModel
 {
     class LayoutEditorViewModel : ViewModelBase
     {
+        private const string TEXT_LAYOUTSET_NO_SELECTION = "No aircraft selected";
+        private const string TEXT_LAYOUT_NO_SELECTION = "No layout selected";
+        private const string TEXT_LAYOUT_NO_LAYOUTS = "No cabin layouts for this aircraft";
+
         private bool hasUnsavedChanges;
         private dynamic storedNewValue;
 
@@ -153,9 +157,13 @@ namespace SLC_LayoutEditor.ViewModel
                 mSelectedLayoutSet = value;
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsAddCabinLayoutButtonEnabled));
+                InvokePropertyChanged(nameof(SelectedLayoutSetText));
+                InvokePropertyChanged(nameof(SelectedLayoutText));
                 LoadLayouts();
             }
         }
+
+        public string SelectedLayoutSetText => mSelectedLayoutSet != null ? null : TEXT_LAYOUTSET_NO_SELECTION;
 
         public bool IsAddCabinLayoutButtonEnabled => SelectedLayoutSet != null && !SelectedLayoutSet.IsLoadingLayouts;
 
@@ -187,9 +195,15 @@ namespace SLC_LayoutEditor.ViewModel
                 }
                 InvokePropertyChanged(nameof(StairwayErrorMessage));
                 InvokePropertyChanged(nameof(LayoutOverviewTitle));
+                InvokePropertyChanged(nameof(SelectedLayoutText));
                 OnCabinLayoutSelected(new CabinLayoutSelectedEventArgs(value?.LayoutName));
             }
         }
+
+        public string SelectedLayoutText => mSelectedLayoutSet != null ? 
+            (mSelectedLayoutSet.CabinLayouts.Count > 0 ? 
+                (mSelectedCabinLayout != null ? null : TEXT_LAYOUT_NO_SELECTION) : TEXT_LAYOUT_NO_LAYOUTS) : 
+            null;
 
         public List<CabinSlot> SelectedCabinSlots
         {
@@ -410,6 +424,7 @@ namespace SLC_LayoutEditor.ViewModel
         private async void LoadLayouts()
         {
             await SelectedLayoutSet.LoadCabinLayouts();
+            InvokePropertyChanged(nameof(SelectedLayoutText));
         }
 
         private bool ArrayContains(string[] array, int targetIndex)

@@ -162,6 +162,7 @@ namespace SLC_LayoutEditor.UI
             if (e.Data is AddDialogResult result && result.IsCreate)
             {
                 CabinLayout layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AirplaneName);
+                layout.SaveLayout();
                 vm.SelectedLayoutSet.CabinLayouts.Add(layout);
                 vm.SelectedCabinLayout = layout;
             }

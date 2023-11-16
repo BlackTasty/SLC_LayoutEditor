@@ -174,6 +174,13 @@ namespace SLC_LayoutEditor.Core.Cabin
         public CabinLayout(string layoutName, string airplaneName)
         {
             mLayoutName = layoutName;
+            #region Generate default layout
+
+            CabinDeck deck = new CabinDeck(4, 10, 0);
+            deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
+            mCabinDecks.Add(deck);
+            #endregion
+
             layoutFile = new FileInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, airplaneName, layoutName + ".txt"));
         }
 

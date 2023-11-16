@@ -33,52 +33,24 @@ namespace SLC_LayoutEditor
         [STAThread]
         public static void Main(string[] args)
         {
+#if DEBUG
+            RunApp(args);
+#else
             try
             {
-                FileInfo fi = new FileInfo("settings.json");
-
-                if (fi.Exists)
-                {
-                    Settings = AppSettings.Load(fi);
-                }
-                else
-                {
-                    Settings = new AppSettings();
-                    Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
-                }
-
-                RunMigrations();
-
-                if (args.Contains("-clean"))
-                {
-                    if (fi.Exists)
-                    {
-                        Directory.Delete(Settings.CabinLayoutsEditPath, true);
-
-                        fi.Delete();
-                        Settings = new AppSettings();
-                        Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
-                    }
-                }
-
-                Directory.CreateDirectory(Settings.CabinLayoutsEditPath);
-
-                //LoadAppSettings();
-
-                App app = new App()
-                {
-                    ShutdownMode = ShutdownMode.OnMainWindowClose
-                };
-                app.InitializeComponent();
-                app.Run();
-
-                SaveAppSettings();
+                RunApp(args);
             }
             catch (Exception ex)
             {
                 Logger.Default.WriteLog("SLC Layout Editor crashed with a fatal exception! Version {0}", LogType.FATAL, ex,
                     PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3));
             }
+#endif
+        }
+
+        public static string GetTemplatePath(string aircraftName)
+        {
+            return Path.Combine(Settings.CabinLayoutsEditPath, aircraftName, "templates");
         }
 
         public static void SaveAppSettings()
@@ -106,9 +78,52 @@ namespace SLC_LayoutEditor
             }
         }
 
+        private static void RunApp(string[] args)
+        {
+            FileInfo fi = new FileInfo("settings.json");
+
+            if (fi.Exists)
+            {
+                Settings = AppSettings.Load(fi);
+            }
+            else
+            {
+                Settings = new AppSettings();
+                Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
+            }
+
+            RunMigrations();
+
+            if (args.Contains("-clean"))
+            {
+                if (fi.Exists)
+                {
+                    Directory.Delete(Settings.CabinLayoutsEditPath, true);
+
+                    fi.Delete();
+                    Settings = new AppSettings();
+                    Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
+                }
+            }
+
+            Directory.CreateDirectory(Settings.CabinLayoutsEditPath);
+            CheckTemplates();
+
+            //LoadAppSettings();
+
+            App app = new App()
+            {
+                ShutdownMode = ShutdownMode.OnMainWindowClose
+            };
+            app.InitializeComponent();
+            app.Run();
+
+            SaveAppSettings();
+        }
+
         private static void RunMigrations()
         {
-            #region Migrate layout folder from default path to new path
+#region Migrate layout folder from default path to new path
             if (Directory.Exists(oldDefaultEditorLayoutsPath))
             {
                 Logger.Default.WriteLog("Migrating directory for layouts edited with the editor...");
@@ -124,7 +139,34 @@ namespace SLC_LayoutEditor
                 Logger.Default.WriteLog("Adjusting {0} property in app settings...", nameof(Settings.CabinLayoutsEditPath));
                 Settings.CabinLayoutsEditPath = defaultEditorLayoutsPath;
             }
-            #endregion
+#endregion
+        }
+
+        private static void CheckTemplates()
+        {
+            if (!Settings.TemplatesCopied)
+            {
+                foreach (string bakedTemplatePath in Util.GetBakedTemplates())
+                {
+                    string template = Util.ReadTextResource(bakedTemplatePath);
+
+                    int newLineIndex = template.IndexOf("\r\n");
+                    string aircraftName = template.Substring(0, newLineIndex);
+                    template = template.Substring(newLineIndex + 2);
+
+                    string templatePath = GetTemplatePath(aircraftName);
+                    string templateFilePath = Path.Combine(templatePath, "Default.txt");
+
+                    if (!File.Exists(templateFilePath))
+                    {
+                        Directory.CreateDirectory(templatePath);
+                        File.WriteAllText(templateFilePath, template);
+                    }
+                }
+
+                Settings.TemplatesCopied = true;
+                SaveAppSettings();
+            }
         }
     }
 }

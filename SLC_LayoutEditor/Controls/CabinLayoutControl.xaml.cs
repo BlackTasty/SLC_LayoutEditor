@@ -28,7 +28,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinLayoutControl.xaml
     /// </summary>
-    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged
+    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged, IDisposable
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -105,6 +105,8 @@ namespace SLC_LayoutEditor.Controls
 
         public bool IsHorizontalScrollBarVisible => deck_scroll.ComputedHorizontalScrollBarVisibility == Visibility.Visible;
 
+        public bool IsVerticalScrollBarVisible => deck_scroll.ComputedVerticalScrollBarVisibility == Visibility.Visible;
+
         #region SelectedCabinSlotFloor property
         public int SelectedCabinSlotFloor
         {
@@ -165,6 +167,7 @@ namespace SLC_LayoutEditor.Controls
             OnLayoutRegenerated(EventArgs.Empty);
             RefreshState();
             InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
+            InvokePropertyChanged(nameof(IsVerticalScrollBarVisible));
         }
 
         private void AddCabinDeckToUI(CabinDeck cabinDeck)
@@ -390,6 +393,26 @@ namespace SLC_LayoutEditor.Controls
         private void deck_scroll_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
+            InvokePropertyChanged(nameof(IsVerticalScrollBarVisible));
+        }
+
+        public void Dispose()
+        {
+            if (CabinLayout != null)
+            {
+                CabinLayout.CabinSlotsChanged -= CabinLayout_CabinSlotsChanged;
+                CabinLayout.CabinDeckCountChanged -= CabinLayout_CabinDeckCountChanged;
+
+                foreach (DeckLayoutControl deckLayoutControl in container_decks?.Children.OfType<DeckLayoutControl>())
+                {
+                    deckLayoutControl.CabinSlotClicked -= CabinDeckControl_CabinSlotClicked;
+                    deckLayoutControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
+                    deckLayoutControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
+
+                    deckLayoutControl.RowsChanged -= CabinDeckControl_RowOrColumnsChanged;
+                    deckLayoutControl.ColumnsChanged -= CabinDeckControl_RowOrColumnsChanged;
+                }
+            }
         }
     }
 }

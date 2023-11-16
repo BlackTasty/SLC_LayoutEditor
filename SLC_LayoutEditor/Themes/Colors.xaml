@@ -142,14 +142,17 @@
     <SolidColorBrush x:Key="ButtonErrorBorderPressedColorBrush" Color="{StaticResource ErrorDarkColor}"/>
     <SolidColorBrush x:Key="ButtonErrorBackgroundHoverColorBrush" Color="{StaticResource ErrorLightColor}" Opacity=".24"/>
     <SolidColorBrush x:Key="ButtonErrorBackgroundPressedColorBrush" Color="{StaticResource ButtonErrorBackgroundPressedColor}"/>
-    
+
     <SolidColorBrush x:Key="RemoveDeckHoverBrush" Color="{StaticResource ErrorLightColor}"/>
+    <SolidColorBrush x:Key="NoLayoutsColorBrush" Color="{StaticResource WarnLightColor}" Opacity=".5"/>
 
     <SolidColorBrush x:Key="EyeForegroundColorBrush">#CCCCCC</SolidColorBrush>
     <SolidColorBrush x:Key="EyeForegroundHoverColorBrush" Color="{StaticResource ForegroundColor}"/>
     <SolidColorBrush x:Key="EyeForegroundPressedColorBrush">#AAAAAA</SolidColorBrush>
 
     <SolidColorBrush x:Key="ItemSelectedBrush" Color="{StaticResource BackgroundLight}" Opacity=".5"/>
+    <SolidColorBrush x:Key="ComboBoxWatermarkColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".48"/>
+    <SolidColorBrush x:Key="CabinSlotHoverColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".1"/>
 
     <SolidColorBrush x:Key="PatchAddedBrush" Color="{DynamicResource ButtonBorderColor}"/>
     <SolidColorBrush x:Key="PatchChangedBrush" Color="{DynamicResource AccentColor}"/>

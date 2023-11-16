@@ -22,7 +22,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinSlotControl.xaml
     /// </summary>
-    public partial class CabinSlotControl : Canvas, INotifyPropertyChanged
+    public partial class CabinSlotControl : Canvas, INotifyPropertyChanged //, IDisposable
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -133,6 +133,24 @@ namespace SLC_LayoutEditor.Controls
                     RefreshHighlighting();
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            if (CabinSlot != null)
+            {
+                CabinSlot.ProblematicChanged -= CabinSlot_ProblematicChanged;
+            }
+        }
+
+        private void layout_MouseEnter(object sender, MouseEventArgs e)
+        {
+            layout.Background = (Brush)App.Current.FindResource("CabinSlotHoverColorBrush");
+        }
+
+        private void layout_MouseLeave(object sender, MouseEventArgs e)
+        {
+            layout.Background = Brushes.Transparent;
         }
     }
 }

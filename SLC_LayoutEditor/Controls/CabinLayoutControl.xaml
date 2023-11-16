@@ -11,8 +11,8 @@
         <Border Style="{DynamicResource CardLayoutTitleStyle}" Height="55" MinWidth="460">
             <DockPanel>
                 <Button DockPanel.Dock="Left" Content="{DynamicResource Template}" Click="MakeTemplate_Click"
-                    ToolTip="Make a template out of this layout" Height="55" Width="55"
-                    Style="{StaticResource MakeTemplateButtonStyle}" Margin="-12,-9,16,-9"/>
+                        ToolTip="Make a template out of this layout" Height="55" Width="55"
+                        Style="{StaticResource MakeTemplateButtonStyle}" Margin="-12,-9,16,-9"/>
                 <Button DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="AddCabinDeck_Click"
                     ToolTip="Add a new deck to your layout" Height="55" Width="55"
                     Style="{StaticResource AddDeckButtonStyle}" Margin="16,-9,-8,-9"/>

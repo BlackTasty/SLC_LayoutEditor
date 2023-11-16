@@ -9,8 +9,10 @@
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundColorBrush}">
     <Grid>
-        <Button Style="{StaticResource SelectRowButtonStyle}" Margin="48,0" HorizontalAlignment="Left"/>
-        <Button Style="{StaticResource SelectColumnButtonStyle}" Margin="48,60,48,0" HorizontalAlignment="Left"/>
+        <Button Style="{StaticResource SelectButtonStyle}" Margin="48,0" HorizontalAlignment="Left" Width="30" Height="22"
+                Content="{StaticResource SelectColumn}"/>
+        <Button Style="{StaticResource SelectButtonStyle}" Margin="48,60,48,0" HorizontalAlignment="Left" Width="22" Height="30"
+                Content="{StaticResource SelectRow}"/>
         <Button Style="{StaticResource AddRowButtonStyle}"/>
         <Button Style="{StaticResource AddColumnButtonStyle}"/>
         <Button Style="{StaticResource AddRowButtonLargeStyle}" Margin="0,68,0,0"/>

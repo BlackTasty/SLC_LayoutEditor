@@ -422,6 +422,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)
         {
+            RefreshProblemChecks();
             CabinSlotsChanged?.Invoke(this, e);
         }
 

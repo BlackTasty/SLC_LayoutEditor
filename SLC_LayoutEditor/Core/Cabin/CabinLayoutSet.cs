@@ -15,6 +15,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private bool mIsLoadingLayouts;
         private string mAirplaneName; //e.g. Airbus A320
         private VeryObservableCollection<CabinLayout> mCabinLayouts = new VeryObservableCollection<CabinLayout>("CabinLayouts");
+        private int mLayoutCount;
 
         public bool IsLoadingLayouts
         {
@@ -23,8 +24,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 mIsLoadingLayouts = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(IsCabinLayoutSelectionEnabled));
             }
         }
+
+        public bool IsCabinLayoutSelectionEnabled => !IsLoadingLayouts && LayoutCount > 0;
 
         public string AirplaneName
         {
@@ -33,8 +37,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 mAirplaneName = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(DisplayText));
             }
         }
+
+        public string DisplayText => string.Format("{0} ({1} layouts)", mAirplaneName, mLayoutCount);
 
         public VeryObservableCollection<CabinLayout> CabinLayouts
         {
@@ -43,6 +50,18 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 mCabinLayouts = value;
                 InvokePropertyChanged();
+            }
+        }
+
+        public int LayoutCount
+        {
+            get => mLayoutCount;
+            private set
+            {
+                mLayoutCount = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(DisplayText));
+                InvokePropertyChanged(nameof(IsCabinLayoutSelectionEnabled));
             }
         }
 
@@ -60,6 +79,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 Directory.CreateDirectory(layoutSetFolder.FullName);
                 //mCabinLayouts.Add(new CabinLayout("Default"));
             }
+
+            LayoutCount = layoutSetFolder.EnumerateFiles("*.txt").Count();
         }
 
         public async Task LoadCabinLayouts()
@@ -74,15 +95,17 @@ namespace SLC_LayoutEditor.Core.Cabin
             await Task.Run(() =>
             {
                 IsLoadingLayouts = true;
-                foreach (FileInfo cabinLayoutFile in layoutSetFolder.EnumerateFiles())
+                foreach (FileInfo cabinLayoutFile in layoutSetFolder.EnumerateFiles("*.txt"))
                 {
                     cabinLayouts.Add(new CabinLayout(cabinLayoutFile));
                 }
                 IsLoadingLayouts = false;
+                InvokePropertyChanged(nameof(DisplayText));
             });
 
             mCabinLayouts.Clear();
             mCabinLayouts.AddRange(cabinLayouts);
+            LayoutCount = mCabinLayouts.Count;
         }
 
         public override string ToString()
