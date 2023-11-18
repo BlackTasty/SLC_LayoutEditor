@@ -72,14 +72,13 @@
                         </Style.Triggers>
                     </Style>
                 </DockPanel.Style>
-                <ToggleButton DockPanel.Dock="Left" Click="MakeTemplate_Click"
-                              ToolTip="Make a template out of this layout"
-                              IsChecked="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}">
-                    <ToggleButton.Style>
-                        <Style TargetType="ToggleButton" BasedOn="{StaticResource LargeTemplateSwitchToggleButton}">
+                <Button DockPanel.Dock="Left" Click="MakeTemplate_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MakeTemplateButtonStyle}">
                             <Setter Property="Margin" Value="-12,-9,16,-9"/>
                             <Setter Property="Width" Value="55"/>
                             <Setter Property="Height" Value="55"/>
+                            <Setter Property="ToolTip" Value="Make a template out of this layout"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
                                     <!--<Setter Property="Margin" Value="-10.5,-9,14.8,-7.5"/>
@@ -88,11 +87,12 @@
                                     <Setter Property="Padding" Value="14.5,16,16.5,14.5"/>
                                     <Setter Property="Width" Value="54"/>
                                     <Setter Property="Height" Value="54"/>
+                                    <Setter Property="ToolTip" Value="Make a template out of the current template"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </ToggleButton.Style>
-                </ToggleButton>
+                    </Button.Style>
+                </Button>
                 <Button DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="AddCabinDeck_Click"
                     ToolTip="Add a new deck to your layout">
                     <Button.Style>

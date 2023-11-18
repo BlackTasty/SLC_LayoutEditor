@@ -140,15 +140,16 @@ namespace SLC_LayoutEditor.Core.Cabin
             TemplateCount = templateFolder.EnumerateFiles("*.txt").Count();
         }
 
-        public void RegisterCabinLayout(CabinLayout cabinLayout)
+        public void RegisterLayout(CabinLayout cabinLayout)
         {
-            cabinLayout.Deleted += CabinLayout_Deleted;
             if (!cabinLayout.IsTemplate)
             {
+                cabinLayout.Deleted += CabinLayout_Deleted;
                 mCabinLayouts.Add(cabinLayout);
             }
             else
             {
+                cabinLayout.Deleted += Template_Deleted;
                 mTemplates.Add(cabinLayout);
             }
         }

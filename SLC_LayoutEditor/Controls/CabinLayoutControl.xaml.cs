@@ -429,35 +429,31 @@ namespace SLC_LayoutEditor.Controls
 
         private void MakeTemplate_Click(object sender, RoutedEventArgs e)
         {
-            if (IsTemplatingMode)
-            {
-                string templatesPath = App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name);
-                IEnumerable<string> existingTemplates = Directory.Exists(templatesPath) ?
-                    new DirectoryInfo(templatesPath).EnumerateFiles("*.txt").Select(x => x.Name.Replace(".txt", "")) :
-                    new List<string>();
+            string templatesPath = !IsTemplatingMode ? App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name) :
+                CabinLayout.LayoutFile.DirectoryName;
+            IEnumerable<string> existingTemplates = Directory.Exists(templatesPath) ?
+                new DirectoryInfo(templatesPath).EnumerateFiles("*.txt").Select(x => x.Name.Replace(".txt", "")) :
+                new List<string>();
 
-                MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, CabinLayout.LayoutName + " - Template");
-                dialog.DialogClosing += MakeTemplate_DialogClosing;
+            MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, CabinLayout.LayoutName + " - Template");
+            dialog.DialogClosing += MakeTemplate_DialogClosing;
 
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
-            }
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
         }
 
         private void MakeTemplate_DialogClosing(object sender, DialogClosingEventArgs e)
         {
             if (e.DialogResult == DialogResultType.OK)
             {
-                string layoutsPath = App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name);
+                string layoutsPath = !IsTemplatingMode ? App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name) :
+                    CabinLayout.LayoutFile.DirectoryName;
                 Directory.CreateDirectory(layoutsPath);
 
                 CabinLayout template = CabinLayout.MakeTemplate(
                     System.IO.Path.Combine(layoutsPath, e.Data + ".txt"));
                 template.SaveLayout();
                 OnTemplateCreatedEventArgs(new TemplateCreatedEventArgs(template));
-            }
-            else
-            {
-                IsTemplatingMode = false;
+                IsTemplatingMode = true;
             }
         }
 

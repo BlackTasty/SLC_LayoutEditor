@@ -750,6 +750,7 @@
 
     <Style x:Key="MakeTemplateButtonStyle" TargetType="Button" BasedOn="{StaticResource AddDeckButtonStyle}">
         <Setter Property="Foreground" Value="{StaticResource TemplatingModeBrush}"/>
+        <Setter Property="Content" Value="{DynamicResource TemplateMode}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">

@@ -181,7 +181,7 @@ namespace SLC_LayoutEditor.UI
             {
                 CabinLayout layout = new CabinLayout(templateName, vm.SelectedLayoutSet.AircraftName, true);
                 layout.SaveLayout();
-                vm.SelectedLayoutSet.RegisterCabinLayout(layout);
+                vm.SelectedLayoutSet.RegisterLayout(layout);
                 vm.SelectedCabinLayout = layout;
             }
         }
@@ -197,7 +197,7 @@ namespace SLC_LayoutEditor.UI
             {
                 CabinLayout layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AircraftName, false);
                 layout.SaveLayout();
-                vm.SelectedLayoutSet.RegisterCabinLayout(layout);
+                vm.SelectedLayoutSet.RegisterLayout(layout);
                 vm.SelectedCabinLayout = layout;
             }
         }
@@ -375,7 +375,7 @@ namespace SLC_LayoutEditor.UI
 
         private void Layout_TemplateCreated(object sender, TemplateCreatedEventArgs e)
         {
-            vm.SelectedLayoutSet.Templates.Add(e.Template);
+            vm.SelectedLayoutSet.RegisterLayout(e.Template);
             vm.SelectedTemplate = e.Template;
         }
 
