@@ -84,7 +84,7 @@ namespace SLC_LayoutEditor.UI
 
         private void SaveLayout_Click(object sender, RoutedEventArgs e)
         {
-            if (App.Settings.ShowWarningWhenIssuesPresent && vm.SelectedCabinLayout.SevereIssuesCountSum > 0)
+            if (App.Settings.ShowWarningWhenIssuesPresent && vm.ActiveLayout.SevereIssuesCountSum > 0)
             {
                 ConfirmationDialog dialog = new ConfirmationDialog("Layout issues detected", 
                     "Seems like your layout has some problems, which can cause unexpected behaviour with SLC!\n\nDo you want to save anyway?",
@@ -114,7 +114,7 @@ namespace SLC_LayoutEditor.UI
 
             if (!vm.IsTemplatingMode && App.Settings.OpenFolderWithEditedLayout)
             {
-                Util.OpenFolder(vm.SelectedCabinLayout.FilePath);
+                Util.OpenFolder(vm.ActiveLayout.FilePath);
 
                 ConfirmationDialog dialog = new ConfirmationDialog("Folder opened",
                     string.Format("The folder with your layout has been opened!"),
@@ -158,7 +158,8 @@ namespace SLC_LayoutEditor.UI
 
             if (!vm.IsTemplatingMode)
             {
-                dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName));
+                dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), 
+                    vm.SelectedLayoutSet.GetTemplatePreviews());
                 dialog.DialogClosing += CreateCabinLayout_DialogClosing;
             }
             else
@@ -182,7 +183,7 @@ namespace SLC_LayoutEditor.UI
                 CabinLayout layout = new CabinLayout(templateName, vm.SelectedLayoutSet.AircraftName, true);
                 layout.SaveLayout();
                 vm.SelectedLayoutSet.RegisterLayout(layout);
-                vm.SelectedCabinLayout = layout;
+                vm.SelectedTemplate = layout;
             }
         }
 
@@ -195,8 +196,18 @@ namespace SLC_LayoutEditor.UI
 
             if (e.Data is AddDialogResult result && result.IsCreate)
             {
-                CabinLayout layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AircraftName, false);
-                layout.SaveLayout();
+                CabinLayout layout;
+                if (result.SelectedTemplatePath == null)
+                {
+                    layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AircraftName, false);
+                    layout.SaveLayout();
+                }
+                else
+                {
+                    string layoutPath = Path.Combine(App.Settings.CabinLayoutsEditPath, vm.SelectedLayoutSet.AircraftName, result.Name + ".txt");
+                    File.Copy(result.SelectedTemplatePath, layoutPath, true);
+                    layout = new CabinLayout(new FileInfo(layoutPath));
+                }
                 vm.SelectedLayoutSet.RegisterLayout(layout);
                 vm.SelectedCabinLayout = layout;
             }
@@ -213,7 +224,7 @@ namespace SLC_LayoutEditor.UI
 
                 if (slotType == CabinSlotType.Stairway)
                 {
-                    vm.SelectedCabinLayout.DeepRefreshProblemChecks();
+                    vm.ActiveLayout.DeepRefreshProblemChecks();
                 }
             }
         }
@@ -245,7 +256,7 @@ namespace SLC_LayoutEditor.UI
                         }
                     }
 
-                    vm.SelectedCabinLayout.DeepRefreshProblemChecks();
+                    vm.ActiveLayout.DeepRefreshProblemChecks();
                     break;
                 case 1: // Wall generator
                     IEnumerable<CabinSlot> wallSlots = vm.SelectedCabinDeck.CabinSlots
@@ -258,7 +269,7 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
                 case 2: //Service points (WIP)
-                    CabinDeck selectedCabinDeck = vm.SelectedCabinLayout.CabinDecks.FirstOrDefault();
+                    CabinDeck selectedCabinDeck = vm.ActiveLayout.CabinDecks.FirstOrDefault();
                     if (selectedCabinDeck != null)
                     {
                         var seatRows = selectedCabinDeck.GetRowsWithSeats();
@@ -311,9 +322,9 @@ namespace SLC_LayoutEditor.UI
         {
             List<CabinSlotType> targetTypesList = targetTypes.ToList();
 
-            if (vm.SelectedCabinLayout != null && vm.SelectedCabinLayout.CabinDecks != null)
+            if (vm.ActiveLayout?.CabinDecks != null)
             {
-                foreach (CabinSlot cabinSlot in vm.SelectedCabinLayout.CabinDecks
+                foreach (CabinSlot cabinSlot in vm.ActiveLayout.CabinDecks
                                                     .SelectMany(x => x.CabinSlots)
                                                     .Where(x => targetTypesList.Contains(x.Type)))
                 {
@@ -361,11 +372,6 @@ namespace SLC_LayoutEditor.UI
         {
             vm.SelectedCabinSlots = e.Selected;
             vm.SelectedCabinSlotFloor = e.Floor;
-        }
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //vm.SelectedCabinLayout.DeepRefreshProblemChecks();
         }
 
         private void Layout_TemplatingModeToggled(object sender, EventArgs e)

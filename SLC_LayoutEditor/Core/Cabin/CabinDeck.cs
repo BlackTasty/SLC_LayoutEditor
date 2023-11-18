@@ -51,38 +51,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public string FloorName
-        {
-            get
-            {
-                switch (mFloor)
-                {
-                    case 1:
-                        return "Lower deck";
-                    case 2:
-                        return "Upper deck";
-                    default:
-                        string suffix;
-                        switch (int.Parse(mFloor.ToString().LastOrDefault().ToString()))
-                        {
-                            case 1:
-                                suffix = "st";
-                                break;
-                            case 2:
-                                suffix = "nd";
-                                break;
-                            case 3:
-                                suffix = "rd";
-                                break;
-                            default:
-                                suffix = "th";
-                                break;
-                        }
-
-                        return string.Format("{0}{1} deck", mFloor, suffix);
-                }
-            }
-        }
+        public string FloorName => Util.GetFloorName(mFloor);
 
         public bool HasDoors => mCabinSlots.Any(x => x.IsDoor);
 
@@ -160,6 +129,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 InvokePropertyChanged();
             }
         }
+
+        public string ThumbnailFileName => string.Format("{0}.png", Floor);
 
         /// <summary>
         /// Generate a new cabin deck

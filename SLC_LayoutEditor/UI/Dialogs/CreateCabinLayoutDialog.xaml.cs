@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.Dialogs;
+﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.ViewModel;
@@ -16,15 +17,19 @@ namespace SLC_LayoutEditor.UI.Dialogs
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
-        public CreateCabinLayoutDialog(IEnumerable<string> existingCabinLayouts)
+        private readonly CreateCabinLayoutDialogViewModel vm;
+
+        public CreateCabinLayoutDialog(IEnumerable<string> existingCabinLayouts, IEnumerable<TemplatePreview> templates)
         {
             InitializeComponent();
-            (DataContext as AddDialogViewModel).ExistingNames.AddRange(existingCabinLayouts);
+            vm = DataContext as CreateCabinLayoutDialogViewModel;
+            vm.ExistingNames.AddRange(existingCabinLayouts);
+            vm.Templates = new List<TemplatePreview>(templates);
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddDialogViewModel).Name)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult(vm.Name, vm.SelectedTemplate?.TemplatePath)));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
@@ -35,6 +40,11 @@ namespace SLC_LayoutEditor.UI.Dialogs
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)
         {
             DialogClosing?.Invoke(this, e);
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

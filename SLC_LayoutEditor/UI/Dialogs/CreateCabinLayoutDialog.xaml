@@ -4,9 +4,10 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
+           xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls"
            xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
            mc:Ignorable="d" 
-           MinHeight="170" Width="300" LastChildFill="False">
+           MinHeight="170" MinWidth="300" LastChildFill="False">
     <DockPanel.DataContext>
         <vm:CreateCabinLayoutDialogViewModel/>
     </DockPanel.DataContext>
@@ -17,9 +18,57 @@
     <TextBlock DockPanel.Dock="Top" Margin="8,2,8,8" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"
                Foreground="{StaticResource ErrorForegroundColorBrush}"/>
 
-    <StackPanel DockPanel.Dock="Top" Margin="8">
-        
-    </StackPanel>
+    <controls:RefinedExpander DockPanel.Dock="Top" Margin="8,0,8,16"
+                              Header="Create from a template (optional)"
+                              Visibility="{Binding HasTemplates, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <StackPanel Margin="12,0,12,12">
+            <controls:RefinedComboBox DockPanel.Dock="Top" ItemsSource="{Binding Templates}"
+                  SelectedItem="{Binding SelectedTemplate}">
+                <controls:RefinedComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsDefault}" Value="True">
+                                <Setter Property="FontStyle" Value="Italic"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ForegroundSecondaryColorBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:RefinedComboBox.ItemContainerStyle>
+            </controls:RefinedComboBox>
+
+            <DockPanel Margin="0,8,0,4" IsEnabled="{Binding IsTemplateSelected}"
+                       Visibility="{Binding SelectedTemplate.IsDefault, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding SelectedTemplate.DeckNames}"
+                          SelectedIndex="{Binding SelectedDeckThumbnailIndex}"
+                          IsEnabled="{Binding HasTemplateThumbnails}"
+                          Visibility="{Binding HasTemplateMultipleDecks, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"
+                           Text="Preview"/>
+            </DockPanel>
+            <Border Background="{DynamicResource BackgroundColorBrush}" BorderThickness="1.5"
+                    CornerRadius="4" Margin="-16,0,-14,-14"
+                    Visibility="{Binding SelectedTemplate.IsDefault, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <Grid>
+                    <Image Source="{Binding SelectedDeckThumbnail}" Height="180"/>
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundSecondaryColorBrush}"
+                           VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasTemplateThumbnails}" Value="False">
+                                        <Setter Property="Text" Value="Preview unavailable (no thumbnails)"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsTemplateSelected}" Value="False">
+                                        <Setter Property="Text" Value="Select a template"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </controls:RefinedExpander>
 
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">

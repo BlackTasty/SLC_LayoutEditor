@@ -100,7 +100,7 @@
     <Compile Include="Converter\StringNotEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
-    <Compile Include="Core\Cabin\TemplateData.cs" />
+    <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
     <Compile Include="Core\Enum\StateChangeType.cs" />

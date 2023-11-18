@@ -165,6 +165,7 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged(nameof(IsAddCabinLayoutButtonEnabled));
                 InvokePropertyChanged(nameof(SelectedLayoutSetText));
                 InvokePropertyChanged(nameof(SelectedLayoutText));
+                InvokePropertyChanged(nameof(SelectedTemplateText));
 
                 if (mSelectedLayoutSet != null)
                 {

@@ -179,7 +179,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool IsTemplate => isTemplate;
 
         public string ThumbnailDirectory => !IsTemplate ? Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName) :
-            Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName, "templates");
+            Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Parent.Name, "templates", mLayoutName);
 
         public CabinLayout(string layoutName, string aircraftName, bool isTemplate) : 
             this(new FileInfo(
@@ -222,6 +222,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
             }
+
+            Directory.Delete(ThumbnailDirectory, true);
 
             OnDeleted(EventArgs.Empty);
         }
@@ -310,7 +312,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
 
-            string thumbnailPath = Path.Combine(ThumbnailDirectory, cabinDeck.Floor + ".png");
+            string thumbnailPath = Path.Combine(ThumbnailDirectory, cabinDeck.ThumbnailFileName);
 
             if (File.Exists(thumbnailPath))
             {

@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Controls
@@ -184,12 +185,12 @@ namespace SLC_LayoutEditor.Controls
 
         public void GenerateThumbnailForDeck(string thumbnailPath, bool overwrite = false)
         {
-            string deckThumbnailPath = System.IO.Path.Combine(thumbnailPath, CabinDeck.Floor + ".png");
+            string deckThumbnailPath = System.IO.Path.Combine(thumbnailPath, CabinDeck.ThumbnailFileName);
 
             if (!File.Exists(deckThumbnailPath) || overwrite)
             {
-                int offsetX = 91;
-                int offsetY = 165;
+                int offsetX = 103;
+                int offsetY = 169;
 
                 if (layout_deck.ActualWidth <= 0 || layout_deck.ActualHeight <= 0)
                 {
@@ -206,9 +207,17 @@ namespace SLC_LayoutEditor.Controls
                 }
                 #endregion
 
+                var rect = new Rect(new Size(width, height));
+                var visual = new DrawingVisual();
+
+                using (var dc = visual.RenderOpen())
+                {
+                    dc.DrawRectangle(new VisualBrush(this), null, rect);
+                }
+
                 RenderTargetBitmap bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
-                bitmap.Render(this);
-                CroppedBitmap croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(offsetX, offsetY, width - offsetX - 83, height - offsetY));
+                bitmap.Render(visual);
+                CroppedBitmap croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(offsetX, offsetY, width - offsetX - 8, height - offsetY - 8));
 
                 double scalingFactor = .5;
                 TransformedBitmap transformedBitmap = new TransformedBitmap(croppedBitmap, new ScaleTransform(scalingFactor, scalingFactor));

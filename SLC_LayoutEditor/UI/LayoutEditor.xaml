@@ -20,7 +20,7 @@
     <DockPanel>
         <DockPanel Width="346" Margin="8" LastChildFill="False">
             <Border DockPanel.Dock="Top" Style="{DynamicResource CardStyle}">
-                <StackPanel Margin="4">
+                <StackPanel>
                     <DockPanel Margin="0,0,0,8">
                         <ToggleButton Style="{StaticResource TemplateSwitchToggleButton}" DockPanel.Dock="Right"
                                       IsChecked="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}"/>
@@ -404,7 +404,7 @@
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Margin" Value="0,0,0,0"/>
-                            <Setter Property="Padding" Value="12,8"/>
+                            <Setter Property="Padding" Value="12"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="Margin" Value="0,0,0,7"/>
@@ -412,7 +412,7 @@
                                 <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
                                     <Setter Property="BorderThickness" Value="1.5,1.5,1.5,0"/>
-                                    <Setter Property="Padding" Value="10.5,8"/>
+                                    <Setter Property="Padding" Value="10.5,12"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -504,7 +504,6 @@
                                     <TextBlock Text="Slot type" Margin="0,0,0,4"/>
                                     <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
                                               SelectedIndex="{Binding SelectedCabinSlotTypeId}"
-                                              SelectionChanged="ComboBox_SelectionChanged"
                                               Style="{StaticResource TopListComboBoxStyle}"/>
                                 </StackPanel>
                                 <StackPanel Margin="4">

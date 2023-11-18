@@ -19,7 +19,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:RefinedExpanderToggle}">
-                    <Border Padding="{TemplateBinding Padding}">
+                    <Border>
                         <Grid Background="Transparent" SnapsToDevicePixels="False" Margin="8,4,12,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

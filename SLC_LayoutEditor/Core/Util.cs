@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.Reflection;
 using SLC_LayoutEditor.Core.Cabin;
+using System.Windows.Media.Imaging;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -53,6 +54,63 @@ namespace SLC_LayoutEditor.Core
         {
             return Keyboard.IsKeyDown(Key.LeftCtrl) ||
                    Keyboard.IsKeyDown(Key.RightCtrl);
+        }
+
+        public static string GetFloorName(int floor)
+        {
+            switch (floor)
+            {
+                case 1:
+                    return "Lower deck";
+                case 2:
+                    return "Upper deck";
+                default:
+                    string suffix;
+                    switch (int.Parse(floor.ToString().LastOrDefault().ToString()))
+                    {
+                        case 1:
+                            suffix = "st";
+                            break;
+                        case 2:
+                            suffix = "nd";
+                            break;
+                        case 3:
+                            suffix = "rd";
+                            break;
+                        default:
+                            suffix = "th";
+                            break;
+                    }
+
+                    return string.Format("{0}{1} deck", floor, suffix);
+            }
+        }
+
+        internal static BitmapImage LoadImage(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            {
+                try
+                {
+                    BitmapImage bmp = new BitmapImage();
+
+                    using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                    {
+                        bmp.BeginInit();
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.StreamSource = fs;
+                        bmp.EndInit();
+                    }
+
+                    return bmp;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Default.WriteLog("There was an error loading an image!", ex);
+                    return null;
+                }
+            }
+            else return null;
         }
 
         public static string SelectFolder(string title, string currentFolder, bool showNewFolderButton)

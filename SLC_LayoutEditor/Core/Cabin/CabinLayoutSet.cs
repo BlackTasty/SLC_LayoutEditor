@@ -154,6 +154,18 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public IEnumerable<TemplatePreview> GetTemplatePreviews()
+        {
+            List<TemplatePreview> templatePreviews = new List<TemplatePreview>();
+
+            foreach (CabinLayout template in mTemplates)
+            {
+                templatePreviews.Add(new TemplatePreview(template));
+            }
+
+            return templatePreviews;
+        }
+
         public async Task LoadCabinLayouts()
         {
             if (!layoutSetFolder.Exists)
