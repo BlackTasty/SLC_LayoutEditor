@@ -109,7 +109,7 @@ namespace SLC_LayoutEditor.UI
 
         private void SaveLayout()
         {
-            vm.SaveLayout();
+            vm.ActiveLayout.SaveLayout();
             control_layout.GenerateThumbnailForLayout(true);
 
             if (!vm.IsTemplatingMode && App.Settings.OpenFolderWithEditedLayout)
@@ -215,7 +215,7 @@ namespace SLC_LayoutEditor.UI
 
         private void MultiSelect_SlotTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
+            if (!vm.IgnoreMultiSlotTypeChange && sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
             {
                 foreach (CabinSlot cabinSlot in control_layout.SelectedCabinSlots)
                 {
@@ -320,7 +320,7 @@ namespace SLC_LayoutEditor.UI
 
         private void ToggleProblemHighlight(bool showProblems, IEnumerable<CabinSlot> problematicSlots, params CabinSlotType[] targetTypes)
         {
-            List<CabinSlotType> targetTypesList = targetTypes.ToList();
+            /*List<CabinSlotType> targetTypesList = targetTypes.ToList();
 
             if (vm.ActiveLayout?.CabinDecks != null)
             {
@@ -330,7 +330,7 @@ namespace SLC_LayoutEditor.UI
                 {
                     cabinSlot.IsProblematic = showProblems && problematicSlots.Any(x => x.Guid == cabinSlot.Guid);
                 }
-            }
+            }*/
         }
 
         private void StairwayPositions_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)

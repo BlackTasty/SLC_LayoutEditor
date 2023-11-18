@@ -51,7 +51,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public string AircraftName
         {
             get => mAircraftName;
-            set
+            private set
             {
                 mAircraftName = value;
                 InvokePropertyChanged();

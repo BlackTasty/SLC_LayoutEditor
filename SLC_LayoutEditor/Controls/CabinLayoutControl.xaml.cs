@@ -219,6 +219,7 @@ namespace SLC_LayoutEditor.Controls
             }
 
             OnLayoutRegenerated(EventArgs.Empty);
+            CabinLayout?.DeepRefreshProblemChecks();
             RefreshState();
             RefreshScrollBarVisibleFlags();
         }
@@ -268,18 +269,15 @@ namespace SLC_LayoutEditor.Controls
 
         private void CabinDeckControl_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
         {
-            if (activeDeckControl != null && e.Selected.Count == 0)
+            if (activeDeckControl != null &&
+                (activeDeckControl.CabinDeck.Floor != e.DeckControl.CabinDeck.Floor || e.Selected.Count == 0))
             {
                 activeDeckControl.SetSlotSelected(null);
             }
 
             SelectedCabinSlots = e.Selected;
             SelectedCabinSlotFloor = e.Floor;
-
-            if (activeDeckControl == null)
-            {
-                activeDeckControl = e.DeckControl;
-            }
+            activeDeckControl = e.DeckControl;
 
             OnSelectedSlotsChanged(e);
         }
@@ -425,6 +423,7 @@ namespace SLC_LayoutEditor.Controls
         {
             InvokePropertyChanged(nameof(LayoutOverviewTitle));
             InvokePropertyChanged(nameof(HasUnsavedChanges));
+            CabinLayout?.DeepRefreshProblemChecks();
         }
 
         private void MakeTemplate_Click(object sender, RoutedEventArgs e)

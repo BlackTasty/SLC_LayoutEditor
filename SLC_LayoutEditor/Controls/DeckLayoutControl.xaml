@@ -36,12 +36,6 @@
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor}" Value="2">
                                     <Setter Property="Text" Value="Upper deck"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues}" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource WarnForegroundColorBrush}"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues}" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource ErrorForegroundColorBrush}"/>
-                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>

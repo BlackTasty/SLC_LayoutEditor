@@ -1,10 +1,12 @@
-﻿16.11.2023
+﻿18.11.2023
 Added: Hovering over any slot now shows the type as a tooltip
-Added: A new menu item "Roadmap" has been added to "System"
+Added: A new menu item "Roadmap" has been added to the "Editor" menu entry
 Added: The deck issue count is now visible below the deck title
 Added: The aircraft list now shows how many layouts each aircraft has
 Added: Cabin slots now are highlighted when hovering over them
 Added: Cabin layouts can now be deleted from within the editor
+Added: You can now create templates from existing layouts as well as create new templates!
+Added: The cabin slot type dropdown now has a preview to the right of the text
 Changed: When reloading a cabin deck from disk, the confirmation dialog does not show up anymore when the layout hasn't been changed
 Changed: Adding or removing new rows and columns does not re-render the whole deck anymore
 Changed: Improved the visual appearance of the deck title
@@ -14,6 +16,8 @@ Changed: Adjusted color for supersonic seats to match that of the editor on the 
 Changed: Increased highlight opacity for selected slots
 Changed: Aircrafts are now sorted by the amount of layouts present for them as well as the name
 Changed: Aisle slots have a new appearance
+Changed: Renamed "System" menu entry to "Editor"
+Changed: Selecting multiple slots of the same type now sets the slot type on the dropdown
 Fixed: Clicking any slot in a layout would cause the UI to re-render the whole deck when it was not required
 Fixed: Adding or removing rows/columns now trigger the check for unsaved changes
 Fixed: Slots that have the issue highlighting and are selected would keep the highlight even after changing the slot type

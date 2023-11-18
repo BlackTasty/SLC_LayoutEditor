@@ -11,7 +11,7 @@
             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=ShowEye, Converter={StaticResource BooleanToVisibilityConverter}}"
             IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=InvalidSlots.Count, Converter={StaticResource GreaterThanConverter}}">
         <Button.Style>
-            <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Style TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
                 <Setter Property="Content" Value="{StaticResource EyeOffOutline}"/>
                 <Setter Property="Padding" Value="1,1.5,1,.5"/>
                 <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
@@ -42,7 +42,7 @@
             ToolTipService.Placement="Right"
             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=Description, Converter={StaticResource NotNullToVisibilityConverter}}">
         <Button.Style>
-            <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Style TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
                 <Setter Property="Content" Value="{StaticResource HelpCircle}"/>
                 <Setter Property="Padding" Value="2"/>
                 <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>
@@ -53,7 +53,7 @@
             ToolTip="Try to automatically fix this problem"
             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=ShowAutoFix, Converter={StaticResource BooleanToVisibilityConverter}}">
         <Button.Style>
-            <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Style TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
                 <Setter Property="Content" Value="{StaticResource WrenchOutline}"/>
                 <Setter Property="Padding" Value="1"/>
                 <Setter Property="Foreground" Value="{StaticResource EyeForegroundColorBrush}"/>

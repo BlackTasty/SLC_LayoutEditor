@@ -22,7 +22,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinSlotControl.xaml
     /// </summary>
-    public partial class CabinSlotControl : Canvas, INotifyPropertyChanged //, IDisposable
+    public partial class CabinSlotControl : Canvas, INotifyPropertyChanged, IDisposable
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;

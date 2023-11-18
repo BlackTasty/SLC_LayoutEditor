@@ -34,5 +34,16 @@ namespace SLC_LayoutEditor.Core
                 Math.Abs(start.Y - current.Y) >= minSizeThreshold &&
                 selectionRect.Width * selectionRect.Height > minTotalPxThreshold;
         }
+
+        public static double ExtractDouble(this object value)
+        {
+            var d = value as double? ?? double.NaN;
+            return double.IsInfinity(d) ? double.NaN : d;
+        }
+
+        public static bool AnyNan(this IEnumerable<double> values)
+        {
+            return values.Any(double.IsNaN);
+        }
     }
 }

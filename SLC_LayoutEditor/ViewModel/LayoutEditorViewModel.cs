@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
+using SLC_LayoutEditor.Converter;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Enum;
@@ -26,6 +27,9 @@ namespace SLC_LayoutEditor.ViewModel
         private const string TEXT_LAYOUT_NO_LAYOUTS = "No cabin layouts for this aircraft found";
         private const string TEXT_TEMPLATE_NO_SELECTION = "No template selected";
         private const string TEXT_TEMPLATE_NO_LAYOUTS = "No templates for this aircraft found";
+
+        private static readonly Style ADD_LAYOUT_BUTTON_STYLE = (Style)App.Current.FindResource("DefaultBorderedIconButtonStyle");
+        private static readonly Style ADD_TEMPLATE_BUTTON_STYLE = (Style)App.Current.FindResource("TemplateBorderedIconButtonStyle");
 
         private bool hasUnsavedChanges;
         private dynamic storedNewValue;
@@ -135,7 +139,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public string StairwayErrorMessage
         {
-            get => SelectedCabinLayout?.CabinDecks?.Count > 1 ? "Invalid stairway positions!" :
+            get => ActiveLayout?.CabinDecks?.Count > 1 ? "Invalid stairway positions!" :
                 "Stairway can be removed!";
         }
         #endregion
@@ -183,7 +187,10 @@ namespace SLC_LayoutEditor.ViewModel
             get => mSelectedCabinLayout;
             set
             {
-                PrepareCabinLayoutChange(mSelectedCabinLayout, value, SelectedCabinLayout_Deleted);
+                if (!PrepareCabinLayoutChange(mSelectedCabinLayout, value, SelectedCabinLayout_Deleted))
+                {
+                    return;
+                }
                 mSelectedCabinLayout = value;
 
                 if (value != null)
@@ -201,7 +208,10 @@ namespace SLC_LayoutEditor.ViewModel
             get => mSelectedTemplate;
             set
             {
-                PrepareCabinLayoutChange(mSelectedTemplate, value, SelectedTemplate_Deleted);
+                if (!PrepareCabinLayoutChange(mSelectedTemplate, value, SelectedTemplate_Deleted))
+                {
+                    return;
+                }
                 mSelectedTemplate = value;
 
                 if (value != null)
@@ -241,9 +251,20 @@ namespace SLC_LayoutEditor.ViewModel
                     InvokePropertyChanged(nameof(SelectedCabinSlotTypeId));
                 }
 
-                SelectedMultiSlotTypeIndex = -1;
+                IgnoreMultiSlotTypeChange = true;
+                if (value?.Count > 0) {
+                    int checkType = value.First().TypeId;
+                    SelectedMultiSlotTypeIndex = value.All(x => x.TypeId == checkType) ? checkType : -1; 
+                }
+                else
+                {
+                    SelectedMultiSlotTypeIndex = -1;
+                }
+                IgnoreMultiSlotTypeChange = true;
             }
         }
+
+        public bool IgnoreMultiSlotTypeChange { get; private set; }
 
         public CabinSlot SelectedCabinSlot => mSelectedCabinSlots.FirstOrDefault();
 
@@ -320,8 +341,8 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public string LayoutOverviewTitle => SelectedCabinLayout != null ? 
-            string.Format("Cabin layout \"{0}\"{1}", SelectedCabinLayout.LayoutName, hasUnsavedChanges ? "*" : "") : 
+        public string LayoutOverviewTitle => ActiveLayout != null ? 
+            string.Format("Cabin layout \"{0}\"{1}", ActiveLayout.LayoutName, hasUnsavedChanges ? "*" : "") : 
             "No cabin layout loaded";
 
         public bool HasUnsavedChanges
@@ -335,11 +356,11 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        private void SelectedCabinLayout_LayoutChanged(object sender, EventArgs e)
+        private void SelectedLayout_LayoutChanged(object sender, EventArgs e)
         {
             InvokePropertyChanged(nameof(StairwayErrorMessage));
             OnChanged(new ChangedEventArgs(
-                Util.HasLayoutChanged(mSelectedCabinLayout))
+                Util.HasLayoutChanged(ActiveLayout))
                 );
         }
 
@@ -356,7 +377,7 @@ namespace SLC_LayoutEditor.ViewModel
         private void CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
         {
             OnChanged(new ChangedEventArgs(
-                Util.HasLayoutChanged(mSelectedCabinLayout))
+                Util.HasLayoutChanged(ActiveLayout))
                 );
         }
 
@@ -445,9 +466,15 @@ namespace SLC_LayoutEditor.ViewModel
                     InvokePropertyChanged();
                     InvokePropertyChanged(nameof(LayoutSets));
                     InvokePropertyChanged(!value ? nameof(SelectedLayoutText) : nameof(SelectedTemplateText));
+                    InvokePropertyChanged(nameof(AddLayoutButtonStyle));
+                    InvokePropertyChanged(nameof(AddLayoutTooltip));
                 }
             }
         }
+
+        public Style AddLayoutButtonStyle => !IsTemplatingMode ? ADD_LAYOUT_BUTTON_STYLE : ADD_TEMPLATE_BUTTON_STYLE;
+
+        public string AddLayoutTooltip => !IsTemplatingMode ? "Create a new layout" : "Create a new template";
 
         public LayoutEditorViewModel()
         {
@@ -509,28 +536,17 @@ namespace SLC_LayoutEditor.ViewModel
             return hasUnsavedChanges;
         }
 
-        public void SaveLayout()
-        {
-            if (!IsTemplatingMode)
-            {
-                SelectedCabinLayout.SaveLayout();
-            }
-            else
-            {
-                SelectedTemplate.SaveLayout();
-            }
-        }
-
         private void UnsavedChangesDialog_DialogClosing(object sender, DialogClosingEventArgs e)
         {
             if (e.DialogResult == DialogResultType.Yes)
             {
-                mSelectedCabinLayout.SaveLayout();
+                ActiveLayout.SaveLayout();
             }
             else if (e.DialogResult == DialogResultType.No)
             {
-                SelectedCabinLayout.LoadCabinLayoutFromFile();
+                ActiveLayout.LoadCabinLayoutFromFile(true);
             }
+            InvokePropertyChanged(nameof(HasUnsavedChanges));
 
             if (storedNewValue != null)
             {
@@ -543,18 +559,28 @@ namespace SLC_LayoutEditor.ViewModel
                     }
                     else if (storedNewValue is CabinLayout selectedLayout)
                     {
-                        SelectedCabinLayout = selectedLayout;
+                        if (!selectedLayout.IsTemplate)
+                        {
+                            SelectedCabinLayout = selectedLayout;
+                        }
+                        else
+                        {
+                            SelectedTemplate = selectedLayout;
+                        }
                     }
                 }
                 else
                 {
                     if (storedNewValue is CabinLayoutSet)
                     {
-                        OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, mLayoutSets.IndexOf(SelectedLayoutSet)));
+                        OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, AircraftListSortConverter.Sort(mLayoutSets)
+                            .ToList().IndexOf(SelectedLayoutSet)));
                     }
                     else if (storedNewValue is CabinLayout)
                     {
-                        OnSelectionRollback(new SelectionRollbackEventArgs(SelectedCabinLayout, SelectedLayoutSet.CabinLayouts.IndexOf(SelectedCabinLayout)));
+                        OnSelectionRollback(new SelectionRollbackEventArgs(ActiveLayout, 
+                            (!IsTemplatingMode ? SelectedLayoutSet.CabinLayouts : SelectedLayoutSet.Templates)
+                                .IndexOf(SelectedCabinLayout)));
                     }
                 }
             }
@@ -562,32 +588,39 @@ namespace SLC_LayoutEditor.ViewModel
             Mediator.Instance.NotifyColleagues(ViewModelMessage.UnsavedChangesDialogClosed, e.DialogResult != DialogResultType.Cancel);
         }
 
-        private void PrepareCabinLayoutChange(CabinLayout current, CabinLayout updated, EventHandler<EventArgs> deletedCallback)
+        private bool PrepareCabinLayoutChange(CabinLayout current, CabinLayout updated, EventHandler<EventArgs> deletedCallback)
         {
             if (CheckUnsavedChanges(updated))
             {
-                return;
+                return false;
             }
 
             if (current != null)
             {
-                current.CabinDeckCountChanged -= SelectedCabinLayout_LayoutChanged;
-                current.CabinSlotsChanged -= SelectedCabinLayout_LayoutChanged;
+                current.CabinDeckCountChanged -= SelectedLayout_LayoutChanged;
+                current.CabinSlotsChanged -= SelectedLayout_LayoutChanged;
                 current.Deleted -= deletedCallback;
             }
 
             updated?.LoadCabinLayoutFromFile();
+            return true;
         }
 
         private void FinishCabinLayoutChange(CabinLayout updated, EventHandler<EventArgs> deletedCallback)
         {
             SelectedCabinDeck = null;
+            SelectedCabinSlots.Clear();
+            SelectedCabinSlotTypeId = -1;
+            SelectedMultiSlotTypeIndex = -1;
             if (updated != null)
             {
-                updated.CabinDeckCountChanged += SelectedCabinLayout_LayoutChanged;
-                updated.CabinSlotsChanged += SelectedCabinLayout_LayoutChanged;
+                updated.CabinDeckCountChanged += SelectedLayout_LayoutChanged;
+                updated.CabinSlotsChanged += SelectedLayout_LayoutChanged;
                 updated.Deleted += deletedCallback;
             }
+            InvokePropertyChanged(nameof(SelectedCabinSlot));
+            InvokePropertyChanged(nameof(SelectedCabinSlots));
+            InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
             InvokePropertyChanged(nameof(StairwayErrorMessage));
             InvokePropertyChanged(nameof(LayoutOverviewTitle));
             InvokePropertyChanged(!IsTemplatingMode ? nameof(SelectedLayoutText) : nameof(SelectedTemplateText));

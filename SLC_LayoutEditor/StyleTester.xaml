@@ -8,16 +8,48 @@
         Title="StyleTester" Height="450" Width="800"
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundColorBrush}">
-    <Grid>
-        <Button Style="{StaticResource SelectButtonStyle}" Margin="48,0" HorizontalAlignment="Left" Width="30" Height="22"
-                Content="{StaticResource SelectColumn}"/>
-        <Button Style="{StaticResource SelectButtonStyle}" Margin="48,60,48,0" HorizontalAlignment="Left" Width="22" Height="30"
-                Content="{StaticResource SelectRow}"/>
-        <Button Style="{StaticResource AddRowButtonStyle}"/>
-        <Button Style="{StaticResource AddColumnButtonStyle}"/>
-        <Button Style="{StaticResource AddRowButtonLargeStyle}" Margin="0,68,0,0"/>
-        <Button Style="{StaticResource AddColumnButtonLargeStyle}" Margin="0,68,0,0"/>
-        <Button Style="{StaticResource RemoveRowButtonStyle}" Margin="96,0"/>
-        <Button Style="{StaticResource RemoveColumnButtonStyle}" Margin="96,0"/>
-    </Grid>
+    <StackPanel Margin="8">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Margin="8">
+                <TextBlock Text="Icon only buttons"/>
+                <UniformGrid Columns="2">
+                    <Button Style="{DynamicResource DefaultIconButtonStyle}" Content="{StaticResource Add}" Margin="2,4"/>
+                    <Button Style="{DynamicResource DefaultIconButtonStyle}" Content="{StaticResource Add}" IsEnabled="False"/>
+                    <Button Style="{DynamicResource WarnIconButtonStyle}" Content="{StaticResource Refresh}" />
+                    <Button Style="{DynamicResource WarnIconButtonStyle}" Content="{StaticResource Refresh}" IsEnabled="False"/>
+                    <Button Style="{DynamicResource ErrorIconButtonStyle}" Content="{StaticResource Trash}" />
+                    <Button Style="{DynamicResource ErrorIconButtonStyle}" Content="{StaticResource Trash}" IsEnabled="False"/>
+                </UniformGrid>
+            </StackPanel>
+            <StackPanel Margin="8">
+                <TextBlock Text="Bordered icon buttons"/>
+                <UniformGrid Columns="2">
+                    <Button Style="{DynamicResource DefaultBorderedIconButtonStyle}" Content="{StaticResource Add}" Margin="2,4"/>
+                    <Button Style="{DynamicResource DefaultBorderedIconButtonStyle}" Content="{StaticResource Add}" IsEnabled="False"/>
+                    <Button Style="{DynamicResource WarnBorderedIconButtonStyle}" Content="{StaticResource Refresh}" />
+                    <Button Style="{DynamicResource WarnBorderedIconButtonStyle}" Content="{StaticResource Refresh}" IsEnabled="False"/>
+                    <Button Style="{DynamicResource ErrorBorderedIconButtonStyle}" Content="{StaticResource Trash}" />
+                    <Button Style="{DynamicResource ErrorBorderedIconButtonStyle}" Content="{StaticResource Trash}" IsEnabled="False"/>
+                    <Button Style="{DynamicResource TemplateBorderedIconButtonStyle}" Content="{StaticResource TemplateMode}" />
+                    <Button Style="{DynamicResource TemplateBorderedIconButtonStyle}" Content="{StaticResource TemplateMode}" IsEnabled="False"/>
+                </UniformGrid>
+            </StackPanel>
+            <StackPanel Margin="8">
+                <TextBlock Text="Filled icon buttons"/>
+                <UniformGrid Columns="2">
+                    <Button Style="{DynamicResource DefaultFilledIconButtonStyle}" Content="{StaticResource Add}" Margin="2,4"/>
+                    <Button Style="{DynamicResource DefaultFilledIconButtonStyle}" Content="{StaticResource Add}" IsEnabled="False"/>
+                </UniformGrid>
+            </StackPanel>
+            <StackPanel Margin="8">
+                <TextBlock Text="Special buttons"/>
+                <UniformGrid Rows="1">
+                    <Button Style="{DynamicResource FilledLargeRoundIconButtonStyle}" Content="{StaticResource Save}" Margin="2,4"/>
+                    <Button Style="{DynamicResource FilledLargeRoundIconButtonStyle}" Content="{StaticResource Save}" IsEnabled="False"/>
+                    <Button Style="{DynamicResource MakeTemplateButtonStyle}"/>
+                    <Button Style="{DynamicResource MakeTemplateButtonStyle}" IsEnabled="False"/>
+                </UniformGrid>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
 </Window>

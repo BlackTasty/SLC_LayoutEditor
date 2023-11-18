@@ -169,7 +169,7 @@
     <SolidColorBrush x:Key="TemplatingModeHoverBrush" Color="{StaticResource TemplatingModeHoverColor}"/>
     <SolidColorBrush x:Key="TemplatingModePressedBrush" Color="{StaticResource TemplatingModePressedColor}"/>
     
-    <LinearGradientBrush x:Key="TemplatingModeBackBrush" EndPoint="16,0" StartPoint="0,16" Opacity=".035"
+    <LinearGradientBrush x:Key="TemplatingModeBackBrush" EndPoint="16,0" StartPoint="0,16" Opacity=".025"
                          MappingMode="Absolute" SpreadMethod="Repeat">
         <GradientStop Color="#45FFFFFF" Offset="0"/>
         <GradientStop Color="#45FFFFFF" Offset=".5"/>

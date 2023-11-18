@@ -20,7 +20,7 @@
     </StackPanel>
     <TextBlock Text="{Binding PatchDate, ElementName=patchnote, FallbackValue=Release date}" Margin="12,0" FontSize="10.667" 
                FontStyle="Italic" DockPanel.Dock="Top" Foreground="{DynamicResource ForegroundSecondaryColorBrush}"/>
-    <RichTextBox x:Name="rtb_patchnotes" Background="{x:Null}" BorderBrush="{x:Null}" IsReadOnly="True" HorizontalScrollBarVisibility="Disabled" 
+    <RichTextBox x:Name="rtb_patchnotes" Background="{x:Null}" BorderThickness="0" IsReadOnly="True" HorizontalScrollBarVisibility="Disabled" 
                  VerticalScrollBarVisibility="Visible" Foreground="{DynamicResource ForegroundColorBrush}" VerticalContentAlignment="Top" Margin="4,8"
                  FontSize="14"/>
     </DockPanel>

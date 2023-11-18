@@ -95,7 +95,6 @@ namespace SLC_LayoutEditor.Core.Cabin
         #endregion
 
         #region Door checks
-
         public bool ShowDuplicateDoorsIssues
         {
             get => mShowDuplicateDoorsIssues;
@@ -170,6 +169,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 }
             }
         }
+
+        public IEnumerable<CabinSlot> InvalidSlots => GetInvalidSlots();
         #endregion
 
         public string FilePath => layoutFile.FullName;
@@ -264,14 +265,19 @@ namespace SLC_LayoutEditor.Core.Cabin
             return autoFixResult;
         }
 
-        public void LoadCabinLayoutFromFile()
+        public void LoadCabinLayoutFromFile(bool reload = false)
         {
-            if (!isLoaded)
+            if (!isLoaded || reload)
             {
                 mCabinDecks.Clear();
 
                 mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
                 LoadCabinLayout(File.ReadAllText(layoutFile.FullName));
+
+                if (reload)
+                {
+                    OnCabinSlotsChanged(EventArgs.Empty);
+                }
             }
         }
 
@@ -562,11 +568,31 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged(nameof(HasSevereIssues));
             InvokePropertyChanged(nameof(HasAnyIssues));
             InvokePropertyChanged(nameof(IssuesCountText));
+
+            IEnumerable<CabinSlot> invalidSlots = InvalidSlots;
+            foreach (CabinSlot cabinSlot in mCabinDecks.SelectMany(x => x.CabinSlots))
+            {
+                cabinSlot.IsProblematic = invalidSlots.Any(x => x.Guid == cabinSlot.Guid);
+            }
         }
 
         public override string ToString()
         {
             return mLayoutName;
+        }
+
+        private IEnumerable<CabinSlot> GetInvalidSlots()
+        {
+            List<CabinSlot> problematic = mCabinDecks.SelectMany(x => x.InvalidSlots).ToList();
+            problematic.AddRange(InvalidStairways);
+            problematic.AddRange(DuplicateDoors);
+            problematic.AddRange(DuplicateEconomySeats);
+            problematic.AddRange(DuplicateBusinessSeats);
+            problematic.AddRange(DuplicateFirstClassSeats);
+            problematic.AddRange(DuplicatePremiumSeats);
+            problematic.AddRange(DuplicateSupersonicSeats);
+            problematic.AddRange(DuplicateUnavailableSeats);
+            return problematic.Distinct();
         }
 
         protected virtual void OnCabinDeckCountChanged(EventArgs e)

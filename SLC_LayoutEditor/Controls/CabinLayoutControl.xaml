@@ -49,122 +49,158 @@
             </Style>
         </Border.Style>
     </Border>
-    <Grid>
-        <ToggleButton HorizontalAlignment="Right" Style="{DynamicResource ToggleDeckViewButtonStyle}" VerticalAlignment="Center" Visibility="Collapsed"/>
-        <Border Height="55" MinWidth="460">
-            <Border.Style>
-                <Style TargetType="Border" BasedOn="{StaticResource CardLayoutTitleStyle}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
-                            <Setter Property="BorderThickness" Value="1.5,0,1.5,1.5"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            <DockPanel>
-                <DockPanel.Style>
-                    <Style TargetType="DockPanel">
+    <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="4"
+                Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout, Converter={StaticResource NotNullToVisibilityConverter}}">
+        <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock>
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
+                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesCountSum, StringFormat={}{0} minor issues}"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
-                                <Setter Property="Margin" Value="-1.5,0,-1.5,-1.5"/>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesCountSum}" Value="1">
+                                <Setter Property="Text" Value="1 minor issue"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </DockPanel.Style>
-                <Button DockPanel.Dock="Left" Click="MakeTemplate_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource MakeTemplateButtonStyle}">
-                            <Setter Property="Margin" Value="-12,-9,16,-9"/>
-                            <Setter Property="Width" Value="55"/>
-                            <Setter Property="Height" Value="55"/>
-                            <Setter Property="ToolTip" Value="Make a template out of this layout"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
-                                    <!--<Setter Property="Margin" Value="-10.5,-9,14.8,-7.5"/>
+                </TextBlock.Style>
+            </TextBlock>
+        </Border>
+        <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock>
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
+                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesCountSum, StringFormat={}{0} severe issues}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesCountSum}" Value="1">
+                                <Setter Property="Text" Value="1 severe issue"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Border>
+        <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonBorderColorBrush}"
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+            <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
+
+        </Border>
+    </StackPanel>
+    <ToggleButton HorizontalAlignment="Right" Style="{DynamicResource ToggleDeckViewButtonStyle}" VerticalAlignment="Center" Visibility="Collapsed"/>
+    <Border Height="55" MinWidth="460">
+        <Border.Style>
+            <Style TargetType="Border" BasedOn="{StaticResource CardLayoutTitleStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                        <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
+                        <Setter Property="BorderThickness" Value="1.5,0,1.5,1.5"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <DockPanel>
+            <DockPanel.Style>
+                <Style TargetType="DockPanel">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                            <Setter Property="Margin" Value="-1.5,0,-1.5,-1.5"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DockPanel.Style>
+            <Button DockPanel.Dock="Left" Click="MakeTemplate_Click">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource MakeTemplateButtonStyle}">
+                        <Setter Property="Margin" Value="-12,-9,16,-9"/>
+                        <Setter Property="Width" Value="55"/>
+                        <Setter Property="Height" Value="55"/>
+                        <Setter Property="ToolTip" Value="Make a template out of this layout"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                <!--<Setter Property="Margin" Value="-10.5,-9,14.8,-7.5"/>
                                     <Setter Property="Padding" Value="14.5,16.8,17.5,15.2"/>-->
-                                    <Setter Property="Margin" Value="-10.5,-10.5,15.5,-9"/>
-                                    <Setter Property="Padding" Value="14.5,16,16.5,14.5"/>
-                                    <Setter Property="Width" Value="54"/>
-                                    <Setter Property="Height" Value="54"/>
-                                    <Setter Property="ToolTip" Value="Make a template out of the current template"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="AddCabinDeck_Click"
+                                <Setter Property="Margin" Value="-10.5,-10.5,15.5,-9"/>
+                                <Setter Property="Padding" Value="14.5,16,16.5,14.5"/>
+                                <Setter Property="Width" Value="54"/>
+                                <Setter Property="Height" Value="54"/>
+                                <Setter Property="ToolTip" Value="Make a template out of the current template"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="AddCabinDeck_Click"
                     ToolTip="Add a new deck to your layout">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource AddDeckButtonStyle}">
-                            <Setter Property="Margin" Value="16,-9,-8,-9"/>
-                            <Setter Property="Width" Value="55"/>
-                            <Setter Property="Height" Value="55"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
-                                    <Setter Property="Margin" Value="15.5,-9,-6.5,-7.5"/>
-                                    <Setter Property="Padding" Value="16.5,16,14.5,14.5"/>
-                                    <Setter Property="Width" Value="54"/>
-                                    <Setter Property="Height" Value="54"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Content="{DynamicResource Refresh}" Click="ReloadDeck_Click"
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource AddDeckButtonStyle}">
+                        <Setter Property="Margin" Value="16,-9,-8,-9"/>
+                        <Setter Property="Width" Value="55"/>
+                        <Setter Property="Height" Value="55"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                <Setter Property="Margin" Value="15.5,-9,-6.5,-7.5"/>
+                                <Setter Property="Padding" Value="16.5,16,14.5,14.5"/>
+                                <Setter Property="Width" Value="54"/>
+                                <Setter Property="Height" Value="54"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Content="{DynamicResource Refresh}" Click="ReloadDeck_Click"
                         Margin="-4,0,24,0" Height="32" Width="32" Padding="6,6,4,6">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource RoundWarnIconButton}">
-                            <Setter Property="ToolTip" Value="Force the editor to reload the layout from file. Unsaved changes are lost!"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
-                                    <Setter Property="ToolTip" Value="Force the editor to reload the template from file. Unsaved changes are lost!"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteLayout_Click"
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WarnIconButtonStyle}">
+                        <Setter Property="ToolTip" Value="Force the editor to reload the layout from file. Unsaved changes are lost!"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                <Setter Property="ToolTip" Value="Force the editor to reload the template from file. Unsaved changes are lost!"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteLayout_Click"
                         Margin="24,0,0,0" Height="32" Width="32"
                         Padding="6">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ErrorIconButtonStyle}">
-                            <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ErrorIconButtonStyle}">
+                        <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                <Setter Property="ToolTip" Value="Delete this template. This cannot be undone!"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <StackPanel>
+                <TextBlock>
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutTitleStyle}">
+                            <Setter Property="Text" Value="Cabin layout"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
-                                    <Setter Property="ToolTip" Value="Delete this template. This cannot be undone!"/>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate}" Value="True">
+                                    <Setter Property="Text" Value="Template"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Button.Style>
-                </Button>
-                <StackPanel>
-                    <TextBlock>
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutTitleStyle}">
-                                <Setter Property="Text" Value="Cabin layout"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate}" Value="True">
-                                        <Setter Property="Text" Value="Template"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                    <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=LayoutOverviewTitle, FallbackValue=No layout selected}"
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=LayoutOverviewTitle, FallbackValue=No layout selected}"
                                MinWidth="120">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutNameStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=HasUnsavedChanges}" Value="True">
-                                        <Setter Property="FontStyle" Value="Italic"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </StackPanel>
-            </DockPanel>
-        </Border>
-    </Grid>
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutNameStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=HasUnsavedChanges}" Value="True">
+                                    <Setter Property="FontStyle" Value="Italic"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+        </DockPanel>
+    </Border>
 </Grid>

@@ -29,7 +29,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for DeckLayoutControl.xaml
     /// </summary>
-    public partial class DeckLayoutControl : StackPanel //, IDisposable
+    public partial class DeckLayoutControl : StackPanel, IDisposable
     {
         private const double LAYOUT_OFFSET_X = 60;
         private const double LAYOUT_OFFSET_Y = 60;

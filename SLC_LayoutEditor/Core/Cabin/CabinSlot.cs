@@ -76,7 +76,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 }
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
                 OnSlotTypeChanged(EventArgs.Empty);
-                IsProblematic = false;
+                //IsProblematic = false;
             }
         }
 
@@ -139,6 +139,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 if (oldValue != value)
                 {
                     OnProblematicChanged(EventArgs.Empty);
+                    InvokePropertyChanged();
                 }
             }
         }

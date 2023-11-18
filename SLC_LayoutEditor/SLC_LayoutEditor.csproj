@@ -89,13 +89,18 @@
     </Compile>
     <Compile Include="Controls\Material\ToggleButtonAssist.cs" />
     <Compile Include="Converter\AircraftListSortConverter.cs" />
+    <Compile Include="Converter\ArcEndPointConverter.cs" />
+    <Compile Include="Converter\ArcSizeConverter.cs" />
     <Compile Include="Converter\EnumDescriptionConverter.cs" />
     <Compile Include="Converter\EnumInRangeConverter.cs" />
     <Compile Include="Converter\EqualsToVisibilityConverter.cs" />
     <Compile Include="Converter\GreaterThanConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converter\NotZeroConverter.cs" />
     <Compile Include="Converter\OffsetConverter.cs" />
+    <Compile Include="Converter\RotateTransformCentreConverter.cs" />
+    <Compile Include="Converter\StartPointConverter.cs" />
     <Compile Include="Converter\StringNotEmptyConverter.cs" />
     <Compile Include="Converter\StringNotEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />

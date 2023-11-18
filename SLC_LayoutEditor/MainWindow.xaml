@@ -34,7 +34,7 @@
                         <MenuItem Header="File" Height="34">
                             <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
                         </MenuItem>
-                        <MenuItem Header="System" Height="34">
+                        <MenuItem Header="Editor" Height="34">
                             <MenuItem Header="Settings" Click="Settings_Click"/>
                             <Separator Style="{StaticResource MenuSeparatorStyle}"/>
                             <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
@@ -47,9 +47,9 @@
                         BorderBrush="{DynamicResource SeparatorColorBrush}"
                         Visibility="Collapsed"/>
                     <DockPanel Margin="0,0,12,0" Visibility="Collapsed">
-                        <Button Style="{StaticResource IconButton}" Content="{StaticResource Undo}" Margin="4,0" ToolTip="Undo"
+                        <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Undo}" Margin="4,0" ToolTip="Undo"
                         Click="Undo_Click" IsEnabled="{Binding History.CanUndo}"/>
-                        <Button Style="{StaticResource IconButton}" Content="{StaticResource Redo}" Margin="4,0" ToolTip="Redo"
+                        <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Redo}" Margin="4,0" ToolTip="Redo"
                         Click="Redo_Click" IsEnabled="{Binding History.CanRedo}"/>
                     </DockPanel>
                 </DockPanel>

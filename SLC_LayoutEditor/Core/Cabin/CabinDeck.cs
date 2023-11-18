@@ -10,7 +10,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
-    public class CabinDeck : ViewModelBase
+    public class CabinDeck : ViewModelBase, IDisposable
     {
         public event EventHandler<EventArgs> CabinSlotsChanged;
         public event EventHandler<ProblematicSlotsCollectedEventArgs> ProblematicSlotsCollected;
@@ -56,6 +56,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool HasDoors => mCabinSlots.Any(x => x.IsDoor);
 
         public IEnumerable<CabinSlot> DoorSlots => mCabinSlots.Where(x => x.IsDoor);
+
+        public IEnumerable<CabinSlot> InvalidSlots => InvalidCateringDoorsAndLoadingBays;
 
         public IEnumerable<CabinSlot> InvalidCateringDoorsAndLoadingBays => mCabinSlots.Where(x => (x.Type == CabinSlotType.CateringDoor || x.Type == CabinSlotType.LoadingBay)
                                             && x.Column != 0);
@@ -108,7 +110,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool HasSevereIssues => SevereIssuesCount > 0;
 
-        public bool HasMinorIssues => SevereIssuesCount > 0;
+        public bool HasMinorIssues => MinorIssuesCount > 0;
 
         public bool HasAnyIssues => HasSevereIssues || HasMinorIssues;
 
@@ -180,10 +182,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         ~CabinDeck()
         {
-            foreach (CabinSlot cabinSlot in mCabinSlots)
-            {
-                cabinSlot.CabinSlotChanged -= CabinSlot_CabinSlotChanged;
-            }
+            Dispose();
         }
 
         public bool ContainsCabinSlots(IEnumerable<CabinSlot> targets)
@@ -360,6 +359,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private void CabinSlot_CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
         {
             OnCabinSlotsChanged(e);
+            RefreshProblemChecks();
         }
 
         public override string ToString()
@@ -411,6 +411,14 @@ namespace SLC_LayoutEditor.Core.Cabin
         protected virtual void OnDeckSlotLayoutChanged(EventArgs e)
         {
             DeckSlotLayoutChanged?.Invoke(this, e);
+        }
+
+        public void Dispose()
+        {
+            foreach (CabinSlot cabinSlot in mCabinSlots)
+            {
+                cabinSlot.CabinSlotChanged -= CabinSlot_CabinSlotChanged;
+            }
         }
     }
 }
