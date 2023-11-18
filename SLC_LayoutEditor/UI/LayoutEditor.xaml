@@ -505,7 +505,7 @@
                                 <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="Margin" Value="0,0,0,7"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <DataTrigger Binding="{Binding ElementName=control_layout, Path=CabinLayout.IsTemplate, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
                                     <Setter Property="BorderThickness" Value="1.5,1.5,1.5,0"/>
                                     <Setter Property="Padding" Value="10.5,12"/>

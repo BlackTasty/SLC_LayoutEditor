@@ -32,7 +32,7 @@ namespace SLC_LayoutEditor.ViewModel
         private static readonly Style ADD_TEMPLATE_BUTTON_STYLE = (Style)App.Current.FindResource("TemplateBorderedIconButtonStyle");
 
         private bool hasUnsavedChanges;
-        private dynamic storedNewValue;
+        private dynamic storedNewValue = new Unset();
 
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
@@ -356,6 +356,8 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        private CabinLayout ShownLayout => mSelectedCabinLayout != null ? mSelectedCabinLayout : mSelectedTemplate;
+
         private void SelectedLayout_LayoutChanged(object sender, EventArgs e)
         {
             InvokePropertyChanged(nameof(StairwayErrorMessage));
@@ -524,9 +526,10 @@ namespace SLC_LayoutEditor.ViewModel
         {
             if (hasUnsavedChanges)
             {
+                bool isTemplate = ShownLayout.IsTemplate;
                 storedNewValue = newValue;
-                ConfirmationDialog dialog = new ConfirmationDialog(!isClosing ? "Save before swapping " + (!IsTemplatingMode ? "layout" : "template") : "Save before closing?",
-                    "Do you want to save the current " + (!IsTemplatingMode ? "layout" : "template") + " before " + (!isClosing ? "proceeding" : "closing the editor") + "?", DialogType.YesNoCancel);
+                ConfirmationDialog dialog = new ConfirmationDialog(!isClosing ? "Save before swapping " + (!isTemplate ? "layout" : "template") : "Save before closing?",
+                    "Do you want to save the current " + (!isTemplate ? "layout" : "template") + " before " + (!isClosing ? "proceeding" : "closing the editor") + "?", DialogType.YesNoCancel);
 
                 dialog.DialogClosing += UnsavedChangesDialog_DialogClosing;
 
@@ -538,17 +541,19 @@ namespace SLC_LayoutEditor.ViewModel
 
         private void UnsavedChangesDialog_DialogClosing(object sender, DialogClosingEventArgs e)
         {
+            CabinLayout shownLayout = ShownLayout;
+
             if (e.DialogResult == DialogResultType.Yes)
             {
-                ActiveLayout.SaveLayout();
+                shownLayout.SaveLayout();
             }
             else if (e.DialogResult == DialogResultType.No)
             {
-                ActiveLayout.LoadCabinLayoutFromFile(true);
+                shownLayout.LoadCabinLayoutFromFile(true);
             }
             InvokePropertyChanged(nameof(HasUnsavedChanges));
 
-            if (storedNewValue != null)
+            if (!(storedNewValue is Unset))
             {
                 if (e.DialogResult != DialogResultType.Cancel) // User doesn't cancel, apply newly selected value
                 {
@@ -574,17 +579,18 @@ namespace SLC_LayoutEditor.ViewModel
                     if (storedNewValue is CabinLayoutSet)
                     {
                         OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, AircraftListSortConverter.Sort(mLayoutSets)
-                            .ToList().IndexOf(SelectedLayoutSet)));
+                            .ToList().IndexOf(SelectedLayoutSet), RollbackType.CabinLayoutSet));
                     }
                     else if (storedNewValue is CabinLayout)
                     {
                         OnSelectionRollback(new SelectionRollbackEventArgs(ActiveLayout, 
                             (!IsTemplatingMode ? SelectedLayoutSet.CabinLayouts : SelectedLayoutSet.Templates)
-                                .IndexOf(SelectedCabinLayout)));
+                                .IndexOf(shownLayout), RollbackType.CabinLayout));
                     }
                 }
             }
 
+            storedNewValue = new Unset();
             Mediator.Instance.NotifyColleagues(ViewModelMessage.UnsavedChangesDialogClosed, e.DialogResult != DialogResultType.Cancel);
         }
 

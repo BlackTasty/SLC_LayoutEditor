@@ -55,19 +55,33 @@ namespace SLC_LayoutEditor.UI
         // Workaround to force-restore the previously selected index
         private void Vm_SelectionRollback(object sender, SelectionRollbackEventArgs e)
         {
-            if (e.RollbackValue is CabinLayoutSet)
+            if (e.RollbackType == RollbackType.CabinLayoutSet)
             {
                 combo_layoutSets.SelectedIndex = e.RollbackIndex;
             }
-            else if (e.RollbackValue is CabinLayout)
+            else if (e.RollbackType == RollbackType.CabinLayout)
             {
-                if (!vm.IsTemplatingMode)
+                if (e.RollbackValue is CabinLayout layout)
                 {
-                    combo_layouts.SelectedIndex = e.RollbackIndex;
+                    if (!layout.IsTemplate)
+                    {
+                        combo_layouts.SelectedIndex = e.RollbackIndex;
+                    }
+                    else
+                    {
+                        combo_templates.SelectedIndex = e.RollbackIndex;
+                    }
                 }
                 else
                 {
-                    combo_templates.SelectedIndex = e.RollbackIndex;
+                    if (!vm.IsTemplatingMode)
+                    {
+                        combo_layouts.SelectedIndex = -1;
+                    }
+                    else
+                    {
+                        combo_templates.SelectedIndex = -1;
+                    }
                 }
             }
         }
