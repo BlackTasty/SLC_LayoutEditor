@@ -13,7 +13,9 @@
     <Border Grid.RowSpan="2" Background="{DynamicResource TemplatingModeBackBrush}"
             Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     <ScrollViewer x:Name="deck_scroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,8,0,0" Grid.Row="1">
-        <StackPanel x:Name="container_decks" Grid.IsSharedSizeScope="True" Margin="0,0,0,80" Loaded="container_decks_Loaded">
+        <StackPanel x:Name="container_decks" Grid.IsSharedSizeScope="True" Margin="0,0,0,80"
+                    Loaded="container_decks_Loaded"
+                    SizeChanged="deck_scroll_SizeChanged">
 
         </StackPanel>
     </ScrollViewer>
@@ -109,14 +111,48 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button DockPanel.Dock="Right" Content="{DynamicResource Refresh}" Click="ReloadDeck_Click"
-                    ToolTip="Force the editor to reload this layout from file. Unsaved changes are lost!"
-                    Margin="24,0,0,0" Style="{StaticResource RoundWarnIconButton}" Height="32" Width="32"
-                    Padding="6,6,4,6"/>
+                <Button Content="{DynamicResource Refresh}" Click="ReloadDeck_Click"
+                        Margin="-4,0,24,0" Height="32" Width="32" Padding="6,6,4,6">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource RoundWarnIconButton}">
+                            <Setter Property="ToolTip" Value="Force the editor to reload the layout from file. Unsaved changes are lost!"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                    <Setter Property="ToolTip" Value="Force the editor to reload the template from file. Unsaved changes are lost!"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteLayout_Click"
+                        Margin="24,0,0,0" Height="32" Width="32"
+                        Padding="6">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ErrorIconButtonStyle}">
+                            <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                    <Setter Property="ToolTip" Value="Delete this template. This cannot be undone!"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
                 <StackPanel>
-                    <TextBlock Style="{StaticResource CabinLayoutTitleStyle}" Text="Cabin layout"/>
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutTitleStyle}">
+                                <Setter Property="Text" Value="Cabin layout"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate}" Value="True">
+                                        <Setter Property="Text" Value="Template"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                     <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=LayoutOverviewTitle, FallbackValue=No layout selected}"
-                       MinWidth="120">
+                               MinWidth="120">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutNameStyle}">
                                 <Style.Triggers>

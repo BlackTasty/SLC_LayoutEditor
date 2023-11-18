@@ -62,11 +62,10 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<CabinSlotClickedEventArgs> SelectedSlotsChanged;
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<EventArgs> TemplatingModeToggled;
+        public event EventHandler<TemplateCreatedEventArgs> TemplateCreated;
 
         private DeckLayoutControl activeDeckControl;
         private CabinDeck currentRemoveTarget;
-
-        private BackgroundWorker thumbnailGenerator;
 
         #region CabinLayout property
         public CabinLayout CabinLayout
@@ -221,8 +220,7 @@ namespace SLC_LayoutEditor.Controls
 
             OnLayoutRegenerated(EventArgs.Empty);
             RefreshState();
-            InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
-            InvokePropertyChanged(nameof(IsVerticalScrollBarVisible));
+            RefreshScrollBarVisibleFlags();
         }
 
         private void AddCabinDeckToUI(CabinDeck cabinDeck)
@@ -433,7 +431,7 @@ namespace SLC_LayoutEditor.Controls
         {
             if (IsTemplatingMode)
             {
-                string templatesPath = App.GetTemplatePath(CabinLayout.LayoutName);
+                string templatesPath = App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name);
                 IEnumerable<string> existingTemplates = Directory.Exists(templatesPath) ?
                     new DirectoryInfo(templatesPath).EnumerateFiles("*.txt").Select(x => x.Name.Replace(".txt", "")) :
                     new List<string>();
@@ -449,9 +447,13 @@ namespace SLC_LayoutEditor.Controls
         {
             if (e.DialogResult == DialogResultType.OK)
             {
-                Directory.CreateDirectory(App.GetTemplatePath(CabinLayout.LayoutName));
+                string layoutsPath = App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name);
+                Directory.CreateDirectory(layoutsPath);
 
-                //CabinLayout template = CabinLayout.MakeTemplate();
+                CabinLayout template = CabinLayout.MakeTemplate(
+                    System.IO.Path.Combine(layoutsPath, e.Data + ".txt"));
+                template.SaveLayout();
+                OnTemplateCreatedEventArgs(new TemplateCreatedEventArgs(template));
             }
             else
             {
@@ -460,6 +462,16 @@ namespace SLC_LayoutEditor.Controls
         }
 
         private void deck_scroll_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            RefreshScrollBarVisibleFlags();
+        }
+
+        private void container_decks_Loaded(object sender, RoutedEventArgs e)
+        {
+            GenerateThumbnailForLayout();
+        }
+
+        private void RefreshScrollBarVisibleFlags()
         {
             InvokePropertyChanged(nameof(IsHorizontalScrollBarVisible));
             InvokePropertyChanged(nameof(IsVerticalScrollBarVisible));
@@ -491,9 +503,27 @@ namespace SLC_LayoutEditor.Controls
             TemplatingModeToggled?.Invoke(this, e);
         }
 
-        private void container_decks_Loaded(object sender, RoutedEventArgs e)
+        protected virtual void OnTemplateCreatedEventArgs(TemplateCreatedEventArgs e)
         {
-            GenerateThumbnailForLayout();
+            TemplateCreated?.Invoke(this, e);
+        }
+
+        private void DeleteLayout_Click(object sender, RoutedEventArgs e)
+        {
+            ConfirmationDialog dialog = new ConfirmationDialog(!IsTemplatingMode ? "Delete cabin layout" : "Delete template",
+                "Are you sure you want to delete this " + (!IsTemplatingMode ? "cabin layout" : "template") + "? This action cannot be undone!", 
+                DialogType.YesNo);
+
+            dialog.DialogClosing += DeleteLayout_DialogClosing;
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+        }
+
+        private void DeleteLayout_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.Yes)
+            {
+                CabinLayout.Delete();
+            }
         }
     }
 }

@@ -10,7 +10,7 @@
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundColorBrush}"
         mc:Ignorable="d" Closing="Window_Closing"
-        Title="{Binding Title}" MinHeight="450" MinWidth="920"
+        Title="{Binding Title}" MinHeight="670" MinWidth="1070"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
         Icon="Resources/icon.ico">
     <Window.DataContext>

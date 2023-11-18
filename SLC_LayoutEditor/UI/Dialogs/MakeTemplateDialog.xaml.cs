@@ -36,12 +36,12 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddDialogViewModel).Name)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, (DataContext as AddDialogViewModel).Name));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
         }
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)

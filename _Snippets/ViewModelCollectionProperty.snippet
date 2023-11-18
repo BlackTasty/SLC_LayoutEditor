@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="">
+    <CodeSnippet Format="1.0.0">
+        <Header>
+            <Title>ViewModel Collection Property</Title>    
+            <Author>Bagel</Author>
+            <Description>Create get/set view-model collections</Description>
+            <Shortcut>propvmc</Shortcut>
+        </Header>
+        <Snippet>
+            <Code Language="CSharp">
+                <![CDATA[
+                private VeryObservableCollection<$typeName$> m$propertyName$ = new VeryObservableCollection<$typeName$>("$propertyName$");
+                
+                public VeryObservableCollection<$typeName$> $propertyName$
+                {
+                    get => m$propertyName$;
+                    set
+                    {
+                        m$propertyName$ = value;
+                        InvokePropertyChanged();
+                    }
+                }
+                ]]>
+            </Code>
+            <Declarations>
+                <Literal>
+                    <ID>typeName</ID>
+                    <ToolTip>The type of your property</ToolTip>
+                    <Default>string</Default>
+                </Literal>   
+                <Literal>      
+                    <ID>propertyName</ID>      
+                    <ToolTip>Name of the property</ToolTip>         
+                    <Default>PropertyName</Default>        
+                </Literal>
+            </Declarations>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>

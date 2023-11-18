@@ -61,7 +61,14 @@ namespace SLC_LayoutEditor.UI
             }
             else if (e.RollbackValue is CabinLayout)
             {
-                combo_layouts.SelectedIndex = e.RollbackIndex;
+                if (!vm.IsTemplatingMode)
+                {
+                    combo_layouts.SelectedIndex = e.RollbackIndex;
+                }
+                else
+                {
+                    combo_templates.SelectedIndex = e.RollbackIndex;
+                }
             }
         }
 
@@ -88,7 +95,7 @@ namespace SLC_LayoutEditor.UI
             }
             else
             {
-                SaveLayout(vm);
+                SaveLayout();
             }
         }
 
@@ -96,16 +103,16 @@ namespace SLC_LayoutEditor.UI
         {
             if (e.DialogResult == DialogResultType.Yes)
             {
-                SaveLayout(vm);
+                SaveLayout();
             }
         }
 
-        private void SaveLayout(LayoutEditorViewModel vm)
+        private void SaveLayout()
         {
-            vm.SelectedCabinLayout.SaveLayout();
+            vm.SaveLayout();
             control_layout.GenerateThumbnailForLayout(true);
 
-            if (App.Settings.OpenFolderWithEditedLayout)
+            if (!vm.IsTemplatingMode && App.Settings.OpenFolderWithEditedLayout)
             {
                 Util.OpenFolder(vm.SelectedCabinLayout.FilePath);
 
@@ -122,19 +129,19 @@ namespace SLC_LayoutEditor.UI
             vm.IsLoadingLayout = true;
         }
 
-        private void AddAirplane_Click(object sender, RoutedEventArgs e)
+        private void AddAircraft_Click(object sender, RoutedEventArgs e)
         {
-            AddAirplaneDialog dialog = new AddAirplaneDialog(vm.LayoutSets.Select(x => x.AirplaneName));
-            dialog.DialogClosing += AddAirplane_DialogClosing;
+            CreateAircraftDialog dialog = new CreateAircraftDialog(vm.LayoutSets.Select(x => x.AircraftName));
+            dialog.DialogClosing += CreateAircraft_DialogClosing;
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
         }
 
-        private void AddAirplane_DialogClosing(object sender, DialogClosingEventArgs e)
+        private void CreateAircraft_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            if (sender is AddAirplaneDialog dialog)
+            if (sender is CreateAircraftDialog dialog)
             {
-                dialog.DialogClosing -= AddAirplane_DialogClosing;
+                dialog.DialogClosing -= CreateAircraft_DialogClosing;
             }
 
             if (e.Data is AddDialogResult result && result.IsCreate)
@@ -145,26 +152,52 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void AddCabinLayout_Click(object sender, RoutedEventArgs e)
+        private void CreateCabinLayout_Click(object sender, RoutedEventArgs e)
         {
-            AddCabinLayoutDialog dialog = new AddCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName));
-            dialog.DialogClosing += AddCabinLayout_DialogClosing;
+            IDialog dialog;
+
+            if (!vm.IsTemplatingMode)
+            {
+                dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName));
+                dialog.DialogClosing += CreateCabinLayout_DialogClosing;
+            }
+            else
+            {
+                dialog = new CreateTemplateDialog(vm.SelectedLayoutSet.Templates.Select(x => x.LayoutName));
+                dialog.DialogClosing += CreateTemplate_DialogClosing;
+            }
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
         }
 
-        private void AddCabinLayout_DialogClosing(object sender, DialogClosingEventArgs e)
+        private void CreateTemplate_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            if (sender is AddCabinLayoutDialog dialog)
+            if (sender is CreateTemplateDialog dialog)
             {
-                dialog.DialogClosing -= AddCabinLayout_DialogClosing;
+                dialog.DialogClosing -= CreateTemplate_DialogClosing;
+            }
+
+            if (e.Data is string templateName)
+            {
+                CabinLayout layout = new CabinLayout(templateName, vm.SelectedLayoutSet.AircraftName, true);
+                layout.SaveLayout();
+                vm.SelectedLayoutSet.RegisterCabinLayout(layout);
+                vm.SelectedCabinLayout = layout;
+            }
+        }
+
+        private void CreateCabinLayout_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (sender is CreateCabinLayoutDialog dialog)
+            {
+                dialog.DialogClosing -= CreateCabinLayout_DialogClosing;
             }
 
             if (e.Data is AddDialogResult result && result.IsCreate)
             {
-                CabinLayout layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AirplaneName);
+                CabinLayout layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AircraftName, false);
                 layout.SaveLayout();
-                vm.SelectedLayoutSet.CabinLayouts.Add(layout);
+                vm.SelectedLayoutSet.RegisterCabinLayout(layout);
                 vm.SelectedCabinLayout = layout;
             }
         }
@@ -330,6 +363,22 @@ namespace SLC_LayoutEditor.UI
             vm.SelectedCabinSlotFloor = e.Floor;
         }
 
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //vm.SelectedCabinLayout.DeepRefreshProblemChecks();
+        }
+
+        private void Layout_TemplatingModeToggled(object sender, EventArgs e)
+        {
+            vm.IsTemplatingMode = control_layout.IsTemplatingMode;
+        }
+
+        private void Layout_TemplateCreated(object sender, TemplateCreatedEventArgs e)
+        {
+            vm.SelectedLayoutSet.Templates.Add(e.Template);
+            vm.SelectedTemplate = e.Template;
+        }
+
         protected virtual void OnCabinLayoutSelected(CabinLayoutSelectedEventArgs e)
         {
             CabinLayoutSelected?.Invoke(this, e);
@@ -338,16 +387,6 @@ namespace SLC_LayoutEditor.UI
         protected virtual void OnChanged(ChangedEventArgs e)
         {
             Changed?.Invoke(this, e);
-        }
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //vm.SelectedCabinLayout.DeepRefreshProblemChecks();
-        }
-
-        private void TemplatingModeToggled(object sender, EventArgs e)
-        {
-            vm.IsTemplatingMode = control_layout.IsTemplatingMode;
         }
     }
 }

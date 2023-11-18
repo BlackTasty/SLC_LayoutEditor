@@ -100,11 +100,13 @@
     <Compile Include="Converter\StringNotEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
+    <Compile Include="Core\Cabin\TemplateData.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
     <Compile Include="Core\Enum\StateChangeType.cs" />
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
+    <Compile Include="Core\Events\TemplateCreatedEventArgs.cs" />
     <Compile Include="Core\Events\ChangedEventArgs.cs" />
     <Compile Include="Core\Events\CabinLayoutSelectedEventArgs.cs" />
     <Compile Include="Core\Events\DialogClosingEventArgs.cs" />
@@ -140,14 +142,17 @@
     <Compile Include="UI\Dialogs\ChangelogDialog.xaml.cs">
       <DependentUpon>ChangelogDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Dialogs\AddAirplaneDialog.xaml.cs">
-      <DependentUpon>AddAirplaneDialog.xaml</DependentUpon>
+    <Compile Include="UI\Dialogs\CreateAircraftDialog.xaml.cs">
+      <DependentUpon>CreateAircraftDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Dialogs\AddCabinLayoutDialog.xaml.cs">
-      <DependentUpon>AddCabinLayoutDialog.xaml</DependentUpon>
+    <Compile Include="UI\Dialogs\CreateCabinLayoutDialog.xaml.cs">
+      <DependentUpon>CreateCabinLayoutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\ConfirmationDialog.xaml.cs">
       <DependentUpon>ConfirmationDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\CreateTemplateDialog.xaml.cs">
+      <DependentUpon>CreateTemplateDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\MakeTemplateDialog.xaml.cs">
       <DependentUpon>MakeTemplateDialog.xaml</DependentUpon>
@@ -158,10 +163,11 @@
     <Compile Include="UI\WelcomeScreen.xaml.cs">
       <DependentUpon>WelcomeScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\AddAirplaneDialogViewModel.cs" />
-    <Compile Include="ViewModel\AddCabinLayoutDialogViewModel.cs" />
+    <Compile Include="ViewModel\CreateAircraftDialogViewModel.cs" />
+    <Compile Include="ViewModel\CreateCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\AddDialogViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
+    <Compile Include="ViewModel\CreateTemplateDialogViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MakeTemplateDialogViewModel.cs" />
@@ -307,6 +313,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Dialogs\CreateTemplateDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Dialogs\MakeTemplateDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -315,11 +325,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Dialogs\AddAirplaneDialog.xaml">
+    <Page Include="UI\Dialogs\CreateAircraftDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Dialogs\AddCabinLayoutDialog.xaml">
+    <Page Include="UI\Dialogs\CreateCabinLayoutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -161,6 +161,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        /// <summary>
+        /// Generate a new cabin deck
+        /// </summary>
+        /// <param name="floor"></param>
+        /// <param name="rows"></param>
+        /// <param name="columns"></param>
         public CabinDeck(int floor, int rows, int columns)
         {
             mFloor = floor;

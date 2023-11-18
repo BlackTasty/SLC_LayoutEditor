@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
@@ -14,6 +15,7 @@ namespace SLC_LayoutEditor.Core.Cabin
     {
         public event EventHandler<EventArgs> CabinSlotsChanged;
         public event EventHandler<EventArgs> CabinDeckCountChanged;
+        public event EventHandler<EventArgs> Deleted;
 
         private readonly FileInfo layoutFile;
         private readonly bool isTemplate;
@@ -33,6 +35,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 InvokePropertyChanged();
             }
         }
+
+        public FileInfo LayoutFile => layoutFile;
 
         public VeryObservableCollection<CabinDeck> CabinDecks
         {
@@ -177,12 +181,15 @@ namespace SLC_LayoutEditor.Core.Cabin
         public string ThumbnailDirectory => !IsTemplate ? Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName) :
             Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName, "templates");
 
-        public CabinLayout(string layoutName, string airplaneName) : this(new FileInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, airplaneName, layoutName + ".txt")))
+        public CabinLayout(string layoutName, string aircraftName, bool isTemplate) : 
+            this(new FileInfo(
+                Path.Combine(!isTemplate ? App.Settings.CabinLayoutsEditPath : App.GetTemplatePath(aircraftName), 
+                    aircraftName, layoutName + ".txt")))
         {
             mLayoutName = layoutName;
             #region Generate default layout
 
-            CabinDeck deck = new CabinDeck(4, 10, 0);
+            CabinDeck deck = new CabinDeck(0, 14, 6);
             deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(deck);
             #endregion
@@ -192,18 +199,31 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             this.layoutFile = layoutFile;
             isTemplate = layoutFile.Directory.Name.Equals("templates", StringComparison.OrdinalIgnoreCase);
-
-            if (layoutFile.Exists)
-            {
-                mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
-
-                //LoadCabinLayoutFromFile();
-            }
+            mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
         }
 
-        private CabinLayout(string layout)
+        /// <summary>
+        /// Create a template from an existing layout
+        /// </summary>
+        /// <param name="layout"></param>
+        private CabinLayout(CabinLayout layout, FileInfo layoutFile) : this(layoutFile)
         {
-            LoadCabinLayout(layout);
+            LoadCabinLayout(layout.ToLayoutFile());
+        }
+
+        public void Delete()
+        {
+            if (layoutFile?.Exists ?? false)
+            {
+                layoutFile.Delete();
+            }
+
+            foreach (CabinDeck cabinDeck in mCabinDecks)
+            {
+                cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
+            }
+
+            OnDeleted(EventArgs.Empty);
         }
 
         public void RefreshCalculated()
@@ -308,12 +328,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             OnCabinDeckCountChanged(EventArgs.Empty);
         }
 
-        public CabinLayout MakeTemplate()
+        public CabinLayout MakeTemplate(string templatePath)
         {
-            CabinLayout template = new CabinLayout(ToLayoutFile())
-            {
-                LayoutName = LayoutName + " - Template"
-            };
+            FileInfo layoutFile = new FileInfo(templatePath);
+
+            CabinLayout template = new CabinLayout(this, layoutFile);
 
             foreach (CabinSlot cabinSlot in template.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => !IsBasicSlotType(x)))
             {
@@ -557,6 +576,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         protected virtual void OnCabinSlotsChanged(EventArgs e)
         {
             CabinSlotsChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnDeleted(EventArgs e)
+        {
+            Deleted?.Invoke(this, e);
         }
     }
 }

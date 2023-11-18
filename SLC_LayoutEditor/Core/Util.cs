@@ -79,7 +79,7 @@ namespace SLC_LayoutEditor.Core
 
         public static bool HasLayoutChanged(CabinLayout layout)
         {
-            return layout != null && CompareLayoutHashes(layout.FilePath, layout.ToLayoutFile());
+            return layout != null && (!File.Exists(layout.FilePath) || CompareLayoutHashes(layout.FilePath, layout.ToLayoutFile()));
         }
 
         public static string ReadTextResource(string name)

@@ -455,7 +455,7 @@
         <Setter Property="Padding" Value="0"/>
         <Setter Property="ContentTemplate" Value="{DynamicResource IconButtonTemplate}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonErrorBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -471,10 +471,10 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource ButtonErrorBackgroundHoverColorBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource RemoveDeckHoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource ButtonErrorBorderPressedColorBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
@@ -485,10 +485,10 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ButtonErrorBackgroundHoverColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource RemoveDeckHoverBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ButtonErrorBorderPressedColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>

@@ -112,7 +112,6 @@
     <Style x:Key="MaterialDesignSwitchToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="{DynamicResource ButtonBorderColorBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
         <Setter Property="Foreground" Value="{DynamicResource ForegroundColorBrush}" />
         <Setter Property="Padding" Value="0,1,0,0" />
         <Setter Property="ContentTemplate" Value="{DynamicResource IconToggleButtonTemplate}"/>
@@ -312,9 +311,9 @@
     <Style x:Key="LargeTemplateSwitchToggleButton" TargetType="{x:Type ToggleButton}"
            BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
         <Setter Property="Content" Value="{DynamicResource TemplateMode}"/>
-        <Setter Property="Foreground" Value="{StaticResource TemplatingModeBrush}"/>
-        <Setter Property="Background" Value="{StaticResource RemoveDeckButtonBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource RemoveDeckButtonBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TemplatingModeBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource RemoveDeckButtonBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource RemoveDeckButtonBackgroundBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -330,7 +329,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledColorBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -338,61 +337,61 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource BackgroundDarkBrush}"/>
-                <Setter Property="Background" Value="{StaticResource TemplatingModeBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource TemplatingModeBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundDarkBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource TemplatingModeBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsChecked" Value="False"/>
                     <Condition Property="IsMouseOver" Value="True"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource TemplatingModeHoverBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource AddDeckButtonBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TemplatingModeHoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource AddDeckButtonBackgroundBrush}"/>
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsChecked" Value="True"/>
                     <Condition Property="IsMouseOver" Value="True"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource TemplatingModeHoverBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource BackgroundColorBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource TemplatingModeHoverBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource TemplatingModeHoverBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundColorBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeHoverBrush}"/>
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsChecked" Value="False"/>
                     <Condition Property="IsPressed" Value="True"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource TemplatingModePressedBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource AddDeckButtonPressedBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TemplatingModePressedBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource AddDeckButtonPressedBackgroundBrush}"/>
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsChecked" Value="True"/>
                     <Condition Property="IsPressed" Value="True"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource TemplatingModePressedBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource BackgroundDarkBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource TemplatingModePressedBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource TemplatingModePressedBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundDarkBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModePressedBrush}"/>
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsChecked" Value="False"/>
                     <Condition Property="IsEnabled" Value="False"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource DisabledColorBrush}"/>
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsChecked" Value="True"/>
                     <Condition Property="IsEnabled" Value="False"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="Background" Value="{StaticResource DisabledColorBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource DisabledColorBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource DisabledColorBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource DisabledColorBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
             </MultiTrigger>
         </Style.Triggers>
     </Style>

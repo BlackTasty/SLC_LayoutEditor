@@ -10,26 +10,26 @@ using System.Windows.Controls;
 namespace SLC_LayoutEditor.UI.Dialogs
 {
     /// <summary>
-    /// Interaction logic for AddCabinLayoutDialog.xaml
+    /// Interaction logic for CreateTemplateDialog.xaml
     /// </summary>
-    public partial class AddCabinLayoutDialog : DockPanel, IDialog
+    public partial class CreateTemplateDialog : DockPanel, IDialog
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
-        public AddCabinLayoutDialog(IEnumerable<string> cabinLayoutNames)
+        public CreateTemplateDialog(IEnumerable<string> templateNames)
         {
             InitializeComponent();
-            (DataContext as AddDialogViewModel).ExistingNames.AddRange(cabinLayoutNames);
+            (DataContext as AddDialogViewModel).ExistingNames.AddRange(templateNames);
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddDialogViewModel).Name)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, (DataContext as AddDialogViewModel).Name));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
         }
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)

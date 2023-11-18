@@ -17,8 +17,8 @@ namespace SLC_LayoutEditor.Converter
             {
                 bool isTemplatingMode = layoutSets.FirstOrDefault()?.IsTemplatingMode ?? false;
 
-                return !isTemplatingMode ? layoutSets.OrderByDescending(x => x.LayoutCount > 0).ThenBy(x => x.AirplaneName) :
-                    layoutSets.OrderByDescending(x => x.TemplateCount > 0).ThenBy(x => x.AirplaneName);
+                return !isTemplatingMode ? layoutSets.OrderByDescending(x => x.LayoutCount > 0).ThenBy(x => x.AircraftName) :
+                    layoutSets.OrderByDescending(x => x.TemplateCount > 0).ThenBy(x => x.AircraftName);
             }
 
             return value;

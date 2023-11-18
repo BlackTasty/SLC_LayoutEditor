@@ -55,6 +55,7 @@
 
     <Color x:Key="SeparatorColor">#424052</Color>
 
+    <SolidColorBrush x:Key="AisleColorBrush" Color="{StaticResource BackgroundDark}" Opacity=".6"/>
     <SolidColorBrush x:Key="CockpitColorBrush" Color="{StaticResource CockpitColor}"/>
     <SolidColorBrush x:Key="CrewAreaColorBrush" Color="{StaticResource CrewAreaColor}" Opacity=".5"/>
     <SolidColorBrush x:Key="CrewAreaBorderColorBrush" Color="{StaticResource CrewAreaColor}"/>
