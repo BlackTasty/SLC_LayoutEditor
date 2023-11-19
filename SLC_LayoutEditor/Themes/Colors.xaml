@@ -2,6 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <BlurEffect x:Key="DisableBlur" Radius="10" KernelType="Gaussian"></BlurEffect>
 
+    <DropShadowEffect x:Key="DropShadowDepth1" Color="{DynamicResource BackgroundDark}" Opacity=".4"
+                      ShadowDepth="1" BlurRadius="4" Direction="270" RenderingBias="Performance"/>
+    <DropShadowEffect x:Key="DropShadowDepth2" Color="{DynamicResource BackgroundDark}" Opacity=".4"
+                      ShadowDepth="2" BlurRadius="10" Direction="270" RenderingBias="Performance"/>
+
     <Color x:Key="CockpitColor">#00ffe0</Color>
     <Color x:Key="CrewAreaColor">#800094ff</Color>
     <Color x:Key="FirstClassColor">#ffd700</Color>
@@ -176,4 +181,6 @@
         <GradientStop Color="{StaticResource TemplatingModeColor}" Offset=".5"/>
         <GradientStop Color="{StaticResource TemplatingModeColor}" Offset="1"/>
     </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="DisabledLayerButtonBrush">#666</SolidColorBrush>
 </ResourceDictionary>

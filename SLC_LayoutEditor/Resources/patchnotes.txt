@@ -1,4 +1,4 @@
-﻿18.11.2023
+﻿19.11.2023 h
 Added: Hovering over any slot now shows the type as a tooltip
 Added: A new menu item "Roadmap" has been added to the "Editor" menu entry
 Added: The deck issue count is now visible below the deck title
@@ -26,4 +26,4 @@ Fixed: Fixed an issue where lowercase letters on a cabin layout would let the ed
 Fixed: The changelog would only show when the editor was the active view
 Fixed: There was an issue where switching layouts with unsaved changes would close the editor after confirming the dialog with "Yes" or "No"
 Fixed: The text on some confirmation dialogs was cut off
-Fixed: Creating new templates would generate no default deck
+Fixed: Creating new layouts would generate no default deck

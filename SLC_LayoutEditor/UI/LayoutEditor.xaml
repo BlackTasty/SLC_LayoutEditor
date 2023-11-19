@@ -18,6 +18,8 @@
         <converter:AircraftListSortConverter x:Key="AircraftListSortConverter"/>
 
         <Style x:Key="CabinSlotDropdownStyle" TargetType="ComboBox" BasedOn="{StaticResource TopListComboBoxStyle}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Grid.IsSharedSizeScope" Value="True"/>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -111,242 +113,243 @@
         </Style>
     </Grid.Resources>
     <DockPanel>
-        <DockPanel Width="346" Margin="8" LastChildFill="False">
-            <Border DockPanel.Dock="Top" Style="{DynamicResource CardStyle}">
-                <StackPanel>
-                    <DockPanel Margin="0,0,0,8">
-                        <ToggleButton Style="{StaticResource TemplateSwitchToggleButton}" DockPanel.Dock="Right"
+        <Border>
+            <DockPanel Width="346" Margin="8" LastChildFill="False">
+                <Border DockPanel.Dock="Top" Style="{DynamicResource CardStyle}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <ToggleButton Style="{StaticResource TemplateSwitchToggleButton}" DockPanel.Dock="Right"
                                       IsChecked="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
+                            <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
                                    Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                    <Setter Property="Text" Value="Show layouts"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="Text" Value="Show templates"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock Text="Aircrafts" Margin="4,0" Style="{StaticResource Title3TextStyle}"/>
-                    </DockPanel>
-                    <DockPanel Margin="8,0">
-                        <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add a new aircraft"
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                        <Setter Property="Text" Value="Show layouts"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <Setter Property="Text" Value="Show templates"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="Aircrafts" Margin="4,0" Style="{StaticResource Title3TextStyle}"/>
+                        </DockPanel>
+                        <DockPanel Margin="8,0">
+                            <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add a new aircraft"
                                 Click="AddAircraft_Click" Style="{StaticResource DefaultBorderedIconButtonStyle}" Content="{StaticResource Add}">
-                        </Button>
-                        <controls:RefinedComboBox x:Name="combo_layoutSets" Margin="0,4,8,4"
+                            </Button>
+                            <controls:RefinedComboBox x:Name="combo_layoutSets" Margin="0,4,8,4"
                                                   ItemsSource="{Binding LayoutSets, Converter={StaticResource AircraftListSortConverter}}"
                                                   SelectedItem="{Binding SelectedLayoutSet}" Grid.IsSharedSizeScope="True"
                                                   Watermark="{Binding SelectedLayoutSetText}"
                                                   Text="{Binding SelectedLayoutSet.AircraftName, Mode=OneWay}">
-                            <controls:RefinedComboBox.Style>
-                                <Style TargetType="controls:RefinedComboBox" BasedOn="{StaticResource {x:Type controls:RefinedComboBox}}">
-                                    <Setter Property="ItemTemplate">
-                                        <Setter.Value>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="1.5"/>
-                                                        <ColumnDefinition SharedSizeGroup="layoutCount" Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{Binding AircraftName}" Margin="0,0,8,0"/>
-                                                    <Border BorderThickness="1,0" BorderBrush="{DynamicResource AccentColorBrush}"
+                                <controls:RefinedComboBox.Style>
+                                    <Style TargetType="controls:RefinedComboBox" BasedOn="{StaticResource {x:Type controls:RefinedComboBox}}">
+                                        <Setter Property="ItemTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="1.5"/>
+                                                            <ColumnDefinition SharedSizeGroup="layoutCount" Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding AircraftName}" Margin="0,0,8,0"/>
+                                                        <Border BorderThickness="1,0" BorderBrush="{DynamicResource AccentColorBrush}"
                                                             DockPanel.Dock="Right" Grid.Column="1" Margin="0,-4,0,-16"/>
-                                                    <TextBlock DockPanel.Dock="Right" FontStyle="Italic" Margin="8,0,0,0"
+                                                        <TextBlock DockPanel.Dock="Right" FontStyle="Italic" Margin="8,0,0,0"
                                                                Grid.Column="2" TextAlignment="Right"
                                                                Text="{Binding CurrentCountText}">
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="{DynamicResource ForegroundSecondaryColorBrush}"/>
-                                                                <Style.Triggers>
-                                                                    <MultiDataTrigger>
-                                                                        <MultiDataTrigger.Conditions>
-                                                                            <Condition Binding="{Binding IsTemplatingMode}" Value="False"/>
-                                                                            <Condition Binding="{Binding LayoutCount}" Value="0"/>
-                                                                        </MultiDataTrigger.Conditions>
-                                                                        <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
-                                                                    </MultiDataTrigger>
-                                                                    <MultiDataTrigger>
-                                                                        <MultiDataTrigger.Conditions>
-                                                                            <Condition Binding="{Binding IsTemplatingMode}" Value="True"/>
-                                                                            <Condition Binding="{Binding TemplateCount}" Value="0"/>
-                                                                        </MultiDataTrigger.Conditions>
-                                                                        <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
-                                                                    </MultiDataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </controls:RefinedComboBox.Style>
-                        </controls:RefinedComboBox>
-                    </DockPanel>
-                    <Border Margin="-12,12,-12,-12" Style="{DynamicResource CardStyle}" Background="{DynamicResource RemoveDeckButtonPressedBackgroundBrush}"
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground" Value="{DynamicResource ForegroundSecondaryColorBrush}"/>
+                                                                    <Style.Triggers>
+                                                                        <MultiDataTrigger>
+                                                                            <MultiDataTrigger.Conditions>
+                                                                                <Condition Binding="{Binding IsTemplatingMode}" Value="False"/>
+                                                                                <Condition Binding="{Binding LayoutCount}" Value="0"/>
+                                                                            </MultiDataTrigger.Conditions>
+                                                                            <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
+                                                                        </MultiDataTrigger>
+                                                                        <MultiDataTrigger>
+                                                                            <MultiDataTrigger.Conditions>
+                                                                                <Condition Binding="{Binding IsTemplatingMode}" Value="True"/>
+                                                                                <Condition Binding="{Binding TemplateCount}" Value="0"/>
+                                                                            </MultiDataTrigger.Conditions>
+                                                                            <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
+                                                                        </MultiDataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </controls:RefinedComboBox.Style>
+                            </controls:RefinedComboBox>
+                        </DockPanel>
+                        <Border Margin="-12,12,-12,-12" Style="{DynamicResource CardStyle}" Background="{DynamicResource RemoveDeckButtonPressedBackgroundBrush}"
                             Effect="{x:Null}" CornerRadius="12,12,8,8"
                             IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}">
-                        <Grid Margin="4">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                    <TextBlock>
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock" BasedOn="{StaticResource Title3TextStyle}">
-                                                <Setter Property="Text" Value="Cabin layouts"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsTemplatingMode}" Value="True">
-                                                        <Setter Property="Text" Value="Templates"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}"
+                            <Grid Margin="4">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource Title3TextStyle}">
+                                                    <Setter Property="Text" Value="Cabin layouts"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsTemplatingMode}" Value="True">
+                                                            <Setter Property="Text" Value="Templates"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}"
                                                  Margin="10,0,0,-2" Height="16" Width="16" VerticalAlignment="Center"
                                                  Visibility="{Binding SelectedLayoutSet.IsLoadingLayouts, Converter={StaticResource BooleanToVisibilityConverter}, TargetNullValue=Collapsed, FallbackValue=Collapsed}"/>
-                                </StackPanel>
-                                <DockPanel DockPanel.Dock="Top" IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}" Margin="4,0">
-                                    <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="{Binding AddLayoutTooltip}" Content="{StaticResource Add}"
+                                    </StackPanel>
+                                    <DockPanel DockPanel.Dock="Top" IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}" Margin="4,0">
+                                        <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="{Binding AddLayoutTooltip}" Content="{StaticResource Add}"
                                             Click="CreateCabinLayout_Click" Style="{Binding AddLayoutButtonStyle}"/>
-                                    <StackPanel>
-                                        <controls:RefinedComboBox x:Name="combo_layouts" Margin="0,4,8,4"
+                                        <StackPanel>
+                                            <controls:RefinedComboBox x:Name="combo_layouts" Margin="0,4,8,4"
                                                                   ItemsSource="{Binding SelectedLayoutSet.CabinLayouts, UpdateSourceTrigger=PropertyChanged}"
                                                                   SelectedItem="{Binding SelectedCabinLayout}"
                                                                   Watermark="{Binding SelectedLayoutText}"
                                                                   IsEnabled="{Binding SelectedLayoutSet.IsCabinLayoutSelectionEnabled}"
                                                                   Visibility="{Binding IsTemplatingMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                                        <controls:RefinedComboBox x:Name="combo_templates" Margin="0,4,8,4"
+                                            <controls:RefinedComboBox x:Name="combo_templates" Margin="0,4,8,4"
                                                                   ItemsSource="{Binding SelectedLayoutSet.Templates, UpdateSourceTrigger=PropertyChanged}"
                                                                   Style="{StaticResource TemplateComboBoxStyle}"
                                                                   SelectedItem="{Binding SelectedTemplate}"
                                                                   Watermark="{Binding SelectedTemplateText}"
                                                                   IsEnabled="{Binding SelectedLayoutSet.IsCabinLayoutSelectionEnabled}"
                                                                   Visibility="{Binding IsTemplatingMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    </StackPanel>
-                                </DockPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </StackPanel>
-            </Border>
-            <Border DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}" Padding="4" Margin="8"
+                                        </StackPanel>
+                                    </DockPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+                <Border DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}" Padding="4" Margin="8"
                     BorderBrush="{DynamicResource BackgroundLightBrush}" BorderThickness="1.5" CornerRadius="4"
                     Visibility="{Binding ActiveLayout, Converter={StaticResource NotNullToVisibilityConverter}}">
-                <StackPanel DockPanel.Dock="Bottom">
-                    <UniformGrid Columns="5">
-                        <controls:SeatCapacityBox Margin="4" SeatTypeLetter="SUPER"
+                    <StackPanel DockPanel.Dock="Bottom">
+                        <UniformGrid Columns="5">
+                            <controls:SeatCapacityBox Margin="4" SeatTypeLetter="SUPER"
                                           Capacity="{Binding ActiveLayout.SupersonicCapacity}"
                                           BoxBackground="{StaticResource SupersonicClassColorBrush}"
                                           ToolTip="Super class"/>
-                        <controls:SeatCapacityBox Margin="4" SeatTypeLetter="FIRST"
+                            <controls:SeatCapacityBox Margin="4" SeatTypeLetter="FIRST"
                                           Capacity="{Binding ActiveLayout.FirstClassCapacity}"
                                           BoxBackground="{StaticResource FirstClassColorBrush}"
                                           ToolTip="First class"/>
-                        <controls:SeatCapacityBox Margin="4" SeatTypeLetter="BZ"
+                            <controls:SeatCapacityBox Margin="4" SeatTypeLetter="BZ"
                                           Capacity="{Binding ActiveLayout.BusinessCapacity}"
                                           BoxBackground="{StaticResource BusinessClassColorBrush}"
                                           ToolTip="Business class"/>
-                        <controls:SeatCapacityBox Margin="4" SeatTypeLetter="PREM"
+                            <controls:SeatCapacityBox Margin="4" SeatTypeLetter="PREM"
                                           Capacity="{Binding ActiveLayout.PremiumCapacity}"
                                           BoxBackground="{StaticResource PremiumClassColorBrush}"
                                           ToolTip="Premium class"/>
-                        <controls:SeatCapacityBox Margin="4" SeatTypeLetter="ECO"
+                            <controls:SeatCapacityBox Margin="4" SeatTypeLetter="ECO"
                                           Capacity="{Binding ActiveLayout.EconomyCapacity}"
                                           BoxBackground="{StaticResource EconomyClassColorBrush}"
                                           ToolTip="Economy class"/>
-                    </UniformGrid>
-                    <TextBlock Margin="4" Style="{StaticResource Title2TextStyle}" HorizontalAlignment="Center"
+                        </UniformGrid>
+                        <TextBlock Margin="4" Style="{StaticResource Title2TextStyle}" HorizontalAlignment="Center"
                                FontSize="24"
                            Text="{Binding ActiveLayout.PassengerCapacity, StringFormat={}Total: {0}, FallbackValue=Total: 0}"/>
-                </StackPanel>
-            </Border>
-            <controls:RefinedExpander DockPanel.Dock="Bottom" Margin="0,16,0,8" IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
+                    </StackPanel>
+                </Border>
+                <controls:RefinedExpander DockPanel.Dock="Bottom" Margin="0,16,0,8" IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                                       Description="{Binding ActiveLayout.IssuesCountText}" ExpandDirection="Up">
-                <controls:RefinedExpander.Style>
-                    <Style TargetType="controls:RefinedExpander" BasedOn="{StaticResource {x:Type controls:RefinedExpander}}">
-                        <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonBorderColorBrush}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ActiveLayout.HasMinorIssues}" Value="True">
-                                <Setter Property="DescriptionForeground" Value="{DynamicResource WarnForegroundColorBrush}"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ActiveLayout.HasSevereIssues}" Value="True">
-                                <Setter Property="DescriptionForeground" Value="{DynamicResource ErrorForegroundColorBrush}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </controls:RefinedExpander.Style>
-                <Expander.Header>
-                    <TextBlock FontSize="16" Text="Issues" FontWeight="Bold">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                <Style.Triggers>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Foreground" Value="{DynamicResource DisabledColorBrush}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </Expander.Header>
-                <ScrollViewer VerticalScrollBarVisibility="Visible" Padding="0,4" x:Name="list_scroll">
-                    <StackPanel Margin="12,4,4,4">
-                        <TextBlock Text="Issues across all decks" FontSize="18"/>
-                        <TextBlock Visibility="Collapsed">
+                    <controls:RefinedExpander.Style>
+                        <Style TargetType="controls:RefinedExpander" BasedOn="{StaticResource {x:Type controls:RefinedExpander}}">
+                            <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonBorderColorBrush}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActiveLayout.HasMinorIssues}" Value="True">
+                                    <Setter Property="DescriptionForeground" Value="{DynamicResource WarnForegroundColorBrush}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ActiveLayout.HasSevereIssues}" Value="True">
+                                    <Setter Property="DescriptionForeground" Value="{DynamicResource ErrorForegroundColorBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </controls:RefinedExpander.Style>
+                    <Expander.Header>
+                        <TextBlock FontSize="16" Text="Issues" FontWeight="Bold">
                             <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                                    <Setter Property="Text" Value="No duplicate doors"/>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ActiveLayout.HasNoDuplicateDoors, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                            <Setter Property="Text" Value="Duplicate doors found!"/>
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
-                                        </DataTrigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Foreground" Value="{DynamicResource DisabledColorBrush}"/>
+                                        </Trigger>
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <controls:LayoutProblemText ValidText="No duplicate Economy Class seats"
+                    </Expander.Header>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible" Padding="0,4" x:Name="list_scroll">
+                        <StackPanel Margin="12,4,4,4">
+                            <TextBlock Text="Issues across all decks" FontSize="18"/>
+                            <TextBlock Visibility="Collapsed">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
+                                        <Setter Property="Text" Value="No duplicate doors"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ActiveLayout.HasNoDuplicateDoors, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                                <Setter Property="Text" Value="Duplicate doors found!"/>
+                                                <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <controls:LayoutProblemText ValidText="No duplicate Economy Class seats"
                                                     InvalidText="Duplicate Economy Class seats found!"
                                                     IsValid="{Binding ActiveLayout.HasNoDuplicateEconomySeats}"
                                                     InvalidSlots="{Binding ActiveLayout.DuplicateEconomySeats}"
                                                     ShowEye="True" ShowProblemsChanged="EconomyClass_ShowProblemsChanged"
                                                     ShowProblems="{Binding ShowEconomyClassIssues}"/>
-                        <controls:LayoutProblemText ValidText="No duplicate Business Class seats"
+                            <controls:LayoutProblemText ValidText="No duplicate Business Class seats"
                                                     InvalidText="Duplicate Business Class seats found!"
                                                     IsValid="{Binding ActiveLayout.HasNoDuplicateBusinessSeats}"
                                                     InvalidSlots="{Binding ActiveLayout.DuplicateBusinessSeats}"
                                                     ShowEye="True" ShowProblemsChanged="BusinessClass_ShowProblemsChanged"
                                                     ShowProblems="{Binding ShowBusinessClassIssues, UpdateSourceTrigger=PropertyChanged}"/>
-                        <controls:LayoutProblemText ValidText="No duplicate Premium Class seats"
+                            <controls:LayoutProblemText ValidText="No duplicate Premium Class seats"
                                                     InvalidText="Duplicate Premium Class seats found!"
                                                     IsValid="{Binding ActiveLayout.HasNoDuplicatePremiumSeats}"
                                                     InvalidSlots="{Binding ActiveLayout.DuplicatePremiumSeats}"
                                                     ShowEye="True" ShowProblemsChanged="Premium_ShowProblemsChanged"
                                                     ShowProblems="{Binding ShowPremiumClassIssues}"/>
-                        <controls:LayoutProblemText ValidText="No duplicate First Class seats"
+                            <controls:LayoutProblemText ValidText="No duplicate First Class seats"
                                                     InvalidText="Duplicate First Class seats found!"
                                                     IsValid="{Binding ActiveLayout.HasNoDuplicateFirstClassSeats}"
                                                     InvalidSlots="{Binding ActiveLayout.DuplicateFirstClassSeats}"
                                                     ShowEye="True" ShowProblemsChanged="FirstClass_ShowProblemsChanged"
                                                     ShowProblems="{Binding ShowFirstClassIssues}"/>
-                        <controls:LayoutProblemText ValidText="No duplicate Supersonic Class seats"
+                            <controls:LayoutProblemText ValidText="No duplicate Supersonic Class seats"
                                                     InvalidText="Duplicate Supersonic Class seats found!"
                                                     IsValid="{Binding ActiveLayout.HasNoDuplicateSupersonicSeats}"
                                                     InvalidSlots="{Binding ActiveLayout.DuplicateSupersonicSeats}"
                                                     ShowEye="True" ShowProblemsChanged="SupersonicClass_ShowProblemsChanged"
                                                     ShowProblems="{Binding ShowSupersonicClassIssues}"/>
-                        <controls:LayoutProblemText ValidText="No duplicate Unavailable seats"
+                            <controls:LayoutProblemText ValidText="No duplicate Unavailable seats"
                                                     InvalidText="Duplicate Unavailable seats found!"
                                                     IsValid="{Binding ActiveLayout.HasNoDuplicateUnavailableSeats}"
                                                     InvalidSlots="{Binding ActiveLayout.DuplicateUnavailableSeats}"
                                                     ShowEye="True" ShowProblemsChanged="UnavailableSeats_ShowProblemsChanged"
                                                     ShowProblems="{Binding ShowUnavailableSeatsIssues}"/>
-                        <Separator Margin="0,4"/>
-                        <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="No duplicate doors"
+                            <Separator Margin="0,4"/>
+                            <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="No duplicate doors"
                                                     InvalidText="Duplicate doors found!"
                                                     IsValid="{Binding ActiveLayout.HasNoDuplicateDoors}"
                                                     InvalidSlots="{Binding ActiveLayout.DuplicateDoors}"
@@ -357,7 +360,7 @@
                                                     ShowAutoFix="True"
                                                     AutoFixApplying="DuplicateDoors_AutoFixApplying"
                                                     Description="Make sure that each door has a unique number across all decks"/>
-                        <controls:LayoutProblemText ValidText="Stairway positions valid"
+                            <controls:LayoutProblemText ValidText="Stairway positions valid"
                                                     InvalidText="{Binding StairwayErrorMessage}"
                                                     IsValid="{Binding ActiveLayout.StairwaysValid}"
                                                     InvalidSlots="{Binding ActiveLayout.InvalidStairways}"
@@ -370,69 +373,69 @@
                                                     Description="When using multiple decks and adding stairways, make sure to align them on the same x/y coordinate"
                                                     NotRequiredText="No stairways required"
                                                     IsRequired="{Binding ActiveLayout.HasMultipleDecks}"/>
-                        <TextBlock Text="Issues per deck" FontSize="18" Margin="0,16,0,0"/>
-                        <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
+                            <TextBlock Text="Issues per deck" FontSize="18" Margin="0,16,0,0"/>
+                            <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
                               GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
                               CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False"
                               CanUserSortColumns="False" HorizontalScrollBarVisibility="Disabled"
                               ItemsSource="{Binding ActiveLayout.CabinDecks}"
                               PreviewMouseWheel="DeckProblemsList_PreviewMouseWheel"
                                   Margin="8,0,0,0">
-                            <DataGrid.Resources>
-                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
-                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Transparent" />
-                                <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Transparent" />
-                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
-                            </DataGrid.Resources>
-                            <DataGrid.RowStyle>
-                                <Style TargetType="DataGridRow">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                </Style>
-                            </DataGrid.RowStyle>
-                            <DataGrid.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                </Style>
-                            </DataGrid.CellStyle>
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn>
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
+                                <DataGrid.Resources>
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Transparent" />
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Transparent" />
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
+                                </DataGrid.Resources>
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    </Style>
+                                </DataGrid.RowStyle>
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                    </Style>
+                                </DataGrid.CellStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
                                                        Margin="8,0,0,12" Width="297">
-                                                <TextBlock FontSize="16" DockPanel.Dock="Top" Margin="-8,0,0,0"
+                                                    <TextBlock FontSize="16" DockPanel.Dock="Top" Margin="-8,0,0,0"
                                                            Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                            <Setter Property="Text" Value="{Binding Floor, StringFormat={}Floor {0}}"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding Floor}" Value="1">
-                                                                    <Setter Property="Text" Value="Lower deck"/>
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding Floor}" Value="2">
-                                                                    <Setter Property="Text" Value="Upper deck"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Deck slots valid"
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                                <Setter Property="Text" Value="{Binding Floor, StringFormat={}Floor {0}}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Floor}" Value="1">
+                                                                        <Setter Property="Text" Value="Lower deck"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Floor}" Value="2">
+                                                                        <Setter Property="Text" Value="Upper deck"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Deck slots valid"
                                                                             InvalidText="Invalid amount of deck slots!"
                                                                             IsValid="{Binding AreSlotsValid}"
                                                                             ShowAutoFix="True"
                                                                             AutoFixTarget="{Binding}"
                                                                             AutoFixApplying="Slots_AutoFixApplying"
                                                                             Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
                                                                             InvalidText="No doors for this deck!"
                                                                             IsValid="{Binding AreDoorsValid}"
                                                                             Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="CAT/LB on correct side"
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="CAT/LB on correct side"
                                                                             InvalidText="CAT/LB detected on the left side"
                                                                             InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
                                                                             ShowEye="True" 
@@ -440,40 +443,41 @@
                                                                             ShowProblems="{Binding ShowCateringAndLoadingBayIssues}"
                                                                             IsValid="{Binding AreCateringAndLoadingBaysValid}" IsSevereProblem="False"
                                                                             Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
-                                                <Separator Margin="0,4"/>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
+                                                    <Separator Margin="0,4"/>
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
                                                                             InvalidText="Invalid service points!"
                                                                             IsValid="{Binding AreServicePointsValid}"
                                                                             Description="Each service start point (&lt;) also requires an end point (&gt;) in the same row"/>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="All seat rows covered by service"
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="All seat rows covered by service"
                                                                             InvalidText="Some rows aren't covered by service!"
                                                                             IsValid="{Binding AreSeatsReachableByService}" IsSevereProblem="False"
                                                                             IsRequired="{Binding AreKitchensValid}"
                                                                             NotRequiredText="No service coverage required (no kitchen)"
                                                                             Description="In case you have a kitchen on this deck, make sure to cover all rows with the service start- and endpoints"/>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Valid galley count"
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Valid galley count"
                                                                             InvalidText="Insufficient galley seats for servicing!"
                                                                             IsValid="{Binding AreGalleysValid}"
                                                                             Description="Make sure to have at least as many galley seats on this deck as there are service areas (denoted by &lt; and &gt;)"/>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Kitchen accessible (In-Flight services available)"
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Kitchen accessible (In-Flight services available)"
                                                                             InvalidText="No kitchen available! (No In-Flight services)"
                                                                             IsValid="{Binding AreKitchensValid}" IsSevereProblem="False"
                                                                             Description="If you wanna be able to offer in-flight services, make sure to place down a kitchen"/>
-                                                <Separator Margin="0,4"/>
-                                                <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
+                                                    <Separator Margin="0,4"/>
+                                                    <controls:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
                                                                             InvalidText="No toilets on this deck!"
                                                                             IsValid="{Binding AreToiletsAvailable}" IsSevereProblem="False"
                                                                             Description="In order to satisfy the needs of your passengers, one or more toilets are required"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </StackPanel>
-                </ScrollViewer>
-            </controls:RefinedExpander>
-        </DockPanel>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </controls:RefinedExpander>
+            </DockPanel>
+        </Border>
         <Border Width="1" Background="{StaticResource DisabledColorBrush}"/>
         <Grid>
             <Grid IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}">
@@ -600,8 +604,7 @@
                                 <StackPanel Margin="4">
                                     <TextBlock Text="Slot type" Margin="0,0,0,4"/>
                                     <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
-                                              SelectedIndex="{Binding SelectedCabinSlotTypeId}" Grid.IsSharedSizeScope="True"
-                                              HorizontalContentAlignment="Stretch"
+                                              SelectedIndex="{Binding SelectedCabinSlotTypeId}"
                                               Style="{StaticResource CabinSlotDropdownStyle}"/>
                                 </StackPanel>
                                 <StackPanel Margin="4">
@@ -635,36 +638,46 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="SaveLayout_Click"
-                        Content="{StaticResource Save}" ToolTip="Save your changes">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource FilledLargeRoundIconButtonStyle}">
+                <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Margin" Value="8"/>
                             <Style.Triggers>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                                         <Condition Binding="{Binding ElementName=control_layout, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Margin" Value="16,16,16,23"/>
+                                    <Setter Property="Margin" Value="8,8,8,15"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
                                         <Condition Binding="{Binding ElementName=control_layout, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Margin" Value="16,16,23,16"/>
+                                    <Setter Property="Margin" Value="8,8,15,8"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                                         <Condition Binding="{Binding ElementName=control_layout, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Margin" Value="16,16,23,23"/>
+                                    <Setter Property="Margin" Value="8,8,15,15"/>
                                 </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Button.Style>
-                </Button>
+                    </Grid.Style>
+                    <Button Click="SaveLayout_Click" Content="{StaticResource Save}" ToolTip="Save your changes"
+                            Style="{StaticResource FilledLargeRoundIconButtonStyle}"/>
+                    <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="{DynamicResource More}"
+                            Style="{StaticResource FilledRoundIconButtonStyle}" ToolTip="More options" Click="More_Click">
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Save as..." Click="CabinLayout_SaveAs_Click"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                </Grid>
             </Grid>
             <Border Background="{DynamicResource BackdropColorBrush}"
                     Visibility="{Binding IsLoadingLayout, Converter={StaticResource BooleanToVisibilityConverter}}">

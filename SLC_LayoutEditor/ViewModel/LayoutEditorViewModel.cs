@@ -260,7 +260,7 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     SelectedMultiSlotTypeIndex = -1;
                 }
-                IgnoreMultiSlotTypeChange = true;
+                IgnoreMultiSlotTypeChange = false;
             }
         }
 

@@ -19,12 +19,17 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         private readonly CreateCabinLayoutDialogViewModel vm;
 
-        public CreateCabinLayoutDialog(IEnumerable<string> existingCabinLayouts, IEnumerable<TemplatePreview> templates)
+        public CreateCabinLayoutDialog(IEnumerable<string> existingCabinLayouts, IEnumerable<TemplatePreview> templates, bool isSaveAs = false)
         {
             InitializeComponent();
             vm = DataContext as CreateCabinLayoutDialogViewModel;
             vm.ExistingNames.AddRange(existingCabinLayouts);
-            vm.Templates = new List<TemplatePreview>(templates);
+            vm.IsSaveAs = isSaveAs;
+
+            if (templates != null )
+            {
+                vm.Templates = new List<TemplatePreview>(templates);
+            }
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)

@@ -408,5 +408,33 @@ namespace SLC_LayoutEditor.UI
         {
             Changed?.Invoke(this, e);
         }
+
+        private void CabinLayout_SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            IDialog dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), null, true);
+            dialog.DialogClosing += CabinLayout_SaveAs_DialogClosing;
+
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+        }
+
+        private void CabinLayout_SaveAs_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.OK && e.Data is AddDialogResult result)
+            {
+                string layoutPath = Path.Combine(App.Settings.CabinLayoutsEditPath, vm.SelectedLayoutSet.AircraftName, result.Name + ".txt");
+                File.Copy(vm.SelectedCabinLayout.FilePath, layoutPath, true);
+                CabinLayout layout = new CabinLayout(new FileInfo(layoutPath));
+                vm.SelectedLayoutSet.RegisterLayout(layout);
+                vm.SelectedCabinLayout = layout;
+            }
+        }
+
+        private void More_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                button.ContextMenu.IsOpen = true;
+            }
+        }
     }
 }

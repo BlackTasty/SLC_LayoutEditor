@@ -11,6 +11,8 @@ namespace SLC_LayoutEditor.ViewModel
         private TemplatePreview mSelectedTemplate;
         private int mSelectedDeckThumbnailIndex = -1;
 
+        private bool mIsSaveAs;
+
         public List<TemplatePreview> Templates
         {
             get => mTemplates;
@@ -51,6 +53,16 @@ namespace SLC_LayoutEditor.ViewModel
                 mSelectedDeckThumbnailIndex = value;
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(SelectedDeckThumbnail));
+            }
+        }
+
+        public bool IsSaveAs
+        {
+            get => mIsSaveAs;
+            set
+            {
+                mIsSaveAs = value;
+                InvokePropertyChanged();
             }
         }
 

@@ -11,8 +11,18 @@
     <DockPanel.DataContext>
         <vm:CreateCabinLayoutDialogViewModel/>
     </DockPanel.DataContext>
-    <TextBlock DockPanel.Dock="Top" Text="Create a new cabin layout" Margin="4"
-               Style="{StaticResource Title1TextStyle}"/>
+    <TextBlock DockPanel.Dock="Top" Margin="4">
+        <TextBlock.Style>
+            <Style TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
+                <Setter Property="Text" Value="Create a new cabin layout"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSaveAs}" Value="True">
+                        <Setter Property="Text" Value="Save cabin layout as"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </TextBlock.Style>
+    </TextBlock>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Layout name"/>
     <TextBox DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"/>
     <TextBlock DockPanel.Dock="Top" Margin="8,2,8,8" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"
@@ -73,7 +83,18 @@
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">
         <Button Content="Create" Width="80" Margin="8" IsEnabled="{Binding IsValid, UpdateSourceTrigger=PropertyChanged}"
-                Click="Create_Click"/>
+                Click="Create_Click">
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Content" Value="Create"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSaveAs}" Value="True">
+                            <Setter Property="Content" Value="Save"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
         <Button Content="Cancel" Width="80" Margin="8" Click="Cancel_Click"
                 Style="{StaticResource YellowButtonStyle}"/>
     </StackPanel>
