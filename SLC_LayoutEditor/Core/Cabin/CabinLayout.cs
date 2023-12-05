@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Tasty.Logging;
 using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
@@ -210,6 +212,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         /// <param name="layout"></param>
         private CabinLayout(CabinLayout layout, FileInfo layoutFile) : this(layoutFile)
         {
+            Logger.Default.WriteLog("Creating template from an existing layout...");
             LoadCabinLayout(layout.ToLayoutFile());
         }
 
@@ -334,13 +337,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             OnCabinDeckCountChanged(EventArgs.Empty);
         }
 
-        public CabinLayout MakeTemplate(string templatePath)
+        public CabinLayout MakeTemplate(MakeTemplateDialogViewModel data, string layoutsPath)
         {
-            FileInfo layoutFile = new FileInfo(templatePath);
+            FileInfo layoutFile = new FileInfo(Path.Combine(layoutsPath, data.Name + ".txt"));
 
             CabinLayout template = new CabinLayout(this, layoutFile);
 
-            foreach (CabinSlot cabinSlot in template.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => !IsBasicSlotType(x)))
+            IEnumerable<CabinSlotType> targetTypes = data.GetKeptSlotTypes();
+            foreach (CabinSlot cabinSlot in template.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => !targetTypes.Contains(x.Type)))
             {
                 cabinSlot.IsEvaluationActive = false;
                 cabinSlot.Type = CabinSlotType.Aisle;
@@ -405,7 +409,9 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void SaveLayout()
         {
+            Logger.Default.WriteLog("Saving {0} \"{1}\"...", IsTemplate ? "template" : "layout", LayoutName);
             File.WriteAllText(FilePath, ToLayoutFile());
+            Logger.Default.WriteLog("{0} saved successfully!", IsTemplate ? "template" : "layout");
             OnCabinSlotsChanged(EventArgs.Empty);
         }
 

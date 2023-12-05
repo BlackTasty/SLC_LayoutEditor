@@ -24,6 +24,7 @@ namespace SLC_LayoutEditor
         private static readonly string defaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "Tasty Apps", "SLC Layout Editor");
 
+
         private static readonly string tempPath = Path.Combine(Path.GetTempPath(), "Tasty Apps", "SLC Layout Editor");
         private static readonly string thumbnailsPath = Path.Combine(tempPath, "thumbnails");
 
@@ -94,24 +95,31 @@ namespace SLC_LayoutEditor
 
         private static void RunApp(string[] args)
         {
+            Logger.Default.WriteLog("Preparing SLC Layout Editor v{0}...", GetVersionText(true));
             FileInfo fi = new FileInfo("settings.json");
 
-            if (fi.Exists)
-            {
-                Settings = AppSettings.Load(fi);
-            }
-            else
-            {
-                Settings = new AppSettings();
-                Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
-            }
-
-            if (args.Contains("-clean"))
+            if (!args.Contains("-clean"))
             {
                 if (fi.Exists)
                 {
+                    Settings = AppSettings.Load(fi);
+                }
+                else
+                {
+                    Logger.Default.WriteLog("No config file exists, creating");
+                    Settings = new AppSettings();
+                    Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
+                }
+            }
+            else
+            {
+                Logger.Default.WriteLog("-clean flag has been set as startup parameter, resetting application...");
+                if (fi.Exists)
+                {
+                    Logger.Default.WriteLog("Removing edited cabin layouts...");
                     Directory.Delete(Settings.CabinLayoutsEditPath, true);
 
+                    Logger.Default.WriteLog("Resetting config file...");
                     fi.Delete();
                     Settings = new AppSettings();
                     Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
@@ -122,8 +130,7 @@ namespace SLC_LayoutEditor
             Directory.CreateDirectory(Settings.CabinLayoutsEditPath);
             CheckTemplates();
 
-            //LoadAppSettings();
-
+            Logger.Default.WriteLog("Preparations complete, starting up editor...");
             App app = new App()
             {
                 ShutdownMode = ShutdownMode.OnMainWindowClose
@@ -131,13 +138,14 @@ namespace SLC_LayoutEditor
             app.InitializeComponent();
             app.Run();
 
+            Logger.Default.WriteLog("Editor shutting down...");
             SaveAppSettings();
         }
 
         private static void RunMigrations()
         {
 #region Migrate layout folder from default path to new path
-            if (Directory.Exists(oldDefaultEditorLayoutsPath))
+            if (!Directory.Exists(defaultEditorLayoutsPath) && Directory.Exists(oldDefaultEditorLayoutsPath))
             {
                 Logger.Default.WriteLog("Migrating directory for layouts edited with the editor...");
                 if (Directory.Exists(defaultEditorLayoutsPath))
@@ -162,6 +170,9 @@ namespace SLC_LayoutEditor
         {
             if (!Settings.TemplatesCopied)
             {
+                Logger.Default.WriteLog("Copying baked-in templates to cabin layouts directory...");
+                int copiedTemplates = 0;
+
                 foreach (string bakedTemplatePath in Util.GetBakedTemplates())
                 {
                     string template = Util.ReadTextResource(bakedTemplatePath);
@@ -177,9 +188,15 @@ namespace SLC_LayoutEditor
                     {
                         Directory.CreateDirectory(templatePath);
                         File.WriteAllText(templateFilePath, template);
+                        copiedTemplates++;
+                    }
+                    else
+                    {
+                        Logger.Default.WriteLog("Skipped template for aircraft \"{0}\" as it exists already.", aircraftName);
                     }
                 }
 
+                Logger.Default.WriteLog("Copying complete! {0} templates have been created.");
                 Settings.TemplatesCopied = true;
                 SaveAppSettings();
             }

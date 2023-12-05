@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tasty.Logging;
 using Tasty.ViewModel;
 using Tasty.ViewModel.Core.Enums;
 using Tasty.ViewModel.Core.Events;
@@ -114,6 +115,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinLayoutSet(string name) : this(new DirectoryInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, name)))
         {
+            Logger.Default.WriteLog("New aircraft type \"{0}\" created!", name);
         }
 
         public CabinLayoutSet(DirectoryInfo layoutSetFolder)
@@ -128,13 +130,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             if (!layoutSetFolder.Exists)
             {
                 Directory.CreateDirectory(layoutSetFolder.FullName);
+                Logger.Default.WriteLog("Aircraft folder created");
             }
 
             if (!templateFolder.Exists)
             {
                 Directory.CreateDirectory(templateFolder.FullName);
+                Logger.Default.WriteLog("Templates folder created");
             }
-
 
             LayoutCount = layoutSetFolder.EnumerateFiles("*.txt").Count();
             TemplateCount = templateFolder.EnumerateFiles("*.txt").Count();

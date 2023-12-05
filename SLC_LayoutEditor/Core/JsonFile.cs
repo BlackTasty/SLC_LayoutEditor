@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tasty.ViewModel.Observer;
 using Tasty.ViewModel;
+using Tasty.Logging;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -102,6 +103,7 @@ namespace SLC_LayoutEditor.Core
 
         protected virtual void SaveFile(T @object)
         {
+            Logger.Default.WriteLog("Saving config file \"{0}\"...", new FileInfo(filePath).Name);
             string json = JsonConvert.SerializeObject(@object);
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -146,6 +148,7 @@ namespace SLC_LayoutEditor.Core
 
         protected static T LoadFile(FileInfo fi)
         {
+            Logger.Default.WriteLog("Loading config file \"{0}\"...", fi.Name);
             string json = File.ReadAllText(fi.FullName);
             return JsonConvert.DeserializeObject<T>(json);
         }

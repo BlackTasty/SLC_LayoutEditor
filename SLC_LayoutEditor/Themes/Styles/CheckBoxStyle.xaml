@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style TargetType="CheckBox">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundColorBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource AccentColorBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
         <Setter Property="FontSize" Value="14"/>
@@ -18,10 +18,10 @@
                                     Height="18" 
                                     CornerRadius="2" 
                                     BorderBrush="{TemplateBinding BorderBrush}"
-                                    Background="{TemplateBinding Background}"
+                                    Background="Transparent"
                                     BorderThickness="{TemplateBinding BorderThickness}">
                                 <Grid>
-                                    <Path Stroke="{DynamicResource BackgroundColorBrush}"
+                                    <Path Stroke="{TemplateBinding Background}"
                                           Fill="{DynamicResource BackdropColorBrush}"
                                           x:Name="CheckBackdrop"
                                           StrokeThickness="4"
@@ -35,10 +35,12 @@
                                           SnapsToDevicePixels="False"
                                           Stretch="Uniform"
                                           Data="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                    <Border x:Name="CheckFill" Background="{TemplateBinding Foreground}" Margin="2.5"
+                                            CornerRadius="3"/>
                                 </Grid>
                             </Border>
                         </BulletDecorator.Bullet>
-                        <TextBlock Margin="12,-1,0,0" FontFamily="{TemplateBinding FontFamily}"
+                        <TextBlock x:Name="CheckText" Margin="12,-1,0,0" FontFamily="{TemplateBinding FontFamily}"
                                    FontSize="{TemplateBinding FontSize}"
                                    FontWeight="{TemplateBinding FontWeight}"
                                    FontStyle="{TemplateBinding FontStyle}"
@@ -51,23 +53,26 @@
                         <Trigger Property="IsChecked" Value="False">
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="CheckBackdrop" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="CheckFill" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                             <Setter TargetName="CheckBackdrop" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="CheckFill" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="CheckBackdrop" Property="Fill" Value="{x:Null}"/>
-                            <Setter TargetName="CheckBackdrop" Property="Stroke" Value="{x:Null}"/>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="CheckBackdrop" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="CheckFill" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="CheckText" Property="Foreground" Value="{DynamicResource DisabledColorBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <Trigger Property="IsChecked" Value="{x:Null}">
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundColorBrush}" />
-            </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsMouseOver" Value="True"/>
@@ -90,6 +95,15 @@
                 <MultiTrigger.Conditions>
                     <Condition Property="IsMouseOver" Value="True"/>
                     <Condition Property="IsChecked" Value="False"/>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundHoverColorBrush}" />
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True"/>
+                    <Condition Property="IsChecked" Value="{x:Null}"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
                     <Setter Property="Background" Value="{DynamicResource ButtonBackgroundHoverColorBrush}" />
@@ -108,6 +122,15 @@
                 <MultiTrigger.Conditions>
                     <Condition Property="IsPressed" Value="True"/>
                     <Condition Property="IsChecked" Value="True"/>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressedColorBrush}" />
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsPressed" Value="True"/>
+                    <Condition Property="IsChecked" Value="{x:Null}"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
                     <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressedColorBrush}" />

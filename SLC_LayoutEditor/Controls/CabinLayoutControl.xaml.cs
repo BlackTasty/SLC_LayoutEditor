@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Controls
@@ -171,12 +172,14 @@ namespace SLC_LayoutEditor.Controls
         {
             if (CabinLayout != null)
             {
+                Logger.Default.WriteLog("Generating thumbnail for {0} \"{1}\"...", CabinLayout.IsTemplate ? "template" : "layout", CabinLayout.LayoutName);
                 Directory.CreateDirectory(CabinLayout.ThumbnailDirectory);
 
                 foreach (DeckLayoutControl deckLayoutControl in container_decks.Children.OfType<DeckLayoutControl>())
                 {
                     deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory, overwrite);
                 }
+                Logger.Default.WriteLog("{0} saved successfully!", CabinLayout.IsTemplate ? "template" : "layout");
             }
         }
 
@@ -209,6 +212,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void RefreshCabinLayout()
         {
+            Logger.Default.WriteLog("Refreshing view for {0} \"{1}\"...", CabinLayout.IsTemplate ? "template" : "layout", CabinLayout.LayoutName);
             OnLayoutLoading(EventArgs.Empty);
 
             //Unhook events before clearing container for deck layout controls
@@ -232,6 +236,7 @@ namespace SLC_LayoutEditor.Controls
 
                 foreach (CabinDeck cabinDeck in CabinLayout.CabinDecks)
                 {
+                    Logger.Default.WriteLog("Rendering cabin deck floor {0}...", cabinDeck.Floor);
                     AddCabinDeckToUI(cabinDeck);
                 }
             }
@@ -452,7 +457,7 @@ namespace SLC_LayoutEditor.Controls
                 new DirectoryInfo(templatesPath).EnumerateFiles("*.txt").Select(x => x.Name.Replace(".txt", "")) :
                 new List<string>();
 
-            MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, CabinLayout.LayoutName + " - Template");
+            MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, CabinLayout.LayoutName + " - Template", CabinLayout);
             dialog.DialogClosing += MakeTemplate_DialogClosing;
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
@@ -460,14 +465,13 @@ namespace SLC_LayoutEditor.Controls
 
         private void MakeTemplate_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            if (e.DialogResult == DialogResultType.OK)
+            if (e.DialogResult == DialogResultType.OK && e.Data is MakeTemplateDialogViewModel data)
             {
                 string layoutsPath = !IsTemplatingMode ? App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name) :
                     CabinLayout.LayoutFile.DirectoryName;
                 Directory.CreateDirectory(layoutsPath);
 
-                CabinLayout template = CabinLayout.MakeTemplate(
-                    System.IO.Path.Combine(layoutsPath, e.Data + ".txt"));
+                CabinLayout template = CabinLayout.MakeTemplate(data, layoutsPath);
                 template.SaveLayout();
                 OnTemplateCreatedEventArgs(new TemplateCreatedEventArgs(template));
                 IsTemplatingMode = true;

@@ -1,4 +1,6 @@
-﻿using SLC_LayoutEditor.Core.Patcher;
+﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Patcher;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -73,6 +75,16 @@ namespace SLC_LayoutEditor.Core
         {
             AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(uiElement);
             adornerLayer?.Add(adorner);
+        }
+
+        public static int CountSlots(this IEnumerable<CabinSlot> cabinSlots, CabinSlotType targetType)
+        {
+            return cabinSlots.Count(x => x.Type == targetType);
+        }
+
+        public static int CountSlots(this IEnumerable<CabinSlot> cabinSlots, params CabinSlotType[] targetTypes)
+        {
+            return cabinSlots.Count(x => targetTypes.Contains(x.Type));
         }
     }
 }

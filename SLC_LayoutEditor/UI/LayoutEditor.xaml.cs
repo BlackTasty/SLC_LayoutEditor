@@ -24,6 +24,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.UI
@@ -46,6 +47,7 @@ namespace SLC_LayoutEditor.UI
             vm.CabinLayoutSelected += Vm_CabinLayoutSelected;
             vm.Changed += CabinLayoutChanged;
             vm.SelectionRollback += Vm_SelectionRollback;
+            vm.ActiveLayoutForceUpdated += Vm_ActiveLayoutForceUpdated;
         }
 
         public bool CheckUnsavedChanges(bool isClosing)
@@ -93,6 +95,11 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
+        private void Vm_ActiveLayoutForceUpdated(object sender, EventArgs e)
+        {
+            RefreshSidebarToggleAdorner();
+        }
+
         private void CabinLayoutChanged(object sender, ChangedEventArgs e)
         {
             OnChanged(e);
@@ -106,6 +113,7 @@ namespace SLC_LayoutEditor.UI
 
         private void SaveLayout_Click(object sender, RoutedEventArgs e)
         {
+            Logger.Default.WriteLog("User requested saving the current {0}...", vm.IsLayoutTemplate ? "template" : "layout");
             if (App.Settings.ShowWarningWhenIssuesPresent && vm.ActiveLayout.SevereIssuesCountSum > 0)
             {
                 ConfirmationDialog dialog = new ConfirmationDialog("Layout issues detected", 
@@ -137,9 +145,10 @@ namespace SLC_LayoutEditor.UI
             if (!vm.IsTemplatingMode && App.Settings.OpenFolderWithEditedLayout)
             {
                 Util.OpenFolder(vm.ActiveLayout.FilePath);
+                Logger.Default.WriteLog("Opened directory containing saved layout");
 
                 ConfirmationDialog dialog = new ConfirmationDialog("Folder opened",
-                    string.Format("The folder with your layout has been opened!"),
+                    string.Format("The folder containing your layout has been opened!"),
                     DialogType.OK);
 
                 Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
@@ -153,6 +162,7 @@ namespace SLC_LayoutEditor.UI
 
         private void AddAircraft_Click(object sender, RoutedEventArgs e)
         {
+            Logger.Default.WriteLog("User requested creating a new aircraft type...");
             CreateAircraftDialog dialog = new CreateAircraftDialog(vm.LayoutSets.Select(x => x.AircraftName));
             dialog.DialogClosing += CreateAircraft_DialogClosing;
 
@@ -176,6 +186,7 @@ namespace SLC_LayoutEditor.UI
 
         private void CreateCabinLayout_Click(object sender, RoutedEventArgs e)
         {
+            Logger.Default.WriteLog("User requested creating a new cabin {0}...", vm.IsTemplatingMode ? "template" : "layout");
             IDialog dialog;
 
             if (!vm.IsTemplatingMode)
@@ -314,7 +325,9 @@ namespace SLC_LayoutEditor.UI
         private void Layout_TemplateCreated(object sender, TemplateCreatedEventArgs e)
         {
             vm.SelectedLayoutSet.RegisterLayout(e.Template);
+            vm.ForceUpdateActiveLayout = true;
             vm.SelectedTemplate = e.Template;
+            vm.ForceUpdateActiveLayout = false;
         }
 
         private void RefreshSidebarToggleAdorner()
@@ -338,6 +351,7 @@ namespace SLC_LayoutEditor.UI
 
         private void CabinLayout_SaveAs_Click(object sender, RoutedEventArgs e)
         {
+            Logger.Default.WriteLog("User requested saving the current {0} under a different name...", vm.IsTemplatingMode ? "template" : "layout");
             IDialog dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), null, true);
             dialog.DialogClosing += CabinLayout_SaveAs_DialogClosing;
 

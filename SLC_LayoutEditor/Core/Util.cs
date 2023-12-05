@@ -140,13 +140,26 @@ namespace SLC_LayoutEditor.Core
             return layout != null && (!File.Exists(layout.FilePath) || CompareLayoutHashes(layout.FilePath, layout.ToLayoutFile()));
         }
 
-        public static void SafeDeleteFile(string filePath)
+        public static bool SafeDeleteFile(string filePath)
         {
             if (File.Exists(filePath))
             {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                File.Delete(filePath);
+                try
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    File.Delete(filePath);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Default.WriteLog("Unable to delete file {0}!", ex, LogType.WARNING, new FileInfo(filePath).Name);
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
             }
         }
 

@@ -41,6 +41,7 @@ namespace SLC_LayoutEditor.ViewModel
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<SelectionRollbackEventArgs> SelectionRollback;
+        public event EventHandler<EventArgs> ActiveLayoutForceUpdated;
 
         private VeryObservableCollection<CabinLayoutSet> mLayoutSets = 
             new VeryObservableCollection<CabinLayoutSet>("LayoutSets");
@@ -218,6 +219,8 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public bool ForceUpdateActiveLayout { get; set; }
+
         public CabinLayout SelectedTemplate
         {
             get => mSelectedTemplate;
@@ -236,6 +239,14 @@ namespace SLC_LayoutEditor.ViewModel
 
                 FinishCabinLayoutChange(mSelectedTemplate, SelectedTemplate_Deleted);
                 InvokePropertyChanged();
+                if (ForceUpdateActiveLayout)
+                {
+                    mIsTemplatingMode = true;
+                    InvokePropertyChanged(nameof(IsLayoutTemplate));
+                    OnActiveLayoutForceUpdated(EventArgs.Empty);
+                    InvokePropertyChanged(nameof(ActiveLayout));
+                    mIsTemplatingMode = false;
+                }
             }
         }
 
@@ -686,6 +697,11 @@ namespace SLC_LayoutEditor.ViewModel
         protected virtual void OnSelectionRollback(SelectionRollbackEventArgs e)
         {
             SelectionRollback?.Invoke(this, e);
+        }
+
+        protected virtual void OnActiveLayoutForceUpdated(EventArgs e)
+        {
+            ActiveLayoutForceUpdated?.Invoke(this, e);
         }
     }
 }

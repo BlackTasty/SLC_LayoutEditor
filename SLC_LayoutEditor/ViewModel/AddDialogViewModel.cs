@@ -7,7 +7,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.ViewModel
 {
-    class AddDialogViewModel : ViewModelBase
+    public class AddDialogViewModel : ViewModelBase
     {
         private readonly string nameExistsErrorMessage;
 

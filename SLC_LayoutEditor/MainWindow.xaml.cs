@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor
@@ -54,10 +55,8 @@ namespace SLC_LayoutEditor
         {
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\cleanup.txt"))
             {
+                Logger.Default.WriteLog("Editor has been updated, cleaning up old files...");
                 Process[] procList = Process.GetProcessesByName("slc_layouteditor");
-                if (procList.Length > 1)
-                {
-                }
 
                 int cycleCount = 0;
                 while (Process.GetProcessesByName("slc_layouteditor").Length > 1)
@@ -72,6 +71,7 @@ namespace SLC_LayoutEditor
                                 if (Process.GetCurrentProcess().Id != proc.Id)
                                 {
                                     proc.Kill();
+                                    Logger.Default.WriteLog("Terminated old instance of editor.");
                                 }
                             }
                         }
@@ -85,11 +85,16 @@ namespace SLC_LayoutEditor
                 }
 
                 string[] lines = File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\cleanup.txt");
+                int deletedFiles = 0;
                 foreach (string path in lines)
                 {
-                    Util.SafeDeleteFile(path);
+                    if (!Util.SafeDeleteFile(path))
+                    {
+                        deletedFiles++;
+                    }
                 }
 
+                Logger.Default.WriteLog("Successfully deleted {0}/{1} files!", deletedFiles, lines.Length);
                 Util.SafeDeleteFile(AppDomain.CurrentDomain.BaseDirectory + "\\cleanup.txt");
             }
         }

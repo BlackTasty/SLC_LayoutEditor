@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.Dialogs;
+﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.ViewModel;
@@ -26,17 +27,18 @@ namespace SLC_LayoutEditor.UI.Dialogs
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
-        public MakeTemplateDialog(IEnumerable<string> templateNames, string layoutName)
+        public MakeTemplateDialog(IEnumerable<string> templateNames, string layoutName, CabinLayout source)
         {
             InitializeComponent();
-            AddDialogViewModel vm = DataContext as AddDialogViewModel;
+            MakeTemplateDialogViewModel vm = DataContext as MakeTemplateDialogViewModel;
+            vm.CalculateSlotsCount(source);
             vm.ExistingNames.AddRange(templateNames);
             vm.Name = layoutName;
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, (DataContext as AddDialogViewModel).Name));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, DataContext as MakeTemplateDialogViewModel));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

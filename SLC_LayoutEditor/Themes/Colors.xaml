@@ -83,6 +83,14 @@
     <SolidColorBrush x:Key="ServicePointStartColorBrush" Color="{StaticResource ServicePointStartColor}"/>
     <SolidColorBrush x:Key="ServicePointEndColorBrush" Color="{StaticResource ServicePointEndColor}"/>
 
+    <LinearGradientBrush x:Key="SerivePointsGradientBrush" EndPoint="20,0" StartPoint="0,20" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource ServicePointStartColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource ServicePointStartColor}" Offset=".45"/>
+        <GradientStop Color="{StaticResource ServicePointEndColor}" Offset=".55"/>
+        <GradientStop Color="{StaticResource ServicePointEndColor}" Offset="1"/>
+    </LinearGradientBrush>
+
     <SolidColorBrush x:Key="BackgroundColorBrush" Color="{StaticResource BackgroundColor}"/>
     <SolidColorBrush x:Key="BackgroundLightBrush" Color="{StaticResource BackgroundLight}"/>
     <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{StaticResource BackgroundDark}"/>

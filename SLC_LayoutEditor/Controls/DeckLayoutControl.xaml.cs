@@ -22,6 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Controls
@@ -94,10 +95,8 @@ namespace SLC_LayoutEditor.Controls
 
         public void RefreshCabinDeckLayout()
         {
-#if DEBUG
             Stopwatch sw = new Stopwatch();
             sw.Start();
-#endif
 
             layout_deck.Dispatcher.Invoke(() =>
             {
@@ -179,67 +178,94 @@ namespace SLC_LayoutEditor.Controls
                 RefreshControlSize();
             });
 
-#if DEBUG
-            Console.WriteLine("Total time generating deck: " + sw.ElapsedMilliseconds);
             sw.Stop();
-#endif
+            Logger.Default.WriteLog("Cabin deck rendered in {0} seconds", (double)sw.ElapsedMilliseconds / 1000);
         }
 
-        public void GenerateThumbnailForDeck(string thumbnailPath, bool overwrite = false)
+        public bool GenerateThumbnailForDeck(string thumbnailPath, bool overwrite = false)
         {
-            string deckThumbnailPath = System.IO.Path.Combine(thumbnailPath, CabinDeck.ThumbnailFileName);
+            bool success = true;
+            bool isHighlightingDisabled = false;
 
-            if (!File.Exists(deckThumbnailPath) || overwrite)
+            try
             {
-                int offsetX = 103;
-                int offsetY = 169;
+                string deckThumbnailPath = System.IO.Path.Combine(thumbnailPath, CabinDeck.ThumbnailFileName);
 
-                if (layout_deck.ActualWidth <= 0 || layout_deck.ActualHeight <= 0)
+                if (!File.Exists(deckThumbnailPath) || overwrite)
                 {
-                    return;
+                    Logger.Default.WriteLog("Creating thumbnail for cabin deck floor {0}...", CabinDeck.Floor);
+                    int offsetX = 103;
+                    int offsetY = 169;
+
+                    if (layout_deck.ActualWidth <= 0 || layout_deck.ActualHeight <= 0)
+                    {
+                        return false;
+                    }
+
+                    int width = (int)layout_deck.ActualWidth + 106;
+                    int height = (int)layout_deck.ActualHeight + 98;
+
+                    #region Temporarily disable highlighting on slots
+                    Logger.Default.WriteLog("Temporarily disabling slot highlighting...");
+                    foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
+                    {
+                        cabinSlotControl.DisableEffects();
+                    }
+                    isHighlightingDisabled = true;
+                    #endregion
+
+                    var rect = new Rect(new Size(width, height));
+                    var visual = new DrawingVisual();
+
+                    using (var dc = visual.RenderOpen())
+                    {
+                        dc.DrawRectangle(new VisualBrush(this), null, rect);
+                    }
+
+                    Logger.Default.WriteLog("Rendering cabin deck onto bitmap... (source width: {0}px; source height: {1}px)", width, height);
+                    RenderTargetBitmap bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+                    bitmap.Render(visual);
+
+                    Int32Rect cropRect = new Int32Rect(offsetX, offsetY, width - offsetX - 8, height - offsetY - 8);
+                    Logger.Default.WriteLog("Cropping bitmap... (cropped width: {0}px; cropped height: {1}px)", cropRect.Width, cropRect.Height);
+                    CroppedBitmap croppedBitmap = new CroppedBitmap(bitmap, cropRect);
+
+                    double scalingFactor = .5;
+                    Logger.Default.WriteLog("Scaling down bitmap... (final width: {0}px; final height: {1}px)", cropRect.Width * scalingFactor, cropRect.Height * scalingFactor);
+                    TransformedBitmap transformedBitmap = new TransformedBitmap(croppedBitmap, new ScaleTransform(scalingFactor, scalingFactor));
+
+                    Logger.Default.WriteLog("Finalizing thumbnail...");
+                    PngBitmapEncoder pngImage = new PngBitmapEncoder();
+                    pngImage.Frames.Add(BitmapFrame.Create(transformedBitmap));
+
+                    Util.SafeDeleteFile(deckThumbnailPath);
+                    using (Stream fileStream = File.Create(deckThumbnailPath))
+                    {
+                        pngImage.Save(fileStream);
+                    }
+                    Logger.Default.WriteLog("Thumbnail saved successfully for cabin deck floor {0}!", CabinDeck.Floor);
                 }
-
-                int width = (int)layout_deck.ActualWidth + 106;
-                int height = (int)layout_deck.ActualHeight + 98;
-
-                #region Temporarily disable highlighting on slots
-                foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
-                {
-                    cabinSlotControl.DisableEffects();
-                }
-                #endregion
-
-                var rect = new Rect(new Size(width, height));
-                var visual = new DrawingVisual();
-
-                using (var dc = visual.RenderOpen())
-                {
-                    dc.DrawRectangle(new VisualBrush(this), null, rect);
-                }
-
-                RenderTargetBitmap bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
-                bitmap.Render(visual);
-                CroppedBitmap croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(offsetX, offsetY, width - offsetX - 8, height - offsetY - 8));
-
-                double scalingFactor = .5;
-                TransformedBitmap transformedBitmap = new TransformedBitmap(croppedBitmap, new ScaleTransform(scalingFactor, scalingFactor));
-
-                PngBitmapEncoder pngImage = new PngBitmapEncoder();
-                pngImage.Frames.Add(BitmapFrame.Create(transformedBitmap));
-
-                Util.SafeDeleteFile(deckThumbnailPath);
-                using (Stream fileStream = File.Create(deckThumbnailPath))
-                {
-                    pngImage.Save(fileStream);
-                }
-
-                #region Restore highlighting on slots
-                foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
-                {
-                    cabinSlotControl.RestoreEffects();
-                }
-                #endregion
             }
+            catch (Exception ex)
+            {
+                Logger.Default.WriteLog("Unable to create a thumbnail for cabin deck floor {0}!", ex, LogType.WARNING, CabinDeck.Floor);
+                success = false;
+            }
+            finally
+            {
+                if (isHighlightingDisabled)
+                {
+                    #region Restore highlighting on slots
+                    foreach (CabinSlotControl cabinSlotControl in layout_deck.Children.OfType<CabinSlotControl>())
+                    {
+                        cabinSlotControl.RestoreEffects();
+                    }
+                    #endregion
+                    Logger.Default.WriteLog("Restored highlighting on slots", CabinDeck.Floor);
+                }
+            }
+
+            return success;
         }
 
         public void Dispose()

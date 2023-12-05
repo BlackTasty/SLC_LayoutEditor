@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.UI
@@ -56,6 +57,7 @@ namespace SLC_LayoutEditor.UI
 
         private void Rollback_Click(object sender, RoutedEventArgs e)
         {
+            Logger.Default.WriteLog("Resetting app config...");
             App.Settings = AppSettings.Load(new System.IO.FileInfo(System.IO.Path.Combine(App.Settings.FilePath, App.Settings.FileName)));
         }
     }
