@@ -41,8 +41,7 @@ namespace SLC_LayoutEditor.Core.Patcher
         {
             if (File.Exists(destPath))
             {
-                if (File.Exists(destPath + ".BAK"))
-                    File.Delete(destPath + ".BAK");
+                Util.SafeDeleteFile(destPath + ".BAK");
                 File.Move(destPath, destPath + ".BAK");
             }
             File.Move(sourcePath, destPath);

@@ -8,8 +8,6 @@ namespace SLC_LayoutEditor.Core.AutoFix
 {
     public class AutoFixResult
     {
-        private int floor;
-
         private string resultText;
         private string successText;
         private int successCount;

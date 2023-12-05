@@ -72,6 +72,9 @@
     <Compile Include="Controls\CabinLayoutControl.xaml.cs">
       <DependentUpon>CabinLayoutControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\IssueTracker.xaml.cs">
+      <DependentUpon>IssueTracker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LayoutProblemText.xaml.cs">
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
@@ -88,6 +91,10 @@
       <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Material\ToggleButtonAssist.cs" />
+    <Compile Include="Controls\SidebarToggleAdorner.cs" />
+    <Compile Include="Controls\Updater.xaml.cs">
+      <DependentUpon>Updater.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\AircraftListSortConverter.cs" />
     <Compile Include="Converter\ArcEndPointConverter.cs" />
     <Compile Include="Converter\ArcSizeConverter.cs" />
@@ -104,6 +111,9 @@
     <Compile Include="Converter\StringNotEmptyConverter.cs" />
     <Compile Include="Converter\StringNotEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />
+    <Compile Include="Converter\UpdateButtonIconConverter.cs" />
+    <Compile Include="Converter\UpdateIconVisibilityConverter.cs" />
+    <Compile Include="Converter\UpdateProgressBarIndeterminateConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
@@ -211,6 +221,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\IssueTracker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\LayoutProblemText.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -220,6 +234,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SeatCapacityBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Updater.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

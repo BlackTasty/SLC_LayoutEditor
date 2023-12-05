@@ -1,3 +1,6 @@
 PROBLEM: SLC Layout Editor does not run, and no log file is created. 
          Event log shows a DCOM error mentioning SmartScreen.
 SOLUTION: Check if "Check apps and files" is enabled in Windows Defender, if so disable it
+
+PROBLEM: SLC Layout Editor is crashing while trying to access files and folders in Documents/Tasty Apps
+SOLUTION: Check if Windows Defender - Ransomware protection is enabled, if so disable it

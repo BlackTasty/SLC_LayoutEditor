@@ -86,6 +86,53 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="SidebarToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Content" Value="{DynamicResource Expand}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundColorBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundDarkBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BackgroundLightBrush}"/>
+        <Setter Property="BorderThickness" Value="0,0,1.5,0"/>
+        <Setter Property="ToolTip" Value="Expand sidebar"/>
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Padding" Value="5,5,9,5"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate DataType="{x:Type ToggleButton}">
+                    <Path Name="path" Stretch="Uniform"
+                          Fill="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Foreground}"
+                          Data="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Content, Converter={StaticResource StringToGeometryConverter}}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" SnapsToDevicePixels="True" CornerRadius="0,6,6,0"
+                            Margin="-1.5,0,0,0">
+                        <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                          Content="{TemplateBinding Content}" 
+                                          ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                          Focusable="False" 
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}" 
+                                          RecognizesAccessKey="True" 
+                                          TextElement.Foreground="{TemplateBinding Foreground}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Content" Value="{DynamicResource Retract}"/>
+                <Setter Property="ToolTip" Value="Retract sidebar"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="ToggleDeckViewButtonStyle" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
         <Setter Property="Content" Value="{DynamicResource ShowAllDecks}"/>
         <Setter Property="ToolTip" Value="Show all decks"/>
@@ -109,6 +156,7 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+        
     <Style x:Key="MaterialDesignSwitchToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="{DynamicResource ButtonBorderColorBrush}" />
         <Setter Property="BorderThickness" Value="1" />

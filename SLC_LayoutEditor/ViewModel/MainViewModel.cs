@@ -25,7 +25,6 @@ namespace SLC_LayoutEditor.ViewModel
         private LayoutEditor editor;
         private string mCabinLayoutName;
         private bool mHasUnsavedChanges;
-        private bool mIsDialogOpen;
 
         #region Updater variables
         private UpdateManager updateManager;
@@ -80,12 +79,14 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     mDialog.DialogClosing += Dialog_DialogClosing;
                 }
-            }
-        }
 
-        private void Dialog_DialogClosing(object sender, DialogClosingEventArgs e)
-        {
-            Dialog = null;
+                App.IsDialogOpen = value != null;
+
+                if (mContent is LayoutEditor layoutEditor)
+                {
+                    layoutEditor.RenderAdorners();
+                }
+            }
         }
 
         public bool IsDialogOpen => mDialog != null;
@@ -112,16 +113,6 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsViewNotEditor));
             }
-        }
-
-        private void Editor_LayoutChanged(object sender, ChangedEventArgs e)
-        {
-            HasUnsavedChanges = e.UnsavedChanges;
-        }
-
-        private void Editor_CabinLayoutSelected(object sender, CabinLayoutSelectedEventArgs e)
-        {
-            CabinLayoutName = e.CabinLayoutName;
         }
 
         public bool IsViewNotEditor => !(mContent is LayoutEditor);
@@ -214,6 +205,10 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged();
             }
         }
+
+        public bool IsIndeterminateUpdateProgress => UpdateStatus == UpdateStatus.SEARCHING ||
+            UpdateStatus == UpdateStatus.EXTRACTING ||
+            UpdateStatus == UpdateStatus.INSTALLING;
         #endregion
 
         public MainViewModel()
@@ -250,6 +245,11 @@ namespace SLC_LayoutEditor.ViewModel
                     Dialog = new ConfirmationDialog("Error setting dialog!", "The supplied dialog control does not inherit from IDialog!", Core.Enum.DialogType.OK);
                 }
             }, ViewModelMessage.DialogOpening);
+
+            Mediator.Instance.Register(o =>
+            {
+                ReturnToEditor();
+            }, ViewModelMessage.SettingsSaved);
         }
 
         public void ShowWelcomeScreen()
@@ -313,6 +313,13 @@ namespace SLC_LayoutEditor.ViewModel
         private void UpdateManager_StatusChanged(object sender, UpdateStatus e)
         {
             InvokePropertyChanged(nameof(UpdateStatus));
+            InvokePropertyChanged(nameof(IsIndeterminateUpdateProgress));
+
+            if (IsIndeterminateUpdateProgress)
+            {
+                DownloadCurrent = 0;
+                DownloadSize = double.MaxValue;
+            }
 
             switch (e)
             {
@@ -371,6 +378,21 @@ namespace SLC_LayoutEditor.ViewModel
         private void ShowDialog(IDialog dialog)
         {
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+        }
+
+        private void Dialog_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            Dialog = null;
+        }
+
+        private void Editor_LayoutChanged(object sender, ChangedEventArgs e)
+        {
+            HasUnsavedChanges = e.UnsavedChanges;
+        }
+
+        private void Editor_CabinLayoutSelected(object sender, CabinLayoutSelectedEventArgs e)
+        {
+            CabinLayoutName = e.CabinLayoutName;
         }
     }
 }

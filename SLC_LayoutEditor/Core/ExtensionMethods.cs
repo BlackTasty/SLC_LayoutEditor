@@ -1,10 +1,14 @@
 ﻿using SLC_LayoutEditor.Core.Patcher;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -44,6 +48,31 @@ namespace SLC_LayoutEditor.Core
         public static bool AnyNan(this IEnumerable<double> values)
         {
             return values.Any(double.IsNaN);
+        }
+
+        public static Point MakeOffset(this Point current, double offsetX, double offsetY)
+        {
+            return new Point(current.X + offsetX, current.Y + offsetY);
+        }
+
+        public static Adorner AttachAdorner(this UIElement uiElement, Type adornerType)
+        {
+            ConstructorInfo ctor = adornerType.GetConstructor(new[] { typeof(UIElement) });
+            Adorner instance = (Adorner)ctor.Invoke(new object[] { uiElement });
+
+            uiElement.AttachAdorner(instance);
+            return instance;
+        }
+
+        public static void RemoveAdorner(this UIElement uiElement, Adorner adorner)
+        {
+            AdornerLayer.GetAdornerLayer(uiElement).Remove(adorner);
+        }
+
+        public static void AttachAdorner(this UIElement uiElement, Adorner adorner)
+        {
+            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(uiElement);
+            adornerLayer?.Add(adorner);
         }
     }
 }

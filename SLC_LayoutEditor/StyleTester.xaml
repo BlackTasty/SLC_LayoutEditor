@@ -51,5 +51,10 @@
                 </UniformGrid>
             </StackPanel>
         </StackPanel>
+        <ToggleButton Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource SidebarToggleButtonStyle}"/>
+        <UniformGrid>
+            <TextBox Text="Test" Margin="8"/>
+            <ComboBox Text="Test"/>
+        </UniformGrid>
     </StackPanel>
 </Window>

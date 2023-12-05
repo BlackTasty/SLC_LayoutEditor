@@ -144,6 +144,16 @@ namespace SLC_LayoutEditor.Controls
         public static readonly DependencyProperty IsTemplatingModeProperty =
             DependencyProperty.Register("IsTemplatingMode", typeof(bool), typeof(CabinLayoutControl), new PropertyMetadata(false, OnIsTemplatingModeChanged));
 
+        public bool IsSidebarOpen
+        {
+            get { return (bool)GetValue(IsSidebarOpenProperty); }
+            set { SetValue(IsSidebarOpenProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsSidebarOpen.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsSidebarOpenProperty =
+            DependencyProperty.Register("IsSidebarOpen", typeof(bool), typeof(CabinLayoutControl), new PropertyMetadata(true));
+
         private static void OnIsTemplatingModeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (sender is CabinLayoutControl control)
@@ -167,6 +177,14 @@ namespace SLC_LayoutEditor.Controls
                 {
                     deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory, overwrite);
                 }
+            }
+        }
+
+        public void RenderAdorners()
+        {
+            foreach (DeckLayoutControl deckLayoutControl in container_decks.Children.OfType<DeckLayoutControl>())
+            {
+                deckLayoutControl.RenderAdorners();
             }
         }
 

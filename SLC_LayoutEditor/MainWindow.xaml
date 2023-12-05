@@ -4,13 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SLC_LayoutEditor"
-        xmlns:ui="clr-namespace:SLC_LayoutEditor.UI"
+        xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls"
         xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
         xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundColorBrush}"
         mc:Ignorable="d" Closing="Window_Closing"
-        Title="{Binding Title}" MinHeight="670" MinWidth="1070"
+        Title="{Binding Title}" MinHeight="670" MinWidth="1240"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
         Icon="Resources/icon.ico">
     <Window.DataContext>
@@ -30,11 +30,11 @@
             </DockPanel.Style>
             <DockPanel DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}">
                 <DockPanel LastChildFill="False" Background="{DynamicResource MenuBackgroundBrush}">
-                    <Menu Foreground="{StaticResource ForegroundColorBrush}">
-                        <MenuItem Header="File" Height="34">
+                    <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14">
+                        <MenuItem Header="File" Height="40">
                             <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
                         </MenuItem>
-                        <MenuItem Header="Editor" Height="34">
+                        <MenuItem Header="Editor" Height="40">
                             <MenuItem Header="Settings" Click="Settings_Click"/>
                             <Separator Style="{StaticResource MenuSeparatorStyle}"/>
                             <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
@@ -53,6 +53,8 @@
                         Click="Redo_Click" IsEnabled="{Binding History.CanRedo}"/>
                     </DockPanel>
                 </DockPanel>
+                <!--<controls:Updater DataContext="{Binding}" HorizontalAlignment="Right"
+                                  Margin="32,0" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
                 <DockPanel LastChildFill="False" HorizontalAlignment="Right">
                     <DockPanel Margin="32,0" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Button Content="Download &amp; install" Visibility="{Binding IsUpdateReady, Converter={StaticResource BooleanToVisibilityConverter}}"

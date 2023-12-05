@@ -84,10 +84,7 @@ namespace SLC_LayoutEditor.Core
             if (isFile && !forceDeleteParentDir)
             {
                 string path = Path.Combine(filePath, fileName);
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
+                Util.SafeDeleteFile(path);
             }
             else
             {

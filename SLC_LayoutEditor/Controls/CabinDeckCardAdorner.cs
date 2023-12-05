@@ -17,7 +17,10 @@ namespace SLC_LayoutEditor.Controls
 
         public CabinDeckCardAdorner(UIElement adornedElement) : base(adornedElement)
         {
-
+            if (App.IsDialogOpen)
+            {
+                Effect = (Effect)App.Current.FindResource("DisableBlur");
+            }
         }
 
         protected override void OnRender(DrawingContext drawingContext)

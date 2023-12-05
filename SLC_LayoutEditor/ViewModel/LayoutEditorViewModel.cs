@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,6 +28,9 @@ namespace SLC_LayoutEditor.ViewModel
         private const string TEXT_LAYOUT_NO_LAYOUTS = "No cabin layouts for this aircraft found";
         private const string TEXT_TEMPLATE_NO_SELECTION = "No template selected";
         private const string TEXT_TEMPLATE_NO_LAYOUTS = "No templates for this aircraft found";
+
+        private const string TEXT_ERROR_SLOT_NUMBER_INVALID = "Only values from 0-99 allowed!";
+        private const string TEXT_ERROR_SLOT_LETTER_INVALID = "Only alphanumeric values allowed!";
 
         private static readonly Style ADD_LAYOUT_BUTTON_STYLE = (Style)App.Current.FindResource("DefaultBorderedIconButtonStyle");
         private static readonly Style ADD_TEMPLATE_BUTTON_STYLE = (Style)App.Current.FindResource("TemplateBorderedIconButtonStyle");
@@ -44,6 +48,8 @@ namespace SLC_LayoutEditor.ViewModel
         private CabinLayout mSelectedCabinLayout;
         private CabinLayout mSelectedTemplate;
         private CabinDeck mSelectedCabinDeck;
+
+        private bool mHasSeatNumberInputError;
 
         private List<CabinSlot> mSelectedCabinSlots = new List<CabinSlot>();
         private int mSelectedCabinSlotFloor;
@@ -65,6 +71,15 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mShowUnavailableSeatsIssues = true;
         private bool mShowStairwayIssues = true;
 
+        private bool mIsSidebarOpen = true;
+        private bool mIsIssueTrackerExpanded;
+
+        #region Input error checks & texts
+        public string SeatLetterError => SelectedCabinSlot != null && !Regex.IsMatch(SelectedCabinSlot.SeatLetter.ToString(), @"^[a-zA-Z]+$") ?
+            TEXT_ERROR_SLOT_LETTER_INVALID : null;
+
+        public string SeatLettersError => !AutomationLettersValid ? TEXT_ERROR_SLOT_LETTER_INVALID : null;
+        #endregion
 
         #region Problem visibility properties
         public bool ShowEconomyClassIssues
@@ -226,6 +241,8 @@ namespace SLC_LayoutEditor.ViewModel
 
         public CabinLayout ActiveLayout => !IsTemplatingMode ? mSelectedCabinLayout : mSelectedTemplate;
 
+        public bool IsLayoutTemplate => ActiveLayout?.IsTemplate ?? false;
+
         public string SelectedLayoutText => mSelectedLayoutSet != null ?
             (mSelectedLayoutSet.CabinLayouts.Count > 0 ?
                 (mSelectedCabinLayout != null ? null : TEXT_LAYOUT_NO_SELECTION) : TEXT_LAYOUT_NO_LAYOUTS) :
@@ -356,14 +373,32 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public bool IsSidebarOpen
+        {
+            get => mIsSidebarOpen;
+            set
+            {
+                mIsSidebarOpen = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool IsIssueTrackerExpanded
+        {
+            get => mIsIssueTrackerExpanded;
+            set
+            {
+                mIsIssueTrackerExpanded = value;
+                InvokePropertyChanged();
+            }
+        }
+
         private CabinLayout ShownLayout => mSelectedCabinLayout != null ? mSelectedCabinLayout : mSelectedTemplate;
 
         private void SelectedLayout_LayoutChanged(object sender, EventArgs e)
         {
             InvokePropertyChanged(nameof(StairwayErrorMessage));
-            OnChanged(new ChangedEventArgs(
-                Util.HasLayoutChanged(ActiveLayout))
-                );
+            OnChanged(new ChangedEventArgs(Util.HasLayoutChanged(ActiveLayout)));
         }
 
         public CabinDeck SelectedCabinDeck
@@ -381,6 +416,7 @@ namespace SLC_LayoutEditor.ViewModel
             OnChanged(new ChangedEventArgs(
                 Util.HasLayoutChanged(ActiveLayout))
                 );
+            InvokePropertyChanged(nameof(SeatLetterError));
         }
 
         public int SelectedAutomationIndex
@@ -401,6 +437,7 @@ namespace SLC_LayoutEditor.ViewModel
                 mAutomationSeatLetters = value.ToUpper();
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(AutomationLettersValid));
+                InvokePropertyChanged(nameof(SeatLettersError));
             }
         }
 
@@ -414,23 +451,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public bool AutomationLettersValid
-        {
-            get
-            {
-                string[] letters = AutomationSeatLetters.Split(',');
-
-                for (int i = 0; i < letters.Length; i++)
-                {
-                    if (string.IsNullOrWhiteSpace(letters[i]) || !char.IsLetter(letters[i][0]) || ArrayContains(letters, i))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        }
+        public bool AutomationLettersValid => Regex.IsMatch(AutomationSeatLetters, @"^[a-zA-Z]+$");
 
         public int ServiceAreasCount
         {
@@ -631,7 +652,14 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(nameof(LayoutOverviewTitle));
             InvokePropertyChanged(!IsTemplatingMode ? nameof(SelectedLayoutText) : nameof(SelectedTemplateText));
             InvokePropertyChanged(nameof(ActiveLayout));
+            InvokePropertyChanged(nameof(IsLayoutTemplate));
             OnCabinLayoutSelected(new CabinLayoutSelectedEventArgs(updated?.LayoutName));
+
+
+            if (App.Settings.HideSidebarAfterLoadingLayout)
+            {
+                IsSidebarOpen = false;
+            }
         }
 
         private void SelectedCabinLayout_Deleted(object sender, EventArgs e)

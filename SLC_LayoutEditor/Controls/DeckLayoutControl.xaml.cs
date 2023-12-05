@@ -60,6 +60,8 @@ namespace SLC_LayoutEditor.Controls
         private Rectangle selectionBox;
         private bool isMouseDown;
 
+        private Adorner deckTitleAdorner;
+
         #region CabinDeck property
         public CabinDeck CabinDeck
         {
@@ -225,7 +227,7 @@ namespace SLC_LayoutEditor.Controls
                 PngBitmapEncoder pngImage = new PngBitmapEncoder();
                 pngImage.Frames.Add(BitmapFrame.Create(transformedBitmap));
 
-                File.Delete(deckThumbnailPath);
+                Util.SafeDeleteFile(deckThumbnailPath);
                 using (Stream fileStream = File.Create(deckThumbnailPath))
                 {
                     pngImage.Save(fileStream);
@@ -440,7 +442,7 @@ namespace SLC_LayoutEditor.Controls
         private void RemoveRowButton_Click(object sender, RoutedEventArgs e)
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Confirm column removal",
-                "Are you sure you want to remove this column? This cannot be undone!", DialogType.YesNo);
+                "Are you sure you want to remove this column? This cannot be undone!", DialogType.YesNo, sender);
 
             dialog.DialogClosing += RemoveRow_DialogClosing;
 
@@ -627,7 +629,7 @@ namespace SLC_LayoutEditor.Controls
         private void RemoveColumnButton_Click(object sender, RoutedEventArgs e)
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Confirm row removal",
-                "Are you sure you want to remove this row? This cannot be undone!", DialogType.YesNo);
+                "Are you sure you want to remove this row? This cannot be undone!", DialogType.YesNo, sender);
 
             dialog.DialogClosing += RemoveColumn_DialogClosing;
 
@@ -794,6 +796,15 @@ namespace SLC_LayoutEditor.Controls
             SetMultipleSlotsSelected(selectedControls, clearCurrentSelection);
         }
 
+        public void RenderAdorners()
+        {
+            if (deckTitleAdorner != null)
+            {
+                card_deckTitle.RemoveAdorner(deckTitleAdorner);
+            }
+            deckTitleAdorner = card_deckTitle.AttachAdorner(typeof(CabinDeckCardAdorner));
+        }
+
         private void UnsetMultipleSlotsSelected(IEnumerable<CabinSlotControl> unselectedSlots)
         {
             foreach (CabinSlotControl unselectedSlot in unselectedSlots.Where(x => x != null))
@@ -893,8 +904,9 @@ namespace SLC_LayoutEditor.Controls
 
             layoutLoader.RunWorkerAsync();
 
-            AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(card_deckTitle);
-            adornerLayer.Add(new CabinDeckCardAdorner(card_deckTitle));
+            RenderAdorners();
+            /*AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(card_deckTitle);
+            adornerLayer.Add(new CabinDeckCardAdorner(card_deckTitle));*/
         }
 
         private void LayoutLoader_DoWork(object sender, DoWorkEventArgs e)

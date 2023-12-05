@@ -13,7 +13,7 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
         public MainDesignViewModel() : base()
         {
             Content = new LayoutEditor();
-            Dialog = new ChangelogDialog();
+            //Dialog = new ChangelogDialog();
         }
     }
 }

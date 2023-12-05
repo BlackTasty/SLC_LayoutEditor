@@ -1,11 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -25,7 +20,7 @@ namespace SLC_LayoutEditor.Core
         #endregion
 
         private bool mWelcomeScreenShown;
-        private bool mTemplatesCopied;
+        private bool mHideSidebarAfterLoadingLayout;
 
         public string CabinLayoutsEditPath
         {
@@ -67,6 +62,16 @@ namespace SLC_LayoutEditor.Core
 
         public bool TemplatesCopied { get; set; }
 
+        public bool HideSidebarAfterLoadingLayout
+        {
+            get => mHideSidebarAfterLoadingLayout;
+            set
+            {
+                mHideSidebarAfterLoadingLayout = value;
+                InvokePropertyChanged();
+            }
+        }
+
         #region Editor toggles
         public bool OpenFolderWithEditedLayout
         {
@@ -106,7 +111,8 @@ namespace SLC_LayoutEditor.Core
         [JsonConstructor]
         public AppSettings(string cabinLayoutsEditPath, bool welcomeScreenShown, bool templatesCopied,
             bool showWarningWhenIssuesPresent, bool openFolderWithEditedLayout,
-            bool autoSearchForUpdates, bool showChangesAfterUpdate, int lastVersionChangelogShown) : this()
+            bool autoSearchForUpdates, bool showChangesAfterUpdate, int lastVersionChangelogShown, 
+            bool hideSidebarAfterLoadingLayout) : this()
         {
             mCabinLayoutsEditPath = cabinLayoutsEditPath;
             mWelcomeScreenShown = welcomeScreenShown;
@@ -127,6 +133,7 @@ namespace SLC_LayoutEditor.Core
                 mAutoSearchForUpdates = true;
                 mShowChangesAfterUpdate = true;
             }
+            mHideSidebarAfterLoadingLayout = hideSidebarAfterLoadingLayout;
         }
 
         public AppSettings() : base(false)

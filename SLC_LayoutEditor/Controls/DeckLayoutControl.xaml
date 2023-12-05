@@ -10,10 +10,6 @@
             Loaded="container_Loaded">
     <Border x:Name="card_deckTitle" Padding="64,0,0,0" Height="75" Style="{DynamicResource CardStyle}"
             HorizontalAlignment="Left" CornerRadius="0,40,40,0">
-        <Border.Effect>
-            <DropShadowEffect Color="{DynamicResource BackgroundDark}" Opacity=".4"
-                              ShadowDepth="4" BlurRadius="10"/>
-        </Border.Effect>
         <Grid VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition SharedSizeGroup="deckTitle" Width="Auto"/>
@@ -80,7 +76,7 @@
             </StackPanel>
         </Grid>
     </Border>
-    <Canvas x:Name="layout_deck" Margin="24" 
+    <Canvas x:Name="layout_deck" Margin="40,24" 
             PreviewMouseLeftButtonDown="MultiSelect_PreviewMouseLeftButtonDown"
             PreviewMouseLeftButtonUp="MultiSelect_PreviewMouseLeftButtonUp"
             PreviewMouseMove="MultiSelect_PreviewMouseMove"

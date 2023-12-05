@@ -140,6 +140,16 @@ namespace SLC_LayoutEditor.Core
             return layout != null && (!File.Exists(layout.FilePath) || CompareLayoutHashes(layout.FilePath, layout.ToLayoutFile()));
         }
 
+        public static void SafeDeleteFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                File.Delete(filePath);
+            }
+        }
+
         public static string ReadTextResource(string name)
         {
             // Determine path

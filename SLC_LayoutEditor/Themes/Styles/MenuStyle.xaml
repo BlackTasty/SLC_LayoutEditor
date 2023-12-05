@@ -31,8 +31,8 @@
 
     <ControlTemplate x:Key="MenuItemTemplate" TargetType="{x:Type MenuItem}">
         <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" 
-                    Background="{TemplateBinding Background}" 
-                    SnapsToDevicePixels="True" Padding="4">
+                Background="{TemplateBinding Background}" 
+                SnapsToDevicePixels="True" Padding="4">
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -45,18 +45,18 @@
                       Fill="{TemplateBinding Foreground}" FlowDirection="LeftToRight" Margin="0" Visibility="Collapsed" 
                       VerticalAlignment="Center"/>
                 <TextBlock x:Name="TextElement" Text="{TemplateBinding Header}" 
-                                  Grid.Column="1"
-                                  Margin="{TemplateBinding Padding}"
-                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                           Grid.Column="1"
+                           Margin="{TemplateBinding Padding}"
+                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                 <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False"
-                           IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
-                           PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" 
-                           Placement="Bottom" PlacementTarget="{Binding ElementName=templateRoot}">
+                       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                       PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" 
+                       Placement="Bottom" PlacementTarget="{Binding ElementName=templateRoot}">
                     <Border x:Name="SubMenuBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
-                            Background="{TemplateBinding Background}" Padding="0">
+                            Background="{TemplateBinding Background}" Padding="0" CornerRadius="8">
                         <ScrollViewer x:Name="SubMenuScrollViewer" 
-                                  Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}"
-                                  Background="{TemplateBinding Background}" Margin="0" Padding="0">
+                                      Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}"
+                                      Background="{TemplateBinding Background}" Margin="0" Padding="0">
                             <Grid RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
                                     <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" 

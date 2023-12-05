@@ -87,10 +87,10 @@ namespace SLC_LayoutEditor
                 string[] lines = File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "\\cleanup.txt");
                 foreach (string path in lines)
                 {
-                    File.Delete(path);
+                    Util.SafeDeleteFile(path);
                 }
 
-                File.Delete(AppDomain.CurrentDomain.BaseDirectory + "\\cleanup.txt");
+                Util.SafeDeleteFile(AppDomain.CurrentDomain.BaseDirectory + "\\cleanup.txt");
             }
         }
 

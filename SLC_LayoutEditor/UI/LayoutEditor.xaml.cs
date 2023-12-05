@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -35,8 +36,8 @@ namespace SLC_LayoutEditor.UI
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
 
-        DeckLayoutControl activeDeckControl;
-        LayoutEditorViewModel vm;
+        private readonly LayoutEditorViewModel vm;
+        private Adorner sidebarToggleAdorner;
 
         public LayoutEditor()
         {
@@ -50,6 +51,12 @@ namespace SLC_LayoutEditor.UI
         public bool CheckUnsavedChanges(bool isClosing)
         {
             return vm.CheckUnsavedChanges(null, isClosing);
+        }
+
+        public void RenderAdorners()
+        {
+            control_layout.RenderAdorners();
+            RefreshSidebarToggleAdorner();
         }
 
         // Workaround to force-restore the previously selected index
@@ -94,6 +101,7 @@ namespace SLC_LayoutEditor.UI
         private void Vm_CabinLayoutSelected(object sender, CabinLayoutSelectedEventArgs e)
         {
             OnCabinLayoutSelected(e);
+            RefreshSidebarToggleAdorner();
         }
 
         private void SaveLayout_Click(object sender, RoutedEventArgs e)
@@ -233,13 +241,12 @@ namespace SLC_LayoutEditor.UI
             {
                 foreach (CabinSlot cabinSlot in control_layout.SelectedCabinSlots)
                 {
+                    cabinSlot.IsEvaluationActive = false;
                     cabinSlot.Type = slotType;
+                    cabinSlot.IsEvaluationActive = true;
                 }
 
-                if (slotType == CabinSlotType.Stairway)
-                {
-                    vm.ActiveLayout.DeepRefreshProblemChecks();
-                }
+                vm.ActiveLayout.DeepRefreshProblemChecks();
             }
         }
 
@@ -249,16 +256,15 @@ namespace SLC_LayoutEditor.UI
             {
                 case 0: // Seat numeration
                     var seatRowGroups = control_layout.SelectedCabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).OrderBy(x => x.Key);
-                    string[] seatLetters = vm.AutomationSeatLetters.Split(',');
+                    char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
                     int currentLetterIndex = 0;
-                    //TODO: Set flag on cabin slot to stop re-evaluation during automation
                     foreach (var group in seatRowGroups)
                     {
                         int seatNumber = vm.AutomationSeatStartNumber;
                         foreach (CabinSlot cabinSlot in group.OrderBy(x => x.Row))
                         {
                             cabinSlot.IsEvaluationActive = false;
-                            cabinSlot.SeatLetter = seatLetters[currentLetterIndex][0];
+                            cabinSlot.SeatLetter = seatLetters[currentLetterIndex];
                             cabinSlot.SlotNumber = seatNumber;
                             seatNumber++;
                             cabinSlot.IsEvaluationActive = true;
@@ -270,7 +276,6 @@ namespace SLC_LayoutEditor.UI
                         }
                     }
 
-                    vm.ActiveLayout.DeepRefreshProblemChecks();
                     break;
                 case 1: // Wall generator
                     IEnumerable<CabinSlot> wallSlots = vm.SelectedCabinDeck.CabinSlots
@@ -279,7 +284,9 @@ namespace SLC_LayoutEditor.UI
 
                     foreach (CabinSlot wallSlot in wallSlots)
                     {
+                        wallSlot.IsEvaluationActive = false;
                         wallSlot.Type = CabinSlotType.Wall;
+                        wallSlot.IsEvaluationActive = true;
                     }
                     break;
                 case 2: //Service points (WIP)
@@ -290,96 +297,7 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
             }
-        }
-
-        private void EconomyClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.EconomyClassSeat);
-        }
-
-        private void BusinessClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.BusinessClassSeat);
-        }
-
-        private void Premium_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.PremiumClassSeat);
-        }
-
-        private void FirstClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.FirstClassSeat);
-        }
-
-        private void SupersonicClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.SupersonicClassSeat);
-        }
-
-        private void UnavailableSeats_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.UnavailableSeat);
-        }
-
-        private void StairwayPositions_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Stairway);
-        }
-
-        private void DuplicateDoors_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
-        }
-
-        private void ToggleProblemHighlight(bool showProblems, IEnumerable<CabinSlot> problematicSlots, params CabinSlotType[] targetTypes)
-        {
-            /*List<CabinSlotType> targetTypesList = targetTypes.ToList();
-
-            if (vm.ActiveLayout?.CabinDecks != null)
-            {
-                foreach (CabinSlot cabinSlot in vm.ActiveLayout.CabinDecks
-                                                    .SelectMany(x => x.CabinSlots)
-                                                    .Where(x => targetTypesList.Contains(x.Type)))
-                {
-                    cabinSlot.IsProblematic = showProblems && problematicSlots.Any(x => x.Guid == cabinSlot.Guid);
-                }
-            }*/
-        }
-
-        private void StairwayPositions_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
-        {
-            if (e.Target is CabinLayout target)
-            {
-                target.FixStairwayPositions();
-            }
-        }
-
-        private void Slots_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
-        {
-            if (e.Target is CabinDeck target)
-            {
-                target.FixSlotCount();
-            }
-        }
-
-        private void DuplicateDoors_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
-        {
-            if (e.Target is CabinLayout target)
-            {
-                target.FixDuplicateDoors();
-            }
-        }
-
-        private void DeckProblemsList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            list_scroll.ScrollToVerticalOffset(list_scroll.VerticalOffset - e.Delta);
-            e.Handled = true;
-        }
-
-        private void CateringAndLoadingBays_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
+            vm.ActiveLayout.DeepRefreshProblemChecks();
         }
 
         private void CabinLayout_SelectedSlotsChanged(object sender, CabinSlotClickedEventArgs e)
@@ -397,6 +315,15 @@ namespace SLC_LayoutEditor.UI
         {
             vm.SelectedLayoutSet.RegisterLayout(e.Template);
             vm.SelectedTemplate = e.Template;
+        }
+
+        private void RefreshSidebarToggleAdorner()
+        {
+            if (sidebarToggleAdorner != null)
+            {
+                toggle_sidebar.RemoveAdorner(sidebarToggleAdorner);
+            }
+            sidebarToggleAdorner = toggle_sidebar.AttachAdorner(typeof(SidebarToggleAdorner));
         }
 
         protected virtual void OnCabinLayoutSelected(CabinLayoutSelectedEventArgs e)
@@ -435,6 +362,11 @@ namespace SLC_LayoutEditor.UI
             {
                 button.ContextMenu.IsOpen = true;
             }
+        }
+
+        private void ToggleSidebarButton_Loaded(object sender, RoutedEventArgs e)
+        {
+            sidebarToggleAdorner = toggle_sidebar.AttachAdorner(typeof(SidebarToggleAdorner));
         }
     }
 }

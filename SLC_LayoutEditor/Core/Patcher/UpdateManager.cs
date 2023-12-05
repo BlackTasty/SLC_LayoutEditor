@@ -35,9 +35,11 @@ namespace SLC_LayoutEditor.Core.Patcher
         public event EventHandler<DownloadProgressChangedEventArgs> DownloadProgressChanged;
         public event EventHandler<UpdateFailedEventArgs> UpdateFailed;
 
-        private static readonly string tempDownloadPath = Path.Combine(Path.GetTempPath(), "SLC_LayoutEditor\\");
+        private static readonly string tempDownloadPath = Path.Combine(App.TempPath, "patch");
         private static readonly string versionFilePath = Path.Combine(tempDownloadPath, "version.txt");
-        private static readonly string installPath = AppDomain.CurrentDomain.BaseDirectory + "\\";
+        private static readonly string installPath = AppDomain.CurrentDomain.BaseDirectory;
+
+        private static readonly string runtimeFilePath = Path.Combine(tempDownloadPath, FixedValues.LOCAL_FILENAME);
 
         internal string Version
         {
@@ -124,10 +126,7 @@ namespace SLC_LayoutEditor.Core.Patcher
                 if (!UpdatesReady)
                 {
                     Logger.Default.WriteLog("Searching for updates...");
-                    if (File.Exists(versionFilePath))
-                    {
-                        File.Delete(versionFilePath);
-                    }
+                    Util.SafeDeleteFile(versionFilePath);
                     DownloadFile("version.txt", versionFilePath, false);
                     CheckAppUpdates();
                 }
@@ -143,10 +142,7 @@ namespace SLC_LayoutEditor.Core.Patcher
             }
             finally
             {
-                if (File.Exists(versionFilePath))
-                {
-                    File.Delete(versionFilePath);
-                }
+                Util.SafeDeleteFile(versionFilePath);
             }
             OnSearchStatusChanged(false);
         }
@@ -157,7 +153,7 @@ namespace SLC_LayoutEditor.Core.Patcher
             Status = UpdateStatus.DOWNLOADING;
             Logger.Default.WriteLog("Started download of SLC Layout Editor v{0}...", newVersion);
 
-            DownloadFile(FixedValues.LOCAL_FILENAME, tempDownloadPath + "\\" + FixedValues.LOCAL_FILENAME, true);
+            DownloadFile(FixedValues.LOCAL_FILENAME, runtimeFilePath, true);
         }
 
         /// <summary>
@@ -181,17 +177,13 @@ namespace SLC_LayoutEditor.Core.Patcher
 
         private void InstallUpdate()
         {
-            string runtimePath = tempDownloadPath + "\\" + FixedValues.LOCAL_FILENAME;
             try
             {
                 if (!filesExtraced)
                 {
                     Status = UpdateStatus.EXTRACTING;
 
-                    if (File.Exists(versionFilePath))
-                    {
-                        File.Delete(versionFilePath);
-                    }
+                    Util.SafeDeleteFile(versionFilePath);
 
                     if (Directory.Exists(tempDownloadPath))
                     {
@@ -204,14 +196,14 @@ namespace SLC_LayoutEditor.Core.Patcher
                         {
                             if (fi.Name != "Runtime.zip")
                             {
-                                File.Delete(fi.FullName);
+                                Util.SafeDeleteFile(fi.FullName);
                             }
                         }
                         Directory.CreateDirectory(tempDownloadPath);
                     }
-                    ZipFile.ExtractToDirectory(runtimePath, tempDownloadPath);
+                    ZipFile.ExtractToDirectory(runtimeFilePath, tempDownloadPath);
                     Thread.Sleep(200);
-                    File.Delete(runtimePath);
+                    Util.SafeDeleteFile(runtimeFilePath);
                     filesExtraced = true;
                 }
                 Status = UpdateStatus.INSTALLING;
@@ -239,7 +231,7 @@ namespace SLC_LayoutEditor.Core.Patcher
             }
             catch (FileNotFoundException ex)
             {
-                if (!File.Exists(runtimePath))
+                if (!File.Exists(runtimeFilePath))
                 {
                     OnUpdateFailed(new UpdateFailedEventArgs(ex, "Missing files for installation! Restarting download..."));
                     Logger.Default.WriteLog("Some required files to update SLC Layout Editor went missing, restarting download process...", ex);
@@ -268,9 +260,8 @@ namespace SLC_LayoutEditor.Core.Patcher
                 {
                     try
                     {
+                        Util.SafeDeleteFile(files[i]);
                         //Logger.Default.WriteLogVerbose(this, "Removing file: {0}", files[i]);
-                        if (File.Exists(files[i]))
-                            File.Delete(files[i]);
 
                     }
                     catch (Exception ex)
@@ -279,7 +270,7 @@ namespace SLC_LayoutEditor.Core.Patcher
                         //Logger.Default.WriteLogVerbose(this, "Unable to delete \"{0}\"!", files[i]);
                     }
                 }
-                File.Delete(installPath + "cleanup.txt");
+                Util.SafeDeleteFile(installPath + "cleanup.txt");
             }
 
             if (Directory.Exists(tempDownloadPath))
@@ -299,7 +290,9 @@ namespace SLC_LayoutEditor.Core.Patcher
             newVersion = PatcherUtil.SerializeVersionNumber(vFile[vFileRow], 3);
 
             if (deleteFile)
-                File.Delete(versionFilePath);
+            {
+                Util.SafeDeleteFile(versionFilePath);
+            }
 
             return versionData.IsOlder(newVersion);
         }
@@ -324,10 +317,7 @@ namespace SLC_LayoutEditor.Core.Patcher
 
             if (targetServer != null)
             {
-                if (File.Exists(targetDir))
-                {
-                    File.Delete(targetDir);
-                }
+                Util.SafeDeleteFile(targetDir);
 
                 using (WebClient wc = new WebClient())
                 {

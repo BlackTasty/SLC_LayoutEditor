@@ -24,7 +24,8 @@ namespace SLC_LayoutEditor
         private static readonly string defaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "Tasty Apps", "SLC Layout Editor");
 
-        private static readonly string thumbnailsPath = Path.Combine(Path.GetTempPath(), "Tasty Apps", "SLC Layout Editor", "thumbnails");
+        private static readonly string tempPath = Path.Combine(Path.GetTempPath(), "Tasty Apps", "SLC Layout Editor");
+        private static readonly string thumbnailsPath = Path.Combine(tempPath, "thumbnails");
 
         public static bool IsDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
@@ -32,7 +33,11 @@ namespace SLC_LayoutEditor
 
         public static string ThumbnailsPath => thumbnailsPath;
 
+        public static string TempPath => tempPath;
+
         public static AppSettings Settings { get; set; } = new AppSettings();
+
+        public static bool IsDialogOpen { get;set; }
 
         [STAThread]
         public static void Main(string[] args)
@@ -101,8 +106,6 @@ namespace SLC_LayoutEditor
                 Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
             }
 
-            RunMigrations();
-
             if (args.Contains("-clean"))
             {
                 if (fi.Exists)
@@ -115,6 +118,7 @@ namespace SLC_LayoutEditor
                 }
             }
 
+            RunMigrations();
             Directory.CreateDirectory(Settings.CabinLayoutsEditPath);
             CheckTemplates();
 
@@ -136,7 +140,10 @@ namespace SLC_LayoutEditor
             if (Directory.Exists(oldDefaultEditorLayoutsPath))
             {
                 Logger.Default.WriteLog("Migrating directory for layouts edited with the editor...");
-                Directory.Delete(defaultEditorLayoutsPath, true);
+                if (Directory.Exists(defaultEditorLayoutsPath))
+                {
+                    Directory.Delete(defaultEditorLayoutsPath, true);
+                }
                 Directory.CreateDirectory(defaultEditorLayoutsPath);
                 Directory.Move(oldDefaultEditorLayoutsPath, defaultEditorLayoutsPath);
 

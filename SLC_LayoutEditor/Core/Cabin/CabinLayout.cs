@@ -199,7 +199,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         public CabinLayout(FileInfo layoutFile)
         {
             this.layoutFile = layoutFile;
-            isTemplate = layoutFile.Directory.Name.Equals("templates", StringComparison.OrdinalIgnoreCase);
+            isTemplate =  !layoutFile.Directory.Parent.FullName.Equals(App.Settings.CabinLayoutsEditPath) &&
+                layoutFile.Directory.Name.Equals("templates", StringComparison.OrdinalIgnoreCase);
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
         }
 
@@ -320,10 +321,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             string thumbnailPath = Path.Combine(ThumbnailDirectory, cabinDeck.ThumbnailFileName);
 
-            if (File.Exists(thumbnailPath))
-            {
-                File.Delete(thumbnailPath);
-            }
+            Util.SafeDeleteFile(thumbnailPath);
             mCabinDecks.Remove(cabinDeck);
 
             if (index < mCabinDecks.Count) // Shift floor numbers for each deck after the removed

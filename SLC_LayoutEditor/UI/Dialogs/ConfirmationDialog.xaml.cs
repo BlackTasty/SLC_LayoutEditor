@@ -26,6 +26,8 @@ namespace SLC_LayoutEditor.UI.Dialogs
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
+        private object senderOverride;
+
         #region Title property
         public string Title
         {
@@ -224,6 +226,11 @@ namespace SLC_LayoutEditor.UI.Dialogs
             }
         }
 
+        public ConfirmationDialog(string title, string message, DialogType dialogType, object senderOverride) : this(title, message, dialogType)
+        {
+            this.senderOverride = senderOverride;
+        }
+
         public ConfirmationDialog(string title, string message, 
             string leftButtonText, string middleButtonText, string rightButtonText,
             bool isLeftButtonRed, bool isMiddleButtonRed, bool isRightButtonRed) : this(title, message, DialogType.Custom)
@@ -264,7 +271,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)
         {
-            DialogClosing?.Invoke(this, e);
+            DialogClosing?.Invoke(senderOverride == null ? this : senderOverride, e);
         }
     }
 }

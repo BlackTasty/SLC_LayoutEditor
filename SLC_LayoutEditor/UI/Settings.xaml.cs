@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.ViewModel;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.UI
 {
@@ -49,6 +51,7 @@ namespace SLC_LayoutEditor.UI
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             App.Settings.Save(App.Settings.FilePath);
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.SettingsSaved);
         }
 
         private void Rollback_Click(object sender, RoutedEventArgs e)

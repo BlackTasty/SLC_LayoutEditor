@@ -4,7 +4,7 @@
     <Style TargetType="TextBox">
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Height" Value="22"/>
-        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
         <Setter Property="Foreground" Value="{DynamicResource ForegroundColorBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ForegroundColorBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
@@ -12,9 +12,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">
-                    <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                    <Grid>
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" SnapsToDevicePixels="True" CornerRadius="2"
+                                VerticalAlignment="Bottom">
+                        </Border>
                         <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                    </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
