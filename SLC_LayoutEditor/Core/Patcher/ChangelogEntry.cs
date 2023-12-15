@@ -12,7 +12,7 @@ namespace SLC_LayoutEditor.Core.Patcher
         private DateTime patchDate = new DateTime(1989, 1, 1);
         private string patchNumber = "0.0.0.0";
         private string[] patchContent = new string[] { "EMPTY" };
-        private bool isSketch, isHotfix;
+        private bool isSketch, isHotfix, isMajorRelease;
 
         private double timelineIndex;
 
@@ -25,6 +25,8 @@ namespace SLC_LayoutEditor.Core.Patcher
         public bool IsSketch { get { return isSketch; } }
 
         public bool IsHotfix { get { return isHotfix; } }
+
+        public bool IsMajorRelease { get { return isMajorRelease; } }
 
         public DateTime GetTimelinePosition()
         {
@@ -79,6 +81,7 @@ namespace SLC_LayoutEditor.Core.Patcher
             {
                 isSketch = initialData[1].Contains("s") || initialData[1].Contains("n");
                 isHotfix = initialData[1].Contains("h");
+                isMajorRelease = initialData[1].Contains("m");
             }
         }
 

@@ -14,7 +14,7 @@ using Tasty.Logging;
 
 namespace SLC_LayoutEditor.Core.Patcher
 {
-    class UpdateManager
+    internal class UpdateManager
     {
         private Stopwatch downloadSpeedStopWatch = new Stopwatch();
         private string currentVersion;
@@ -68,6 +68,15 @@ namespace SLC_LayoutEditor.Core.Patcher
                     lastSaveStatus = status;
                 }
                 status = value;
+
+                if (value == UpdateStatus.UPTODATE)
+                {
+                    new Thread(() => {
+                        Thread.Sleep(3000);
+                        Status = UpdateStatus.IDLE;
+                        OnSearchStatusChanged(false);
+                    }).Start();
+                }
                 OnStatusChanged(value);
             }
         }

@@ -19,7 +19,7 @@
 
         </StackPanel>
     </ScrollViewer>
-    <Border Grid.RowSpan="2" Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <Border Grid.RowSpan="2">
         <Border.Style>
             <Style TargetType="Border">
                 <Setter Property="Margin" Value="-1.5,0,0,0"/>
@@ -30,10 +30,14 @@
                 </Style.Triggers>
             </Style>
         </Border.Style>
-        <Border BorderBrush="{DynamicResource TemplatingModeBrush}" BorderThickness="1.5" CornerRadius="6">
+        <Border BorderThickness="1.5" CornerRadius="6">
             <Border.Style>
                 <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="{DynamicResource BackgroundLightBrush}"/>
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate}" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
+                        </DataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>

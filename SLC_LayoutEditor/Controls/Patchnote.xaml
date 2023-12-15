@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="150" d:DesignWidth="360" x:Name="patchnote">
+             d:DesignHeight="150" x:Name="patchnote">
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
         <TextBlock Text="SLC Layout Editor" FontSize="28" Margin="4,0"
                    FontStyle="{Binding Nightly, ElementName=patchnote}"/>
@@ -16,6 +16,10 @@
         <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}" VerticalAlignment="Top"
                 Visibility="{Binding IsHotfix, ElementName=patchnote, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Style="{DynamicResource CardTextStyle}" Text="Hotfix"/>
+        </Border>
+        <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonBorderColorBrush}" VerticalAlignment="Top"
+                Visibility="{Binding IsMajorRelease, ElementName=patchnote, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Style="{DynamicResource CardTextStyle}" Text="Major release"/>
         </Border>
     </StackPanel>
     <TextBlock Text="{Binding PatchDate, ElementName=patchnote, FallbackValue=Release date}" Margin="12,0" FontSize="10.667" 

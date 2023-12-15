@@ -116,12 +116,12 @@ namespace SLC_LayoutEditor
 
         private void SearchUpdates_Click(object sender, RoutedEventArgs e)
         {
-            vm.UpdateManager.CheckForUpdates();
+            App.Patcher.CheckForUpdates();
         }
 
         private void DownloadAndInstallUpdate_Click(object sender, RoutedEventArgs e)
         {
-            vm.UpdateManager.DownloadUpdate();
+            App.Patcher.DownloadUpdate();
         }
 
         private void Undo_Click(object sender, RoutedEventArgs e)

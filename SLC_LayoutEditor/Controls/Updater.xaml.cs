@@ -21,13 +21,12 @@ namespace SLC_LayoutEditor.Controls
     /// </summary>
     public partial class Updater : StackPanel
     {
-        private readonly MainViewModel vm;
-        private bool isMouseDown;
+        private readonly UpdaterViewModel vm;
 
         public Updater()
         {
             InitializeComponent();
-            vm = DataContext as MainViewModel;
+            vm = DataContext as UpdaterViewModel;
         }
 
         private void SearchUpdates_Click(object sender, RoutedEventArgs e)
@@ -37,29 +36,40 @@ namespace SLC_LayoutEditor.Controls
 
         private void Grid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            isMouseDown = true;
+            vm.IsPressed = true;
         }
 
         private void Grid_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (isMouseDown)
+            if (vm.IsPressed)
             {
                 ProceedThroughUpdate();
-                isMouseDown = false;
+                vm.IsPressed = false;
             }
         }
 
         private void Grid_MouseLeave(object sender, MouseEventArgs e)
         {
-            isMouseDown = false;
+            vm.IsPressed = false;
+            vm.IsMouseOver = false;
         }
 
         private void ProceedThroughUpdate()
         {
             if (vm.UpdateStatus == Core.Patcher.UpdateStatus.UPDATES_FOUND)
             {
-                vm.UpdateManager.DownloadUpdate();
+                vm.Patcher.DownloadUpdate();
             }
+        }
+
+        private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            vm.ForceRefreshProperties();
+        }
+
+        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            vm.IsMouseOver = true;
         }
     }
 }

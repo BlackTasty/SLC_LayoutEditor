@@ -84,8 +84,19 @@ namespace SLC_LayoutEditor.Controls
         {
             if (sender is CabinLayoutControl control)
             {
+                CabinLayout oldLayout = e.OldValue as CabinLayout;
+                CabinLayout newLayout = e.NewValue as CabinLayout;
+                Logger.Default.WriteLog("Layout has changed for UI. Old value: {0}; New value: {1}", 
+                    GetCabinLayoutValueForLog(oldLayout), GetCabinLayoutValueForLog(newLayout));
                 control.RefreshCabinLayout();
             }
+        }
+
+        private static string GetCabinLayoutValueForLog(CabinLayout cabinLayout)
+        {
+            return cabinLayout != null ?
+                string.Format("{0} (type: {1})", cabinLayout.LayoutName, cabinLayout.IsTemplate ? "template" : "layout") :
+                "Unset";
         }
         #endregion
 
@@ -212,7 +223,6 @@ namespace SLC_LayoutEditor.Controls
 
         private void RefreshCabinLayout()
         {
-            Logger.Default.WriteLog("Refreshing view for {0} \"{1}\"...", CabinLayout.IsTemplate ? "template" : "layout", CabinLayout.LayoutName);
             OnLayoutLoading(EventArgs.Empty);
 
             //Unhook events before clearing container for deck layout controls
@@ -231,6 +241,7 @@ namespace SLC_LayoutEditor.Controls
 
             if (CabinLayout != null)
             {
+                Logger.Default.WriteLog("Refreshing view for {0} \"{1}\"...", CabinLayout.IsTemplate ? "template" : "layout", CabinLayout.LayoutName);
                 CabinLayout.CabinSlotsChanged += CabinLayout_CabinSlotsChanged;
                 CabinLayout.CabinDeckCountChanged += CabinLayout_CabinDeckCountChanged;
 

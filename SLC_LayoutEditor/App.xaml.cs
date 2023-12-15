@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 using Tasty.Logging;
 
 namespace SLC_LayoutEditor
@@ -24,9 +25,10 @@ namespace SLC_LayoutEditor
         private static readonly string defaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "Tasty Apps", "SLC Layout Editor");
 
-
         private static readonly string tempPath = Path.Combine(Path.GetTempPath(), "Tasty Apps", "SLC Layout Editor");
         private static readonly string thumbnailsPath = Path.Combine(tempPath, "thumbnails");
+
+        private static UpdateManager patcher;
 
         public static bool IsDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
@@ -39,6 +41,8 @@ namespace SLC_LayoutEditor
         public static AppSettings Settings { get; set; } = new AppSettings();
 
         public static bool IsDialogOpen { get;set; }
+
+        internal static UpdateManager Patcher => patcher;
 
         [STAThread]
         public static void Main(string[] args)
@@ -93,6 +97,14 @@ namespace SLC_LayoutEditor
             }
         }
 
+        internal static void InitPatcher()
+        {
+            if (patcher == null)
+            {
+                patcher = new UpdateManager();
+            }
+        }
+
         private static void RunApp(string[] args)
         {
             Logger.Default.WriteLog("Preparing SLC Layout Editor v{0}...", GetVersionText(true));
@@ -129,6 +141,7 @@ namespace SLC_LayoutEditor
             RunMigrations();
             Directory.CreateDirectory(Settings.CabinLayoutsEditPath);
             CheckTemplates();
+            InitPatcher();
 
             Logger.Default.WriteLog("Preparations complete, starting up editor...");
             App app = new App()

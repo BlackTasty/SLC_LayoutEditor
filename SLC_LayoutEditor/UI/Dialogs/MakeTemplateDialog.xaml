@@ -14,7 +14,7 @@
         <Style x:Key="SlotBorderStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="BorderThickness" Value="1.5"/>
-            <Setter Property="Margin" Value="16,4,4,3"/>
+            <Setter Property="Margin" Value="8,4,4,3"/>
             <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Tag}" Value="1">
@@ -90,7 +90,7 @@
         <Style x:Key="SlotCountStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
             <Setter Property="DockPanel.Dock" Value="Right"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
@@ -117,7 +117,7 @@
             <StackPanel>
                 <DockPanel>
                     <CheckBox DockPanel.Dock="Right" Style="{StaticResource CheckboxStyle}" IsChecked="{Binding KeepAllBasics}"
-                              Margin="4,4,0,2"/>
+                              Margin="4,4,-4,2"/>
                     <TextBlock DockPanel.Dock="Right" Style="{StaticResource Title2TextStyle}" Text="{Binding TotalBasicSlots}"/>
                     <TextBlock Style="{StaticResource Title2TextStyle}" Text="Basics"/>
                 </DockPanel>
@@ -165,7 +165,7 @@
             <StackPanel>
                 <DockPanel>
                     <CheckBox DockPanel.Dock="Right" Style="{StaticResource CheckboxStyle}" IsChecked="{Binding KeepAllServices}"
-                              Margin="4,4,0,2"/>
+                              Margin="4,4,-4,2"/>
                     <TextBlock DockPanel.Dock="Right" Style="{StaticResource Title2TextStyle}" Text="{Binding TotalServiceSlots}"/>
                     <TextBlock Style="{StaticResource Title2TextStyle}" Text="Services"/>
                 </DockPanel>
@@ -201,7 +201,7 @@
             <StackPanel>
                 <DockPanel>
                     <CheckBox DockPanel.Dock="Right" Style="{StaticResource CheckboxStyle}" IsChecked="{Binding KeepAllSeats}"
-                              Margin="4,4,0,2"/>
+                              Margin="4,4,-4,2"/>
                     <TextBlock DockPanel.Dock="Right" Style="{StaticResource Title2TextStyle}" Text="{Binding TotalSeatSlots}"/>
                     <TextBlock Style="{StaticResource Title2TextStyle}" Text="Seats &amp; galleys"/>
                 </DockPanel>

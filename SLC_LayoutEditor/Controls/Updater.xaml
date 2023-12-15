@@ -4,11 +4,14 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
+            xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
             xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
             xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
-            mc:Ignorable="d" Orientation="Horizontal" Height="40">
+            mc:Ignorable="d" Orientation="Horizontal" Height="40"
+            Loaded="StackPanel_Loaded"
+            d:DataContext="{d:DesignInstance {x:Type dvm:UpdaterDesignViewModel}, IsDesignTimeCreatable=True}">
     <StackPanel.DataContext>
-        <vm:MainViewModel/>
+        <vm:UpdaterViewModel/>
     </StackPanel.DataContext>
     <StackPanel.Resources>
         <converter:UpdateButtonIconConverter x:Key="UpdateButtonIconConverter"/>
@@ -20,11 +23,31 @@
             <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="BorderThickness" Value="1.5"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsMouseOver}" Value="True"/>
+                        <Condition Binding="{Binding IsInteractable}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background" Value="{DynamicResource BackgroundLightBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentHoverColorBrush}"/>
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsPressed}" Value="True"/>
+                        <Condition Binding="{Binding IsInteractable}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background" Value="{DynamicResource BackgroundDarkBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentPressedColorBrush}"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
         </Style>
     </StackPanel.Resources>
     <Grid PreviewMouseLeftButtonDown="Grid_PreviewMouseLeftButtonDown"
           PreviewMouseLeftButtonUp="Grid_PreviewMouseLeftButtonUp"
-          MouseLeave="Grid_MouseLeave">
+          MouseEnter="Grid_MouseEnter"
+          MouseLeave="Grid_MouseLeave"
+          Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}">
         <Border Style="{StaticResource ProgressBorderStyle}" CornerRadius="4,0,0,4" Margin="0,0,24,0"
                 HorizontalAlignment="Left">
             <TextBlock Text="{Binding UpdateText}" VerticalAlignment="Center" Margin="4,0,6,0"
@@ -32,15 +55,63 @@
         </Border>
         <Border Style="{StaticResource ProgressBorderStyle}" CornerRadius="26" Width="30" Height="30" HorizontalAlignment="Right"
                 Margin="30,0,0,0"/>
-        <Rectangle Fill="{DynamicResource BackgroundColorBrush}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                   Height="{Binding ElementName=progress_text, Path=ActualHeight}" Width="6" Margin="0,0,24,0"/>
-        <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}" Width="26" Height="26" Margin="0,0,2,0"
-                     HorizontalAlignment="Right"
-                     IsIndeterminate="{Binding UpdateStatus, Converter={StaticResource UpdateProgressBarIndeterminateConverter}}"
+        <Rectangle HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Height="{Binding ElementName=progress_text, Path=ActualHeight}" Width="6" Margin="0,0,24,0">
+            <Rectangle.Style>
+                <Style TargetType="Rectangle">
+                    <Setter Property="Fill" Value="{DynamicResource BackgroundColorBrush}"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsMouseOver}" Value="True"/>
+                                <Condition Binding="{Binding IsInteractable}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Fill" Value="{StaticResource BackgroundLightBrush}"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsPressed}" Value="True"/>
+                                <Condition Binding="{Binding IsInteractable}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Fill" Value="{StaticResource BackgroundDarkBrush}"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+        <ProgressBar Style="{DynamicResource MaterialDesignThinCircularProgressBar}" Width="28" Height="28" Margin="0,0,1,0"
+                     HorizontalAlignment="Right" BorderThickness="1"
+                     IsIndeterminate="{Binding IsIndeterminateUpdateProgress}"
                      Value="{Binding DownloadCurrent}" Maximum="{Binding DownloadSize}"
-                     Visibility="Collapsed"/>
-        <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Download}" HorizontalAlignment="Right"
-                VerticalAlignment="Center" Margin="0,0,5,0"/>
+                     Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <Button Content="{Binding UpdateStatus, Converter={StaticResource UpdateButtonIconConverter}}" HorizontalAlignment="Right"
+                VerticalAlignment="Center" IsHitTestVisible="False"
+                Visibility="{Binding ShowButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
+                    <Setter Property="Margin" Value="0,0,5,0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsReady}" Value="True">
+                            <Setter Property="Margin" Value="0,0,5,1"/>
+                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsMouseOver}" Value="True"/>
+                                <Condition Binding="{Binding IsInteractable}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonBorderHoverColorBrush}"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsPressed}" Value="True"/>
+                                <Condition Binding="{Binding IsInteractable}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonBorderPressedColorBrush}"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
     </Grid>
 
 </StackPanel>

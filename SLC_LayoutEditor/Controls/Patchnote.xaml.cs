@@ -47,6 +47,7 @@ namespace SLC_LayoutEditor.Controls
 
             Nightly = data.IsSketch ? FontStyles.Italic : FontStyles.Normal;
             IsHotfix = data.IsHotfix;
+            IsMajorRelease = data.IsMajorRelease;
 
             rtb_patchnotes.Document = BuildPatchnote(data.PatchContent);
 
@@ -118,6 +119,7 @@ namespace SLC_LayoutEditor.Controls
                 case "re-enabled":
                     return FixedValues.PATCH_ADDED_BRUSH;
                 case "changed":
+                case "updated":
                     return FixedValues.PATCH_CHANGED_BRUSH;
                 case "fixed":
                     return FixedValues.PATCH_FIXED_BRUSH;
@@ -162,6 +164,16 @@ namespace SLC_LayoutEditor.Controls
         // Using a DependencyProperty as the backing store for IsHotfix.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsHotfixProperty =
             DependencyProperty.Register("IsHotfix", typeof(bool), typeof(Patchnote), new PropertyMetadata(false));
+
+        public bool IsMajorRelease
+        {
+            get { return (bool)GetValue(IsMajorReleaseProperty); }
+            set { SetValue(IsMajorReleaseProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsMajorRelease.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsMajorReleaseProperty =
+            DependencyProperty.Register("IsMajorRelease", typeof(bool), typeof(Patchnote), new PropertyMetadata(false));
         #endregion
 
         #region PatchDate

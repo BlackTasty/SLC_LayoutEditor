@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SLC_LayoutEditor"
         xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls"
         xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
         xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
+        xmlns:enum="clr-namespace:SLC_LayoutEditor.Core.Enum"
+        xmlns:updater="clr-namespace:SLC_LayoutEditor.Core.Patcher"
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundColorBrush}"
         mc:Ignorable="d" Closing="Window_Closing"
@@ -29,12 +30,16 @@
                 </Style>
             </DockPanel.Style>
             <DockPanel DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}">
-                <DockPanel LastChildFill="False" Background="{DynamicResource MenuBackgroundBrush}">
+                <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
+                        DockPanel.Dock="Right" Margin="24,0,0,0"
+                        Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0"/>
+                <DockPanel LastChildFill="False">
                     <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14">
-                        <MenuItem Header="File" Height="40">
+                        <MenuItem Header="File" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
                             <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
                         </MenuItem>
-                        <MenuItem Header="Editor" Height="40">
+                        <MenuItem Header="Editor" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
                             <MenuItem Header="Settings" Click="Settings_Click"/>
                             <Separator Style="{StaticResource MenuSeparatorStyle}"/>
                             <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
@@ -52,21 +57,6 @@
                         <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Redo}" Margin="4,0" ToolTip="Redo"
                         Click="Redo_Click" IsEnabled="{Binding History.CanRedo}"/>
                     </DockPanel>
-                </DockPanel>
-                <!--<controls:Updater DataContext="{Binding}" HorizontalAlignment="Right"
-                                  Margin="32,0" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
-                <DockPanel LastChildFill="False" HorizontalAlignment="Right">
-                    <DockPanel Margin="32,0" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Button Content="Download &amp; install" Visibility="{Binding IsUpdateReady, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Click="DownloadAndInstallUpdate_Click" Margin="2"/>
-                        <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="{Binding IsDownloading, Converter={StaticResource InverseBooleanConverter}}"
-                                 Value="{Binding DownloadCurrent}" Maximum="{Binding DownloadSize}" 
-                                 Visibility="{Binding IsUpdateReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                        <TextBlock Text="{Binding UpdateText}" VerticalAlignment="Center" TextAlignment="Right" Margin="4,0"
-                                 Visibility="{Binding IsUpdateReady, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                    </DockPanel>
-                    <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
-                        Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </DockPanel>
             </DockPanel>
             <ContentPresenter Content="{Binding Content}"/>

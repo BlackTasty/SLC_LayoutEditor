@@ -1,4 +1,3 @@
-﻿21.11.2023
-Added: When creating a template from an existing layout, you can now decide which slots are kept
-Fixed: Creating a template from a layout would not load the template afterwards
-Fixed: Columns and rows can be removed again
+﻿16.12.2023
+Added: The editor now writes more detailed logs for debugging issues
+Updated: The patcher info at the top right got a revamp!

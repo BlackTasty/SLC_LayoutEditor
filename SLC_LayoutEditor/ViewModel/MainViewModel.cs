@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.Dialogs;
+﻿using Newtonsoft.Json.Linq;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.UI;
@@ -26,16 +27,7 @@ namespace SLC_LayoutEditor.ViewModel
         private string mCabinLayoutName;
         private bool mHasUnsavedChanges;
 
-        #region Updater variables
-        private UpdateManager updateManager;
-
-        private string mUpdateText = "Idle";
         private bool mIsSearching;
-        private bool mIsDownloading;
-        private double mDownloadSize;
-        private double mDownloadCurrent;
-        private bool mIsUpdateReady;
-        #endregion
 
         public string Title => string.Format("SLC Layout Editor ({0}) {1} {2}", App.GetVersionText(), 
             mCabinLayoutName != null ? "- " + mCabinLayoutName : "", mHasUnsavedChanges ? "(UNSAVED CHANGES)" : "");
@@ -59,6 +51,16 @@ namespace SLC_LayoutEditor.ViewModel
                 mHasUnsavedChanges = value;
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(Title));
+            }
+        }
+
+        public bool IsSearching
+        {
+            get => mIsSearching;
+            set
+            {
+                mIsSearching = value;
+                InvokePropertyChanged();
             }
         }
 
@@ -117,99 +119,6 @@ namespace SLC_LayoutEditor.ViewModel
 
         public bool IsViewNotEditor => !(mContent is LayoutEditor);
 
-        #region Updater properties
-        public UpdateManager UpdateManager => updateManager;
-
-        public UpdateStatus UpdateStatus
-        {
-            get => updateManager?.Status ?? UpdateStatus.IDLE;
-            set => updateManager.Status = value;
-        }
-
-        public string UpdateText
-        {
-            get => mUpdateText;
-            set
-            {
-                mUpdateText = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool IsSearching
-        {
-            get
-            {
-                if (!mIsSearching)
-                {
-                    return mIsUpdateReady;
-                }
-                else
-                {
-                    return mIsSearching;
-                }
-            }
-            set
-            {
-                mIsSearching = value;
-                if (!value && !mIsUpdateReady)
-                {
-                    new Thread(() => {
-                        Thread.Sleep(3000);
-                        InvokePropertyChanged();
-                    }).Start();
-                }
-                else
-                {
-                    InvokePropertyChanged();
-                }
-            }
-        }
-
-        public bool IsDownloading
-        {
-            get => mIsDownloading;
-            set
-            {
-                mIsDownloading = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool IsUpdateReady
-        {
-            get => mIsUpdateReady;
-            set
-            {
-                mIsUpdateReady = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public double DownloadSize
-        {
-            get => mDownloadSize;
-            set
-            {
-                mDownloadSize = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public double DownloadCurrent
-        {
-            get => mDownloadCurrent;
-            set
-            {
-                mDownloadCurrent = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool IsIndeterminateUpdateProgress => UpdateStatus == UpdateStatus.SEARCHING ||
-            UpdateStatus == UpdateStatus.EXTRACTING ||
-            UpdateStatus == UpdateStatus.INSTALLING;
-        #endregion
 
         public MainViewModel()
         {
@@ -225,14 +134,6 @@ namespace SLC_LayoutEditor.ViewModel
                 mContent = editor;
             }
 
-            if (!App.IsDesignMode)
-            {
-                updateManager = new UpdateManager();
-                updateManager.DownloadProgressChanged += UpdateManager_DownloadProgressChanged;
-                updateManager.UpdateFailed += UpdateManager_UpdateFailed;
-                updateManager.SearchStatusChanged += UpdateManager_SearchStatusChanged;
-                updateManager.StatusChanged += UpdateManager_StatusChanged;
-            }
 
             Mediator.Instance.Register(o =>
             {
@@ -250,6 +151,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 ReturnToEditor();
             }, ViewModelMessage.SettingsSaved);
+
+            Mediator.Instance.Register(o =>
+            {
+                IsSearching = (bool)o;
+            }, ViewModelMessage.Patcher_IsSearchingChanged);
         }
 
         public void ShowWelcomeScreen()
@@ -277,11 +183,11 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void ShowChangelogIfUpdated()
         {
-            if (App.Settings.LastVersionChangelogShown < UpdateManager.VersionData.VersionNumber &&
+            if (App.Settings.LastVersionChangelogShown < App.Patcher.VersionData.VersionNumber &&
                 App.Settings.ShowChangesAfterUpdate)
             {
                 ShowChangelog();
-                App.Settings.LastVersionChangelogShown = UpdateManager.VersionData.VersionNumber;
+                App.Settings.LastVersionChangelogShown = App.Patcher.VersionData.VersionNumber;
                 App.SaveAppSettings();
             }
         }
@@ -308,71 +214,6 @@ namespace SLC_LayoutEditor.ViewModel
             }
 
             Content = new LayoutEditor();
-        }
-
-        private void UpdateManager_StatusChanged(object sender, UpdateStatus e)
-        {
-            InvokePropertyChanged(nameof(UpdateStatus));
-            InvokePropertyChanged(nameof(IsIndeterminateUpdateProgress));
-
-            if (IsIndeterminateUpdateProgress)
-            {
-                DownloadCurrent = 0;
-                DownloadSize = double.MaxValue;
-            }
-
-            switch (e)
-            {
-                case UpdateStatus.IDLE:
-                    UpdateText = "Idle";
-                    break;
-                case UpdateStatus.SEARCHING:
-                    IsSearching = true;
-                    UpdateText = "Searching for updates...";
-                    break;
-                case UpdateStatus.UPDATES_FOUND:
-                    UpdateText = "Updates found!";
-                    IsUpdateReady = true;
-                    break;
-                case UpdateStatus.DOWNLOADING:
-                    IsUpdateReady = false;
-                    IsDownloading = true;
-                    UpdateText = "Downloading update...";
-                    break;
-                case UpdateStatus.EXTRACTING:
-                case UpdateStatus.INSTALLING:
-                    IsDownloading = false;
-                    UpdateText = "Extracting files...";
-                    break;
-                case UpdateStatus.READY:
-                    UpdateText = "Update installed!";
-                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "SLC_LayoutEditor.exe");
-                    Application.Current.MainWindow.Close();
-                    break;
-                case UpdateStatus.UPTODATE:
-                    UpdateText = "Everything is up-to-date!";
-                    break;
-            }
-        }
-
-        private void UpdateManager_SearchStatusChanged(object sender, bool e)
-        {
-            IsSearching = e;
-        }
-
-        private void UpdateManager_UpdateFailed(object sender, UpdateFailedEventArgs e)
-        {
-            UpdateText = e.ErrorMessage;
-        }
-
-        private void UpdateManager_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
-        {
-            UpdateText = "Downloading - " +
-                Math.Round((e.BytesReceived / 1024d) / 1024d, 2).ToString("0.00") + " from " +
-                Math.Round((e.TotalBytesToReceive / 1024d) / 1024d, 2).ToString("0.00") +
-                " (" + updateManager.CalculateSpeed(e.BytesReceived) + ")";
-            DownloadSize = e.TotalBytesToReceive;
-            DownloadCurrent = e.BytesReceived;
         }
 
         private void ShowDialog(IDialog dialog)

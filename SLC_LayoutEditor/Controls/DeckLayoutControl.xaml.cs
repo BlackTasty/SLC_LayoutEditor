@@ -95,6 +95,7 @@ namespace SLC_LayoutEditor.Controls
 
         public void RefreshCabinDeckLayout()
         {
+            Logger.Default.WriteLog("Re-rendering cabin deck...");
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -179,7 +180,7 @@ namespace SLC_LayoutEditor.Controls
             });
 
             sw.Stop();
-            Logger.Default.WriteLog("Cabin deck rendered in {0} seconds", (double)sw.ElapsedMilliseconds / 1000);
+            Logger.Default.WriteLog("Cabin deck rendered in {0} seconds", Math.Round((double)sw.ElapsedMilliseconds / 1000, 3));
         }
 
         public bool GenerateThumbnailForDeck(string thumbnailPath, bool overwrite = false)
@@ -467,8 +468,9 @@ namespace SLC_LayoutEditor.Controls
 
         private void RemoveRowButton_Click(object sender, RoutedEventArgs e)
         {
-            ConfirmationDialog dialog = new ConfirmationDialog("Confirm column removal",
-                "Are you sure you want to remove this column? This cannot be undone!", DialogType.YesNo, sender);
+            Logger.Default.WriteLog("User requested removing a row from cabin deck floor {0}...", CabinDeck.Floor);
+            ConfirmationDialog dialog = new ConfirmationDialog("Confirm row removal",
+                "Are you sure you want to remove this row? This cannot be undone!", DialogType.YesNo, sender);
 
             dialog.DialogClosing += RemoveRow_DialogClosing;
 
@@ -529,15 +531,20 @@ namespace SLC_LayoutEditor.Controls
                         }
                     }
 
+                    Logger.Default.WriteLog("Row {0} removed!", targetRow);
                     RefreshControlSize();
                     OnColumnsChanged(EventArgs.Empty);
                 }
+            }
+            else
+            {
+                Logger.Default.WriteLog("Row removal aborted by user");
             }
         }
         #endregion
         #endregion
 
-        #region Column buttons (Insert, Select, Remove) and helper functions
+        #region Row buttons (Insert, Select, Remove) and helper functions
         private void GenerateButtonsForColumn(int column)
         {
             AddColumnSelectButton(column);
@@ -654,8 +661,9 @@ namespace SLC_LayoutEditor.Controls
 
         private void RemoveColumnButton_Click(object sender, RoutedEventArgs e)
         {
-            ConfirmationDialog dialog = new ConfirmationDialog("Confirm row removal",
-                "Are you sure you want to remove this row? This cannot be undone!", DialogType.YesNo, sender);
+            Logger.Default.WriteLog("User requested removing a column from cabin deck floor {0}...", CabinDeck.Floor);
+            ConfirmationDialog dialog = new ConfirmationDialog("Confirm column removal",
+                "Are you sure you want to remove this column? This cannot be undone!", DialogType.YesNo, sender);
 
             dialog.DialogClosing += RemoveColumn_DialogClosing;
 
@@ -716,9 +724,14 @@ namespace SLC_LayoutEditor.Controls
                         }
                     }
 
+                    Logger.Default.WriteLog("Column {0} removed!", targetColumn);
                     RefreshControlSize();
                     OnRowsChanged(EventArgs.Empty);
                 }
+            }
+            else
+            {
+                Logger.Default.WriteLog("Column removal aborted by user");
             }
         }
         #endregion

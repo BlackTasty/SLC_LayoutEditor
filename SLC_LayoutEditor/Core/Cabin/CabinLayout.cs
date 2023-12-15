@@ -549,6 +549,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void RefreshProblemChecks()
         {
+            Logger.Default.WriteLog("Checking layout for issues...");
             InvokePropertyChanged(nameof(DuplicateEconomySeats));
             InvokePropertyChanged(nameof(HasNoDuplicateEconomySeats));
             InvokePropertyChanged(nameof(DuplicateBusinessSeats));
@@ -573,7 +574,17 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged(nameof(HasAnyIssues));
             InvokePropertyChanged(nameof(IssuesCountText));
 
-            IEnumerable<CabinSlot> invalidSlots = InvalidSlots;
+            IEnumerable<CabinSlot> invalidSlots = GetInvalidSlots();
+
+            if (invalidSlots.Any())
+            {
+                Logger.Default.WriteLog("{0} invalid slots detected, setting IsProblematic flag", invalidSlots.Count());
+            }
+            else
+            {
+                Logger.Default.WriteLog("No issues detected!");
+            }
+
             foreach (CabinSlot cabinSlot in mCabinDecks.SelectMany(x => x.CabinSlots))
             {
                 cabinSlot.IsProblematic = invalidSlots.Any(x => x.Guid == cabinSlot.Guid);

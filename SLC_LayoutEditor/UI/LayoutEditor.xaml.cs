@@ -176,17 +176,24 @@ namespace SLC_LayoutEditor.UI
                 dialog.DialogClosing -= CreateAircraft_DialogClosing;
             }
 
-            if (e.Data is AddDialogResult result && result.IsCreate)
+            if (e.DialogResult == DialogResultType.OK)
             {
-                CabinLayoutSet layoutSet = new CabinLayoutSet(result.Name);
-                vm.LayoutSets.Add(layoutSet);
-                vm.SelectedLayoutSet = layoutSet;
+                if (e.Data is AddDialogResult result && result.IsCreate)
+                {
+                    CabinLayoutSet layoutSet = new CabinLayoutSet(result.Name);
+                    vm.LayoutSets.Add(layoutSet);
+                    vm.SelectedLayoutSet = layoutSet;
+                }
+            }
+            else
+            {
+                Logger.Default.WriteLog("Creating new aircraft aborted by user");
             }
         }
 
         private void CreateCabinLayout_Click(object sender, RoutedEventArgs e)
         {
-            Logger.Default.WriteLog("User requested creating a new cabin {0}...", vm.IsTemplatingMode ? "template" : "layout");
+            Logger.Default.WriteLog("User requested creating a new {0} for aircraft \"{1}\"...", vm.IsTemplatingMode ? "template" : "layout", vm.SelectedLayoutSet.AircraftName);
             IDialog dialog;
 
             if (!vm.IsTemplatingMode)
@@ -211,12 +218,19 @@ namespace SLC_LayoutEditor.UI
                 dialog.DialogClosing -= CreateTemplate_DialogClosing;
             }
 
-            if (e.Data is string templateName)
+            if (e.DialogResult == DialogResultType.OK)
             {
-                CabinLayout layout = new CabinLayout(templateName, vm.SelectedLayoutSet.AircraftName, true);
-                layout.SaveLayout();
-                vm.SelectedLayoutSet.RegisterLayout(layout);
-                vm.SelectedTemplate = layout;
+                if (e.Data is string templateName)
+                {
+                    CabinLayout layout = new CabinLayout(templateName, vm.SelectedLayoutSet.AircraftName, true);
+                    layout.SaveLayout();
+                    vm.SelectedLayoutSet.RegisterLayout(layout);
+                    vm.SelectedTemplate = layout;
+                }
+            }
+            else
+            {
+                Logger.Default.WriteLog("Creating template aborted by user");
             }
         }
 
@@ -227,22 +241,29 @@ namespace SLC_LayoutEditor.UI
                 dialog.DialogClosing -= CreateCabinLayout_DialogClosing;
             }
 
-            if (e.Data is AddDialogResult result && result.IsCreate)
+            if (e.DialogResult == DialogResultType.OK)
             {
-                CabinLayout layout;
-                if (result.SelectedTemplatePath == null)
+                if (e.Data is AddDialogResult result && result.IsCreate)
                 {
-                    layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AircraftName, false);
-                    layout.SaveLayout();
+                    CabinLayout layout;
+                    if (result.SelectedTemplatePath == null)
+                    {
+                        layout = new CabinLayout(result.Name, vm.SelectedLayoutSet.AircraftName, false);
+                        layout.SaveLayout();
+                    }
+                    else
+                    {
+                        string layoutPath = Path.Combine(App.Settings.CabinLayoutsEditPath, vm.SelectedLayoutSet.AircraftName, result.Name + ".txt");
+                        File.Copy(result.SelectedTemplatePath, layoutPath, true);
+                        layout = new CabinLayout(new FileInfo(layoutPath));
+                    }
+                    vm.SelectedLayoutSet.RegisterLayout(layout);
+                    vm.SelectedCabinLayout = layout;
                 }
-                else
-                {
-                    string layoutPath = Path.Combine(App.Settings.CabinLayoutsEditPath, vm.SelectedLayoutSet.AircraftName, result.Name + ".txt");
-                    File.Copy(result.SelectedTemplatePath, layoutPath, true);
-                    layout = new CabinLayout(new FileInfo(layoutPath));
-                }
-                vm.SelectedLayoutSet.RegisterLayout(layout);
-                vm.SelectedCabinLayout = layout;
+            }
+            else
+            {
+                Logger.Default.WriteLog("Creating layout aborted by user");
             }
         }
 
@@ -360,13 +381,20 @@ namespace SLC_LayoutEditor.UI
 
         private void CabinLayout_SaveAs_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            if (e.DialogResult == DialogResultType.OK && e.Data is AddDialogResult result)
+            if (e.DialogResult == DialogResultType.OK)
             {
-                string layoutPath = Path.Combine(App.Settings.CabinLayoutsEditPath, vm.SelectedLayoutSet.AircraftName, result.Name + ".txt");
-                File.Copy(vm.SelectedCabinLayout.FilePath, layoutPath, true);
-                CabinLayout layout = new CabinLayout(new FileInfo(layoutPath));
-                vm.SelectedLayoutSet.RegisterLayout(layout);
-                vm.SelectedCabinLayout = layout;
+                if (e.Data is AddDialogResult result)
+                {
+                    string layoutPath = Path.Combine(App.Settings.CabinLayoutsEditPath, vm.SelectedLayoutSet.AircraftName, result.Name + ".txt");
+                    File.Copy(vm.SelectedCabinLayout.FilePath, layoutPath, true);
+                    CabinLayout layout = new CabinLayout(new FileInfo(layoutPath));
+                    vm.SelectedLayoutSet.RegisterLayout(layout);
+                    vm.SelectedCabinLayout = layout;
+                }
+            }
+            else
+            {
+                Logger.Default.WriteLog("Saving aborted by user");
             }
         }
 

@@ -10,6 +10,7 @@ namespace SLC_LayoutEditor.ViewModel.Communication
     {
         DialogOpening,
         UnsavedChangesDialogClosed,
-        SettingsSaved
+        SettingsSaved,
+        Patcher_IsSearchingChanged
     }
 }
