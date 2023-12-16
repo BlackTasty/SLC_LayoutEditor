@@ -141,6 +141,16 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool HasAnyIssues => HasMinorIssues || HasSevereIssues;
 
+        public string MinorIssuesList => GetIssuesList(false);
+
+        public string SevereIssuesList => GetIssuesList(true);
+
+        public string StairwayErrorMessage
+        {
+            get => CabinDecks?.Count > 1 ? "Invalid stairway positions!" :
+                "Stairway can be removed!";
+        }
+
         public string IssuesCountText
         {
             get
@@ -283,6 +293,85 @@ namespace SLC_LayoutEditor.Core.Cabin
                     OnCabinSlotsChanged(EventArgs.Empty);
                 }
             }
+        }
+
+        private string GetIssuesList(bool getSevereIssues)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (getSevereIssues && HasSevereIssues)
+            {
+                if (!HasNoDuplicateEconomySeats)
+                {
+                    AppendBulletPoint(sb, "Duplicate Economy Class seats found!");
+                }
+                if (!HasNoDuplicateBusinessSeats)
+                {
+                    AppendBulletPoint(sb, "Duplicate Business Class seats found!");
+                }
+                if (!HasNoDuplicatePremiumSeats)
+                {
+                    AppendBulletPoint(sb, "Duplicate Premium Class seats found!");
+                }
+                if (!HasNoDuplicateFirstClassSeats)
+                {
+                    AppendBulletPoint(sb, "Duplicate First Class seats found!");
+                }
+                if (!HasNoDuplicateSupersonicSeats)
+                {
+                    AppendBulletPoint(sb, "Duplicate Supersonic Class seats found!");
+                }
+                if (!HasNoDuplicateUnavailableSeats)
+                {
+                    AppendBulletPoint(sb, "Duplicate Unavailable seats found!");
+                }
+                if (!HasNoDuplicateDoors)
+                {
+                    AppendBulletPoint(sb, "Duplicate doors found!");
+                }
+                if (!StairwaysValid)
+                {
+                    AppendBulletPoint(sb, StairwayErrorMessage);
+                }
+            }
+            else if (!getSevereIssues && HasMinorIssues)
+            {
+            }
+
+            int lastFloor = mCabinDecks.Max(x => x.Floor);
+            int firstFloor = mCabinDecks.Min(x => x.Floor);
+            foreach (CabinDeck cabinDeck in CabinDecks)
+            {
+                if (getSevereIssues && cabinDeck.HasSevereIssues ||
+                    !getSevereIssues && cabinDeck.HasMinorIssues)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append("\n\n");
+                    }
+                    sb.AppendLine(cabinDeck.FloorName);
+                    if (cabinDeck.Floor != lastFloor)
+                    {
+                        sb.Append(cabinDeck.GetIssuesList(getSevereIssues, true));
+                    }
+                    else
+                    {
+                        sb.Append(cabinDeck.GetIssuesList(getSevereIssues, true));
+                    }
+                }
+            }
+
+            return sb.Length > 0 ? sb.ToString() : null;
+        }
+
+        private void AppendBulletPoint(StringBuilder sb, string text)
+        {
+            if (sb.Length > 0)
+            {
+                sb.Append("\n");
+            }
+
+            sb.Append("• ");
+            sb.Append(text);
         }
 
         private void LoadCabinLayout(string layout)
@@ -573,6 +662,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged(nameof(HasSevereIssues));
             InvokePropertyChanged(nameof(HasAnyIssues));
             InvokePropertyChanged(nameof(IssuesCountText));
+            InvokePropertyChanged(nameof(MinorIssuesList));
+            InvokePropertyChanged(nameof(SevereIssuesList));
 
             IEnumerable<CabinSlot> invalidSlots = GetInvalidSlots();
 

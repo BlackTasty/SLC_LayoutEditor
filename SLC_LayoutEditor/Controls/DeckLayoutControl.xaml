@@ -38,7 +38,8 @@
                 </TextBlock>
                 <StackPanel Orientation="Horizontal" Margin="16,4,16,0">
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.MinorIssuesList}"
+                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
@@ -53,7 +54,8 @@
                         </TextBlock>
                     </Border>
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.SevereIssuesList}"
+                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">

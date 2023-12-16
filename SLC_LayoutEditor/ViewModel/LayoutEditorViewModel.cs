@@ -153,11 +153,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public string StairwayErrorMessage
-        {
-            get => ActiveLayout?.CabinDecks?.Count > 1 ? "Invalid stairway positions!" :
-                "Stairway can be removed!";
-        }
+        public string StairwayErrorMessage => ActiveLayout?.StairwayErrorMessage;
         #endregion
 
         public VeryObservableCollection<CabinLayoutSet> LayoutSets

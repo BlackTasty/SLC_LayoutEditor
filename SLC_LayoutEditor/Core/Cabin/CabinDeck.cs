@@ -114,13 +114,17 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool HasAnyIssues => HasSevereIssues || HasMinorIssues;
 
-        public int SevereIssuesCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreServicePointsValid, AreSlotsValid);
+        public int SevereIssuesCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreServicePointsValid, AreSlotsValid, AreSeatsReachableByService);
 
-        public int MinorIssuesCount => Util.GetProblemCount(0, AreCateringAndLoadingBaysValid, AreSeatsReachableByService, AreToiletsAvailable, AreKitchensValid);
+        public int MinorIssuesCount => Util.GetProblemCount(0, AreCateringAndLoadingBaysValid, AreToiletsAvailable, AreKitchensValid);
 
         public string MinorIssuesText => HasMinorIssues ? string.Format("{0} minor", MinorIssuesCount) : "";
 
         public string SevereIssuesText => HasSevereIssues ? string.Format("{0} severe", SevereIssuesCount) : "";
+
+        public string MinorIssuesList => GetIssuesList(false);
+
+        public string SevereIssuesList => GetIssuesList(true);
 
         public bool ShowCateringAndLoadingBayIssues
         {
@@ -340,6 +344,66 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public string GetIssuesList(bool getSevereIssues, bool indented = false)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (getSevereIssues && HasSevereIssues)
+            {
+                if (!AreSlotsValid)
+                {
+                    AppendBulletPoint(sb, "Invalid amount of deck slots!", indented);
+                }
+                if (!AreDoorsValid)
+                {
+                    AppendBulletPoint(sb, "No doors for this deck!", indented);
+                }
+                if (!AreServicePointsValid)
+                {
+                    AppendBulletPoint(sb, "Invalid service points!", indented);
+                }
+                if (AreKitchensValid && !AreSeatsReachableByService)
+                {
+                    AppendBulletPoint(sb, "Some rows aren't covered by service!", indented);
+                }
+                if (!AreGalleysValid)
+                {
+                    AppendBulletPoint(sb, "Insufficient galley seats for servicing!", indented);
+                }
+            }
+            else if (!getSevereIssues && HasMinorIssues)
+            {
+                if (!AreCateringAndLoadingBaysValid)
+                {
+                    AppendBulletPoint(sb, "CAT/LB detected on the left side", indented);
+                }
+                if (!AreKitchensValid)
+                {
+                    AppendBulletPoint(sb, "No kitchen available! (No In-Flight services)", indented);
+                }
+                if (!AreToiletsAvailable)
+                {
+                    AppendBulletPoint(sb, "No toilets on this deck!", indented);
+                }
+            }
+
+            return sb.Length > 0 ? sb.ToString() : null;
+        }
+
+        private void AppendBulletPoint(StringBuilder sb, string text, bool indented)
+        {
+            if (sb.Length > 0)
+            {
+                sb.Append("\n");
+            }
+
+            if (indented)
+            {
+                sb.Append("  ");
+            }
+            sb.Append("• ");
+            sb.Append(text);
+        }
+
         private IEnumerable<int> GetRowsCoveredByService()
         {
             List<int> coveredRows = new List<int>();
@@ -395,6 +459,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged(nameof(HasAnyIssues));
             InvokePropertyChanged(nameof(MinorIssuesText));
             InvokePropertyChanged(nameof(SevereIssuesText));
+            InvokePropertyChanged(nameof(MinorIssuesList));
+            InvokePropertyChanged(nameof(SevereIssuesList));
         }
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)

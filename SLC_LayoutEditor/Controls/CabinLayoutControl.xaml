@@ -67,6 +67,7 @@
     <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="4"
                 Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout, Converter={StaticResource NotNullToVisibilityConverter}, FallbackValue=Collapsed}">
         <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
+                ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesList}"
                 Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
             <TextBlock>
                 <TextBlock.Style>
@@ -82,7 +83,8 @@
             </TextBlock>
         </Border>
         <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesList}"
+                Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
             <TextBlock>
                 <TextBlock.Style>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
@@ -99,7 +101,6 @@
         <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonBorderColorBrush}"
                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
             <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
-
         </Border>
     </StackPanel>
     <ToggleButton HorizontalAlignment="Right" Style="{DynamicResource ToggleDeckViewButtonStyle}" VerticalAlignment="Center" Visibility="Collapsed"/>
