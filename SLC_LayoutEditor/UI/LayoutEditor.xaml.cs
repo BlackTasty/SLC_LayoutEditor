@@ -39,6 +39,7 @@ namespace SLC_LayoutEditor.UI
 
         private readonly LayoutEditorViewModel vm;
         private Adorner sidebarToggleAdorner;
+        private Adorner currentGuideAdorner;
 
         public LayoutEditor()
         {
@@ -48,6 +49,19 @@ namespace SLC_LayoutEditor.UI
             vm.Changed += CabinLayoutChanged;
             vm.SelectionRollback += Vm_SelectionRollback;
             vm.ActiveLayoutForceUpdated += Vm_ActiveLayoutForceUpdated;
+
+            Mediator.Instance.Register(o =>
+            {
+                // Workaround for text binding not properly updating
+                if (vm.SelectedTemplate != null)
+                {
+                    combo_templates.Text = vm.SelectedTemplate.LayoutName;
+                }
+                else if (vm.SelectedCabinLayout != null)
+                {
+                    combo_layouts.Text = vm.SelectedCabinLayout.LayoutName;
+                }
+            }, ViewModelMessage.LayoutNameChanged);
         }
 
         public bool CheckUnsavedChanges(bool isClosing)
@@ -59,6 +73,24 @@ namespace SLC_LayoutEditor.UI
         {
             control_layout.RenderAdorners();
             RefreshSidebarToggleAdorner();
+        }
+
+        public void RememberLayout()
+        {
+            if (App.Settings.RememberLastLayout)
+            {
+                App.Settings.LastLayoutSet = vm.SelectedLayoutSet?.AircraftName;
+                App.Settings.LastLayout = vm.ActiveLayout?.LayoutName;
+                App.Settings.LastLayoutWasTemplate = vm.ActiveLayout?.IsTemplate ?? false;
+            }
+            else
+            {
+                App.Settings.LastLayoutSet = null;
+                App.Settings.LastLayout = null;
+                App.Settings.LastLayoutWasTemplate = false;
+            }
+
+            App.SaveAppSettings();
         }
 
         // Workaround to force-restore the previously selected index
@@ -199,7 +231,7 @@ namespace SLC_LayoutEditor.UI
             if (!vm.IsTemplatingMode)
             {
                 dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), 
-                    vm.SelectedLayoutSet.GetTemplatePreviews());
+                    vm.SelectedLayoutSet.GetTemplatePreviews(), vm.IsTemplatingMode);
                 dialog.DialogClosing += CreateCabinLayout_DialogClosing;
             }
             else
@@ -310,9 +342,9 @@ namespace SLC_LayoutEditor.UI
 
                     break;
                 case 1: // Wall generator
-                    IEnumerable<CabinSlot> wallSlots = vm.SelectedCabinDeck.CabinSlots
-                        .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.SelectedCabinDeck.Rows || x.Column == vm.SelectedCabinDeck.Columns) && 
-                            !x.IsDoor && x.Type != CabinSlotType.Wall);
+                    IEnumerable<CabinSlot> wallSlots = vm.AutomationSelectedDeck.CabinSlots
+                        .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.AutomationSelectedDeck.Rows || x.Column == vm.AutomationSelectedDeck.Columns) && 
+                            !x.IsDoor && x.Type != CabinSlotType.Wall && x.Type != CabinSlotType.Cockpit);
 
                     foreach (CabinSlot wallSlot in wallSlots)
                     {
@@ -322,10 +354,156 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
                 case 2: //Service points (WIP)
-                    CabinDeck selectedCabinDeck = vm.ActiveLayout.CabinDecks.FirstOrDefault();
-                    if (selectedCabinDeck != null)
+                    foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
                     {
-                        var seatRows = selectedCabinDeck.GetRowsWithSeats();
+                        // Reset all service start- and endpoints to type Aisle
+                        foreach (CabinSlot serviceSlot in cabinDeck.CabinSlots
+                            .Where(x => x.Type == CabinSlotType.ServiceEndPoint || x.Type == CabinSlotType.ServiceStartPoint))
+                        {
+                            serviceSlot.Type = CabinSlotType.Aisle;
+                        }
+
+                        int galleyCount = cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Galley).Count();
+                        List<CabinSlot> aisles = new List<CabinSlot>();
+
+                        if (galleyCount > 0) // Get aisles where service areas should appear
+                        {
+                            IEnumerable<int> seatRows = cabinDeck.GetRowsWithSeats();
+                            foreach (int row in seatRows)
+                            {
+                                IEnumerable<CabinSlot> seatsInRow = cabinDeck.CabinSlots.Where(x => x.Row == row && x.IsSeat);
+
+                                foreach (CabinSlot seat in seatsInRow)
+                                {
+                                    CabinSlot nearestAisle = cabinDeck.GetNearestServiceArea(seat);
+
+                                    if (nearestAisle != null && !aisles.Any(x => x.Guid == nearestAisle.Guid))
+                                    {
+                                        aisles.Add(nearestAisle);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Group aisles by column
+                        var groupedAisleColumns = aisles.OrderBy(x => x.Row).GroupBy(x => x.Column);
+                        List<ServiceGroup> serviceGroups = new List<ServiceGroup>();
+                        foreach (var group in groupedAisleColumns)
+                        {
+                            int count = group.Count();
+
+                            for (int i = 0; i < count; i++)
+                            {
+                                CabinSlot serviceStart = group.ElementAt(i);
+                                CabinSlot serviceEnd = null;
+                                IEnumerable<CabinSlot> nextAisles = cabinDeck.GetCabinSlotsOfTypeInColumn(CabinSlotType.Aisle, serviceStart.Column, serviceStart.Row + 1);
+
+                                int lastAisleRow = -1;
+                                int currentDistance = 1;
+                                foreach (CabinSlot nextAisle in nextAisles)
+                                {
+                                    if (!group.Any(x => x.Guid == nextAisle.Guid)) // Aisle does not have seats to service
+                                    {
+                                        if (serviceEnd == null)
+                                        {
+                                            serviceEnd = nextAisle;
+                                        }    
+                                        break;
+                                    }
+                                    else if (lastAisleRow > -1 && nextAisle.Row - 1 != lastAisleRow) // Line of aisles has been broken
+                                    {
+                                        break;
+                                    }
+
+                                    serviceEnd = nextAisle;
+                                    lastAisleRow = nextAisle.Row;
+                                    currentDistance++;
+
+                                    if (currentDistance >= vm.MaxRowsPerServiceGroup)
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                if (serviceEnd != null)
+                                {
+                                    serviceGroups.Add(new ServiceGroup(serviceStart, serviceEnd));
+
+                                    int nextGroup = group.ToList().FindIndex(x => x.Row > serviceEnd.Row);
+                                    if (nextGroup > i + 1)
+                                    {
+                                        i = nextGroup - 1;
+                                    }
+                                    else if (nextGroup == -1)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (galleyCount >= serviceGroups.Count) // Enough galleys available for service points
+                        {
+                            serviceGroups.ForEach(x =>
+                            {
+                                x.ServiceStartSlot.Type = CabinSlotType.ServiceStartPoint;
+                                x.ServiceEndSlot.Type = CabinSlotType.ServiceEndPoint;
+                            });
+                        }
+                        else
+                        {
+                            foreach (var columnGroup in serviceGroups.GroupBy(x => x.Column))
+                            {
+                                int column = columnGroup.Key;
+                                if (column > -1)
+                                {
+                                    CabinSlot firstServiceStartSlot = columnGroup.Select(x => x.ServiceStartSlot).First();
+                                    CabinSlot lastServiceEndSlot = columnGroup.Select(x => x.ServiceEndSlot).Last();
+
+                                    int targetServiceGroupLength = (lastServiceEndSlot.Row - firstServiceStartSlot.Row) / galleyCount;
+                                    for (int startRow = firstServiceStartSlot.Row; startRow <= lastServiceEndSlot.Row; startRow += targetServiceGroupLength + 1)
+                                    {
+                                        int endRow = startRow + targetServiceGroupLength;
+
+                                        CabinSlot newServiceStartSlot = cabinDeck.GetSlotAtPosition(startRow, column);
+                                        CabinSlot newServiceEndSlot = cabinDeck.GetSlotAtPosition(endRow, column);
+
+                                        bool isServiceEndSlotAdjacentToSeat = cabinDeck.HasSeatInRow(newServiceEndSlot);
+                                        if (!isServiceEndSlotAdjacentToSeat)
+                                        {
+                                            int currentOffset = 0;
+                                            do
+                                            {
+                                                currentOffset++;
+                                                if (endRow + currentOffset > cabinDeck.Rows)
+                                                {
+                                                    break;
+                                                }
+
+                                                newServiceEndSlot = cabinDeck.GetSlotAtPosition(endRow + currentOffset, column);
+                                                isServiceEndSlotAdjacentToSeat = cabinDeck.HasSeatInRow(newServiceEndSlot);
+                                            }
+                                            while (!isServiceEndSlotAdjacentToSeat);
+
+                                            if (isServiceEndSlotAdjacentToSeat)
+                                            {
+                                                startRow += currentOffset;
+                                            }
+                                        }
+
+                                        if (isServiceEndSlotAdjacentToSeat)
+                                        {
+                                            newServiceStartSlot.Type = CabinSlotType.ServiceStartPoint;
+                                            newServiceEndSlot.Type = CabinSlotType.ServiceEndPoint;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+
+                                }
+                            }
+                        }
                     }
                     break;
             }
@@ -373,7 +551,7 @@ namespace SLC_LayoutEditor.UI
         private void CabinLayout_SaveAs_Click(object sender, RoutedEventArgs e)
         {
             Logger.Default.WriteLog("User requested saving the current {0} under a different name...", vm.IsTemplatingMode ? "template" : "layout");
-            IDialog dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), null, true);
+            IDialog dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), null, vm.IsTemplatingMode, true);
             dialog.DialogClosing += CabinLayout_SaveAs_DialogClosing;
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
@@ -409,6 +587,30 @@ namespace SLC_LayoutEditor.UI
         private void ToggleSidebarButton_Loaded(object sender, RoutedEventArgs e)
         {
             sidebarToggleAdorner = toggle_sidebar.AttachAdorner(typeof(SidebarToggleAdorner));
+
+            /*currentGuideAdorner = LiveGuideAdorner.AttachAdorner(btn_createAircraft, 
+                "Creating a new aircraft", "To create a new aircraft type, click on the + button.", Dock.Right);*/
+        }
+
+        private void ShowGuide_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && menuItem.Parent is ContextMenu contextMenu &&
+                contextMenu.PlacementTarget is UIElement element && GuideAssist.GetHasGuide(element))
+            {
+                LiveGuideAdorner.AttachAdorner(element);
+            }
+        }
+
+        private void Grid_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (App.IsStartup && App.Settings.RememberLastLayout && App.Settings.LastLayout != null)
+            {
+                CabinLayoutSet lastLayoutSet = vm.LayoutSets.FirstOrDefault(x => x.AircraftName == App.Settings.LastLayoutSet);
+                if (lastLayoutSet != null)
+                {
+                    vm.SelectedLayoutSet = lastLayoutSet;
+                }
+            }
         }
     }
 }

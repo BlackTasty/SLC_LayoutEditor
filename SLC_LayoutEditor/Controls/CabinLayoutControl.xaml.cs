@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.UI.Dialogs;
@@ -31,7 +32,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinLayoutControl.xaml
     /// </summary>
-    public partial class CabinLayoutControl : Grid, INotifyPropertyChanged, IDisposable
+    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged, IDisposable
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -177,6 +178,16 @@ namespace SLC_LayoutEditor.Controls
         public CabinLayoutControl()
         {
             InitializeComponent();
+
+            Mediator.Instance.Register(o =>
+            {
+                InvokePropertyChanged(nameof(LayoutOverviewTitle));
+            }, ViewModelMessage.LayoutNameChanged);
+
+            Mediator.Instance.Register(o =>
+            {
+                IsTemplatingMode = (bool)o;
+            }, ViewModelMessage.ForceTemplatingToggleState);
         }
 
         public void GenerateThumbnailForLayout(bool overwrite = false)
@@ -428,7 +439,7 @@ namespace SLC_LayoutEditor.Controls
         {
             SelectedCabinSlots.Clear();
             activeDeckControl?.SetMultipleSlotsSelected(SelectedCabinSlots, true);
-            CabinLayout.LoadCabinLayoutFromFile();
+            CabinLayout.LoadCabinLayoutFromFile(true);
             RefreshCabinLayout();
         }
 
@@ -552,6 +563,20 @@ namespace SLC_LayoutEditor.Controls
             {
                 CabinLayout.Delete();
             }
+        }
+
+        private void ShowGuide_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && menuItem.Parent is ContextMenu contextMenu &&
+                contextMenu.PlacementTarget is UIElement element && GuideAssist.GetHasGuide(element))
+            {
+                LiveGuideAdorner.AttachAdorner(element);
+            }
+        }
+
+        private void EditCabinLayoutName_Click(object sender, RoutedEventArgs e)
+        {
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.EditLayoutNameRequested, CabinLayout);
         }
     }
 }

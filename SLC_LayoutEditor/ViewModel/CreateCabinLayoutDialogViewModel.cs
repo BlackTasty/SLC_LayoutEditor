@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace SLC_LayoutEditor.ViewModel
 {
-    class CreateCabinLayoutDialogViewModel : AddDialogViewModel
+    class CreateCabinLayoutDialogViewModel : AddEditCabinLayoutDialogViewModel
     {
         private List<TemplatePreview> mTemplates = new List<TemplatePreview>();
         private TemplatePreview mSelectedTemplate;

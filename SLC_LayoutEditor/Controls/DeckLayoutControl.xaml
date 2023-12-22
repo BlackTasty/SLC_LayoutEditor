@@ -8,7 +8,7 @@
             d:DesignHeight="450" d:DesignWidth="800"
             x:Name="container" Margin="0,0,0,8"
             Loaded="container_Loaded">
-    <Border x:Name="card_deckTitle" Padding="64,0,0,0" Height="75" Style="{DynamicResource CardStyle}"
+    <Border x:Name="card_deckTitle" Padding="48,0,0,0" Height="75" Style="{DynamicResource CardStyle}"
             HorizontalAlignment="Left" CornerRadius="0,40,40,0">
         <Grid VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
@@ -69,7 +69,7 @@
                             </TextBlock.Style>
                         </TextBlock>
                     </Border>
-                    <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonBorderColorBrush}"
+                    <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonForegroundColorBrush}"
                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                         <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
 
@@ -78,7 +78,7 @@
             </StackPanel>
         </Grid>
     </Border>
-    <Canvas x:Name="layout_deck" Margin="40,24" 
+    <Canvas x:Name="layout_deck" Margin="40,24,16,24" 
             PreviewMouseLeftButtonDown="MultiSelect_PreviewMouseLeftButtonDown"
             PreviewMouseLeftButtonUp="MultiSelect_PreviewMouseLeftButtonUp"
             PreviewMouseMove="MultiSelect_PreviewMouseMove"

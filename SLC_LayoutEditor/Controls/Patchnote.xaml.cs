@@ -80,7 +80,23 @@ namespace SLC_LayoutEditor.Controls
                                 Margin = new Thickness(0, 0, 0, 4)
                             };
                             p.Inlines.Add(header);
-                            p.Inlines.Add(change[1]);
+
+                            if (change[1].StartsWith(" (BETA)"))
+                            {
+                                Run betaTag = new Run("(BETA)")
+                                {
+                                    FontWeight = FontWeights.SemiBold,
+                                    FontStyle = FontStyles.Italic,
+                                    Foreground = (Brush)App.Current.FindResource("TemplatingModeBrush")
+                                };
+                                p.Inlines.Add(" ");
+                                p.Inlines.Add(betaTag);
+                                p.Inlines.Add(change[1].Substring(7));
+                            }
+                            else
+                            {
+                                p.Inlines.Add(change[1]);
+                            }
                             doc.Blocks.Add(p);
                         }
                         else

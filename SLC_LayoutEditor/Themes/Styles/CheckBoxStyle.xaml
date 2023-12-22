@@ -3,7 +3,7 @@
     <Style TargetType="CheckBox">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="Background" Value="{DynamicResource BackgroundColorBrush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource AccentColorBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource CheckBoxMarkColorBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Margin" Value="16,4"/>
@@ -79,7 +79,7 @@
                     <Condition Property="IsChecked" Value="True"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundHoverColorBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource CheckBoxMarkHoverColorBrush}"/>
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <MultiTrigger>
@@ -88,16 +88,7 @@
                     <Condition Property="IsChecked" Value="False"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundHoverColorBrush}" />
-                </MultiTrigger.Setters>
-            </MultiTrigger>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsMouseOver" Value="True"/>
-                    <Condition Property="IsChecked" Value="False"/>
-                </MultiTrigger.Conditions>
-                <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundHoverColorBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource CheckBoxMarkHoverColorBrush}"/>
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <MultiTrigger>
@@ -106,7 +97,7 @@
                     <Condition Property="IsChecked" Value="{x:Null}"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundHoverColorBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource CheckBoxMarkHoverColorBrush}"/>
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <MultiTrigger>
@@ -115,7 +106,7 @@
                     <Condition Property="IsChecked" Value="False"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressedColorBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource CheckBoxMarkPressedColorBrush}" />
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <MultiTrigger>
@@ -124,7 +115,7 @@
                     <Condition Property="IsChecked" Value="True"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressedColorBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource CheckBoxMarkPressedColorBrush}" />
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <MultiTrigger>
@@ -133,7 +124,7 @@
                     <Condition Property="IsChecked" Value="{x:Null}"/>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressedColorBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource CheckBoxMarkPressedColorBrush}" />
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <Trigger Property="IsEnabled" Value="False">

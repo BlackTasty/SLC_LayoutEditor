@@ -994,7 +994,7 @@ namespace SLC_LayoutEditor.Controls
                 Point currentPosition = e.GetPosition(layout_deck);
                 if (currentPosition.X >= 65 && currentPosition.Y >= 65)
                 {
-                    if (dragStartPoint.ExceedsSelectionThreshold(currentPosition, 5, 50))
+                    if (dragStartPoint.ExceedsSelectionThreshold(currentPosition, 5, 25))
                     {
                         Rect selectionRect = new Rect(dragStartPoint, currentPosition);
                         if (selectionBox == null)

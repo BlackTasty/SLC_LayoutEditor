@@ -72,6 +72,7 @@
     <Compile Include="Controls\CabinLayoutControl.xaml.cs">
       <DependentUpon>CabinLayoutControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\GuideAssist.cs" />
     <Compile Include="Controls\IssueTracker.xaml.cs">
       <DependentUpon>IssueTracker.xaml</DependentUpon>
     </Compile>
@@ -79,6 +80,7 @@
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LayoutSelectorInnerCardAdorner.cs" />
+    <Compile Include="Controls\LiveGuideAdorner.cs" />
     <Compile Include="Controls\Material\ShadowAssist.cs" />
     <Compile Include="Controls\Patchnote.xaml.cs">
       <DependentUpon>Patchnote.xaml</DependentUpon>
@@ -111,6 +113,7 @@
     <Compile Include="Converter\StringNotEmptyConverter.cs" />
     <Compile Include="Converter\StringNotEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\StringToGeometryConverter.cs" />
+    <Compile Include="Converter\StringToUriConverter.cs" />
     <Compile Include="Converter\UpdateButtonIconConverter.cs" />
     <Compile Include="Converter\UpdateIconVisibilityConverter.cs" />
     <Compile Include="Converter\UpdateProgressBarIndeterminateConverter.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\Dialogs\IDialog.cs" />
+    <Compile Include="Core\IThemeManager.cs" />
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
     <Compile Include="Core\Memento\HistoryStack.cs" />
@@ -147,6 +151,7 @@
     <Compile Include="Core\Patcher\UpdateStatus.cs" />
     <Compile Include="Core\Patcher\PatcherUtil.cs" />
     <Compile Include="Core\Patcher\VersionData.cs" />
+    <Compile Include="Core\Cabin\ServiceGroup.cs" />
     <Compile Include="Core\Unset.cs" />
     <Compile Include="FixedValues.cs" />
     <Compile Include="StyleTester.xaml.cs">
@@ -171,6 +176,9 @@
     <Compile Include="UI\Dialogs\CreateTemplateDialog.xaml.cs">
       <DependentUpon>CreateTemplateDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\EditCabinLayoutNameDialog.xaml.cs">
+      <DependentUpon>EditCabinLayoutNameDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\MakeTemplateDialog.xaml.cs">
       <DependentUpon>MakeTemplateDialog.xaml</DependentUpon>
     </Compile>
@@ -180,11 +188,13 @@
     <Compile Include="UI\WelcomeScreen.xaml.cs">
       <DependentUpon>WelcomeScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\AddEditCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\CreateAircraftDialogViewModel.cs" />
     <Compile Include="ViewModel\CreateCabinLayoutDialogViewModel.cs" />
-    <Compile Include="ViewModel\AddDialogViewModel.cs" />
+    <Compile Include="ViewModel\AddEditDialogViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
     <Compile Include="ViewModel\CreateTemplateDialogViewModel.cs" />
+    <Compile Include="ViewModel\DesignTime\LayoutEditorDesignViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\UpdaterDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -272,6 +282,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\Seasonal\ChristmasTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Style.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -341,6 +355,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\CreateTemplateDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\EditCabinLayoutNameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

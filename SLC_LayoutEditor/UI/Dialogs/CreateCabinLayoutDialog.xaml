@@ -16,17 +16,45 @@
             <Style TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
                 <Setter Property="Text" Value="Create a new cabin layout"/>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsSaveAs}" Value="True">
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsTemplate}" Value="True"/>
+                            <Condition Binding="{Binding IsSaveAs}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Text" Value="Create a new template"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsTemplate}" Value="False"/>
+                            <Condition Binding="{Binding IsSaveAs}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
                         <Setter Property="Text" Value="Save cabin layout as"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsTemplate}" Value="True"/>
+                            <Condition Binding="{Binding IsSaveAs}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Text" Value="Save template as"/>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
+        </TextBlock.Style>
+    </TextBlock>
+    <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4">
+        <TextBlock.Style>
+            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="Text" Value="Layout name"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsTemplate}" Value="True">
+                        <Setter Property="Text" Value="Template name"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
         </TextBlock.Style>
     </TextBlock>
-    <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Layout name"/>
     <TextBox DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"/>
     <TextBlock DockPanel.Dock="Top" Style="{StaticResource DialogErrorTextStyle}" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"/>
-
     <controls:RefinedExpander DockPanel.Dock="Top" Margin="8,0,8,16"
                               Header="Create from a template (optional)"
                               Visibility="{Binding HasTemplates, Converter={StaticResource BooleanToVisibilityConverter}}">

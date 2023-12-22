@@ -100,7 +100,7 @@
     <SolidColorBrush x:Key="ForegroundPressedColorBrush" Color="{StaticResource ForegroundSecondaryColor}" Opacity=".6"/>
 
     <SolidColorBrush x:Key="SeparatorColorBrush" Color="{StaticResource SeparatorColor}"/>
-
+    <SolidColorBrush x:Key="LiveGuideOverlayBrush" Color="{StaticResource BackgroundDark}" Opacity=".85"/>
 
     <SolidColorBrush x:Key="RemoveDeckButtonBackgroundBrush" Color="{StaticResource BackgroundColor}" Opacity=".24"/>
     <SolidColorBrush x:Key="RemoveDeckButtonHoverBackgroundBrush" Color="{StaticResource BackgroundLight}" Opacity=".24"/>
@@ -135,12 +135,20 @@
     <SolidColorBrush x:Key="BackdropDarkColorBrush" Color="{StaticResource BackgroundColor}" Opacity=".9"/>
     <SolidColorBrush x:Key="MenuItemHoverColorBrush">#333333</SolidColorBrush>
 
+    <SolidColorBrush x:Key="ButtonForegroundColorBrush" Color="{StaticResource ButtonBorderColor}"/>
+    <SolidColorBrush x:Key="ButtonForegroundHoverColorBrush" Color="{StaticResource ButtonBorderHoverColor}"/>
+    <SolidColorBrush x:Key="ButtonForegroundPressedColorBrush" Color="{StaticResource ButtonBorderPressedColor}"/>
     <SolidColorBrush x:Key="ButtonBorderColorBrush" Color="{StaticResource ButtonBorderColor}"/>
     <SolidColorBrush x:Key="ButtonBorderHoverColorBrush" Color="{StaticResource ButtonBorderHoverColor}"/>
     <SolidColorBrush x:Key="ButtonBorderPressedColorBrush" Color="{StaticResource ButtonBorderPressedColor}"/>
     <SolidColorBrush x:Key="ButtonBackgroundColorBrush" Color="{StaticResource ButtonBackgroundColor}"/>
     <SolidColorBrush x:Key="ButtonBackgroundHoverColorBrush" Color="{StaticResource ButtonBackgroundHoverColor}"/>
     <SolidColorBrush x:Key="ButtonBackgroundPressedColorBrush" Color="{StaticResource ButtonBackgroundPressedColor}"/>
+
+    <SolidColorBrush x:Key="CheckBoxMarkColorBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="CheckBoxMarkHoverColorBrush" Color="{StaticResource AccentHoverColor}"/>
+    <SolidColorBrush x:Key="CheckBoxMarkPressedColorBrush" Color="{StaticResource AccentPressedColor}"/>
+    <SolidColorBrush x:Key="ComboBoxItemSplitterColorBrush" Color="{StaticResource AccentColor}"/>
 
     <SolidColorBrush x:Key="AccentColorBrush" Color="{StaticResource AccentColor}"/>
     <SolidColorBrush x:Key="AccentHoverColorBrush" Color="{StaticResource AccentHoverColor}"/>
@@ -178,6 +186,10 @@
     <SolidColorBrush x:Key="PatchRemovedBrush" Color="{DynamicResource ErrorColor}"/>
     <SolidColorBrush x:Key="PatchDisabledBrush" Color="{DynamicResource ForegroundColor}" Opacity=".45"/>
 
+    <SolidColorBrush x:Key="LayoutingModeBorderBrush" Color="{StaticResource BackgroundLight}"/>
+    <SolidColorBrush x:Key="TemplatingModeBorderBrush" Color="{StaticResource TemplatingModeColor}"/>
+    <SolidColorBrush x:Key="TemplatingModeBorderHoverBrush" Color="{StaticResource TemplatingModeHoverColor}"/>
+    <SolidColorBrush x:Key="TemplatingModeBorderPressedBrush" Color="{StaticResource TemplatingModePressedColor}"/>
     <SolidColorBrush x:Key="TemplatingModeBrush" Color="{StaticResource TemplatingModeColor}"/>
     <SolidColorBrush x:Key="TemplatingModeHoverBrush" Color="{StaticResource TemplatingModeHoverColor}"/>
     <SolidColorBrush x:Key="TemplatingModePressedBrush" Color="{StaticResource TemplatingModePressedColor}"/>

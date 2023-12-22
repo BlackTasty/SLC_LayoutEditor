@@ -59,8 +59,21 @@ namespace SLC_LayoutEditor.Core
 
         public static Adorner AttachAdorner(this UIElement uiElement, Type adornerType)
         {
-            ConstructorInfo ctor = adornerType.GetConstructor(new[] { typeof(UIElement) });
-            Adorner instance = (Adorner)ctor.Invoke(new object[] { uiElement });
+            return AttachAdorner(uiElement, adornerType, null);
+        }
+
+        public static Adorner AttachAdorner(this UIElement uiElement, Type adornerType, params object[] args)
+        {
+            List<Type> constructorTypes = new List<Type> { typeof(UIElement) };
+            List<object> constructorParams = new List<object> { uiElement };
+            if (args?.Length > 0)
+            {
+                constructorTypes.AddRange(args.Select(t => t.GetType()));
+                constructorParams.AddRange(args);
+            }
+
+            ConstructorInfo ctor = adornerType.GetConstructor(constructorTypes.ToArray());
+            Adorner instance = (Adorner)ctor.Invoke(constructorParams.ToArray());
 
             uiElement.AttachAdorner(instance);
             return instance;

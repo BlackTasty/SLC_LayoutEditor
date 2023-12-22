@@ -50,11 +50,14 @@
 
     <Style x:Key="TemplateComboBoxStyle" TargetType="{x:Type controls:RefinedComboBox}" BasedOn="{StaticResource {x:Type controls:RefinedComboBox}}">
         <Setter Property="Template" Value="{DynamicResource TemplateComboBoxTemplate}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeHoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderHoverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderPressedBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -264,7 +267,7 @@
                 <Themes:SystemDropShadowChrome x:Name="shadow" Color="{DynamicResource BackgroundDark}" MaxHeight="{TemplateBinding MaxDropDownHeight}" 
                                                MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
                     <Border x:Name="DropDownBorder" 
-                            BorderBrush="{DynamicResource TemplatingModeHoverBrush}"
+                            BorderBrush="{DynamicResource TemplatingModeBorderBrush}"
                             CornerRadius="2"
                             Background="{DynamicResource BackdropDarkColorBrush}">
                         <Border.Style>

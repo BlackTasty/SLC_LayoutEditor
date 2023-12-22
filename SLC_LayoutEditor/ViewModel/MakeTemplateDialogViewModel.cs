@@ -8,7 +8,7 @@ using System.Windows.Documents;
 
 namespace SLC_LayoutEditor.ViewModel
 {
-    public class MakeTemplateDialogViewModel : AddDialogViewModel
+    public class MakeTemplateDialogViewModel : AddEditDialogViewModel
     {
         private bool mKeepWalls = true;
         private int wallsCount;

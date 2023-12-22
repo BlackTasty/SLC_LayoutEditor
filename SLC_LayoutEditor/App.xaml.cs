@@ -18,8 +18,10 @@ namespace SLC_LayoutEditor
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : Application, IUIManager
     {
+        private Uri currentTheme;
+
         private static readonly string oldDefaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "SLC Layout Editor");
         private static readonly string defaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
@@ -44,6 +46,8 @@ namespace SLC_LayoutEditor
 
         internal static UpdateManager Patcher => patcher;
 
+        public static bool IsStartup { get; set; } = true;
+
         [STAThread]
         public static void Main(string[] args)
         {
@@ -60,6 +64,33 @@ namespace SLC_LayoutEditor
                     PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3));
             }
 #endif
+        }
+
+        public void RefreshTheme()
+        {
+            if (App.Settings.EnableSeasonalThemes)
+            {
+                DateTime now = DateTime.Now;
+                switch (now.Month)
+                {
+                    case 12: // Apply christmas theme
+                        if (now.Day <= 25)
+                        {
+                            ToggleTheme(new Uri(FixedValues.URI_THEMES + "ChristmasTheme.xaml"));
+                        }
+                        break;
+                }
+
+                if (currentTheme == null)
+                {
+                    ToggleTheme(null);
+                }
+            }
+            else
+            {
+                currentTheme = null;
+                ToggleTheme(null);
+            }
         }
 
         public static string GetTemplatePath(string aircraftName)
@@ -212,6 +243,24 @@ namespace SLC_LayoutEditor
                 Logger.Default.WriteLog("Copying complete! {0} templates have been created.");
                 Settings.TemplatesCopied = true;
                 SaveAppSettings();
+            }
+        }
+
+        private void ToggleTheme(Uri themeUri)
+        {
+            if (themeUri != null && currentTheme == null && !Resources.MergedDictionaries.Any(x => x.Source.OriginalString == themeUri.OriginalString))
+            {
+                Resources.MergedDictionaries.Add(new ResourceDictionary()
+                {
+                    Source = themeUri
+                });
+
+                currentTheme = themeUri;
+            }
+            else if (currentTheme != null && 
+                Resources.MergedDictionaries.FirstOrDefault(x => x.Source.OriginalString == currentTheme.OriginalString) is ResourceDictionary theme)
+            {
+                Resources.MergedDictionaries.Remove(theme);
             }
         }
     }

@@ -53,20 +53,17 @@ namespace SLC_LayoutEditor.Core.Cabin
         #region Seat counts
         public int PassengerCapacity => CabinDecks.SelectMany(x => x.CabinSlots).Where(x => x.IsSeat && x.Type != CabinSlotType.UnavailableSeat).Count();
 
-        public int EconomyCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
-                                        .Where(x => x.Type == CabinSlotType.EconomyClassSeat).Count();
+        public int EconomyCapacity => CountSlots(CabinSlotType.EconomyClassSeat);
 
-        public int BusinessCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
-                                        .Where(x => x.Type == CabinSlotType.BusinessClassSeat).Count();
+        public int BusinessCapacity => CountSlots(CabinSlotType.BusinessClassSeat);
 
-        public int PremiumCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
-                                        .Where(x => x.Type == CabinSlotType.PremiumClassSeat).Count();
+        public int PremiumCapacity => CountSlots(CabinSlotType.PremiumClassSeat);
 
-        public int FirstClassCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
-                                        .Where(x => x.Type == CabinSlotType.FirstClassSeat).Count();
+        public int FirstClassCapacity => CountSlots(CabinSlotType.FirstClassSeat);
 
-        public int SupersonicCapacity => CabinDecks.SelectMany(x => x.CabinSlots)
-                                        .Where(x => x.Type == CabinSlotType.SupersonicClassSeat).Count();
+        public int SupersonicCapacity => CountSlots(CabinSlotType.SupersonicClassSeat);
+
+        public int GalleyCapacity => CountSlots(CabinSlotType.Galley);
         #endregion
 
         #region Issue flags
@@ -128,9 +125,9 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool HasMultipleDecks => mCabinDecks.Count > 1;
 
-        public int SevereIssuesCountSum => Util.GetProblemCount(CabinDecks.Sum(x => x.SevereIssuesCount), 
-            HasNoDuplicateBusinessSeats, HasNoDuplicateEconomySeats, 
-            HasNoDuplicateFirstClassSeats, HasNoDuplicatePremiumSeats, HasNoDuplicateSupersonicSeats, 
+        public int SevereIssuesCountSum => Util.GetProblemCount(CabinDecks.Sum(x => x.SevereIssuesCount),
+            HasNoDuplicateBusinessSeats, HasNoDuplicateEconomySeats,
+            HasNoDuplicateFirstClassSeats, HasNoDuplicatePremiumSeats, HasNoDuplicateSupersonicSeats,
             HasNoDuplicateUnavailableSeats, StairwaysValid, HasNoDuplicateDoors);
 
         public bool HasSevereIssues => SevereIssuesCountSum > 0;
@@ -194,10 +191,10 @@ namespace SLC_LayoutEditor.Core.Cabin
         public string ThumbnailDirectory => !IsTemplate ? Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName) :
             Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Parent.Name, "templates", mLayoutName);
 
-        public CabinLayout(string layoutName, string aircraftName, bool isTemplate) : 
+        public CabinLayout(string layoutName, string aircraftName, bool isTemplate) :
             this(new FileInfo(
-                Path.Combine(!isTemplate ? App.Settings.CabinLayoutsEditPath : App.GetTemplatePath(aircraftName), 
-                    aircraftName, layoutName + ".txt")))
+                Path.Combine(!isTemplate ? App.Settings.CabinLayoutsEditPath : App.GetTemplatePath(aircraftName),
+                    layoutName + ".txt")))
         {
             mLayoutName = layoutName;
             #region Generate default layout
@@ -211,7 +208,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public CabinLayout(FileInfo layoutFile)
         {
             this.layoutFile = layoutFile;
-            isTemplate =  !layoutFile.Directory.Parent.FullName.Equals(App.Settings.CabinLayoutsEditPath) &&
+            isTemplate = !layoutFile.Directory.Parent.FullName.Equals(App.Settings.CabinLayoutsEditPath) &&
                 layoutFile.Directory.Name.Equals("templates", StringComparison.OrdinalIgnoreCase);
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
         }
@@ -293,6 +290,18 @@ namespace SLC_LayoutEditor.Core.Cabin
                     OnCabinSlotsChanged(EventArgs.Empty);
                 }
             }
+        }
+
+        public void Rename(string newName)
+        {
+            LayoutName = newName;
+            layoutFile.MoveTo(Path.Combine(layoutFile.Directory.FullName, mLayoutName + ".txt"));
+        }
+
+        private int CountSlots(CabinSlotType slotType)
+        {
+            return CabinDecks.SelectMany(x => x.CabinSlots)
+                                                    .Where(x => x.Type == slotType).Count();
         }
 
         private string GetIssuesList(bool getSevereIssues)
@@ -479,6 +488,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged(nameof(PremiumCapacity));
             InvokePropertyChanged(nameof(FirstClassCapacity));
             InvokePropertyChanged(nameof(SupersonicCapacity));
+            InvokePropertyChanged(nameof(GalleyCapacity));
         }
 
         public string ToLayoutFile()
@@ -490,7 +500,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     layoutRaw += "\r\n";
                 }
-                layoutRaw += cabinDeck.ToString() + "@";
+                layoutRaw += cabinDeck.ToFileString() + "@";
             }
 
             return layoutRaw;

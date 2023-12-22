@@ -221,7 +221,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
                     MiddleButtonStyle = App.Current.FindResource("RedButtonStyle") as Style;
                     RightButtonText = "Cancel";
                     RightResult = DialogResultType.Cancel;
-                    RightButtonStyle = App.Current.FindResource("RedButtonStyle") as Style;
+                    RightButtonStyle = App.Current.FindResource("YellowButtonStyle") as Style;
                     break;
             }
         }

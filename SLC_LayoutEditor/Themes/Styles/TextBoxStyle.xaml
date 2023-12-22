@@ -24,10 +24,10 @@
                             <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBackgroundHoverColorBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderHoverColorBrush}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderColorBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderPressedColorBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -55,10 +55,10 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBackgroundHoverColorBrush}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderHoverColorBrush}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocused" Value="True">
-                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderColorBrush}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderPressedColorBrush}"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>

@@ -50,11 +50,16 @@
         <TextBlock Text="Utilities" Style="{StaticResource Title2TextStyle}"/>
         <CheckBox IsChecked="{Binding Settings.ShowWarningWhenIssuesPresent}" Content="Show warning dialog when severe issues are present"/>
         <CheckBox IsChecked="{Binding Settings.OpenFolderWithEditedLayout}" Content="Open folder with edited layout after saving"/>
-        <CheckBox IsChecked="{Binding Settings.HideSidebarAfterLoadingLayout}" Content="Hide sidebar after loading a layout" Margin="16"/>
+        <CheckBox IsChecked="{Binding Settings.HideSidebarAfterLoadingLayout}" Content="Hide sidebar after loading a layout" Margin="16,16,16,4"/>
+        <CheckBox IsChecked="{Binding Settings.RememberLastLayout}" Content="Remember last edited layout on exit"/>
     </StackPanel>
     <StackPanel Margin="8" DockPanel.Dock="Top">
         <TextBlock Text="Updates" Style="{StaticResource Title2TextStyle}"/>
         <CheckBox IsChecked="{Binding Settings.AutoSearchForUpdates}" Content="Automatically search for updates after launching"/>
         <CheckBox IsChecked="{Binding Settings.ShowChangesAfterUpdate}" Content="Show patchnotes after an update" Margin="16,16,8,8"/>
+    </StackPanel>
+    <StackPanel Margin="8" DockPanel.Dock="Top">
+        <TextBlock Text="Miscellaneous" Style="{StaticResource Title2TextStyle}"/>
+        <CheckBox IsChecked="{Binding Settings.EnableSeasonalThemes}" Content="Enable seasonal themes (requires restart)"/>
     </StackPanel>
 </DockPanel>

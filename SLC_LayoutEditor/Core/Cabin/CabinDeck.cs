@@ -217,6 +217,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             return CabinSlots.Where(x => x.IsSeat).Select(x => x.Row).Distinct();
         }
 
+        public IEnumerable<CabinSlot> GetCabinSlotsOfTypeInColumn(CabinSlotType slotType, int column, int startRow = 0)
+        {
+            return CabinSlots.Where(x => x.Row >= startRow && x.Column == column && x.Type == slotType);
+        }
+
         public Dictionary<CabinSlot, int> GetStairways()
         {
             Dictionary<CabinSlot, int> stairwayDict = new Dictionary<CabinSlot, int>();
@@ -389,6 +394,77 @@ namespace SLC_LayoutEditor.Core.Cabin
             return sb.Length > 0 ? sb.ToString() : null;
         }
 
+        public CabinSlot GetNearestServiceArea(CabinSlot seat)
+        {
+            // Search nearest aisle upward
+            foreach (CabinSlot slot in mCabinSlots
+                                        .Where(x => x.Row == seat.Row)
+                                        .Take(seat.Column)
+                                        .OrderByDescending(x => x.Column))
+            {
+                if (slot.Type == CabinSlotType.Aisle)
+                {
+                    return slot;
+                }
+                else if (!slot.IsSeat)
+                {
+                    break;
+                }
+            }
+
+            // Search nearest aisle downward
+            foreach (CabinSlot slot in mCabinSlots
+                                        .Where(x => x.Row == seat.Row)
+                                        .Skip(seat.Column)
+                                        .OrderBy(x => x.Column))
+            {
+                if (slot.Type == CabinSlotType.Aisle)
+                {
+                    return slot;
+                }
+                else if (!slot.IsSeat)
+                {
+                    break;
+                }
+            }
+
+            return null;
+        }
+
+        public bool HasSeatInRow(CabinSlot source)
+        {
+            // Search nearest seat upward
+            foreach (CabinSlot slot in mCabinSlots
+                                        .Where(x => x.Row == source.Row)
+                                        .Take(source.Column)
+                                        .OrderByDescending(x => x.Column))
+            {
+                if (slot.IsSeat)
+                {
+                    return true;
+                }
+            }
+
+            // Search nearest seat downward
+            foreach (CabinSlot slot in mCabinSlots
+                                        .Where(x => x.Row == source.Row)
+                                        .Skip(source.Column)
+                                        .OrderBy(x => x.Column))
+            {
+                if (slot.IsSeat)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public CabinSlot GetSlotAtPosition(int row, int column)
+        {
+            return mCabinSlots.FirstOrDefault(x => x.Row == row && x.Column == column);
+        }
+
         private void AppendBulletPoint(StringBuilder sb, string text, bool indented)
         {
             if (sb.Length > 0)
@@ -426,7 +502,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             RefreshProblemChecks();
         }
 
-        public override string ToString()
+        public string ToFileString()
         {
             var ordered = mCabinSlots.GroupBy(x => x.Column).OrderBy(x => x.Key);
 
@@ -438,6 +514,11 @@ namespace SLC_LayoutEditor.Core.Cabin
                 cabinDeckRaw += string.Join(",", columnData) + ",\r\n";
             }
             return cabinDeckRaw;
+        }
+
+        public override string ToString()
+        {
+            return FloorName;
         }
 
         public void RefreshProblemChecks()

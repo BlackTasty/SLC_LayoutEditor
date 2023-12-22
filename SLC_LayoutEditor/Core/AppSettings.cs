@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 using System.IO;
 
 namespace SLC_LayoutEditor.Core
@@ -22,6 +23,15 @@ namespace SLC_LayoutEditor.Core
         private bool mWelcomeScreenShown;
         private bool mHideSidebarAfterLoadingLayout;
 
+        #region Remember last layout settings
+        private bool mRememberLastLayout;
+        private string mLastLayoutSet;
+        private string mLastLayout;
+        private bool mLastLayoutWasTemplate;
+        #endregion
+
+        private bool mEnableSeasonalThemes = true;
+
         public string CabinLayoutsEditPath
         {
             get => mCabinLayoutsEditPath;
@@ -40,6 +50,8 @@ namespace SLC_LayoutEditor.Core
         [JsonIgnore]
         public bool PathsValid => EditPathValid;
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(true)]
         public bool ShowWarningWhenIssuesPresent
         {
             get => mShowWarningWhenIssuesPresent;
@@ -85,6 +97,8 @@ namespace SLC_LayoutEditor.Core
         #endregion
 
         #region Updater settings
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(true)]
         public bool AutoSearchForUpdates
         {
             get => mAutoSearchForUpdates;
@@ -95,6 +109,8 @@ namespace SLC_LayoutEditor.Core
             }
         }
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(true)]
         public bool ShowChangesAfterUpdate
         {
             get => mShowChangesAfterUpdate;
@@ -108,11 +124,66 @@ namespace SLC_LayoutEditor.Core
         public int LastVersionChangelogShown { get; set; }
         #endregion
 
+        #region Remember last layout settings
+        public bool RememberLastLayout
+        {
+            get => mRememberLastLayout;
+            set
+            {
+                mRememberLastLayout = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public string LastLayoutSet
+        {
+            get => mLastLayoutSet;
+            set
+            {
+                mLastLayoutSet = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public string LastLayout
+        {
+            get => mLastLayout;
+            set
+            {
+                mLastLayout = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool LastLayoutWasTemplate
+        {
+            get => mLastLayoutWasTemplate;
+            set
+            {
+                mLastLayoutWasTemplate = value;
+                InvokePropertyChanged();
+            }
+        }
+        #endregion
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(true)]
+        public bool EnableSeasonalThemes
+        {
+            get => mEnableSeasonalThemes;
+            set
+            {
+                mEnableSeasonalThemes = value;
+                InvokePropertyChanged();
+            }
+        }
+
         [JsonConstructor]
         public AppSettings(string cabinLayoutsEditPath, bool welcomeScreenShown, bool templatesCopied,
             bool showWarningWhenIssuesPresent, bool openFolderWithEditedLayout,
             bool autoSearchForUpdates, bool showChangesAfterUpdate, int lastVersionChangelogShown, 
-            bool hideSidebarAfterLoadingLayout) : this()
+            bool hideSidebarAfterLoadingLayout, bool rememberLastLayout, string lastLayoutSet, string lastLayout, bool lastLayoutWasTemplate, 
+            bool enableSeasonalThemes) : this()
         {
             mCabinLayoutsEditPath = cabinLayoutsEditPath;
             mWelcomeScreenShown = welcomeScreenShown;
@@ -134,6 +205,11 @@ namespace SLC_LayoutEditor.Core
                 mShowChangesAfterUpdate = true;
             }
             mHideSidebarAfterLoadingLayout = hideSidebarAfterLoadingLayout;
+            mRememberLastLayout = rememberLastLayout;
+            mLastLayoutSet = lastLayoutSet;
+            mLastLayout = lastLayout;
+            mLastLayoutWasTemplate = lastLayoutWasTemplate;
+            mEnableSeasonalThemes = enableSeasonalThemes;
         }
 
         public AppSettings() : base(false)

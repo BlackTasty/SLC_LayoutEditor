@@ -15,6 +15,8 @@ namespace SLC_LayoutEditor.Controls
 {
     internal class SidebarToggleAdorner : Adorner
     {
+        private const double BORDER_THICKNESS = 1.5;
+
         public SidebarToggleAdorner(UIElement adornedElement) : base(adornedElement)
         {
             if (App.IsDialogOpen)
@@ -33,7 +35,7 @@ namespace SLC_LayoutEditor.Controls
             {
                 renderBrush = button.Background;
 
-                renderPen = new Pen(button.BorderBrush, 1.5);
+                renderPen = new Pen(button.BorderBrush, BORDER_THICKNESS);
             }
 
             #region Draw actual adorner

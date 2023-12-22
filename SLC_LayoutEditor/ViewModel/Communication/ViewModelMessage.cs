@@ -11,6 +11,11 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         DialogOpening,
         UnsavedChangesDialogClosed,
         SettingsSaved,
-        Patcher_IsSearchingChanged
+        Patcher_IsSearchingChanged,
+        EditLayoutNameRequested,
+        LayoutNameChanged,
+        GuideAdornerShown,
+        GuideAdornerClosed,
+        ForceTemplatingToggleState
     }
 }

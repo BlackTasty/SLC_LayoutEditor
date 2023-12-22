@@ -19,12 +19,12 @@ namespace SLC_LayoutEditor.UI.Dialogs
         public CreateTemplateDialog(IEnumerable<string> templateNames)
         {
             InitializeComponent();
-            (DataContext as AddDialogViewModel).ExistingNames.AddRange(templateNames);
+            (DataContext as AddEditDialogViewModel).ExistingNames.AddRange(templateNames);
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, (DataContext as AddDialogViewModel).Name));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, (DataContext as AddEditDialogViewModel).Name));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

@@ -1,5 +1,15 @@
-﻿16.12.2023
-Added: The editor now writes more detailed logs for debugging purposes
-Added: Hovering over an issue card now shows a tooltip containing all issues
-Updated: The patcher info at the top right got a revamp!
-Fixed: Decks with rows not covered by a service now properly show up as a severe issue
+﻿22.12.2023 m
+Added: In-app guides! Right-clicking on some elements (like the issue tracker, buttons to add cabin layouts, etc) now allows you to show a short info about the element
+Added: Seasonal themes have been introduced! These can be toggled in the settings
+Added: A new option has been added to the settings, which when enabled remembers your last edited layout on exiting
+Added: The seat capacity view now also shows the amount of galleys in your layout
+Added: (BETA) You can now automate the placement of service start- and endpoints
+Added: Cabin layouts and templates can now be renamed
+Updated: Slot automation is now separate from slot configuration with a toggle, and no longer requires selecting multiple slots in order to show up
+Updated: Increased thickness for scrollbars
+Fixed: Some texts in the layout view could appear blurry
+Fixed: The wall automation is working again and doesn't crash the editor anymore
+Fixed: Reloading a layout from disk works again
+Fixed: Wall automation does no longer override slots of type "Cockpit"
+Fixed: The texts in the "Save as" dialog for templates now shows "template" instead of "cabin layout"
+Fixed: Creating a template from scratch (without basing it off of an existing layout or template) would result in a crash

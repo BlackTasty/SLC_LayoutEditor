@@ -195,5 +195,10 @@ namespace SLC_LayoutEditor.Core
                   .Select(item => item.ToString("x2")));
             }
         }
+
+        public static void RefreshTheme(System.Windows.Application app)
+        {
+            ((IUIManager)app).RefreshTheme();
+        }
     }
 }

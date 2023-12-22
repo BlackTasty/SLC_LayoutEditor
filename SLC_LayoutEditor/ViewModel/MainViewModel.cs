@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Patcher;
@@ -204,6 +205,18 @@ namespace SLC_LayoutEditor.ViewModel
             }
 
             return false;
+        }
+
+        public void RememberLayout()
+        {
+            if (Content is LayoutEditor editor)
+            {
+                editor.RememberLayout();
+            }
+            else
+            {
+                this.editor?.RememberLayout();
+            }
         }
 
         private void Welcome_WelcomeConfirmed(object sender, EventArgs e)

@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using SLC_LayoutEditor.Converter;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.UI.Dialogs;
@@ -32,8 +33,17 @@ namespace SLC_LayoutEditor.ViewModel
         private const string TEXT_ERROR_SLOT_NUMBER_INVALID = "Only values from 0-99 allowed!";
         private const string TEXT_ERROR_SLOT_LETTER_INVALID = "Only alphanumeric values allowed!";
 
+        private const string TEXT_GUIDE_ADD_LAYOUT_INFO_ADDITIONAL = "Here you can optionally select a template (if any are available) to base your layout off of.";
+        private const string TEXT_GUIDE_ADD_TEMPLATE_INFO_ADDITIONAL = "Templates can be later used to create new templates faster.";
+        private const string TEXT_GUIDE_SLOT_CONFIGURATOR_TITLE = "Configuring slots";
+        private const string TEXT_GUIDE_SLOT_AUTOMATION_TITLE = "Automating configurations";
+        private const string TEXT_GUIDE_SLOT_CONFIGURATOR_DESCRIPTION = "Here you can change the slot type as well as configuring slot data (if applicable).";
+        private const string TEXT_GUIDE_SLOT_AUTOMATION_DESCRIPTION = "This allows you to automate certain configuration steps on your layout.";
+
         private static readonly Style ADD_LAYOUT_BUTTON_STYLE = (Style)App.Current.FindResource("DefaultBorderedIconButtonStyle");
         private static readonly Style ADD_TEMPLATE_BUTTON_STYLE = (Style)App.Current.FindResource("TemplateBorderedIconButtonStyle");
+
+        private CabinLayout editNameTarget;
 
         private bool hasUnsavedChanges;
         private dynamic storedNewValue = new Unset();
@@ -48,7 +58,6 @@ namespace SLC_LayoutEditor.ViewModel
         private CabinLayoutSet mSelectedLayoutSet;
         private CabinLayout mSelectedCabinLayout;
         private CabinLayout mSelectedTemplate;
-        private CabinDeck mSelectedCabinDeck;
 
         private bool mHasSeatNumberInputError;
 
@@ -59,6 +68,9 @@ namespace SLC_LayoutEditor.ViewModel
         private int mSelectedAutomationIndex = -1;
         private string mAutomationSeatLetters = "";
         private int mAutomationSeatStartNumber = 1;
+        private bool mIsAutomationChecked;
+        private CabinDeck mAutomationSelectedDeck;
+        private int mMaxRowsPerServiceGroup = 8;
         private int mServiceAreasCount = 1;
 
         private bool mIsLoadingLayout;
@@ -205,7 +217,7 @@ namespace SLC_LayoutEditor.ViewModel
                 }
                 mSelectedCabinLayout = value;
 
-                if (value != null)
+                if (value != null && SelectedTemplate != null)
                 {
                     SelectedTemplate = null;
                 }
@@ -362,8 +374,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedMultiSlotTypeIndex = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(MultiSlotTypesMatch));
             }
         }
+
+        public bool MultiSlotTypesMatch => mSelectedAutomationIndex > -1;
 
         public string LayoutOverviewTitle => ActiveLayout != null ? 
             string.Format("Cabin layout \"{0}\"{1}", ActiveLayout.LayoutName, hasUnsavedChanges ? "*" : "") : 
@@ -400,22 +415,32 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public bool IsAutomationChecked
+        {
+            get => mIsAutomationChecked;
+            set
+            {
+                mIsAutomationChecked = value;
+                InvokePropertyChanged();
+            }
+        }
+        
+        public int MaxRowsPerServiceGroup
+        {
+            get => mMaxRowsPerServiceGroup;
+            set
+            {
+                mMaxRowsPerServiceGroup = Math.Max(value, 2);
+                InvokePropertyChanged();
+            }
+        }
+
         private CabinLayout ShownLayout => mSelectedCabinLayout != null ? mSelectedCabinLayout : mSelectedTemplate;
 
         private void SelectedLayout_LayoutChanged(object sender, EventArgs e)
         {
             InvokePropertyChanged(nameof(StairwayErrorMessage));
             OnChanged(new ChangedEventArgs(Util.HasLayoutChanged(ActiveLayout)));
-        }
-
-        public CabinDeck SelectedCabinDeck
-        {
-            get => mSelectedCabinDeck;
-            set
-            {
-                mSelectedCabinDeck = value;
-                InvokePropertyChanged();
-            }
         }
 
         private void CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
@@ -458,6 +483,19 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public CabinDeck AutomationSelectedDeck
+        {
+            get => mAutomationSelectedDeck;
+            set
+            {
+                mAutomationSelectedDeck = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(AutomationSelectedDeckValid));
+            }
+        }
+
+        public bool AutomationSelectedDeckValid => mAutomationSelectedDeck != null;
+
         public bool AutomationLettersValid => Regex.IsMatch(AutomationSeatLetters, @"^[a-zA-Z]+$");
 
         public int ServiceAreasCount
@@ -498,13 +536,27 @@ namespace SLC_LayoutEditor.ViewModel
                     InvokePropertyChanged(!value ? nameof(SelectedLayoutText) : nameof(SelectedTemplateText));
                     InvokePropertyChanged(nameof(AddLayoutButtonStyle));
                     InvokePropertyChanged(nameof(AddLayoutTooltip));
+                    InvokePropertyChanged(nameof(AddLayoutGuideTitle));
+                    InvokePropertyChanged(nameof(AddLayoutGuideDescription));
+                    InvokePropertyChanged(nameof(SlotSettingsGuideTitle));
+                    InvokePropertyChanged(nameof(SlotSettingsGuideDescription));
                 }
             }
         }
 
         public Style AddLayoutButtonStyle => !IsTemplatingMode ? ADD_LAYOUT_BUTTON_STYLE : ADD_TEMPLATE_BUTTON_STYLE;
 
+        public string AddLayoutGuideTitle => string.Format("Creating a new {0}", !IsTemplatingMode ? "layout" : "template");
+
+        public string AddLayoutGuideDescription => string.Format("In order to create a new {0}, click on the + button.\n{1}", 
+            !IsTemplatingMode ? "layout" : "template",
+            !IsTemplatingMode ? TEXT_GUIDE_ADD_LAYOUT_INFO_ADDITIONAL : TEXT_GUIDE_ADD_TEMPLATE_INFO_ADDITIONAL);
+
         public string AddLayoutTooltip => !IsTemplatingMode ? "Create a new layout" : "Create a new template";
+
+        public string SlotSettingsGuideTitle => !IsTemplatingMode ? TEXT_GUIDE_SLOT_CONFIGURATOR_TITLE : TEXT_GUIDE_SLOT_AUTOMATION_TITLE;
+
+        public string SlotSettingsGuideDescription => !IsTemplatingMode ? TEXT_GUIDE_SLOT_CONFIGURATOR_DESCRIPTION : TEXT_GUIDE_SLOT_AUTOMATION_DESCRIPTION;
 
         public LayoutEditorViewModel()
         {
@@ -519,6 +571,49 @@ namespace SLC_LayoutEditor.ViewModel
             }
 
             mLayoutSets.CollectionUpdated += LayoutSets_CollectionUpdated;
+
+            Mediator.Instance.Register(o =>
+            {
+                if (SelectedLayoutSet != null && o is CabinLayout layout)
+                {
+                    editNameTarget = layout;
+                    IEnumerable<string> existingNames = (!layout.IsTemplate ? SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName) :
+                    SelectedLayoutSet.Templates.Select(x => x.LayoutName)).Where(x => x != layout.LayoutName);
+                    IDialog dialog = new EditCabinLayoutNameDialog(existingNames, layout.LayoutName,
+                        layout.IsTemplate);
+
+                    dialog.DialogClosing += EditLayoutName_DialogClosing;
+
+                    Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                }
+            }, ViewModelMessage.EditLayoutNameRequested);
+        }
+
+        private void EditLayoutName_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.OK && e.Data is AddDialogResult result)
+            {
+                editNameTarget.Rename(result.Name);
+
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.LayoutNameChanged);
+            }
+        }
+
+        public bool CheckUnsavedChanges(dynamic newValue, bool isClosing = false)
+        {
+            if (hasUnsavedChanges)
+            {
+                bool isTemplate = ShownLayout.IsTemplate;
+                storedNewValue = newValue;
+                ConfirmationDialog dialog = new ConfirmationDialog(!isClosing ? "Save before swapping " + (!isTemplate ? "layout" : "template") : "Save before closing?",
+                    "Do you want to save the current " + (!isTemplate ? "layout" : "template") + " before " + (!isClosing ? "proceeding" : "closing the editor") + "?", DialogType.YesNoCancel);
+
+                dialog.DialogClosing += UnsavedChangesDialog_DialogClosing;
+
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            }
+
+            return hasUnsavedChanges;
         }
 
         private void LayoutSets_CollectionUpdated(object sender, Tasty.ViewModel.Core.Events.CollectionUpdatedEventArgs<CabinLayoutSet> e)
@@ -530,6 +625,34 @@ namespace SLC_LayoutEditor.ViewModel
         {
             await SelectedLayoutSet.LoadCabinLayouts();
             InvokePropertyChanged(nameof(SelectedLayoutText));
+
+            if (App.IsStartup)
+            {
+                // Check if a layout was open during the last session
+                if (App.Settings.RememberLastLayout)
+                {
+                    CabinLayout lastLayout = !App.Settings.LastLayoutWasTemplate ? SelectedLayoutSet.CabinLayouts.FirstOrDefault(x => x.LayoutName == App.Settings.LastLayout) :
+                            SelectedLayoutSet.Templates.FirstOrDefault(x => x.LayoutName == App.Settings.LastLayout);
+
+                    if (lastLayout != null)
+                    {
+                        if (!App.Settings.LastLayoutWasTemplate)
+                        {
+                            SelectedCabinLayout = lastLayout;
+                        }
+                        else
+                        {
+                            IsTemplatingMode = true;
+                            ForceUpdateActiveLayout = true;
+                            SelectedTemplate = lastLayout;
+                            ForceUpdateActiveLayout = false;
+
+                            Mediator.Instance.NotifyColleagues(ViewModelMessage.ForceTemplatingToggleState, true);
+                        }
+                    }
+                }
+                App.IsStartup = false;
+            }
         }
 
         private bool ArrayContains(string[] array, int targetIndex)
@@ -548,23 +671,6 @@ namespace SLC_LayoutEditor.ViewModel
             }
 
             return false;
-        }
-
-        public bool CheckUnsavedChanges(dynamic newValue, bool isClosing = false)
-        {
-            if (hasUnsavedChanges)
-            {
-                bool isTemplate = ShownLayout.IsTemplate;
-                storedNewValue = newValue;
-                ConfirmationDialog dialog = new ConfirmationDialog(!isClosing ? "Save before swapping " + (!isTemplate ? "layout" : "template") : "Save before closing?",
-                    "Do you want to save the current " + (!isTemplate ? "layout" : "template") + " before " + (!isClosing ? "proceeding" : "closing the editor") + "?", DialogType.YesNoCancel);
-
-                dialog.DialogClosing += UnsavedChangesDialog_DialogClosing;
-
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
-            }
-
-            return hasUnsavedChanges;
         }
 
         private void UnsavedChangesDialog_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -629,6 +735,8 @@ namespace SLC_LayoutEditor.ViewModel
                 return false;
             }
 
+            IsIssueTrackerExpanded = false;
+            IsAutomationChecked = false;
             if (current != null)
             {
                 current.CabinDeckCountChanged -= SelectedLayout_LayoutChanged;
@@ -642,10 +750,10 @@ namespace SLC_LayoutEditor.ViewModel
 
         private void FinishCabinLayoutChange(CabinLayout updated, EventHandler<EventArgs> deletedCallback)
         {
-            SelectedCabinDeck = null;
             SelectedCabinSlots.Clear();
             SelectedCabinSlotTypeId = -1;
             SelectedMultiSlotTypeIndex = -1;
+            AutomationSelectedDeck = null;
             if (updated != null)
             {
                 updated.CabinDeckCountChanged += SelectedLayout_LayoutChanged;

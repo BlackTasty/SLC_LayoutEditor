@@ -5,7 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
              xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             local:GuideAssist.Title="Issue tracker"
+             local:GuideAssist.Description="The issue tracker keeps watch of your changes, and informs you in case of detected problems.&#x0a;The editor can also try to automatically fix some of these issues for you!"
+             local:GuideAssist.HasGuide="True"
+             local:GuideAssist.IsCircleCutout="False"
+             local:GuideAssist.TextPosition="Top">
     <UserControl.DataContext>
         <vm:LayoutEditorViewModel/>
     </UserControl.DataContext>
@@ -14,7 +19,7 @@
                            IsExpanded="{Binding IsIssueTrackerExpanded}">
         <local:RefinedExpander.Style>
             <Style TargetType="local:RefinedExpander" BasedOn="{StaticResource {x:Type local:RefinedExpander}}">
-                <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonBorderColorBrush}"/>
+                <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonForegroundColorBrush}"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ActiveLayout.HasMinorIssues}" Value="True">
                         <Setter Property="DescriptionForeground" Value="{DynamicResource WarnForegroundColorBrush}"/>

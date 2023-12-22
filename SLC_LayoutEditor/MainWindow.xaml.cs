@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core;
+﻿using SLC_LayoutEditor.Controls;
+using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
@@ -33,8 +34,12 @@ namespace SLC_LayoutEditor
         private bool isClosing;
         private bool forceClose;
 
+        private LiveGuideAdorner currentGuideAdorner;
+
         public MainWindow()
         {
+            Util.RefreshTheme(Application.Current);
+
             InitializeComponent();
             vm = DataContext as MainViewModel;
 
@@ -49,6 +54,19 @@ namespace SLC_LayoutEditor
                     Close();
                 }
             }, ViewModelMessage.UnsavedChangesDialogClosed);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is LiveGuideAdorner adorner)
+                {
+                    currentGuideAdorner = adorner;
+                }
+            }, ViewModelMessage.GuideAdornerShown);
+
+            Mediator.Instance.Register(o =>
+            {
+                currentGuideAdorner = null;
+            }, ViewModelMessage.GuideAdornerClosed);
         }
 
         private void CheckCleanupFile()
@@ -139,7 +157,10 @@ namespace SLC_LayoutEditor
             {
                 isClosing = true;
                 e.Cancel = true;
+                return;
             }
+
+            vm.RememberLayout();
         }
 
         private void Changelog_Click(object sender, RoutedEventArgs e)

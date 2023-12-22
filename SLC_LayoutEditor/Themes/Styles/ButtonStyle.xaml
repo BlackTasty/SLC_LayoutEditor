@@ -6,7 +6,7 @@
 
     <Style TargetType="Button">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Padding" Value="12,6"/>
@@ -115,8 +115,8 @@
 
     <Style x:Key="AddRowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonForegroundColorBrush}"/>
 
         <Setter Property="Template">
             <Setter.Value>
@@ -156,8 +156,8 @@
 
     <Style x:Key="AddColumnButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonForegroundColorBrush}"/>
 
         <Setter Property="Template">
             <Setter.Value>
@@ -197,8 +197,8 @@
 
     <Style x:Key="AddRowButtonLargeStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonForegroundColorBrush}"/>
 
         <Setter Property="Template">
             <Setter.Value>
@@ -238,8 +238,8 @@
 
     <Style x:Key="AddColumnButtonLargeStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonForegroundColorBrush}"/>
 
         <Setter Property="Template">
             <Setter.Value>
@@ -279,8 +279,8 @@
 
     <Style x:Key="SelectButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonForegroundColorBrush}"/>
         <Setter Property="Padding" Value="5.5"/>
 
         <Setter Property="ContentTemplate" Value="{DynamicResource IconButtonTemplate}"/>
@@ -424,13 +424,25 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ButtonBorderHoverColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ButtonForegroundHoverColorBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ButtonBorderPressedColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressedColorBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ForegroundIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
+        <Setter Property="Foreground" Value="{StaticResource ForegroundSecondaryColorBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundPressedColorBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -510,22 +522,22 @@
     </Style>
 
     <Style x:Key="TemplateBorderedIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultBorderedIconButtonStyle}">
-        <Setter Property="BorderBrush" Value="{StaticResource TemplatingModeBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource TemplatingModeBorderBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource TemplatingModeBrush}"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource TemplatingModeHoverBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TemplatingModeBorderHoverBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource TemplatingModeHoverBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource TemplatingModePressedBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TemplatingModeBorderPressedBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource TemplatingModePressedBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style x:Key="FilledLargeRoundIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultBorderedIconButtonStyle}">
-        <Setter Property="Background" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Background" Value="{StaticResource ButtonForegroundColorBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource BackgroundDarkBrush}"/>
         <Setter Property="Padding" Value="16"/>
         <Setter Property="Width" Value="56"/>
@@ -551,11 +563,11 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource ButtonBorderHoverColorBrush}"/>
+                <Setter Property="Background" Value="{StaticResource ButtonForegroundHoverColorBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource BackgroundLightBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="{StaticResource ButtonBorderPressedColorBrush}"/>
+                <Setter Property="Background" Value="{StaticResource ButtonForegroundPressedColorBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource BackgroundDarkBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
@@ -637,7 +649,7 @@
     </Style>
 
     <Style x:Key="AddDeckButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
         <Setter Property="Background" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
         <Setter Property="Padding" Value="16"/>
@@ -659,12 +671,12 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ButtonBorderHoverColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ButtonForegroundHoverColorBrush}"/>
                 <Setter Property="Background" Value="{StaticResource RemoveDeckButtonBackgroundBrush}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource RemoveDeckButtonBackgroundBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ButtonBorderPressedColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressedColorBrush}"/>
                 <Setter Property="Background" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonPressedBackgroundBrush}"/>
             </Trigger>

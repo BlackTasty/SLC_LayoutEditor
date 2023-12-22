@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Themes/Colors.xaml"/>
                 <ResourceDictionary Source="Themes/Style.xaml"/>
                 <ResourceDictionary Source="Icons.xaml"/>
+                <!--<ResourceDictionary Source="Themes/Overrides/ChristmasTheme.xaml"/>-->
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

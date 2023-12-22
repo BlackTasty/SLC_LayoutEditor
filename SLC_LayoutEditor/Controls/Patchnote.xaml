@@ -17,7 +17,7 @@
                 Visibility="{Binding IsHotfix, ElementName=patchnote, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Style="{DynamicResource CardTextStyle}" Text="Hotfix"/>
         </Border>
-        <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonBorderColorBrush}" VerticalAlignment="Top"
+        <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonForegroundColorBrush}" VerticalAlignment="Top"
                 Visibility="{Binding IsMajorRelease, ElementName=patchnote, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Style="{DynamicResource CardTextStyle}" Text="Major release"/>
         </Border>

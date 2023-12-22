@@ -26,11 +26,13 @@ namespace SLC_LayoutEditor.UI
     public partial class Settings : DockPanel
     {
         private SettingsViewModel vm;
+        private bool areSeasonalThemesEnabled;
 
         public Settings()
         {
             InitializeComponent();
             vm = DataContext as SettingsViewModel;
+            areSeasonalThemesEnabled = App.Settings.EnableSeasonalThemes;
         }
 
         private void OpenEditFolder_Click(object sender, RoutedEventArgs e)
@@ -53,6 +55,11 @@ namespace SLC_LayoutEditor.UI
         {
             App.Settings.Save(App.Settings.FilePath);
             Mediator.Instance.NotifyColleagues(ViewModelMessage.SettingsSaved);
+
+            /*if (areSeasonalThemesEnabled != App.Settings.EnableSeasonalThemes)
+            {
+                Util.RefreshTheme(Application.Current);
+            }*/
         }
 
         private void Rollback_Click(object sender, RoutedEventArgs e)

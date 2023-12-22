@@ -7,12 +7,18 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.ViewModel
 {
-    public class AddDialogViewModel : ViewModelBase
+    public class AddEditDialogViewModel : ViewModelBase
     {
-        private readonly string nameExistsErrorMessage;
+        private string nameExistsErrorMessage;
 
         private string mName;
         private List<string> mExistingNames = new List<string>();
+
+        public string NameExistsErrorMessage
+        {
+            get => nameExistsErrorMessage;
+            set => nameExistsErrorMessage = value;
+        }
 
         public string Name
         {
@@ -55,7 +61,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public AddDialogViewModel(string nameExistsErrorMessage, string defaultName = null)
+        public AddEditDialogViewModel(string nameExistsErrorMessage, string defaultName = null)
         {
             mName = defaultName;
             this.nameExistsErrorMessage = nameExistsErrorMessage;

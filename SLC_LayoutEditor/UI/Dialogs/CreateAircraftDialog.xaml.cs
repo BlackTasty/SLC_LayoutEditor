@@ -19,12 +19,12 @@ namespace SLC_LayoutEditor.UI.Dialogs
         public CreateAircraftDialog(IEnumerable<string> aircraftNames)
         {
             InitializeComponent();
-            (DataContext as AddDialogViewModel).ExistingNames.AddRange(aircraftNames);
+            (DataContext as AddEditDialogViewModel).ExistingNames.AddRange(aircraftNames);
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddDialogViewModel).Name)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddEditDialogViewModel).Name)));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

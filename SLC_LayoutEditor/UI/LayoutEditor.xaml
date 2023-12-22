@@ -4,13 +4,16 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
+      xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
       xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls"
       xmlns:enum="clr-namespace:SLC_LayoutEditor.Core.Enum"
       xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
       xmlns:local="clr-namespace:SLC_LayoutEditor.UI"
       mc:Ignorable="d"
-      d:DesignWidth="1100"
-      d:DesignHeight="650">
+      d:DesignWidth="1200"
+      d:DesignHeight="650"
+      d:DataContext="{d:DesignInstance {x:Type dvm:LayoutEditorDesignViewModel}, IsDesignTimeCreatable=True}"
+      Loaded="Grid_Loaded">
     <Grid.DataContext>
         <vm:LayoutEditorViewModel/>
     </Grid.DataContext>
@@ -111,6 +114,21 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="MultiSelectDetailsStyle" TargetType="TextBlock" BasedOn="{StaticResource Title3TextStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSingleCabinSlotSelected}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsAutomationChecked}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <ContextMenu x:Key="GuideMenu">
+            <MenuItem Header="Help" Click="ShowGuide_Click"/>
+        </ContextMenu>
     </Grid.Resources>
     <Grid.ColumnDefinitions>
         <ColumnDefinition x:Name="column_sidebar">
@@ -127,13 +145,18 @@
         </ColumnDefinition>
         <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
-    <Border Background="{DynamicResource BackgroundDarkBrush}">
-        <DockPanel Margin="8" LastChildFill="False" Background="{DynamicResource BackgroundDarkBrush}">
+    <Border>
+        <DockPanel Margin="8" LastChildFill="False">
             <Border DockPanel.Dock="Top" Style="{DynamicResource CardStyle}">
                 <StackPanel>
                     <DockPanel Margin="0,0,0,8">
                         <ToggleButton Style="{StaticResource TemplateSwitchToggleButton}" DockPanel.Dock="Right"
-                                      IsChecked="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}"/>
+                                      IsChecked="{Binding ElementName=control_layout, Path=IsTemplatingMode, UpdateSourceTrigger=PropertyChanged}"
+                                      controls:GuideAssist.Title="Switching editor mode"
+                                      controls:GuideAssist.Description="This toggle allows you to switch between templating and layouting mode.&#x0a;Templates that have been created can be later used to base new layouts off of."
+                                      controls:GuideAssist.HasGuide="True"
+                                      controls:GuideAssist.RadiusOffset="-8"
+                                      ContextMenu="{StaticResource GuideMenu}"/>
                         <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
                                    Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
                             <TextBlock.Style>
@@ -150,9 +173,12 @@
                         <TextBlock Text="Aircrafts" Margin="4,0" Style="{StaticResource Title3TextStyle}"/>
                     </DockPanel>
                     <DockPanel Margin="8,0">
-                        <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add a new aircraft"
-                                Click="AddAircraft_Click" Style="{StaticResource DefaultBorderedIconButtonStyle}" Content="{StaticResource Add}">
-                        </Button>
+                        <Button x:Name="btn_createAircraft" DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add a new aircraft"
+                                Click="AddAircraft_Click" Style="{StaticResource DefaultBorderedIconButtonStyle}" Content="{StaticResource Add}"
+                                controls:GuideAssist.Title="Creating a new aircraft"
+                                controls:GuideAssist.Description="To create a new aircraft type, click on the + button."
+                                controls:GuideAssist.HasGuide="True"
+                                ContextMenu="{StaticResource GuideMenu}"/>
                         <controls:RefinedComboBox x:Name="combo_layoutSets" Margin="0,4,8,4"
                                                   ItemsSource="{Binding LayoutSets, Converter={StaticResource AircraftListSortConverter}}"
                                                   SelectedItem="{Binding SelectedLayoutSet}" Grid.IsSharedSizeScope="True"
@@ -170,7 +196,7 @@
                                                         <ColumnDefinition SharedSizeGroup="layoutCount" Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Text="{Binding AircraftName}" Margin="0,0,8,0"/>
-                                                    <Border BorderThickness="1,0" BorderBrush="{DynamicResource AccentColorBrush}"
+                                                    <Border BorderThickness="1,0" BorderBrush="{DynamicResource ComboBoxItemSplitterColorBrush}"
                                                             DockPanel.Dock="Right" Grid.Column="1" Margin="0,-4,0,-16"/>
                                                     <TextBlock DockPanel.Dock="Right" FontStyle="Italic" Margin="8,0,0,0"
                                                                Grid.Column="2" TextAlignment="Right"
@@ -229,15 +255,21 @@
                                 </StackPanel>
                                 <DockPanel DockPanel.Dock="Top" IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}" Margin="4,0">
                                     <Button DockPanel.Dock="Right" Width="22" Height="22" ToolTip="{Binding AddLayoutTooltip}" Content="{StaticResource Add}"
-                                            Click="CreateCabinLayout_Click" Style="{Binding AddLayoutButtonStyle}"/>
+                                            Click="CreateCabinLayout_Click" Style="{Binding AddLayoutButtonStyle}"
+                                            controls:GuideAssist.Title="{Binding AddLayoutGuideTitle}"
+                                            controls:GuideAssist.Description="{Binding AddLayoutGuideDescription}"
+                                            controls:GuideAssist.HasGuide="True"
+                                            ContextMenu="{StaticResource GuideMenu}"/>
                                     <StackPanel>
                                         <controls:RefinedComboBox x:Name="combo_layouts" Margin="0,4,8,4"
+                                                                  DisplayMemberPath="LayoutName"
                                                                   ItemsSource="{Binding SelectedLayoutSet.CabinLayouts, UpdateSourceTrigger=PropertyChanged}"
                                                                   SelectedItem="{Binding SelectedCabinLayout}"
                                                                   Watermark="{Binding SelectedLayoutText}"
                                                                   IsEnabled="{Binding SelectedLayoutSet.IsCabinLayoutSelectionEnabled}"
                                                                   Visibility="{Binding IsTemplatingMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                                         <controls:RefinedComboBox x:Name="combo_templates" Margin="0,4,8,4"
+                                                                  DisplayMemberPath="LayoutName"
                                                                   ItemsSource="{Binding SelectedLayoutSet.Templates, UpdateSourceTrigger=PropertyChanged}"
                                                                   Style="{StaticResource TemplateComboBoxStyle}"
                                                                   SelectedItem="{Binding SelectedTemplate}"
@@ -252,20 +284,10 @@
                 </StackPanel>
             </Border>
             <Border DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}" Padding="4" Margin="8"
-                    BorderBrush="{DynamicResource BackgroundLightBrush}" CornerRadius="4"
+                    BorderBrush="{DynamicResource LayoutingModeBorderBrush}" CornerRadius="4" BorderThickness="1.5"
                     Visibility="{Binding ActiveLayout, Converter={StaticResource NotNullToVisibilityConverter}}">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="BorderThickness" Value="1.5"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsLayoutTemplate}" Value="True">
-                                <Setter Property="BorderThickness" Value="0"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <StackPanel DockPanel.Dock="Bottom">
-                    <UniformGrid Columns="5">
+                <StackPanel>
+                    <UniformGrid Columns="3">
                         <controls:SeatCapacityBox Margin="4" SeatTypeLetter="SUPER"
                                           Capacity="{Binding ActiveLayout.SupersonicCapacity}"
                                           BoxBackground="{StaticResource SupersonicClassColorBrush}"
@@ -286,13 +308,19 @@
                                           Capacity="{Binding ActiveLayout.EconomyCapacity}"
                                           BoxBackground="{StaticResource EconomyClassColorBrush}"
                                           ToolTip="Economy class"/>
+                        <controls:SeatCapacityBox Margin="8,4" SeatTypeLetter="Galley"
+                                              DockPanel.Dock="Right" TextElement.FontStyle="Italic"
+                                              Capacity="{Binding ActiveLayout.GalleyCapacity}"
+                                              BoxBackground="{StaticResource CrewAreaBorderColorBrush}"
+                                              ToolTip="Galley seats"/>
                     </UniformGrid>
                     <TextBlock Margin="4" Style="{StaticResource Title2TextStyle}" HorizontalAlignment="Center"
                                FontSize="24"
-                           Text="{Binding ActiveLayout.PassengerCapacity, StringFormat={}Total: {0}, FallbackValue=Total: 0}"/>
+                           Text="{Binding ActiveLayout.PassengerCapacity, StringFormat={}Total passenger seats: {0}, FallbackValue=Total: 0}"/>
                 </StackPanel>
             </Border>
-            <controls:IssueTracker DockPanel.Dock="Bottom" DataContext="{Binding}" IsExpanded="{Binding IsIssueTrackerExpanded}"/>
+            <controls:IssueTracker DockPanel.Dock="Bottom" DataContext="{Binding}" IsExpanded="{Binding IsIssueTrackerExpanded}"
+                                   ContextMenu="{StaticResource GuideMenu}" Margin="0,0,0,4"/>
         </DockPanel>
     </Border>
     <Grid Grid.Column="1" IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}">
@@ -307,94 +335,208 @@
             </Style>
         </Grid.Style>
         <controls:CabinLayoutControl x:Name="control_layout"
-                                         CabinLayout="{Binding ActiveLayout, UpdateSourceTrigger=PropertyChanged}"
-                                         IsSidebarOpen="{Binding IsSidebarOpen}"
-                                         SelectedSlotsChanged="CabinLayout_SelectedSlotsChanged"
-                                         Changed="CabinLayoutChanged"
-                                         TemplatingModeToggled="Layout_TemplatingModeToggled"
-                                         TemplateCreated="Layout_TemplateCreated">
+                                     CabinLayout="{Binding ActiveLayout, UpdateSourceTrigger=PropertyChanged}"
+                                     IsSidebarOpen="{Binding IsSidebarOpen}"
+                                     SelectedSlotsChanged="CabinLayout_SelectedSlotsChanged"
+                                     Changed="CabinLayoutChanged"
+                                     TemplatingModeToggled="Layout_TemplatingModeToggled"
+                                     TemplateCreated="Layout_TemplateCreated">
         </controls:CabinLayoutControl>
-        <Border VerticalAlignment="Bottom" CornerRadius="12,12,0,0"
-                        HorizontalAlignment="Center" MinWidth="500"
-                        Background="{DynamicResource BackgroundDarkBrush}">
+        <Border x:Name="container_slotConfig" VerticalAlignment="Bottom" CornerRadius="12,12,0,0"
+                HorizontalAlignment="Center" MinWidth="500"
+                Background="{DynamicResource BackgroundDarkBrush}"
+                controls:GuideAssist.Title="{Binding SlotSettingsGuideTitle}"
+                controls:GuideAssist.Description="{Binding SlotSettingsGuideDescription}"
+                controls:GuideAssist.HasGuide="True"
+                controls:GuideAssist.IsCircleCutout="False"
+                controls:GuideAssist.TextPosition="Top"
+                controls:GuideAssist.HeightOffset="-12"
+                ContextMenu="{StaticResource GuideMenu}">
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="Margin" Value="0,0,0,0"/>
                     <Setter Property="BorderThickness" Value="1.5,1.5,1.5,0"/>
                     <Setter Property="Padding" Value="10.5,12"/>
-                    <Setter Property="BorderBrush" Value="{DynamicResource BackgroundLightBrush}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource LayoutingModeBorderBrush}"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                            <Setter Property="Margin" Value="0,0,0,7"/>
+                            <Setter Property="Margin" Value="0,0,0,13"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding ElementName=control_layout, Path=CabinLayout.IsTemplate, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Border.Style>
             <StackPanel>
-                <StackPanel Visibility="{Binding IsSingleCabinSlotSelected, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="16">
-                                    <Run Text="{Binding SelectedCabinSlots.Count, Mode=OneWay, StringFormat={}Multi-slot configuration ({0} selected slots}"/>
-                                    <Run Text="{Binding SelectedFloorText, Mode=OneWay, StringFormat={}on {0})}"/>
+                <StackPanel IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
+                            Margin="0,-6,0,0">
+                    <DockPanel Margin="0,0,0,6">
+                        <ToggleButton Style="{StaticResource AutomationSwitchToggleButton}" DockPanel.Dock="Right"
+                                      IsChecked="{Binding IsAutomationChecked}"
+                                      controls:GuideAssist.Title="Configuration mode toggle"
+                                      controls:GuideAssist.Description="By toggling this switch, you change between configuring selected slots and automating the slot configuration."
+                                      controls:GuideAssist.HasGuide="True"
+                                      controls:GuideAssist.TextPosition="Left"
+                                      controls:GuideAssist.RadiusOffset="-8"
+                                      ContextMenu="{StaticResource GuideMenu}"/>
+                        <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Setter Property="Text" Value="Configure slot(s)"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsAutomationChecked}" Value="True">
+                                            <Setter Property="Text" Value="Automation"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
                         </TextBlock>
-                    </StackPanel>
-                    <UniformGrid Rows="1">
-                        <!--<UniformGrid.Style>
-                        <Style TargetType="UniformGrid">
-                            <Setter Property="Columns" Value="3"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedAutomationIndex}" Value="0">
-                                    <Setter Property="Columns" Value="4"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </UniformGrid.Style>-->
-                        <StackPanel Margin="4">
-                            <TextBlock Text="Slot type" Margin="0,0,0,4"/>
-                            <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
-                                              SelectedIndex="{Binding SelectedMultiSlotTypeIndex}"
-                                              SelectionChanged="MultiSelect_SlotTypeSelectionChanged"
-                                              Style="{StaticResource CabinSlotDropdownStyle}"/>
-                        </StackPanel>
-                        <StackPanel Margin="4">
-                            <TextBlock Text="Automation" Margin="0,0,0,4"/>
-                            <ComboBox SelectedIndex="{Binding SelectedAutomationIndex}"
-                                              Style="{StaticResource TopListComboBoxStyle}">
-                                <ComboBoxItem Content="Seat numeration" ToolTip="Sets numeration and letters automatically for you"/>
-                                <ComboBoxItem Content="Auto walls" ToolTip="Automatically sets walls around your layout"/>
-                                <ComboBoxItem Content="Service points" Visibility="Collapsed"/>
-                            </ComboBox>
-                        </StackPanel>
-                        <StackPanel Margin="4" ToolTip="When modifying multiple rows, input each letter for each row. For example, ABC to adjust 3 selected rows to have A, B and C set as letters"
-                                            Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=0}">
-                            <TextBlock Margin="0,0,0,4" Text="Seat letter(s)"/>
-                            <TextBox Text="{Binding AutomationSeatLetters, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Text="{Binding SeatLettersError}">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,4,0">
+                            <TextBlock>
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock" BasedOn="{StaticResource ErrorTextStyle}">
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource Title3TextStyle}">
+                                        <Setter Property="Text" Value="Single slot configuration "/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SeatLettersError}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            <DataTrigger Binding="{Binding IsSingleCabinSlotSelected}" Value="False">
+                                                <Setter Property="Text" Value="Configure"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsAutomationChecked}" Value="True">
+                                                <Setter Property="Text" Value="Automate slot configuration"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
+                            <TextBlock Style="{StaticResource MultiSelectDetailsStyle}">
+                                <Run Text="{Binding SelectedCabinSlots.Count, Mode=OneWay, StringFormat={} {0} selected slots}"/>
+                                <Run Text="{Binding SelectedFloorText, Mode=OneWay, StringFormat={}on {0}}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource Title3TextStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding SelectedCabinSlot, Converter={StaticResource NotNullToBooleanConverter}}" Value="True"/>
+                                                    <Condition Binding="{Binding IsSingleCabinSlotSelected}" Value="True"/>
+                                                    <Condition Binding="{Binding IsAutomationChecked}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                                    <Run Text="{Binding SelectedFloorText, Mode=OneWay, StringFormat={}({0}}"/><Run Text=","/>
+                                    <Run Text="{Binding SelectedCabinSlot.Row, StringFormat={}Row {0}, Converter={StaticResource OffsetConverter}, ConverterParameter=1}"/><Run Text=","/>
+                                    <Run Text="{Binding SelectedCabinSlot.Column, StringFormat={}Column {0}), Converter={StaticResource OffsetConverter}, ConverterParameter=1}"/>
+                            </TextBlock>
                         </StackPanel>
-                        <StackPanel Margin="4" ToolTip="With which number should the automation start when numbering seats"
-                                            Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=0}">
-                            <TextBlock Margin="0,0,0,4" Text="Starting number"/>
-                            <TextBox Text="{Binding AutomationSeatStartNumber, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <StackPanel Margin="4" Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=1}">
-                            <TextBlock Margin="0,0,0,4" Text="Target deck"/>
-                            <ComboBox ItemsSource="{Binding ActiveLayout.CabinDecks}" DisplayMemberPath="Floor"
-                                          Style="{StaticResource TopListComboBoxStyle}"/>
-                        </StackPanel>
-                        <Button Margin="4,8" Content="Automate" Click="Automate_Click" VerticalAlignment="Top">
+                    </DockPanel>
+                    <StackPanel Visibility="{Binding IsAutomationChecked, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                IsEnabled="{Binding SelectedCabinSlot, Converter={StaticResource NotNullToBooleanConverter}}"
+                                Margin="4,0">
+                        <UniformGrid Rows="1"
+                                     Visibility="{Binding IsSingleCabinSlotSelected, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <StackPanel Margin="4">
+                                <TextBlock Text="Slot type" Margin="0,0,0,4"/>
+                                <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
+                                          SelectedIndex="{Binding SelectedMultiSlotTypeIndex}"
+                                          SelectionChanged="MultiSelect_SlotTypeSelectionChanged"
+                                          Style="{StaticResource CabinSlotDropdownStyle}"/>
+                            </StackPanel>
+                            <!--<StackPanel Margin="4" IsEnabled="{Binding MultiSlotTypesMatch}">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right"
+                                               Visibility="{Binding SelectedCabinSlot.HasSlotNumber, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                               Text="{Binding SelectedCabinSlot.MaxSlotNumber, Mode=OneWay, StringFormat={}(max. {0})}"/>
+                                    <TextBlock Margin="0,0,0,4">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                <Setter Property="Text" Value="Seat number"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedCabinSlot.IsDoor, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 Value="True">
+                                                        <Setter Property="Text" Value="Door number"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DockPanel>
+                                <TextBox Text="{Binding SelectedCabinSlot.SlotNumber, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding SelectedCabinSlot.HasSlotNumber, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
+                            </StackPanel>
+                            <StackPanel Margin="4" IsEnabled="{Binding MultiSlotTypesMatch}">
+                                <TextBlock Margin="0,0,0,4" Text="Seat letter"/>
+                                <TextBox Text="{Binding SelectedCabinSlot.SeatLetter, UpdateSourceTrigger=PropertyChanged}" 
+                                             IsEnabled="{Binding SelectedCabinSlot.IsSeat, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
+                                <TextBlock Text="{Binding SeatLetterError}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource ErrorTextStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SeatLetterError}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>-->
+                        </UniformGrid>
+                        <UniformGrid Rows="1"
+                                     Visibility="{Binding IsSingleCabinSlotSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Margin="4">
+                                <TextBlock Text="Slot type" Margin="0,0,0,4"/>
+                                <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
+                                          SelectedIndex="{Binding SelectedCabinSlotTypeId}"
+                                          Style="{StaticResource CabinSlotDropdownStyle}"/>
+                            </StackPanel>
+                            <StackPanel Margin="4">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right"
+                                               Visibility="{Binding SelectedCabinSlot.HasSlotNumber, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                               Text="{Binding SelectedCabinSlot.MaxSlotNumber, Mode=OneWay, StringFormat={}(max. {0})}"/>
+                                    <TextBlock Margin="0,0,0,4">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                <Setter Property="Text" Value="Seat number"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedCabinSlot.IsDoor, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 Value="True">
+                                                        <Setter Property="Text" Value="Door number"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DockPanel>
+                                <TextBox Text="{Binding SelectedCabinSlot.SlotNumber, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding SelectedCabinSlot.HasSlotNumber, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
+                            </StackPanel>
+                            <StackPanel Margin="4">
+                                <TextBlock Margin="0,0,0,4" Text="Seat letter"/>
+                                <TextBox Text="{Binding SelectedCabinSlot.SeatLetter, UpdateSourceTrigger=PropertyChanged}" 
+                                             IsEnabled="{Binding SelectedCabinSlot.IsSeat, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
+                                <TextBlock Text="{Binding SeatLetterError}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource ErrorTextStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SeatLetterError}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+
+                    <DockPanel Visibility="{Binding IsAutomationChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Button Margin="4,8" Content="Automate" Click="Automate_Click" VerticalAlignment="Top" DockPanel.Dock="Right">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                     <Style.Triggers>
@@ -410,69 +552,64 @@
                                             </MultiDataTrigger.Conditions>
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </MultiDataTrigger>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding SelectedAutomationIndex}" Value="1"/>
+                                                <Condition Binding="{Binding AutomationSelectedDeckValid}"
+                                                       Value="False">
+                                                </Condition>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </MultiDataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                    </UniformGrid>
-                </StackPanel>
-                <StackPanel Visibility="{Binding IsSingleCabinSlotSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                IsEnabled="{Binding SelectedCabinSlot, Converter={StaticResource NotNullToBooleanConverter}}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Single slot configuration " Style="{StaticResource Title3TextStyle}"/>
-                        <TextBlock Visibility="{Binding SelectedCabinSlot, Converter={StaticResource NotNullToVisibilityConverter}}"
-                                       Style="{StaticResource Title3TextStyle}">
-                                    <Run Text="{Binding SelectedFloorText, Mode=OneWay, StringFormat={}({0}}"/><Run Text=","/>
-                                    <Run Text="{Binding SelectedCabinSlot.Row, StringFormat={}Row {0}, Converter={StaticResource OffsetConverter}, ConverterParameter=1}"/><Run Text=","/>
-                                    <Run Text="{Binding SelectedCabinSlot.Column, StringFormat={}Column {0}, Converter={StaticResource OffsetConverter}, ConverterParameter=1}"/>
-                        </TextBlock>
-                    </StackPanel>
-                    <UniformGrid Rows="1" Margin="4,0">
-                        <StackPanel Margin="4">
-                            <TextBlock Text="Slot type" Margin="0,0,0,4"/>
-                            <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
-                                              SelectedIndex="{Binding SelectedCabinSlotTypeId}"
-                                              Style="{StaticResource CabinSlotDropdownStyle}"/>
-                        </StackPanel>
-                        <StackPanel Margin="4">
-                            <DockPanel>
-                                <TextBlock DockPanel.Dock="Right"
-                                       Visibility="{Binding SelectedCabinSlot.HasSlotNumber, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                       Text="{Binding SelectedCabinSlot.MaxSlotNumber, Mode=OneWay, StringFormat={}(max. {0})}"/>
-                                <TextBlock Margin="0,0,0,4">
+                        <UniformGrid Rows="1">
+                            <StackPanel Margin="4">
+                                <TextBlock Text="Automation" Margin="0,0,0,4"/>
+                                <ComboBox SelectedIndex="{Binding SelectedAutomationIndex}"
+                                          Style="{StaticResource TopListComboBoxStyle}">
+                                    <ComboBoxItem Content="Seat numeration" ToolTip="Sets numeration and letters automatically for you"/>
+                                    <ComboBoxItem Content="Auto walls" ToolTip="Automatically sets walls around your layout"/>
+                                    <ComboBoxItem Content="(BETA) Service points" ToolTip="Generate service start- and endpoints automatically"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Margin="4" ToolTip="When modifying multiple rows, input each letter for each row. For example, ABC to adjust 3 selected rows to have A, B and C set as letters"
+                                        Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=0}">
+                                <TextBlock Margin="0,0,0,4" Text="Seat letter(s)"/>
+                                <TextBox Text="{Binding AutomationSeatLetters, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="{Binding SeatLettersError}">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                            <Setter Property="Text" Value="Seat number"/>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource ErrorTextStyle}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedCabinSlot.IsDoor, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Value="True">
-                                                    <Setter Property="Text" Value="Door number"/>
+                                                <DataTrigger Binding="{Binding SeatLettersError}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                            </DockPanel>
-                            <TextBox Text="{Binding SelectedCabinSlot.SlotNumber, UpdateSourceTrigger=PropertyChanged}"
-                                         IsEnabled="{Binding SelectedCabinSlot.HasSlotNumber, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
-                        </StackPanel>
-                        <StackPanel Margin="4">
-                            <TextBlock Margin="0,0,0,4" Text="Seat letter"/>
-                            <TextBox Text="{Binding SelectedCabinSlot.SeatLetter, UpdateSourceTrigger=PropertyChanged}" 
-                                             IsEnabled="{Binding SelectedCabinSlot.IsSeat, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
-                            <TextBlock Text="{Binding SeatLetterError}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock" BasedOn="{StaticResource ErrorTextStyle}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SeatLetterError}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Hidden"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </StackPanel>
-                    </UniformGrid>
+                            </StackPanel>
+                            <StackPanel Margin="4" ToolTip="With which number should the automation start when numbering seats"
+                                        Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=0}">
+                                <TextBlock Margin="0,0,0,4" Text="Starting number"/>
+                                <TextBox Text="{Binding AutomationSeatStartNumber, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                            <StackPanel Margin="4" ToolTip="Select the deck where you want to apply the wall generator"
+                                        Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=1}">
+                                <TextBlock Margin="0,0,0,4" Text="Target deck"/>
+                                <ComboBox ItemsSource="{Binding ActiveLayout.CabinDecks}"
+                                          SelectedItem="{Binding AutomationSelectedDeck}"
+                                          Style="{StaticResource TopListComboBoxStyle}"/>
+                            </StackPanel>
+                            <StackPanel Margin="4" ToolTip="Choose how many seat rows a service area can cover at max"
+                                        Visibility="{Binding SelectedAutomationIndex, Converter={StaticResource EqualsToVisibilityConverter}, ConverterParameter=2}">
+                                <TextBlock Margin="0,0,0,4" Text="Max. seat rows per area"/>
+                                <TextBox Text="{Binding MaxRowsPerServiceGroup, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </DockPanel>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -518,8 +655,11 @@
         </Grid>
     </Grid>
     <controls:IssueTracker Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" DataContext="{Binding}" 
-                           IsExpanded="{Binding IsIssueTrackerExpanded}" Width="348" Margin="32,8"
-                           Visibility="{Binding IsSidebarOpen, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                           IsExpanded="{Binding IsIssueTrackerExpanded}" Width="348"
+                           Visibility="{Binding IsSidebarOpen, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                           ContextMenu="{StaticResource GuideMenu}" Margin="8,12"
+                           controls:GuideAssist.HeightOffset="-26"
+                           controls:GuideAssist.WidthOffset="-16"/>
     <Border Background="{DynamicResource BackdropColorBrush}" Grid.Column="1"
                     Visibility="{Binding IsLoadingLayout, Converter={StaticResource BooleanToVisibilityConverter}}">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="16">
@@ -531,17 +671,19 @@
     </Border>
     <Grid Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
         <Rectangle Fill="{DynamicResource BackgroundDarkBrush}" HorizontalAlignment="Left" Width="2" Height="92"
-                   Margin="-2,0,0,0"/>
-        <ToggleButton x:Name="toggle_sidebar" IsChecked="{Binding IsSidebarOpen}" UseLayoutRounding="True" Loaded="ToggleSidebarButton_Loaded">
-            <ToggleButton.Style>
-                <Style TargetType="ToggleButton" BasedOn="{StaticResource SidebarToggleButtonStyle}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsLayoutTemplate}" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBrush}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ToggleButton.Style>
-        </ToggleButton>
+                   Margin="-1,0,0,0"/>
+        <AdornerDecorator Margin="1,0,0,0">
+            <ToggleButton x:Name="toggle_sidebar" IsChecked="{Binding IsSidebarOpen}" UseLayoutRounding="True" Loaded="ToggleSidebarButton_Loaded">
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton" BasedOn="{StaticResource SidebarToggleButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLayoutTemplate}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+        </AdornerDecorator>
     </Grid>
 </Grid>
