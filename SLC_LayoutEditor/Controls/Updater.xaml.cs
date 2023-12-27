@@ -1,7 +1,9 @@
 ﻿using SLC_LayoutEditor.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +23,8 @@ namespace SLC_LayoutEditor.Controls
     /// </summary>
     public partial class Updater : StackPanel
     {
+        public event EventHandler<EventArgs> InstallUpdateClicked;
+
         private readonly UpdaterViewModel vm;
 
         public Updater()
@@ -60,6 +64,11 @@ namespace SLC_LayoutEditor.Controls
             {
                 vm.Patcher.DownloadUpdate();
             }
+            else if (vm.UpdateStatus == Core.Patcher.UpdateStatus.READY)
+            {
+                App.Patcher.RestartAfterClose = true;
+                Application.Current.MainWindow.Close();
+            }
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -70,6 +79,11 @@ namespace SLC_LayoutEditor.Controls
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
             vm.IsMouseOver = true;
+        }
+
+        protected virtual void OnInstallUpdateClicked(EventArgs e)
+        {
+            InstallUpdateClicked?.Invoke(this, e);
         }
     }
 }

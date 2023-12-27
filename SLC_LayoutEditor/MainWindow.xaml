@@ -7,13 +7,12 @@
         xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
         xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
         xmlns:enum="clr-namespace:SLC_LayoutEditor.Core.Enum"
-        xmlns:updater="clr-namespace:SLC_LayoutEditor.Core.Patcher"
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundDarkBrush}"
         mc:Ignorable="d" Closing="Window_Closing"
         Title="{Binding Title}" MinHeight="670" MinWidth="1240"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
-        Icon="Resources/icon.ico">
+        Icon="Resources/icon.ico" StateChanged="Window_StateChanged">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -33,7 +32,7 @@
                 <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
                         DockPanel.Dock="Right" Margin="24,0,0,0"
                         Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0"/>
+                <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0" InstallUpdateClicked="Updater_InstallUpdateClicked"/>
                 <DockPanel LastChildFill="False">
                     <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14">
                         <MenuItem Header="File" Height="40" Background="{DynamicResource BackgroundDarkBrush}">

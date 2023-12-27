@@ -14,7 +14,7 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         Patcher_IsSearchingChanged,
         EditLayoutNameRequested,
         LayoutNameChanged,
-        GuideAdornerShown,
+        GuideAdornerShowing,
         GuideAdornerClosed,
         ForceTemplatingToggleState
     }

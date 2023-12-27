@@ -9,13 +9,17 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
 {
     internal class LayoutEditorDesignViewModel : LayoutEditorViewModel
     {
-        public new bool IsSingleCabinSlotSelected => false;
+        public new bool IsSingleCabinSlotSelected => true;
+
+        public new CabinSlot SelectedCabinSlot => new CabinSlot(0, 0, Core.Enum.CabinSlotType.PremiumClassSeat, 1);
 
         public new CabinLayout ActiveLayout => new CabinLayout("Test", "Test", false);
 
         public LayoutEditorDesignViewModel()
         {
             IsAutomationChecked = false;
+            IsSidebarOpen = true;
+            SelectedCabinSlotTypeId = SelectedCabinSlot.TypeId;
         }
     }
 }

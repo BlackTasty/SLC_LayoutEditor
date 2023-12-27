@@ -190,38 +190,38 @@ namespace SLC_LayoutEditor.UI.Dialogs
                 case DialogType.OK:
                     LeftButtonText = "OK";
                     LeftResult = DialogResultType.OK;
-                    LeftButtonStyle = App.Current.FindResource("GreenButtonStyle") as Style;
+                    LeftButtonStyle = GetButtonStyle(DialogButtonStyle.Green);
                     MiddleButtonVisible = Visibility.Collapsed;
                     RightButtonVisible = Visibility.Collapsed;
                     break;
                 case DialogType.OKCancel:
                     LeftButtonText = "OK";
                     LeftResult = DialogResultType.OK;
-                    LeftButtonStyle = App.Current.FindResource("GreenButtonStyle") as Style;
+                    LeftButtonStyle = GetButtonStyle(DialogButtonStyle.Green);
                     MiddleButtonText = "Cancel";
                     MiddleResult = DialogResultType.Cancel;
-                    MiddleButtonStyle = App.Current.FindResource("RedButtonStyle") as Style;
+                    MiddleButtonStyle = GetButtonStyle(DialogButtonStyle.Red);
                     RightButtonVisible = Visibility.Collapsed;
                     break;
                 case DialogType.YesNo:
                     LeftButtonText = "Yes";
                     LeftResult = DialogResultType.Yes;
-                    LeftButtonStyle = App.Current.FindResource("GreenButtonStyle") as Style;
+                    LeftButtonStyle = GetButtonStyle(DialogButtonStyle.Green);
                     MiddleButtonText = "No";
                     MiddleResult = DialogResultType.No;
-                    MiddleButtonStyle = App.Current.FindResource("RedButtonStyle") as Style;
+                    MiddleButtonStyle = GetButtonStyle(DialogButtonStyle.Red);
                     RightButtonVisible = Visibility.Collapsed;
                     break;
                 case DialogType.YesNoCancel:
                     LeftButtonText = "Yes";
                     LeftResult = DialogResultType.Yes;
-                    LeftButtonStyle = App.Current.FindResource("GreenButtonStyle") as Style;
+                    LeftButtonStyle = GetButtonStyle(DialogButtonStyle.Green);
                     MiddleButtonText = "No";
                     MiddleResult = DialogResultType.No;
-                    MiddleButtonStyle = App.Current.FindResource("RedButtonStyle") as Style;
+                    MiddleButtonStyle = GetButtonStyle(DialogButtonStyle.Red);
                     RightButtonText = "Cancel";
                     RightResult = DialogResultType.Cancel;
-                    RightButtonStyle = App.Current.FindResource("YellowButtonStyle") as Style;
+                    RightButtonStyle = GetButtonStyle(DialogButtonStyle.Yellow);
                     break;
             }
         }
@@ -233,26 +233,33 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         public ConfirmationDialog(string title, string message, 
             string leftButtonText, string middleButtonText, string rightButtonText,
-            bool isLeftButtonRed, bool isMiddleButtonRed, bool isRightButtonRed) : this(title, message, DialogType.Custom)
+            DialogButtonStyle isLeftButtonRed, DialogButtonStyle isMiddleButtonRed, DialogButtonStyle isRightButtonRed) : this(title, message, DialogType.Custom)
         {
             LeftButtonText = leftButtonText;
             MiddleButtonText = middleButtonText;
             RightButtonText = rightButtonText;
 
-            LeftButtonStyle = App.Current.FindResource(isLeftButtonRed ? "RedButtonStyle" : "GreenButtonStyle") as Style;
-            MiddleButtonStyle = App.Current.FindResource(isMiddleButtonRed ? "RedButtonStyle" : "GreenButtonStyle") as Style;
-            RightButtonStyle = App.Current.FindResource(isRightButtonRed ? "RedButtonStyle" : "GreenButtonStyle") as Style;
+            LeftButtonStyle = GetButtonStyle(isLeftButtonRed);
+            MiddleButtonStyle = GetButtonStyle(isMiddleButtonRed);
+            RightButtonStyle = GetButtonStyle(isRightButtonRed);
 
             LeftButtonVisible = !string.IsNullOrEmpty(leftButtonText) ? Visibility.Visible : Visibility.Collapsed;
             MiddleButtonVisible = !string.IsNullOrEmpty(middleButtonText) ? Visibility.Visible : Visibility.Collapsed;
             RightButtonVisible = !string.IsNullOrEmpty(rightButtonText) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        /*public static async Task<DialogResultType> ShowDialog(string title, string message, DialogType dialogType)
+        private Style GetButtonStyle(DialogButtonStyle dialogButtonStyle)
         {
-            ConfirmationDialog dialog = new ConfirmationDialog(title, message, dialogType);
-
-        }*/
+            switch (dialogButtonStyle)
+            {
+                case DialogButtonStyle.Yellow:
+                    return (Style)App.Current.FindResource("YellowButtonStyle");
+                case DialogButtonStyle.Red:
+                    return (Style)App.Current.FindResource("RedButtonStyle");
+                default:
+                    return (Style)App.Current.FindResource("GreenButtonStyle");
+            }
+        }
 
         private void LeftButton_Click(object sender, RoutedEventArgs e)
         {

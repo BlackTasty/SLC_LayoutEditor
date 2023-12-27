@@ -24,5 +24,15 @@ namespace SLC_LayoutEditor
         internal static readonly Brush LIVE_GUIDE_OVERLAY_BRUSH = (Brush)App.Current.FindResource("LiveGuideOverlayBrush");
         internal static readonly Brush LIVE_GUIDE_TEXT_BORDER_BRUSH = (Brush)App.Current.FindResource("ButtonBorderColorBrush");
         internal static readonly Brush LIVE_GUIDE_TEXT_BACK_BRUSH = (Brush)App.Current.FindResource("BackgroundLightBrush");
+
+        internal static readonly string GUIDE_CREATE_LAYOUT_TITLE = (string)App.Current.FindResource("GuideCreateLayoutTitle");
+        internal static readonly string GUIDE_CREATE_LAYOUT_DESC = (string)App.Current.FindResource("GuideCreateLayoutDescription");
+        internal static readonly string GUIDE_CREATE_TEMPLATE_TITLE = (string)App.Current.FindResource("GuideCreateTemplateTitle");
+        internal static readonly string GUIDE_CREATE_TEMPLATE_DESC = (string)App.Current.FindResource("GuideCreateTemplateDescription");
+
+        internal static readonly string GUIDE_SLOT_CONFIGURATOR_TITLE = (string)App.Current.FindResource("GuideSlotConfigurationTitle");
+        internal static readonly string GUIDE_SLOT_CONFIGURATOR_DESC = (string)App.Current.FindResource("GuideSlotConfigurationDescription");
+        internal static readonly string GUIDE_SLOT_AUTOMATION_TITLE = (string)App.Current.FindResource("GuideSlotAutomationTitle");
+        internal static readonly string GUIDE_SLOT_AUTOMATION_DESC = (string)App.Current.FindResource("GuideSlotAutomationDescription");
     }
 }

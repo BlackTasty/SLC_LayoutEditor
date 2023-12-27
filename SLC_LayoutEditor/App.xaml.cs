@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -184,6 +185,14 @@ namespace SLC_LayoutEditor
 
             Logger.Default.WriteLog("Editor shutting down...");
             SaveAppSettings();
+
+
+            // Installation of an update pending, restart editor
+            if (App.Patcher.RestartAfterClose)
+            {
+                Logger.Default.WriteLog("Update installed, user requested app restart...");
+                Process.Start(Assembly.GetExecutingAssembly().Location.Replace(".dll", ".exe"));
+            }
         }
 
         private static void RunMigrations()

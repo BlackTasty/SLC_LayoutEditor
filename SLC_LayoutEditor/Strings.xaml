@@ -1,0 +1,60 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    
+    <system:String x:Key="GuideMakeTemplateTitle" d:Freeze="True" xml:space="preserve">Create a template from the current layout</system:String>
+    <system:String x:Key="GuideMakeTemplateDescription" d:Freeze="True" xml:space="preserve">Pressing this button allows you to make a template out of the current layout, giving you the choice which slot types should be kept.</system:String>
+
+    <system:String x:Key="GuideIssueCardsTitle" d:Freeze="True" xml:space="preserve">Issue detection</system:String>
+    <system:String x:Key="GuideLayoutIssueCardsDescription" d:Freeze="True" xml:space="preserve">This area shows all issues across your layout.&#x0a;Hovering over the cards for minor and severe issues will also show a list of all detected issues in a tooltip.</system:String>
+    <system:String x:Key="GuideDeckIssueCardsDescription" d:Freeze="True" xml:space="preserve">This area displays detected issues on this deck.&#x0a;Hovering over the cards for minor and severe issues will also show a list of all detected issues in a tooltip.</system:String>
+
+    <system:String x:Key="GuideAddDeckTitle" d:Freeze="True" xml:space="preserve">Adding a new deck</system:String>
+    <system:String x:Key="GuideAddDeckDescription" d:Freeze="True" xml:space="preserve">Clicking this button allows you to add a new cabin deck to your layout.</system:String>
+
+    <system:String x:Key="GuideReloadLayoutTitle" d:Freeze="True" xml:space="preserve">Reloading the layout</system:String>
+    <system:String x:Key="GuideReloadLayoutDescription" d:Freeze="True" xml:space="preserve">Clicking this button allows you to reload the current layout from your hard drive, resetting all unsaved changes.</system:String>
+
+    <system:String x:Key="GuideDeleteLayoutTitle" d:Freeze="True" xml:space="preserve">Deleting the layout</system:String>
+    <system:String x:Key="GuideDeleteLayoutDescription" d:Freeze="True" xml:space="preserve">Clicking on this button allows you to delete this layout.&#x0a;You will be asked for your confirmation first.</system:String>
+
+    <system:String x:Key="GuideEditLayoutNameTitle" d:Freeze="True" xml:space="preserve">Changing the name of your layout</system:String>
+    <system:String x:Key="GuideEditLayoutNameDescription" d:Freeze="True" xml:space="preserve">With this button you can rename your current layout.</system:String>
+
+    <system:String x:Key="GuideIssueTrackerTitle" d:Freeze="True" xml:space="preserve">Issue tracker</system:String>
+    <system:String x:Key="GuideIssueTrackerDescription" d:Freeze="True" xml:space="preserve">The issue tracker keeps watch of your changes, and informs you in case of detected problems.&#x0a;The editor can also try to automatically fix some of these issues for you!</system:String>
+
+    <system:String x:Key="GuideSelectorCardTitle" d:Freeze="True" xml:space="preserve">Aircraft/Layout overview</system:String>
+    <system:String x:Key="GuideSelectorCardDescription" d:Freeze="True" xml:space="preserve">This card contains dropdowns for both selecting an aircraft as well as a layout from your selected aircraft,&#x0a;as well as allowing you to create a new aircraft and layouts.</system:String>
+
+    <system:String x:Key="GuideToggleEditorModeTitle" d:Freeze="True" xml:space="preserve">Switching editor mode</system:String>
+    <system:String x:Key="GuideToggleEditorModeDescription" d:Freeze="True" xml:space="preserve">This toggle allows you to switch between templating and layouting mode.&#x0a;Templates that have been created can be later used to base new layouts off of.</system:String>
+
+    <system:String x:Key="GuideCreateAircraftTitle" d:Freeze="True" xml:space="preserve">Creating a new aircraft</system:String>
+    <system:String x:Key="GuideCreateAircraftDescription" d:Freeze="True" xml:space="preserve">To create a new aircraft type, click on the + button.</system:String>
+
+    <system:String x:Key="GuideCreateLayoutTitle" d:Freeze="True" xml:space="preserve">Creating a new layout</system:String>
+    <system:String x:Key="GuideCreateLayoutDescription" d:Freeze="True" xml:space="preserve">In order to create a new layout, click on the + button.&#x0a;Here you can optionally select a template (if any are available) to base your layout off of.</system:String>
+
+    <system:String x:Key="GuideCreateTemplateTitle" d:Freeze="True" xml:space="preserve">Creating a new template</system:String>
+    <system:String x:Key="GuideCreateTemplateDescription" d:Freeze="True" xml:space="preserve">In order to create a new template, click on the + button.&#x0a;Templates can be later used to create new templates faster.</system:String>
+
+    <system:String x:Key="GuideSlotConfigurationTitle" d:Freeze="True" xml:space="preserve">Configuring slots</system:String>
+    <system:String x:Key="GuideSlotConfigurationDescription" d:Freeze="True" xml:space="preserve">Here you can change the slot type as well as configuring slot data (if applicable).</system:String>
+
+    <system:String x:Key="GuideSlotAutomationTitle" d:Freeze="True" xml:space="preserve">Automating configurations</system:String>
+    <system:String x:Key="GuideSlotAutomationDescription" d:Freeze="True" xml:space="preserve">This allows you to automate certain configuration steps on your layout.</system:String>
+
+    <system:String x:Key="GuideToggleSlotModeTitle" d:Freeze="True" xml:space="preserve">Configuration mode toggle</system:String>
+    <system:String x:Key="GuideToggleSlotModeDescription" d:Freeze="True" xml:space="preserve">By toggling this switch, you change between configuring selected slots and automating the slot configuration.</system:String>
+
+    <system:String x:Key="GuideSavingLayoutsTitle" d:Freeze="True" xml:space="preserve">Saving layouts</system:String>
+    <system:String x:Key="GuideSavingLayoutsDescription" d:Freeze="True" xml:space="preserve">Clicking the big green button saves your layout, whereas the purple button opens a context menu with further options.&#x0a;&#x0a;Please note that in order to use your layout in SLC, you have to upload the layout to the SLC website first.&#x0a;Create a new layout on the website, then copy &amp; paste the content of the layout file into the editor on the website.</system:String>
+
+    <system:String x:Key="GuideToggleSidebarTitle" d:Freeze="True" xml:space="preserve">Toggling the sidebar</system:String>
+    <system:String x:Key="GuideToggleSidebarDescription" d:Freeze="True" xml:space="preserve">Clicking this button extends or retracts the sidebar. This is a great way to fully display large layouts!</system:String>
+
+    <system:String x:Key="GuideEditorAreaTitle" d:Freeze="True" xml:space="preserve">Layout editor area</system:String>
+    <system:String x:Key="GuideEditorAreaDescription" d:Freeze="True" xml:space="preserve">This is where the actual editing happens. There are a few things to note, so we will go through each sub-area separately.</system:String>
+</ResourceDictionary>

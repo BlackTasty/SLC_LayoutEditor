@@ -63,7 +63,7 @@
                                  Value="False">
                         <Setter Property="Content" Value="{StaticResource Wrench}"/>
                         <Setter Property="Padding" Value="1"/>
-                        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
+                        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
                         <Setter Property="IsEnabled" Value="True"/>
                     </DataTrigger>
 

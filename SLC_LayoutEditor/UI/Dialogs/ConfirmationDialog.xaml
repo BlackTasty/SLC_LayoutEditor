@@ -9,13 +9,13 @@
     <TextBlock DockPanel.Dock="Top" Text="{Binding ElementName=dialog, Path=Title}" Style="{DynamicResource Title1TextStyle}" Margin="4"/>
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">
-        <Button Content="{Binding ElementName=dialog, Path=LeftButtonText, FallbackValue=Left}" Width="80" Margin="8"
+        <Button Content="{Binding ElementName=dialog, Path=LeftButtonText, FallbackValue=Left}" MinWidth="80" Margin="8"
                 Style="{Binding ElementName=dialog, Path=LeftButtonStyle}" Click="LeftButton_Click"
                 Visibility="{Binding ElementName=dialog, Path=LeftButtonVisible}"/>
-        <Button Content="{Binding ElementName=dialog, Path=MiddleButtonText, FallbackValue=Middle}" Width="80" Margin="8"
+        <Button Content="{Binding ElementName=dialog, Path=MiddleButtonText, FallbackValue=Middle}" MinWidth="80" Margin="8"
                 Style="{Binding ElementName=dialog, Path=MiddleButtonStyle}" Click="MiddleButton_Click"
                 Visibility="{Binding ElementName=dialog, Path=MiddleButtonVisible}"/>
-        <Button Content="{Binding ElementName=dialog, Path=RightButtonText, FallbackValue=Right}" Width="80" Margin="8"
+        <Button Content="{Binding ElementName=dialog, Path=RightButtonText, FallbackValue=Right}" MinWidth="80" Margin="8"
                 Style="{Binding ElementName=dialog, Path=RightButtonStyle}" Click="RightButton_Click"
                 Visibility="{Binding ElementName=dialog, Path=RightButtonVisible}"/>
     </StackPanel>

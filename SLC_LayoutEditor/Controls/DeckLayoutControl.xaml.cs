@@ -82,6 +82,16 @@ namespace SLC_LayoutEditor.Controls
             DependencyProperty.Register("CabinDeck", typeof(CabinDeck), typeof(DeckLayoutControl), cabinDeckMetadata);
         #endregion
 
+        public ContextMenu GuideMenu
+        {
+            get { return (ContextMenu)GetValue(GuideMenuProperty); }
+            set { SetValue(GuideMenuProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GuideMenu.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GuideMenuProperty =
+            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(DeckLayoutControl), new PropertyMetadata(null));
+
         public bool HasAnyIssues => CabinDeck?.HasAnyIssues ?? false;
 
         public bool HasMinorIssues => CabinDeck?.HasMinorIssues ?? false;
@@ -402,7 +412,7 @@ namespace SLC_LayoutEditor.Controls
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Insert new row",
                 "Do you want to insert the new row to the left or right?",
-                "Left", "Right", "Cancel", false, false, true);
+                "Left", "Right", "Cancel", DialogButtonStyle.Green, DialogButtonStyle.Green, DialogButtonStyle.Yellow);
 
             dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
             {
@@ -594,7 +604,7 @@ namespace SLC_LayoutEditor.Controls
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Insert new column",
                 "Do you want to insert the new column above or below?",
-                "Above", "Below", "Cancel", false, false, true);
+                "Above", "Below", "Cancel", DialogButtonStyle.Green, DialogButtonStyle.Green, DialogButtonStyle.Yellow);
 
             dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
             {
@@ -944,8 +954,6 @@ namespace SLC_LayoutEditor.Controls
             layoutLoader.RunWorkerAsync();
 
             RenderAdorners();
-            /*AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(card_deckTitle);
-            adornerLayer.Add(new CabinDeckCardAdorner(card_deckTitle));*/
         }
 
         private void LayoutLoader_DoWork(object sender, DoWorkEventArgs e)

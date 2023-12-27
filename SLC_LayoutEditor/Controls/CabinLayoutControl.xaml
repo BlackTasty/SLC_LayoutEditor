@@ -6,11 +6,6 @@
         xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
         mc:Ignorable="d"
         d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel.Resources>
-        <ContextMenu x:Key="GuideMenu">
-            <MenuItem Header="Help" Click="ShowGuide_Click"/>
-        </ContextMenu>
-    </DockPanel.Resources>
     <!--<local:BindableScrollBar BoundScrollViewer="{Binding ElementName=deck_scroll}" Orientation="Horizontal"
                              DockPanel.Dock="Bottom"
                              Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
@@ -100,7 +95,14 @@
             </Border.Style>
         </Border>
         <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="4"
-                Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout, Converter={StaticResource NotNullToVisibilityConverter}, FallbackValue=Collapsed}">
+                    Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout, Converter={StaticResource NotNullToVisibilityConverter}, FallbackValue=Collapsed}"
+                    local:GuideAssist.Title="{StaticResource GuideIssueCardsTitle}"
+                    local:GuideAssist.Description="{StaticResource GuideLayoutIssueCardsDescription}"
+                    local:GuideAssist.HasGuide="True"
+                    local:GuideAssist.IsCircleCutout="False"
+                    local:GuideAssist.TextPosition="Bottom"
+                    Cursor="Help"
+                    ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
             <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
                 ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesList}"
                 Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
@@ -153,14 +155,15 @@
                 </Style>
             </Border.Style>
                 <DockPanel Margin="-1.5,0,-1.5,-1.5">
-                    <Button DockPanel.Dock="Left" Click="MakeTemplate_Click"
-                            local:GuideAssist.Title="Create a template from the current layout"
-                            local:GuideAssist.Description="Pressing this button allows you to make a template out of the current layout, giving you the choice which slot types should be kept."
+                    <Button x:Name="btn_makeTemplate" DockPanel.Dock="Left" Click="MakeTemplate_Click"
+                            local:GuideAssist.Title="{StaticResource GuideMakeTemplateTitle}"
+                            local:GuideAssist.Description="{StaticResource GuideMakeTemplateDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
                             local:GuideAssist.RadiusOffset="-24"
-                            local:GuideAssist.HighlightXOffset="-10"
-                            ContextMenu="{StaticResource GuideMenu}"
+                            local:GuideAssist.HighlightXOffset="-2"
+                            Cursor="Help"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"
                             Margin="-10.5,-10.5,15.5,-8.5"
                             Padding="14.5,16,16.5,14.5"
                             Width="53" Height="53">
@@ -175,28 +178,28 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                    <Button DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="AddCabinDeck_Click"
+                    <Button x:Name="btn_addDeck" DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="AddCabinDeck_Click"
                             Style="{StaticResource AddDeckButtonStyle}"
                             ToolTip="Add a new deck to your layout"
-                            local:GuideAssist.Title="Adding a new deck"
-                            local:GuideAssist.Description="Clicking this button allows you to add a new cabin deck to your layout."
+                            local:GuideAssist.Title="{StaticResource GuideAddDeckTitle}"
+                            local:GuideAssist.Description="{StaticResource GuideAddDeckDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
                             local:GuideAssist.RadiusOffset="-28"
-                            local:GuideAssist.HighlightXOffset="-2"
-                            ContextMenu="{StaticResource GuideMenu}"
+                            Cursor="Help"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"
                             Margin="15.5,-9,-6.5,-7"
                             Padding="16.5,16,14.5,14.5"
                             Width="53" Height="53"/>
-                    <Button Content="{DynamicResource Refresh}" Click="ReloadDeck_Click"
+                    <Button x:Name="btn_reloadLayout" Content="{DynamicResource Refresh}" Click="ReloadDeck_Click"
                             Margin="-4,0,24,0" Height="32" Width="32" Padding="6,6,4,6"
-                            local:GuideAssist.Title="Reloading the layout"
-                            local:GuideAssist.Description="Clicking this button allows you to reload the current layout from your hard drive, resetting all unsaved changes."
+                            local:GuideAssist.Title="{StaticResource GuideReloadLayoutTitle}"
+                            local:GuideAssist.Description="{StaticResource GuideReloadLayoutDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
                             local:GuideAssist.RadiusOffset="-20"
-                            local:GuideAssist.HighlightXOffset="-9"
-                            ContextMenu="{StaticResource GuideMenu}">
+                            Cursor="Help"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource WarnIconButtonStyle}">
                             <Setter Property="ToolTip" Value="Force the editor to reload the layout from file. Unsaved changes are lost!"/>
@@ -208,15 +211,15 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteLayout_Click"
+                    <Button x:Name="btn_deleteLayout" DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteLayout_Click"
                         Margin="24,0,0,0" Height="32" Width="32" Padding="6"
-                        local:GuideAssist.Title="Deleting the layout"
-                        local:GuideAssist.Description="Clicking on this button allows you to delete this layout.&#x0a;You will be asked for your confirmation first."
+                        local:GuideAssist.Title="{StaticResource GuideDeleteLayoutTitle}"
+                        local:GuideAssist.Description="{StaticResource GuideDeleteLayoutDescription}"
                         local:GuideAssist.HasGuide="True"
                         local:GuideAssist.TextPosition="Bottom"
                         local:GuideAssist.RadiusOffset="-24"
-                        local:GuideAssist.HighlightXOffset="-11"
-                        ContextMenu="{StaticResource GuideMenu}">
+                        Cursor="Help"
+                        ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ErrorIconButtonStyle}">
                             <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
@@ -257,15 +260,16 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <Button Style="{StaticResource ForegroundIconButtonStyle}" Content="{StaticResource Edit}" ToolTip="Edit layout name"
+                            <Button x:Name="btn_editLayoutName" Style="{StaticResource ForegroundIconButtonStyle}" Content="{StaticResource Edit}" ToolTip="Edit layout name"
                                     Click="EditCabinLayoutName_Click" Margin="0,-2,0,1"
-                                    local:GuideAssist.Title="Changing the name of your layout"
-                                    local:GuideAssist.Description="With this button you can rename your current layout."
+                                    local:GuideAssist.Title="{StaticResource GuideEditLayoutNameTitle}"
+                                    local:GuideAssist.Description="{StaticResource GuideEditLayoutNameDescription}"
                                     local:GuideAssist.HasGuide="True"
                                     local:GuideAssist.TextPosition="Bottom"
                                     local:GuideAssist.RadiusOffset="-10"
-                                    local:GuideAssist.HighlightXOffset="-1.5"
-                                    ContextMenu="{StaticResource GuideMenu}"/>
+                                    local:GuideAssist.HighlightYOffset="1"
+                                    Cursor="Help"
+                                    ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"/>
                         </StackPanel>
                 </StackPanel>
             </DockPanel>

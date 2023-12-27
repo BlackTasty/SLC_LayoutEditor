@@ -11,17 +11,33 @@
     <Style TargetType="Menu">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ForegroundColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Menu}">
+                    <Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True"
+                            CornerRadius="4">
+                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="ContextMenu">
-        <Setter Property="BorderBrush" Value="{DynamicResource MenuItemHoverColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundColorBrush}"/>
         <Setter Property="TextElement.FontSize" Value="16"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
-                    <Border x:Name="Border" CornerRadius="8"
-                            Background="{DynamicResource BackgroundColorBrush}"
-                            BorderThickness="1.5" BorderBrush="{DynamicResource BackgroundColorBrush}">
+                    <Border x:Name="Border" CornerRadius="4"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="1.5" BorderBrush="{TemplateBinding BorderBrush}">
                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                     </Border>
                 </ControlTemplate>
@@ -31,7 +47,7 @@
 
     <ControlTemplate x:Key="MenuItemTemplate" TargetType="{x:Type MenuItem}">
         <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" 
-                Background="{TemplateBinding Background}" 
+                Background="{TemplateBinding Background}"
                 SnapsToDevicePixels="True" Padding="4">
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -53,17 +69,16 @@
                        PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" 
                        Placement="Bottom" PlacementTarget="{Binding ElementName=templateRoot}">
                     <Border x:Name="SubMenuBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
-                            Background="{TemplateBinding Background}" Padding="0" CornerRadius="8">
+                            Background="{TemplateBinding Background}" Padding="0" CornerRadius="6">
                         <ScrollViewer x:Name="SubMenuScrollViewer" 
                                       Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}"
                                       Background="{TemplateBinding Background}" Margin="0" Padding="0">
                             <Grid RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
-                                    <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" 
+                                    <Rectangle x:Name="OpaqueRect" RadiusX="6" RadiusY="6"
                                                Height="{Binding ActualHeight, ElementName=SubMenuBorder}" 
                                                Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
                                 </Canvas>
-                                <Rectangle Fill="{TemplateBinding Background}" HorizontalAlignment="Left" Margin="0" Width="0"/>
                                 <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" 
                                                 Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
                                                 KeyboardNavigation.TabNavigation="Cycle"/>

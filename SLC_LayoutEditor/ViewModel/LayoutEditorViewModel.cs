@@ -33,13 +33,6 @@ namespace SLC_LayoutEditor.ViewModel
         private const string TEXT_ERROR_SLOT_NUMBER_INVALID = "Only values from 0-99 allowed!";
         private const string TEXT_ERROR_SLOT_LETTER_INVALID = "Only alphanumeric values allowed!";
 
-        private const string TEXT_GUIDE_ADD_LAYOUT_INFO_ADDITIONAL = "Here you can optionally select a template (if any are available) to base your layout off of.";
-        private const string TEXT_GUIDE_ADD_TEMPLATE_INFO_ADDITIONAL = "Templates can be later used to create new templates faster.";
-        private const string TEXT_GUIDE_SLOT_CONFIGURATOR_TITLE = "Configuring slots";
-        private const string TEXT_GUIDE_SLOT_AUTOMATION_TITLE = "Automating configurations";
-        private const string TEXT_GUIDE_SLOT_CONFIGURATOR_DESCRIPTION = "Here you can change the slot type as well as configuring slot data (if applicable).";
-        private const string TEXT_GUIDE_SLOT_AUTOMATION_DESCRIPTION = "This allows you to automate certain configuration steps on your layout.";
-
         private static readonly Style ADD_LAYOUT_BUTTON_STYLE = (Style)App.Current.FindResource("DefaultBorderedIconButtonStyle");
         private static readonly Style ADD_TEMPLATE_BUTTON_STYLE = (Style)App.Current.FindResource("TemplateBorderedIconButtonStyle");
 
@@ -258,7 +251,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public CabinLayout ActiveLayout => !IsTemplatingMode ? mSelectedCabinLayout : mSelectedTemplate;
+        public CabinLayout ActiveLayout => mSelectedCabinLayout != null ? mSelectedCabinLayout : mSelectedTemplate;
 
         public bool IsLayoutTemplate => ActiveLayout?.IsTemplate ?? false;
 
@@ -422,6 +415,8 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mIsAutomationChecked = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(SlotSettingsGuideTitle));
+                InvokePropertyChanged(nameof(SlotSettingsGuideDescription));
             }
         }
         
@@ -440,14 +435,12 @@ namespace SLC_LayoutEditor.ViewModel
         private void SelectedLayout_LayoutChanged(object sender, EventArgs e)
         {
             InvokePropertyChanged(nameof(StairwayErrorMessage));
-            OnChanged(new ChangedEventArgs(Util.HasLayoutChanged(ActiveLayout)));
+            RefreshUnsavedChanges();
         }
 
         private void CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
         {
-            OnChanged(new ChangedEventArgs(
-                Util.HasLayoutChanged(ActiveLayout))
-                );
+            RefreshUnsavedChanges();
             InvokePropertyChanged(nameof(SeatLetterError));
         }
 
@@ -538,25 +531,21 @@ namespace SLC_LayoutEditor.ViewModel
                     InvokePropertyChanged(nameof(AddLayoutTooltip));
                     InvokePropertyChanged(nameof(AddLayoutGuideTitle));
                     InvokePropertyChanged(nameof(AddLayoutGuideDescription));
-                    InvokePropertyChanged(nameof(SlotSettingsGuideTitle));
-                    InvokePropertyChanged(nameof(SlotSettingsGuideDescription));
                 }
             }
         }
 
         public Style AddLayoutButtonStyle => !IsTemplatingMode ? ADD_LAYOUT_BUTTON_STYLE : ADD_TEMPLATE_BUTTON_STYLE;
 
-        public string AddLayoutGuideTitle => string.Format("Creating a new {0}", !IsTemplatingMode ? "layout" : "template");
+        public string AddLayoutGuideTitle => !IsTemplatingMode ? FixedValues.GUIDE_CREATE_LAYOUT_TITLE : FixedValues.GUIDE_CREATE_TEMPLATE_TITLE;
 
-        public string AddLayoutGuideDescription => string.Format("In order to create a new {0}, click on the + button.\n{1}", 
-            !IsTemplatingMode ? "layout" : "template",
-            !IsTemplatingMode ? TEXT_GUIDE_ADD_LAYOUT_INFO_ADDITIONAL : TEXT_GUIDE_ADD_TEMPLATE_INFO_ADDITIONAL);
+        public string AddLayoutGuideDescription => !IsTemplatingMode ? FixedValues.GUIDE_CREATE_LAYOUT_DESC : FixedValues.GUIDE_CREATE_TEMPLATE_DESC;
 
         public string AddLayoutTooltip => !IsTemplatingMode ? "Create a new layout" : "Create a new template";
 
-        public string SlotSettingsGuideTitle => !IsTemplatingMode ? TEXT_GUIDE_SLOT_CONFIGURATOR_TITLE : TEXT_GUIDE_SLOT_AUTOMATION_TITLE;
+        public string SlotSettingsGuideTitle => !IsAutomationChecked ? FixedValues.GUIDE_SLOT_CONFIGURATOR_TITLE : FixedValues.GUIDE_SLOT_AUTOMATION_TITLE;
 
-        public string SlotSettingsGuideDescription => !IsTemplatingMode ? TEXT_GUIDE_SLOT_CONFIGURATOR_DESCRIPTION : TEXT_GUIDE_SLOT_AUTOMATION_DESCRIPTION;
+        public string SlotSettingsGuideDescription => !IsAutomationChecked ? FixedValues.GUIDE_SLOT_CONFIGURATOR_DESC : FixedValues.GUIDE_SLOT_AUTOMATION_DESC;
 
         public LayoutEditorViewModel()
         {
@@ -597,6 +586,13 @@ namespace SLC_LayoutEditor.ViewModel
 
                 Mediator.Instance.NotifyColleagues(ViewModelMessage.LayoutNameChanged);
             }
+        }
+
+        public void RefreshUnsavedChanges()
+        {
+            OnChanged(new ChangedEventArgs(
+                Util.HasLayoutChanged(ActiveLayout))
+                );
         }
 
         public bool CheckUnsavedChanges(dynamic newValue, bool isClosing = false)

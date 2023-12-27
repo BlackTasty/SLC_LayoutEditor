@@ -32,6 +32,8 @@ namespace SLC_LayoutEditor.Core
 
         private bool mEnableSeasonalThemes = true;
 
+        private bool mGettingStartedGuideShown;
+
         public string CabinLayoutsEditPath
         {
             get => mCabinLayoutsEditPath;
@@ -178,12 +180,22 @@ namespace SLC_LayoutEditor.Core
             }
         }
 
+        public bool GettingStartedGuideShown
+        {
+            get => mGettingStartedGuideShown;
+            set
+            {
+                mGettingStartedGuideShown = value;
+                InvokePropertyChanged();
+            }
+        }
+
         [JsonConstructor]
         public AppSettings(string cabinLayoutsEditPath, bool welcomeScreenShown, bool templatesCopied,
             bool showWarningWhenIssuesPresent, bool openFolderWithEditedLayout,
             bool autoSearchForUpdates, bool showChangesAfterUpdate, int lastVersionChangelogShown, 
             bool hideSidebarAfterLoadingLayout, bool rememberLastLayout, string lastLayoutSet, string lastLayout, bool lastLayoutWasTemplate, 
-            bool enableSeasonalThemes) : this()
+            bool enableSeasonalThemes, bool gettingStartedGuideShown) : this()
         {
             mCabinLayoutsEditPath = cabinLayoutsEditPath;
             mWelcomeScreenShown = welcomeScreenShown;
@@ -210,6 +222,7 @@ namespace SLC_LayoutEditor.Core
             mLastLayout = lastLayout;
             mLastLayoutWasTemplate = lastLayoutWasTemplate;
             mEnableSeasonalThemes = enableSeasonalThemes;
+            mGettingStartedGuideShown = gettingStartedGuideShown;
         }
 
         public AppSettings() : base(false)

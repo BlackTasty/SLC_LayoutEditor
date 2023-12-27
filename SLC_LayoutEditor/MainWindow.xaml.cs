@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,15 +58,15 @@ namespace SLC_LayoutEditor
 
             Mediator.Instance.Register(o =>
             {
-                if (o is LiveGuideAdorner adorner)
+                if (o is UIElement guidedElement)
                 {
-                    currentGuideAdorner = adorner;
+                    SetGuideAdorner(guidedElement);
                 }
-            }, ViewModelMessage.GuideAdornerShown);
+            }, ViewModelMessage.GuideAdornerShowing);
 
             Mediator.Instance.Register(o =>
             {
-                currentGuideAdorner = null;
+                SetGuideAdorner(null);
             }, ViewModelMessage.GuideAdornerClosed);
         }
 
@@ -171,6 +172,40 @@ namespace SLC_LayoutEditor
         private void Roadmap_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://trello.com/b/vJMbqwXb/slc-layout-editor-roadmap");
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            RefreshGuideAdorner();
+        }
+
+        private void SetGuideAdorner(UIElement guidedElement)
+        {
+            if (guidedElement != null)
+            {
+                if (Content is UIElement rootElement)
+                {
+                    LiveGuideAdorner.AttachAdorner(rootElement, guidedElement);
+                }
+            }
+            else
+            {
+                currentGuideAdorner = null;
+            }
+        }
+
+        private void RefreshGuideAdorner()
+        {
+            if (currentGuideAdorner != null)
+            {
+                UIElement adornedElement = currentGuideAdorner.AdornedElement;
+                adornedElement.RemoveAdorner(currentGuideAdorner);
+                currentGuideAdorner = (LiveGuideAdorner)LiveGuideAdorner.AttachAdorner(adornedElement, currentGuideAdorner.GuidedElement);
+            }
+        }
+
+        private void Updater_InstallUpdateClicked(object sender, EventArgs e)
+        {
         }
     }
 }

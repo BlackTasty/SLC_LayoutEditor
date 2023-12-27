@@ -119,8 +119,10 @@
     <Compile Include="Converter\UpdateProgressBarIndeterminateConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
+    <Compile Include="Core\Enum\DialogButtonStyle.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
+    <Compile Include="Core\Enum\GuideTextPosition.cs" />
     <Compile Include="Core\Enum\RollbackType.cs" />
     <Compile Include="Core\Enum\StateChangeType.cs" />
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\Dialogs\IDialog.cs" />
+    <Compile Include="Core\GettingStartedGuide.cs" />
     <Compile Include="Core\IThemeManager.cs" />
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
@@ -278,6 +281,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Strings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="StyleTester.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

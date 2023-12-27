@@ -311,6 +311,8 @@ namespace SLC_LayoutEditor.UI
                 }
 
                 vm.ActiveLayout.DeepRefreshProblemChecks();
+                vm.RefreshUnsavedChanges();
+                control_layout.RefreshState();
             }
         }
 
@@ -597,19 +599,48 @@ namespace SLC_LayoutEditor.UI
             if (sender is MenuItem menuItem && menuItem.Parent is ContextMenu contextMenu &&
                 contextMenu.PlacementTarget is UIElement element && GuideAssist.GetHasGuide(element))
             {
-                LiveGuideAdorner.AttachAdorner(element);
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.GuideAdornerShowing, element);
             }
         }
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
-            if (App.IsStartup && App.Settings.RememberLastLayout && App.Settings.LastLayout != null)
+            if (App.IsStartup)
             {
-                CabinLayoutSet lastLayoutSet = vm.LayoutSets.FirstOrDefault(x => x.AircraftName == App.Settings.LastLayoutSet);
-                if (lastLayoutSet != null)
+                if (App.Settings.RememberLastLayout && App.Settings.LastLayout != null)
                 {
-                    vm.SelectedLayoutSet = lastLayoutSet;
+                    CabinLayoutSet lastLayoutSet = vm.LayoutSets.FirstOrDefault(x => x.AircraftName == App.Settings.LastLayoutSet);
+                    if (lastLayoutSet != null)
+                    {
+                        vm.SelectedLayoutSet = lastLayoutSet;
+                    }
                 }
+
+                // TODO: Implement guided tour
+                /*if (!App.Settings.GettingStartedGuideShown)
+                {
+                    ConfirmationDialog dialog = new ConfirmationDialog("Getting started",
+                        "It looks like this is your first time starting the editor.\nDo you wish to partake in a guided tour through the editor?",
+                        "Ask me later", "Yes", "No", DialogButtonStyle.Yellow, DialogButtonStyle.Green, DialogButtonStyle.Red);
+
+                    dialog.DialogClosing += GuidedTour_DialogClosing;
+
+                    Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                }*/
+            }
+        }
+
+        private void GuidedTour_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.CustomMiddle)
+            {
+
+            }
+
+            if (e.DialogResult != DialogResultType.CustomLeft)
+            {
+                App.Settings.GettingStartedGuideShown = true;
+                App.SaveAppSettings();
             }
         }
     }

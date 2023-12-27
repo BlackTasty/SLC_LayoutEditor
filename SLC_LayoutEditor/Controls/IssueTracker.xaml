@@ -6,11 +6,13 @@
              xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
              xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
              mc:Ignorable="d"
-             local:GuideAssist.Title="Issue tracker"
-             local:GuideAssist.Description="The issue tracker keeps watch of your changes, and informs you in case of detected problems.&#x0a;The editor can also try to automatically fix some of these issues for you!"
+             local:GuideAssist.Title="{StaticResource GuideIssueTrackerTitle}"
+             local:GuideAssist.Description="{StaticResource GuideIssueTrackerDescription}"
              local:GuideAssist.HasGuide="True"
              local:GuideAssist.IsCircleCutout="False"
-             local:GuideAssist.TextPosition="Top">
+             local:GuideAssist.TextPosition="Top"
+             local:GuideAssist.SafeZoneSize="16"
+             Cursor="Help">
     <UserControl.DataContext>
         <vm:LayoutEditorViewModel/>
     </UserControl.DataContext>
@@ -194,7 +196,7 @@
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
                                                                             InvalidText="Invalid service points!"
                                                                             IsValid="{Binding AreServicePointsValid}"
-                                                                            Description="Each service start point (&lt;) also requires an end point (&gt;) in the same row"/>
+                                                                            Description="Each service start point (&lt;) also requires an end point (&gt;) in the same column"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All seat rows covered by service"
                                                                             InvalidText="Some rows aren't covered by service!"
                                                                             IsValid="{Binding AreSeatsReachableByService}"

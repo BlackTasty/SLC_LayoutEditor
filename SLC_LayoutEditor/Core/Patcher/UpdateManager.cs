@@ -20,6 +20,7 @@ namespace SLC_LayoutEditor.Core.Patcher
         private string currentVersion;
         private VersionData versionData;
         private string newVersion;
+        private bool isPullingVersionFile;
 
         private bool updatesReady;
         private UpdateStatus status = UpdateStatus.INIT;
@@ -81,6 +82,8 @@ namespace SLC_LayoutEditor.Core.Patcher
             }
         }
 
+        internal bool RestartAfterClose { get; set; }
+
         internal UpdateManager()
         {
             if (Directory.Exists(tempDownloadPath))
@@ -136,8 +139,8 @@ namespace SLC_LayoutEditor.Core.Patcher
                 {
                     Logger.Default.WriteLog("Searching for updates...");
                     Util.SafeDeleteFile(versionFilePath);
+                    isPullingVersionFile = true;
                     DownloadFile("version.txt", versionFilePath, false);
-                    CheckAppUpdates();
                 }
                 else
                 {
@@ -330,15 +333,17 @@ namespace SLC_LayoutEditor.Core.Patcher
 
                 using (WebClient wc = new WebClient())
                 {
+                    wc.DownloadFileCompleted += DownloadFileCompleted;
                     if (notifyProgress)
                     {
                         wc.DownloadProgressChanged += DownloadChanged;
-                        wc.DownloadFileCompleted += DownloadFileCompleted;
                         downloadSpeedStopWatch.Start();
                         wc.DownloadFileAsync(new Uri(targetServer.URL + fileName), targetDir);
                     }
                     else
-                        wc.DownloadFile(new Uri(targetServer.URL + fileName), targetDir);
+                    {
+                        wc.DownloadFileAsync(new Uri(targetServer.URL + fileName), targetDir);
+                    }
                 }
             }
             else
@@ -366,8 +371,16 @@ namespace SLC_LayoutEditor.Core.Patcher
 
         private void DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            downloadSpeedStopWatch.Reset();
-            InstallUpdate();
+            if (!isPullingVersionFile)
+            {
+                downloadSpeedStopWatch.Reset();
+                InstallUpdate();
+            }
+            else
+            {
+                CheckAppUpdates();
+                isPullingVersionFile = false;
+            }
         }
 
         private void DownloadChanged(object sender, DownloadProgressChangedEventArgs e)

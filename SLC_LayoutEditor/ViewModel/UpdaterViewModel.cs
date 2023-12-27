@@ -200,13 +200,13 @@ namespace SLC_LayoutEditor.ViewModel
                     ShowButton = true;
                     ShowProgressBar = false;
                     IsInteractable = true;
-                    UpdateText = "Updates found!";
+                    UpdateText = "Updates ready to download";
                     break;
                 case UpdateStatus.DOWNLOADING:
                     ShowButton = false;
                     ShowProgressBar = true;
                     IsInteractable = false;
-                    UpdateText = "Downloading update...";
+                    UpdateText = "Starting download...";
                     break;
                 case UpdateStatus.EXTRACTING:
                 case UpdateStatus.INSTALLING:
@@ -216,9 +216,7 @@ namespace SLC_LayoutEditor.ViewModel
                     ShowButton = true;
                     ShowProgressBar = false;
                     IsInteractable = true;
-                    UpdateText = "Update installed!";
-                    /*Process.Start(AppDomain.CurrentDomain.BaseDirectory + "SLC_LayoutEditor.exe");
-                    Application.Current.MainWindow.Close();*/
+                    UpdateText = "Update installed, restart the editor";
                     break;
                 case UpdateStatus.UPTODATE:
                     ShowButton = true;

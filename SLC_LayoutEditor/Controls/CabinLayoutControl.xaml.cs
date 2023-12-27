@@ -113,6 +113,16 @@ namespace SLC_LayoutEditor.Controls
             DependencyProperty.Register("SelectedCabinSlots", typeof(List<CabinSlot>), typeof(CabinLayoutControl), new PropertyMetadata(new List<CabinSlot>()));
         #endregion
 
+        public ContextMenu GuideMenu
+        {
+            get { return (ContextMenu)GetValue(GuideMenuProperty); }
+            set { SetValue(GuideMenuProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GuideMenu.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GuideMenuProperty =
+            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(CabinLayoutControl), new PropertyMetadata(null));
+
         public string LayoutOverviewTitle => CabinLayout != null ?
             string.Format("{0} {1}", CabinLayout.LayoutName, HasUnsavedChanges ? "*" : "") :
             "No layout selected";
@@ -213,6 +223,16 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
+        public void GetGuidedElements(out Button makeTemplateButton, out Button reloadLayoutButton, out Button deleteLayoutButton, 
+            out Button addDeckButton, out Button editLayoutNameButton)
+        {
+            makeTemplateButton = btn_makeTemplate;
+            reloadLayoutButton = btn_reloadLayout;
+            deleteLayoutButton = btn_deleteLayout;
+            addDeckButton = btn_addDeck;
+            editLayoutNameButton = btn_editLayoutName;
+        }
+
         public void Dispose()
         {
             if (CabinLayout != null)
@@ -273,7 +293,8 @@ namespace SLC_LayoutEditor.Controls
         {
             DeckLayoutControl cabinDeckControl = new DeckLayoutControl()
             {
-                CabinDeck = cabinDeck
+                CabinDeck = cabinDeck,
+                GuideMenu = GuideMenu
             };
 
             cabinDeckControl.CabinSlotClicked += CabinDeckControl_CabinSlotClicked;
@@ -464,7 +485,7 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
-        private void RefreshState()
+        public void RefreshState()
         {
             InvokePropertyChanged(nameof(LayoutOverviewTitle));
             InvokePropertyChanged(nameof(HasUnsavedChanges));
@@ -562,15 +583,6 @@ namespace SLC_LayoutEditor.Controls
             if (e.DialogResult == DialogResultType.Yes)
             {
                 CabinLayout.Delete();
-            }
-        }
-
-        private void ShowGuide_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is MenuItem menuItem && menuItem.Parent is ContextMenu contextMenu &&
-                contextMenu.PlacementTarget is UIElement element && GuideAssist.GetHasGuide(element))
-            {
-                LiveGuideAdorner.AttachAdorner(element);
             }
         }
 

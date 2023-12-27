@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Core.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,12 +74,12 @@ namespace SLC_LayoutEditor.Controls
         #region TextPosition property
         public static readonly DependencyProperty TextPositionProperty =
             DependencyProperty.RegisterAttached("TextPosition",
-                typeof(Dock), typeof(GuideAssist), new FrameworkPropertyMetadata(Dock.Right, FrameworkPropertyMetadataOptions.AffectsRender));
+                typeof(GuideTextPosition), typeof(GuideAssist), new FrameworkPropertyMetadata(GuideTextPosition.Auto, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public static Dock GetTextPosition(UIElement target) =>
-            (Dock)target.GetValue(TextPositionProperty);
+        public static GuideTextPosition GetTextPosition(UIElement target) =>
+            (GuideTextPosition)target.GetValue(TextPositionProperty);
 
-        public static void SetTextPosition(UIElement target, Dock value) =>
+        public static void SetTextPosition(UIElement target, GuideTextPosition value) =>
             target.SetValue(TextPositionProperty, value);
         #endregion
 
@@ -164,6 +165,42 @@ namespace SLC_LayoutEditor.Controls
 
         public static void SetHighlightYOffset(UIElement target, double value) =>
             target.SetValue(HighlightYOffsetProperty, value);
+        #endregion
+
+        #region SafeZoneSize property
+        public static readonly DependencyProperty SafeZoneSizeProperty =
+            DependencyProperty.RegisterAttached("SafeZoneSize",
+                typeof(double), typeof(GuideAssist), new FrameworkPropertyMetadata(32d, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static double GetSafeZoneSize(UIElement target) =>
+            (double)target.GetValue(SafeZoneSizeProperty);
+
+        public static void SetSafeZoneSize(UIElement target, double value) =>
+            target.SetValue(SafeZoneSizeProperty, value);
+        #endregion
+
+        #region TextAreaXOffset property
+        public static readonly DependencyProperty TextAreaXOffsetProperty =
+            DependencyProperty.RegisterAttached("TextAreaXOffset",
+                typeof(double), typeof(GuideAssist), new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static double GetTextAreaXOffset(UIElement target) =>
+            (double)target.GetValue(TextAreaXOffsetProperty);
+
+        public static void SetTextAreaXOffset(UIElement target, double value) =>
+            target.SetValue(TextAreaXOffsetProperty, value);
+        #endregion
+
+        #region TextAreaYOffset property
+        public static readonly DependencyProperty TextAreaYOffsetProperty =
+            DependencyProperty.RegisterAttached("TextAreaYOffset",
+                typeof(double), typeof(GuideAssist), new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static double GetTextAreaYOffset(UIElement target) =>
+            (double)target.GetValue(TextAreaYOffsetProperty);
+
+        public static void SetTextAreaYOffset(UIElement target, double value) =>
+            target.SetValue(TextAreaYOffsetProperty, value);
         #endregion
     }
 }
