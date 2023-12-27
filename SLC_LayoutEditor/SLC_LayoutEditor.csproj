@@ -106,6 +106,7 @@
     <Compile Include="Converter\GreaterThanConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converter\ModifyNumberConverter.cs" />
     <Compile Include="Converter\NotZeroConverter.cs" />
     <Compile Include="Converter\OffsetConverter.cs" />
     <Compile Include="Converter\RotateTransformCentreConverter.cs" />

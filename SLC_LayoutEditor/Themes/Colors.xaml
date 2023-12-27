@@ -54,6 +54,8 @@
     <Color x:Key="ForegroundColor">#FFFFFF</Color>
     <Color x:Key="ForegroundSecondaryColor">#C9C9C9</Color>
 
+    <Color x:Key="GuideBackdropColor">#030304</Color>
+
     <Color x:Key="TemplatingModeColor">#ffc89e</Color>
     <Color x:Key="TemplatingModeHoverColor">#ffd9bc</Color>
     <Color x:Key="TemplatingModePressedColor">#e7a573</Color>
@@ -100,7 +102,7 @@
     <SolidColorBrush x:Key="ForegroundPressedColorBrush" Color="{StaticResource ForegroundSecondaryColor}" Opacity=".6"/>
 
     <SolidColorBrush x:Key="SeparatorColorBrush" Color="{StaticResource SeparatorColor}"/>
-    <SolidColorBrush x:Key="LiveGuideOverlayBrush" Color="{StaticResource BackgroundDark}" Opacity=".85"/>
+    <SolidColorBrush x:Key="LiveGuideOverlayBrush" Color="{StaticResource GuideBackdropColor}" Opacity=".7"/>
 
     <SolidColorBrush x:Key="RemoveDeckButtonBackgroundBrush" Color="{StaticResource BackgroundColor}" Opacity=".24"/>
     <SolidColorBrush x:Key="RemoveDeckButtonHoverBackgroundBrush" Color="{StaticResource BackgroundLight}" Opacity=".24"/>

@@ -310,7 +310,7 @@ namespace SLC_LayoutEditor.UI
                     cabinSlot.IsEvaluationActive = true;
                 }
 
-                vm.ActiveLayout.DeepRefreshProblemChecks();
+                vm.ActiveLayout.RefreshCalculated();
                 vm.RefreshUnsavedChanges();
                 control_layout.RefreshState();
             }
@@ -321,19 +321,38 @@ namespace SLC_LayoutEditor.UI
             switch (vm.SelectedAutomationIndex)
             {
                 case 0: // Seat numeration
-                    var seatRowGroups = control_layout.SelectedCabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).OrderBy(x => x.Key);
+                    var seatRowGroups = 
+                        (!vm.AutomationCountEmptySlots ? 
+                            control_layout.SelectedCabinSlots.Where(x => x.IsSeat) : 
+                            control_layout.SelectedCabinSlots)
+                        .GroupBy(x => x.Column).OrderBy(x => x.Key);
+
                     char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
                     int currentLetterIndex = 0;
                     foreach (var group in seatRowGroups)
                     {
                         int seatNumber = vm.AutomationSeatStartNumber;
-                        foreach (CabinSlot cabinSlot in group.OrderBy(x => x.Row))
+                        IEnumerable<CabinSlot> slots = group.OrderBy(x => x.Row);
+                        int firstSeatRow = slots.FirstOrDefault(x => x.IsSeat)?.Row ?? -1;
+                        if (vm.AutomationCountEmptySlots)
                         {
-                            cabinSlot.IsEvaluationActive = false;
-                            cabinSlot.SeatLetter = seatLetters[currentLetterIndex];
-                            cabinSlot.SlotNumber = seatNumber;
-                            seatNumber++;
-                            cabinSlot.IsEvaluationActive = true;
+                            slots = slots.Skip(firstSeatRow);
+                        }
+
+                        if (firstSeatRow > -1)
+                        {
+                            foreach (CabinSlot cabinSlot in slots)
+                            {
+                                if (!vm.AutomationCountEmptySlots && !cabinSlot.IsSeat)
+                                {
+                                    continue;
+                                }
+                                cabinSlot.IsEvaluationActive = false;
+                                cabinSlot.SeatLetter = seatLetters[currentLetterIndex];
+                                cabinSlot.SlotNumber = seatNumber;
+                                seatNumber++;
+                                cabinSlot.IsEvaluationActive = true;
+                            }
                         }
 
                         if (currentLetterIndex + 1 < seatLetters.Length)
@@ -510,6 +529,8 @@ namespace SLC_LayoutEditor.UI
                     break;
             }
             vm.ActiveLayout.DeepRefreshProblemChecks();
+            vm.RefreshUnsavedChanges();
+            control_layout.RefreshState();
         }
 
         private void CabinLayout_SelectedSlotsChanged(object sender, CabinSlotClickedEventArgs e)
@@ -642,6 +663,11 @@ namespace SLC_LayoutEditor.UI
                 App.Settings.GettingStartedGuideShown = true;
                 App.SaveAppSettings();
             }
+        }
+
+        private void Layout_LayoutReloaded(object sender, EventArgs e)
+        {
+            vm.ClearSelection();
         }
     }
 }

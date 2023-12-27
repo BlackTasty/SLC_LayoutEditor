@@ -77,8 +77,8 @@
                     </Style>
                 </ScrollViewer.Style>
                 <StackPanel x:Name="container_decks" Grid.IsSharedSizeScope="True" Margin="0,63,0,80"
-                    Loaded="container_decks_Loaded"
-                    SizeChanged="deck_scroll_SizeChanged">
+                            Loaded="container_decks_Loaded"
+                            SizeChanged="deck_scroll_SizeChanged">
 
             </StackPanel>
         </ScrollViewer>
@@ -101,11 +101,12 @@
                     local:GuideAssist.HasGuide="True"
                     local:GuideAssist.IsCircleCutout="False"
                     local:GuideAssist.TextPosition="Bottom"
+                    local:GuideAssist.CornerRadius="20"
                     Cursor="Help"
                     ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
             <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
-                ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesList}"
-                Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                    ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesList}"
+                    Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
                 <TextBlock>
                     <TextBlock.Style>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
@@ -120,8 +121,8 @@
                 </TextBlock>
             </Border>
             <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
-                ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesList}"
-                Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                    ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesList}"
+                    Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
                 <TextBlock>
                     <TextBlock.Style>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
@@ -136,7 +137,7 @@
                 </TextBlock>
             </Border>
             <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonForegroundColorBrush}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
             </Border>
         </StackPanel>
@@ -186,6 +187,7 @@
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
                             local:GuideAssist.RadiusOffset="-28"
+                            local:GuideAssist.HighlightXOffset="2"
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"
                             Margin="15.5,-9,-6.5,-7"
@@ -212,14 +214,14 @@
                     </Button.Style>
                 </Button>
                     <Button x:Name="btn_deleteLayout" DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteLayout_Click"
-                        Margin="24,0,0,0" Height="32" Width="32" Padding="6"
-                        local:GuideAssist.Title="{StaticResource GuideDeleteLayoutTitle}"
-                        local:GuideAssist.Description="{StaticResource GuideDeleteLayoutDescription}"
-                        local:GuideAssist.HasGuide="True"
-                        local:GuideAssist.TextPosition="Bottom"
-                        local:GuideAssist.RadiusOffset="-24"
-                        Cursor="Help"
-                        ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
+                            Margin="24,0,0,0" Height="32" Width="32" Padding="6"
+                            local:GuideAssist.Title="{StaticResource GuideDeleteLayoutTitle}"
+                            local:GuideAssist.Description="{StaticResource GuideDeleteLayoutDescription}"
+                            local:GuideAssist.HasGuide="True"
+                            local:GuideAssist.TextPosition="Bottom"
+                            local:GuideAssist.RadiusOffset="-24"
+                            Cursor="Help"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ErrorIconButtonStyle}">
                             <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>

@@ -13,7 +13,7 @@
                 <ControlTemplate TargetType="ToolTip">
                     <Border Name="Border"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4"
+                            CornerRadius="4" Margin="4"
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
                             Background="{TemplateBinding Background}"

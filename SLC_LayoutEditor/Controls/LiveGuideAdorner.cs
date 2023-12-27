@@ -130,34 +130,6 @@ namespace SLC_LayoutEditor.Controls
 
             Rect textAreaRect = GetTextAreaRect(textPosition, adornedElementRect, adornedElementCenter, formattedTitle, formattedDescription, formattedCloseInfo);
 
-            double totalRightOffset = textAreaRect.Right + safeZoneSize;
-            totalRightOffset = (totalRightOffset > AdornedElement.RenderSize.Width ? AdornedElement.RenderSize.Width - totalRightOffset : 0) + textAreaXOffset;
-            if (totalRightOffset < 0)
-            {
-                textAreaRect.Offset(totalRightOffset, 0);
-            }
-
-            double totalTopOffset = textAreaRect.Top - safeZoneSize;
-            totalTopOffset = (totalTopOffset > AdornedElement.RenderSize.Height ? AdornedElement.RenderSize.Height - totalTopOffset : 0) + textAreaYOffset;
-            if (totalTopOffset < 0)
-            {
-                textAreaRect.Offset(0, totalTopOffset);
-            }
-
-            double totalLeftOffset = textAreaRect.Left - safeZoneSize;
-            totalLeftOffset = (totalLeftOffset < 0 ? Math.Abs(totalLeftOffset) : 0) + textAreaXOffset;
-            if (totalLeftOffset > 0)
-            {
-                textAreaRect.Offset(totalLeftOffset, 0);
-            }
-
-            double totalBottomOffset = textAreaRect.Bottom + safeZoneSize;
-            totalBottomOffset = (totalBottomOffset < 0 ? Math.Abs(totalBottomOffset) : 0) + textAreaYOffset;
-            if (totalBottomOffset > 0)
-            {
-                textAreaRect.Offset(0, totalBottomOffset);
-            }
-
             Point titlePosition = textAreaRect.Location.MakeOffset(padding, 0);
             Point descriptionPosition = titlePosition.MakeOffset(8, formattedTitle.Height + 8);
             Point closeInfoPosition = descriptionPosition.MakeOffset(0, formattedDescription.Height + 12);
@@ -201,8 +173,8 @@ namespace SLC_LayoutEditor.Controls
             }
             else
             {
-
-                Rect adjustedHighlightRect = new Rect(adornedElementRect.Location.X, adornedElementRect.Location.Y,
+                double diameter = radiusOffset / 2;
+                Rect adjustedHighlightRect = new Rect(adornedElementRect.Location.X - diameter, adornedElementRect.Location.Y - diameter,
                     adornedElementRect.Width + radiusOffset, adornedElementRect.Height + radiusOffset);
                 geometry = new CombinedGeometry(GeometryCombineMode.Xor,
                    new RectangleGeometry(drawingRect),
@@ -236,6 +208,9 @@ namespace SLC_LayoutEditor.Controls
             double textAreaCenterX = Math.Max(formattedDescription.Width, formattedTitle.Width) / 2 + highlightXOffset;
             double textAreaCenterY = Math.Max(formattedDescription.Height, formattedTitle.Height) / 2 + highlightYOffset;
 
+            double textAreaWidth = Math.Max(formattedTitle.Width, formattedDescription.Width + 8) + padding * 2;
+            double textAreaHeight = formattedTitle.Height + formattedDescription.Height + formattedCloseInfo.Height + padding * 4;
+
             switch (textPosition)
             {
                 case GuideTextPosition.Right:
@@ -245,10 +220,10 @@ namespace SLC_LayoutEditor.Controls
                     titlePosition = new Point(adornedElementRect.X + adornedElementCenter.X - textAreaCenterX, adornedElementRect.Bottom + offset);
                     break;
                 case GuideTextPosition.Left:
-                    titlePosition = new Point(adornedElementRect.Left - formattedDescription.Width - offset - 16, adornedElementRect.Bottom - offset + margin + textAreaCenterY);
+                    titlePosition = new Point(adornedElementRect.Left - textAreaWidth - offset - 16, adornedElementRect.Bottom - offset + margin + textAreaCenterY);
                     break;
                 case GuideTextPosition.Top:
-                    titlePosition = new Point(adornedElementRect.X + adornedElementCenter.X - textAreaCenterX, adornedElementRect.Top - offset - formattedTitle.Height - formattedDescription.Height);
+                    titlePosition = new Point(adornedElementRect.X + adornedElementCenter.X - textAreaCenterX, adornedElementRect.Top - offset - textAreaHeight);
                     break;
                 case GuideTextPosition.Over:
                     titlePosition = new Point(adornedElementRect.X + adornedElementCenter.X - textAreaCenterX, adornedElementRect.Y + adornedElementCenter.Y - textAreaCenterY);
@@ -299,12 +274,37 @@ namespace SLC_LayoutEditor.Controls
             }
 
             //titlePosition.Offset(-padding, -padding);
-            double textAreaWidth = Math.Max(formattedTitle.Width, formattedDescription.Width + 8) + padding * 2;
-            double textAreaHeight = formattedTitle.Height + formattedDescription.Height + formattedCloseInfo.Height + padding * 4;
 
-            return new Rect(titlePosition.X, titlePosition.Y,
-                textAreaWidth,
-                textAreaHeight);
+            Rect textAreaRect = new Rect(titlePosition.X, titlePosition.Y, textAreaWidth, textAreaHeight);
+            double totalRightOffset = textAreaRect.Right + safeZoneSize;
+            totalRightOffset = (totalRightOffset > AdornedElement.RenderSize.Width ? AdornedElement.RenderSize.Width - totalRightOffset : 0) + textAreaXOffset;
+            if (totalRightOffset < 0)
+            {
+                textAreaRect.Offset(totalRightOffset, 0);
+            }
+
+            double totalTopOffset = textAreaRect.Top - safeZoneSize;
+            totalTopOffset = (totalTopOffset > AdornedElement.RenderSize.Height ? AdornedElement.RenderSize.Height - totalTopOffset : 0) + textAreaYOffset;
+            if (totalTopOffset < 0)
+            {
+                textAreaRect.Offset(0, totalTopOffset);
+            }
+
+            double totalLeftOffset = textAreaRect.Left - safeZoneSize;
+            totalLeftOffset = (totalLeftOffset < 0 ? Math.Abs(totalLeftOffset) : 0) + textAreaXOffset;
+            if (totalLeftOffset > 0)
+            {
+                textAreaRect.Offset(totalLeftOffset, 0);
+            }
+
+            double totalBottomOffset = textAreaRect.Bottom + safeZoneSize;
+            totalBottomOffset = (totalBottomOffset < 0 ? Math.Abs(totalBottomOffset) : 0) + textAreaYOffset;
+            if (totalBottomOffset > 0)
+            {
+                textAreaRect.Offset(0, totalBottomOffset);
+            }
+
+            return textAreaRect;
         }
     }
 }

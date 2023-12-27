@@ -342,7 +342,8 @@ namespace SLC_LayoutEditor.Core.Patcher
                     }
                     else
                     {
-                        wc.DownloadFileAsync(new Uri(targetServer.URL + fileName), targetDir);
+                        wc.DownloadFile(new Uri(targetServer.URL + fileName), targetDir);
+                        CheckAppUpdates();
                     }
                 }
             }
@@ -378,7 +379,6 @@ namespace SLC_LayoutEditor.Core.Patcher
             }
             else
             {
-                CheckAppUpdates();
                 isPullingVersionFile = false;
             }
         }

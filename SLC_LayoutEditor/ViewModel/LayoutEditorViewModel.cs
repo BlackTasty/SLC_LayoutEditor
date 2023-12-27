@@ -61,6 +61,7 @@ namespace SLC_LayoutEditor.ViewModel
         private int mSelectedAutomationIndex = -1;
         private string mAutomationSeatLetters = "";
         private int mAutomationSeatStartNumber = 1;
+        private bool mAutomationCountEmptySlots;
         private bool mIsAutomationChecked;
         private CabinDeck mAutomationSelectedDeck;
         private int mMaxRowsPerServiceGroup = 8;
@@ -273,10 +274,10 @@ namespace SLC_LayoutEditor.ViewModel
                 mSelectedCabinSlots = value;
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
+                InvokePropertyChanged(nameof(SelectedCabinSlot));
 
                 if (value.Count <= 1)
                 {
-                    InvokePropertyChanged(nameof(SelectedCabinSlot));
                     InvokePropertyChanged(nameof(SelectedCabinSlotTypeId));
                 }
 
@@ -290,6 +291,7 @@ namespace SLC_LayoutEditor.ViewModel
                     SelectedMultiSlotTypeIndex = -1;
                 }
                 IgnoreMultiSlotTypeChange = false;
+                InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
             }
         }
 
@@ -315,6 +317,8 @@ namespace SLC_LayoutEditor.ViewModel
         #endregion
 
         public bool IsSingleCabinSlotSelected => SelectedCabinSlots.Count <= 1;
+
+        public bool ShowSelectedCabinSlotDetails => SelectedCabinSlot != null && IsSingleCabinSlotSelected && !IsAutomationChecked;
 
         public int SelectedCabinSlotFloor
         {
@@ -476,6 +480,16 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public bool AutomationCountEmptySlots
+        {
+            get => mAutomationCountEmptySlots;
+            set
+            {
+                mAutomationCountEmptySlots = value;
+                InvokePropertyChanged();
+            }
+        }
+
         public CabinDeck AutomationSelectedDeck
         {
             get => mAutomationSelectedDeck;
@@ -612,6 +626,18 @@ namespace SLC_LayoutEditor.ViewModel
             return hasUnsavedChanges;
         }
 
+        public void ClearSelection()
+        {
+            SelectedCabinSlots.Clear();
+            SelectedCabinSlotTypeId = -1;
+            SelectedMultiSlotTypeIndex = -1;
+            AutomationSelectedDeck = null;
+            InvokePropertyChanged(nameof(SelectedCabinSlot));
+            InvokePropertyChanged(nameof(SelectedCabinSlots));
+            InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
+            InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
+        }
+
         private void LayoutSets_CollectionUpdated(object sender, Tasty.ViewModel.Core.Events.CollectionUpdatedEventArgs<CabinLayoutSet> e)
         {
             InvokePropertyChanged(nameof(LayoutSets));
@@ -746,19 +772,13 @@ namespace SLC_LayoutEditor.ViewModel
 
         private void FinishCabinLayoutChange(CabinLayout updated, EventHandler<EventArgs> deletedCallback)
         {
-            SelectedCabinSlots.Clear();
-            SelectedCabinSlotTypeId = -1;
-            SelectedMultiSlotTypeIndex = -1;
-            AutomationSelectedDeck = null;
+            ClearSelection();
             if (updated != null)
             {
                 updated.CabinDeckCountChanged += SelectedLayout_LayoutChanged;
                 updated.CabinSlotsChanged += SelectedLayout_LayoutChanged;
                 updated.Deleted += deletedCallback;
             }
-            InvokePropertyChanged(nameof(SelectedCabinSlot));
-            InvokePropertyChanged(nameof(SelectedCabinSlots));
-            InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
             InvokePropertyChanged(nameof(StairwayErrorMessage));
             InvokePropertyChanged(nameof(LayoutOverviewTitle));
             InvokePropertyChanged(!IsTemplatingMode ? nameof(SelectedLayoutText) : nameof(SelectedTemplateText));

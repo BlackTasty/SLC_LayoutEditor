@@ -60,6 +60,7 @@ namespace SLC_LayoutEditor.Controls
         #endregion
 
         public event EventHandler<EventArgs> LayoutRegenerated;
+        public event EventHandler<EventArgs> LayoutReloaded;
         public event EventHandler<EventArgs> LayoutLoading;
         public event EventHandler<CabinSlotClickedEventArgs> SelectedSlotsChanged;
         public event EventHandler<ChangedEventArgs> Changed;
@@ -462,6 +463,7 @@ namespace SLC_LayoutEditor.Controls
             activeDeckControl?.SetMultipleSlotsSelected(SelectedCabinSlots, true);
             CabinLayout.LoadCabinLayoutFromFile(true);
             RefreshCabinLayout();
+            OnLayoutReloaded(EventArgs.Empty);
         }
 
         private void layout_decks_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -541,6 +543,11 @@ namespace SLC_LayoutEditor.Controls
         {
             LayoutRegenerated?.Invoke(this, e);
             OnChanged(new ChangedEventArgs(HasUnsavedChanges));
+        }
+
+        protected virtual void OnLayoutReloaded(EventArgs e)
+        {
+            LayoutReloaded?.Invoke(this, e);
         }
 
         protected virtual void OnLayoutLoading(EventArgs e)

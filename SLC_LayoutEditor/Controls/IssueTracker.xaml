@@ -10,8 +10,7 @@
              local:GuideAssist.Description="{StaticResource GuideIssueTrackerDescription}"
              local:GuideAssist.HasGuide="True"
              local:GuideAssist.IsCircleCutout="False"
-             local:GuideAssist.TextPosition="Top"
-             local:GuideAssist.SafeZoneSize="16"
+             local:GuideAssist.RadiusOffset="-12"
              Cursor="Help">
     <UserControl.DataContext>
         <vm:LayoutEditorViewModel/>
