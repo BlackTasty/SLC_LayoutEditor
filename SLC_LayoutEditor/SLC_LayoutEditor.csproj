@@ -87,8 +87,14 @@
     </Compile>
     <Compile Include="Controls\RefinedComboBox.cs" />
     <Compile Include="Controls\RefinedExpander.cs" />
+    <Compile Include="Controls\RefinedTextBlock.xaml.cs">
+      <DependentUpon>RefinedTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\RefinedToggleButton.cs" />
     <Compile Include="Controls\RoundedCornersPolygon.cs" />
+    <Compile Include="Controls\ScrollingTextBlock.xaml.cs">
+      <DependentUpon>ScrollingTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SeatCapacityBox.xaml.cs">
       <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
     </Compile>
@@ -100,6 +106,7 @@
     <Compile Include="Converter\AircraftListSortConverter.cs" />
     <Compile Include="Converter\ArcEndPointConverter.cs" />
     <Compile Include="Converter\ArcSizeConverter.cs" />
+    <Compile Include="Converter\ContentSizeConverter.cs" />
     <Compile Include="Converter\EnumDescriptionConverter.cs" />
     <Compile Include="Converter\EnumInRangeConverter.cs" />
     <Compile Include="Converter\EqualsToVisibilityConverter.cs" />
@@ -139,7 +146,7 @@
     <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\Dialogs\IDialog.cs" />
-    <Compile Include="Core\GettingStartedGuide.cs" />
+    <Compile Include="Core\GuidedTour.cs" />
     <Compile Include="Core\IThemeManager.cs" />
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
@@ -249,6 +256,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\RefinedTextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ScrollingTextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SeatCapacityBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -287,6 +302,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="StyleTester.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ContentPlaceholderOverrides.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

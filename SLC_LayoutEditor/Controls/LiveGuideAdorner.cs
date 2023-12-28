@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core;
+﻿using Newtonsoft.Json.Linq;
+using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
@@ -22,6 +23,8 @@ namespace SLC_LayoutEditor.Controls
     /// </summary>
     internal class LiveGuideAdorner : Adorner
     {
+        public event EventHandler<EventArgs> Closed;
+
         private const double BACKDROP_SAFEZONE_SIZE = 250;
 
         private readonly double margin;
@@ -106,6 +109,7 @@ namespace SLC_LayoutEditor.Controls
         {
             AdornedElement.RemoveAdorner(this);
             Mediator.Instance.NotifyColleagues(ViewModelMessage.GuideAdornerClosed);
+            OnClosed(EventArgs.Empty);
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -134,7 +138,7 @@ namespace SLC_LayoutEditor.Controls
             Point descriptionPosition = titlePosition.MakeOffset(8, formattedTitle.Height + 8);
             Point closeInfoPosition = descriptionPosition.MakeOffset(0, formattedDescription.Height + 12);
 
-            ApplyOpacityMask(drawingContext, drawingRect, adornedElementRect, adornedElementCenter);
+            ApplyOpacityMask(drawingContext, drawingRect, adornedElementRect, adornedElementCenter, textAreaRect);
             drawingContext.DrawRectangle(overlayBrush, null, drawingRect);
 
             drawingContext.DrawRoundedRectangle(FixedValues.LIVE_GUIDE_TEXT_BACK_BRUSH, 
@@ -157,7 +161,8 @@ namespace SLC_LayoutEditor.Controls
             return result;
         }
 
-        private void ApplyOpacityMask(DrawingContext context, Rect drawingRect, Rect adornedElementRect, Point adornedElementCenter)
+        private void ApplyOpacityMask(DrawingContext context, Rect drawingRect, Rect adornedElementRect, Point adornedElementCenter,
+            Rect textAreaRect)
         {
             CombinedGeometry geometry;
             if (isCircularCutout)
@@ -176,9 +181,23 @@ namespace SLC_LayoutEditor.Controls
                 double diameter = radiusOffset / 2;
                 Rect adjustedHighlightRect = new Rect(adornedElementRect.Location.X - diameter, adornedElementRect.Location.Y - diameter,
                     adornedElementRect.Width + radiusOffset, adornedElementRect.Height + radiusOffset);
-                geometry = new CombinedGeometry(GeometryCombineMode.Xor,
-                   new RectangleGeometry(drawingRect),
-                   new RectangleGeometry(adjustedHighlightRect, cornerRadius, cornerRadius));
+
+                if (textPosition != GuideTextPosition.Over)
+                {
+                    geometry = new CombinedGeometry(GeometryCombineMode.Xor,
+                       new RectangleGeometry(drawingRect),
+                       new RectangleGeometry(adjustedHighlightRect, cornerRadius, cornerRadius));
+                }
+                else
+                {
+                    Rect adjustedTextAreaRect = new Rect(textAreaRect.X - margin / 2, textAreaRect.Y - margin / 2,
+                        textAreaRect.Width + margin, textAreaRect.Height + margin);
+                    geometry = new CombinedGeometry(GeometryCombineMode.Union,
+                        new CombinedGeometry(GeometryCombineMode.Xor,
+                           new RectangleGeometry(drawingRect),
+                           new RectangleGeometry(adjustedHighlightRect, cornerRadius, cornerRadius)),
+                        new RectangleGeometry(adjustedTextAreaRect, cornerRadius, cornerRadius));
+                }
             }
 
             DrawingBrush mask = new DrawingBrush(new GeometryDrawing(Brushes.Blue, null, geometry));
@@ -305,6 +324,11 @@ namespace SLC_LayoutEditor.Controls
             }
 
             return textAreaRect;
+        }
+
+        protected virtual void OnClosed(EventArgs e)
+        {
+            Closed?.Invoke(this, e);
         }
     }
 }

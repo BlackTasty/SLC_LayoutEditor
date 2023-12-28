@@ -628,6 +628,8 @@ namespace SLC_LayoutEditor.UI
         {
             if (App.IsStartup)
             {
+                App.GuidedTour = new GuidedTour(this);
+
                 if (App.Settings.RememberLastLayout && App.Settings.LastLayout != null)
                 {
                     CabinLayoutSet lastLayoutSet = vm.LayoutSets.FirstOrDefault(x => x.AircraftName == App.Settings.LastLayoutSet);
@@ -638,7 +640,7 @@ namespace SLC_LayoutEditor.UI
                 }
 
                 // TODO: Implement guided tour
-                /*if (!App.Settings.GettingStartedGuideShown)
+                if (!App.Settings.GettingStartedGuideShown)
                 {
                     ConfirmationDialog dialog = new ConfirmationDialog("Getting started",
                         "It looks like this is your first time starting the editor.\nDo you wish to partake in a guided tour through the editor?",
@@ -647,7 +649,7 @@ namespace SLC_LayoutEditor.UI
                     dialog.DialogClosing += GuidedTour_DialogClosing;
 
                     Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
-                }*/
+                }
             }
         }
 
@@ -655,9 +657,10 @@ namespace SLC_LayoutEditor.UI
         {
             if (e.DialogResult == DialogResultType.CustomMiddle)
             {
-
+                App.GuidedTour.ContinueTour();
             }
 
+            return;
             if (e.DialogResult != DialogResultType.CustomLeft)
             {
                 App.Settings.GettingStartedGuideShown = true;

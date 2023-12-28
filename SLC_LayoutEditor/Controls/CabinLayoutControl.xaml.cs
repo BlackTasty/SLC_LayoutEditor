@@ -224,14 +224,9 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
-        public void GetGuidedElements(out Button makeTemplateButton, out Button reloadLayoutButton, out Button deleteLayoutButton, 
-            out Button addDeckButton, out Button editLayoutNameButton)
+        public UIElement GetDeckIssueElement()
         {
-            makeTemplateButton = btn_makeTemplate;
-            reloadLayoutButton = btn_reloadLayout;
-            deleteLayoutButton = btn_deleteLayout;
-            addDeckButton = btn_addDeck;
-            editLayoutNameButton = btn_editLayoutName;
+            return container_decks.Children.OfType<DeckLayoutControl>().FirstOrDefault().cards_deckIssues;
         }
 
         public void Dispose()

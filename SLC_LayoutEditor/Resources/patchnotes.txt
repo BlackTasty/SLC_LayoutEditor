@@ -2,6 +2,8 @@
 Added: When automating seat numeration you can now enable counting non-seat rows when adjusting the seat number
 Updated: Updated some status texts for the updater 
 Updated: The issue tracker has an added margin at the bottom when the scrollbar is visible and the sidebar is collapsed
+Updated: The "Save as" action is now directly tied to the button instead of having to open the context menu first
+Updated: Added separate guides for the "Save" and "Save as" buttons
 Fixed: Changing multiple slots at once would not affect the unsaved changes flag, causing the UI to not show that there are unsaved changes
 Fixed: Clicking on the updater after an update was found wouldn't restart the editor as it should
 Fixed: Multi-selecting one or more rows/columns would sometimes disable the slot type dropdown

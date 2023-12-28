@@ -185,12 +185,19 @@ namespace SLC_LayoutEditor
             {
                 if (Content is UIElement rootElement)
                 {
-                    LiveGuideAdorner.AttachAdorner(rootElement, guidedElement);
+                    currentGuideAdorner = (LiveGuideAdorner)LiveGuideAdorner.AttachAdorner(rootElement, guidedElement);
+                    currentGuideAdorner.Closed += CurrentGuideAdorner_Closed;
                 }
             }
-            else
+        }
+
+        private void CurrentGuideAdorner_Closed(object sender, EventArgs e)
+        {
+            currentGuideAdorner.Closed -= CurrentGuideAdorner_Closed;
+            currentGuideAdorner = null;
+            if (App.isGuidedTourRunning)
             {
-                currentGuideAdorner = null;
+                App.GuidedTour.ContinueTour();
             }
         }
 
@@ -198,9 +205,11 @@ namespace SLC_LayoutEditor
         {
             if (currentGuideAdorner != null)
             {
+                currentGuideAdorner.Closed -= CurrentGuideAdorner_Closed;
                 UIElement adornedElement = currentGuideAdorner.AdornedElement;
                 adornedElement.RemoveAdorner(currentGuideAdorner);
                 currentGuideAdorner = (LiveGuideAdorner)LiveGuideAdorner.AttachAdorner(adornedElement, currentGuideAdorner.GuidedElement);
+                currentGuideAdorner.Closed += CurrentGuideAdorner_Closed;
             }
         }
 

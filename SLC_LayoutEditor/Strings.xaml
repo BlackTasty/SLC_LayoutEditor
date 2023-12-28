@@ -49,8 +49,11 @@
     <system:String x:Key="GuideToggleSlotModeTitle" d:Freeze="True" xml:space="preserve">Configuration mode toggle</system:String>
     <system:String x:Key="GuideToggleSlotModeDescription" d:Freeze="True" xml:space="preserve">By toggling this switch, you change between configuring selected slots and automating the slot configuration.</system:String>
 
-    <system:String x:Key="GuideSavingLayoutsTitle" d:Freeze="True" xml:space="preserve">Saving layouts</system:String>
-    <system:String x:Key="GuideSavingLayoutsDescription" d:Freeze="True" xml:space="preserve">Clicking the big green button saves your layout, whereas the purple button opens a context menu with further options.&#x0a;&#x0a;Please note that in order to use your layout in SLC, you have to upload the layout to the SLC website first.&#x0a;Create a new layout on the website, then copy &amp; paste the content of the layout file into the editor on the website.</system:String>
+    <system:String x:Key="GuideSavingLayoutsTitle" d:Freeze="True" xml:space="preserve">Saving your changes</system:String>
+    <system:String x:Key="GuideSavingLayoutsDescription" d:Freeze="True" xml:space="preserve">Clicking this button saves your current layout.&#x0a;&#x0a;Please note that in order to use your layout in SLC, you have to upload the layout to the SLC website first.&#x0a;Create a new layout on the website, then copy &amp; paste the content of the layout file into the editor on the website.</system:String>
+
+    <system:String x:Key="GuideSavingAsLayoutsTitle" d:Freeze="True" xml:space="preserve">Saving layouts under a new name</system:String>
+    <system:String x:Key="GuideSavingAsLayoutsDescription" d:Freeze="True" xml:space="preserve">Clicking the smaller button of the two allows you to save the current layout under a new name, and proceed to edit the newly created layout.&#x0a;&#x0a;Please note that in order to use your layout in SLC, you have to upload the layout to the SLC website first.&#x0a;Create a new layout on the website, then copy &amp; paste the content of the layout file into the editor on the website.</system:String>
 
     <system:String x:Key="GuideToggleSidebarTitle" d:Freeze="True" xml:space="preserve">Toggling the sidebar</system:String>
     <system:String x:Key="GuideToggleSidebarDescription" d:Freeze="True" xml:space="preserve">Clicking this button extends or retracts the sidebar. This is a great way to fully display large layouts!</system:String>

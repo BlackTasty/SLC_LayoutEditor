@@ -36,7 +36,7 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-                <StackPanel Orientation="Horizontal" Margin="16,4,16,0"
+                <StackPanel x:Name="cards_deckIssues" Orientation="Horizontal" Margin="16,4,16,0"
                             local:GuideAssist.Title="{StaticResource GuideIssueCardsTitle}"
                             local:GuideAssist.Description="{StaticResource GuideDeckIssueCardsDescription}"
                             local:GuideAssist.HasGuide="True"

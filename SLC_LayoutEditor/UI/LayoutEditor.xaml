@@ -157,9 +157,11 @@
                                  LayoutReloaded="Layout_LayoutReloaded"
                                  GuideMenu="{StaticResource GuideMenu}"
                                  controls:GuideAssist.Title="{StaticResource GuideEditorAreaTitle}"
-                                 controls:GuideAssist.Description="{StaticResource GuideEditLayoutNameDescription}"
+                                 controls:GuideAssist.Description="{StaticResource GuideEditorAreaDescription}"
                                  controls:GuideAssist.HasGuide="True"
-                                 controls:GuideAssist.TextPosition="Over">
+                                 controls:GuideAssist.TextPosition="Over"
+                                 controls:GuideAssist.IsCircleCutout="False"
+                                 controls:GuideAssist.Margin="32">
         <controls:CabinLayoutControl.Style>
             <Style TargetType="controls:CabinLayoutControl">
                 <Setter Property="Grid.Column" Value="1"/>
@@ -173,16 +175,16 @@
             </Style>
         </controls:CabinLayoutControl.Style>
     </controls:CabinLayoutControl>
-    <DockPanel Margin="8" LastChildFill="False">
+    <DockPanel Margin="8,0" LastChildFill="False">
         <Border x:Name="card_layoutSelect" DockPanel.Dock="Top" Style="{DynamicResource CardStyle}"
-                    Visibility="{Binding IsSidebarOpen, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    controls:GuideAssist.Title="{StaticResource GuideSelectorCardTitle}"
-                    controls:GuideAssist.Description="{StaticResource GuideSelectorCardDescription}"
-                    controls:GuideAssist.HasGuide="True"
-                    controls:GuideAssist.TextPosition="Right"
-                    controls:GuideAssist.IsCircleCutout="False"
-                    Cursor="Help"
-                    ContextMenu="{StaticResource GuideMenu}">
+                Visibility="{Binding IsSidebarOpen, Converter={StaticResource BooleanToVisibilityConverter}}"
+                controls:GuideAssist.Title="{StaticResource GuideSelectorCardTitle}"
+                controls:GuideAssist.Description="{StaticResource GuideSelectorCardDescription}"
+                controls:GuideAssist.HasGuide="True"
+                controls:GuideAssist.TextPosition="Right"
+                controls:GuideAssist.IsCircleCutout="False"
+                Cursor="Help"
+                ContextMenu="{StaticResource GuideMenu}">
             <StackPanel>
                 <DockPanel Margin="0,0,0,8">
                     <ToggleButton x:Name="toggle_editorMode" Style="{StaticResource TemplateSwitchToggleButton}" DockPanel.Dock="Right"
@@ -324,7 +326,7 @@
                 </Border>
             </StackPanel>
         </Border>
-        <Border DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}" Padding="4" Margin="8"
+        <Border DockPanel.Dock="Top" Background="{DynamicResource BackgroundDarkBrush}" Padding="4" Margin="0,8"
                 BorderBrush="{DynamicResource LayoutingModeBorderBrush}" CornerRadius="4" BorderThickness="1.5">
             <Border.Style>
                 <Style TargetType="Border">
@@ -369,11 +371,11 @@
                                               ToolTip="Galley seats"/>
                 </UniformGrid>
                 <TextBlock Margin="4" Style="{StaticResource Title2TextStyle}" HorizontalAlignment="Center"
-                           FontSize="24"
+                           FontSize="22"
                            Text="{Binding ActiveLayout.PassengerCapacity, StringFormat={}Total passenger seats: {0}, FallbackValue=Total: 0}"/>
             </StackPanel>
         </Border>
-        <controls:IssueTracker DockPanel.Dock="Bottom" DataContext="{Binding}" 
+        <controls:IssueTracker x:Name="issue_tracker" DockPanel.Dock="Bottom" DataContext="{Binding}" 
                                IsExpanded="{Binding IsIssueTrackerExpanded}"
                                ContextMenu="{StaticResource GuideMenu}">
             <controls:IssueTracker.Style>
@@ -409,11 +411,10 @@
             UseLayoutRounding="True">
         <Border.Style>
             <Style TargetType="Border">
-                <Setter Property="Margin" Value="0,0,0,0"/>
                 <Setter Property="BorderThickness" Value="1.5,1.5,1.5,0"/>
                 <Setter Property="Padding" Value="10.5,12"/>
                 <Setter Property="Grid.Column" Value="1"/>
-                <Setter Property="Grid.ColumnSpan" Value="2"/>
+                <Setter Property="Grid.ColumnSpan" Value="1"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource LayoutingModeBorderBrush}"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True">
@@ -433,7 +434,7 @@
             <StackPanel IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                         Margin="0,-3,0,0">
                 <DockPanel Margin="0,0,0,6">
-                    <ToggleButton Style="{StaticResource AutomationSwitchToggleButton}" DockPanel.Dock="Right"
+                    <ToggleButton x:Name="toggle_slotConfigMode" Style="{StaticResource AutomationSwitchToggleButton}" DockPanel.Dock="Right"
                                   IsChecked="{Binding IsAutomationChecked}"
                                   controls:GuideAssist.Title="{StaticResource GuideToggleSlotModeTitle}"
                                   controls:GuideAssist.Description="{StaticResource GuideToggleSlotModeDescription}"
@@ -669,15 +670,7 @@
     </Border>
     <Grid x:Name="area_fabs" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="2"
           IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
-          controls:GuideAssist.Title="{StaticResource GuideSavingLayoutsTitle}"
-          controls:GuideAssist.Description="{StaticResource GuideSavingLayoutsDescription}"
-          controls:GuideAssist.HasGuide="True"
-          controls:GuideAssist.RadiusOffset="-64"
-          controls:GuideAssist.HighlightXOffset="2"
-          controls:GuideAssist.HighlightYOffset="2"
-          controls:GuideAssist.TextPosition="Top"
-          Cursor="Help"
-          ContextMenu="{StaticResource GuideMenu}">
+          Cursor="Help">
         <Grid.Style>
             <Style TargetType="Grid">
                 <Setter Property="Margin" Value="8"/>
@@ -706,16 +699,22 @@
                 </Style.Triggers>
             </Style>
         </Grid.Style>
-        <Button Click="SaveLayout_Click" Content="{StaticResource Save}" ToolTip="Save your changes"
-                Style="{StaticResource FilledLargeRoundIconButtonStyle}"/>
-        <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="{DynamicResource More}"
-                Style="{StaticResource FilledRoundIconButtonStyle}" ToolTip="More options" Click="More_Click">
-            <Button.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Save as..." Click="CabinLayout_SaveAs_Click"/>
-                </ContextMenu>
-            </Button.ContextMenu>
-        </Button>
+        <Button x:Name="btn_saveLayout" Click="SaveLayout_Click" Content="{StaticResource Save}" ToolTip="Save your changes"
+                Style="{StaticResource FilledLargeRoundIconButtonStyle}"
+                controls:GuideAssist.Title="{StaticResource GuideSavingLayoutsTitle}"
+                controls:GuideAssist.Description="{StaticResource GuideSavingLayoutsDescription}"
+                controls:GuideAssist.HasGuide="True"
+                controls:GuideAssist.RadiusOffset="-48"
+                controls:GuideAssist.TextPosition="Top"
+                ContextMenu="{StaticResource GuideMenu}"/>
+        <Button x:Name="btn_saveAsLayout" VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="{DynamicResource SaveAs}" Padding="6,6,4,4"
+                Style="{StaticResource FilledRoundIconButtonStyle}" ToolTip="Save as..." Click="CabinLayout_SaveAs_Click"
+                controls:GuideAssist.Title="{StaticResource GuideSavingAsLayoutsTitle}"
+                controls:GuideAssist.Description="{StaticResource GuideSavingAsLayoutsDescription}"
+                controls:GuideAssist.HasGuide="True"
+                controls:GuideAssist.RadiusOffset="-18"
+                controls:GuideAssist.TextPosition="Top"
+                ContextMenu="{StaticResource GuideMenu}"/>
     </Grid>
     <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
         <Grid.Style>
