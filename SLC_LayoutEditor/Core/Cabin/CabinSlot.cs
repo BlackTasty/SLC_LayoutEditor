@@ -127,6 +127,9 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool IsDoor => mType == CabinSlotType.Door || mType == CabinSlotType.LoadingBay || mType == CabinSlotType.CateringDoor;
 
+        public bool IsInteractable => IsSeat || IsDoor || mType == CabinSlotType.Cockpit || mType == CabinSlotType.Galley ||
+            mType == CabinSlotType.Toilet || mType == CabinSlotType.Kitchen || mType == CabinSlotType.Intercom || mType == CabinSlotType.Stairway;
+
         public string DisplayText => ToString().Trim();
 
         public bool IsProblematic
@@ -262,6 +265,26 @@ namespace SLC_LayoutEditor.Core.Cabin
             mColumn = column;
             mType = type;
             mSlotNumber = slotNumber;
+        }
+
+        public bool IsReachable(CabinDeck deck)
+        {
+            if (deck != null)
+            {
+                AdjacentSlots adjacentSlots = new AdjacentSlots(deck, this);
+                if (adjacentSlots.HasAdjacentAisle)
+                {
+
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public void Validate()

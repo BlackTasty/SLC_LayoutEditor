@@ -62,6 +62,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         public IEnumerable<CabinSlot> InvalidCateringDoorsAndLoadingBays => mCabinSlots.Where(x => (x.Type == CabinSlotType.CateringDoor || x.Type == CabinSlotType.LoadingBay)
                                             && x.Column != 0);
 
+        public IEnumerable<CabinSlot> UnreachableSlots => mCabinSlots.Where(x => x.IsInteractable && !x.IsReachable(this));
+
         public bool AreServicePointsValid =>
             mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint).Count() ==
             mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceEndPoint).Count();
@@ -106,6 +108,11 @@ namespace SLC_LayoutEditor.Core.Cabin
 
                 return true;
             }
+        }
+
+        public bool HasUnreachableSlots
+        {
+            get => false;
         }
 
         public bool HasSevereIssues => SevereIssuesCount > 0;
@@ -530,6 +537,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             InvokePropertyChanged(nameof(AreToiletsAvailable));
             InvokePropertyChanged(nameof(AreSeatsReachableByService));
             InvokePropertyChanged(nameof(AreSlotsValid));
+            InvokePropertyChanged(nameof(HasUnreachableSlots));
             InvokePropertyChanged(nameof(AreCateringAndLoadingBaysValid));
             InvokePropertyChanged(nameof(InvalidCateringDoorsAndLoadingBays));
 

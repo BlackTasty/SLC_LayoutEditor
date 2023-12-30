@@ -240,11 +240,11 @@
                                                 <Border BorderThickness="1,0" BorderBrush="{DynamicResource ComboBoxItemSplitterColorBrush}"
                                                         DockPanel.Dock="Right" Grid.Column="1" Margin="0,-4,0,-16"/>
                                                 <TextBlock DockPanel.Dock="Right" FontStyle="Italic" Margin="8,0,0,0"
-                                                           Grid.Column="2" TextAlignment="Right"
-                                                           Text="{Binding CurrentCountText}">
+                                                           Grid.Column="2" TextAlignment="Right">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="Foreground" Value="{DynamicResource ForegroundSecondaryColorBrush}"/>
+                                                            <Setter Property="Text" Value="{Binding CurrentCountText}"/>
                                                             <Style.Triggers>
                                                                 <MultiDataTrigger>
                                                                     <MultiDataTrigger.Conditions>
@@ -252,6 +252,7 @@
                                                                         <Condition Binding="{Binding LayoutCount}" Value="0"/>
                                                                     </MultiDataTrigger.Conditions>
                                                                     <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
+                                                                    <Setter Property="Text" Value="No layouts"/>
                                                                 </MultiDataTrigger>
                                                                 <MultiDataTrigger>
                                                                     <MultiDataTrigger.Conditions>
@@ -259,6 +260,7 @@
                                                                         <Condition Binding="{Binding TemplateCount}" Value="0"/>
                                                                     </MultiDataTrigger.Conditions>
                                                                     <Setter Property="Foreground" Value="{DynamicResource NoLayoutsColorBrush}"/>
+                                                                    <Setter Property="Text" Value="No templates"/>
                                                                 </MultiDataTrigger>
                                                             </Style.Triggers>
                                                         </Style>

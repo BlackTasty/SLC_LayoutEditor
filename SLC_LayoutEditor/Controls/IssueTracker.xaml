@@ -17,7 +17,9 @@
     </UserControl.DataContext>
     <local:RefinedExpander IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                            Description="{Binding ActiveLayout.IssuesCountText}" ExpandDirection="Up"
-                           IsExpanded="{Binding IsIssueTrackerExpanded}">
+                           IsExpanded="True">
+        <!--
+                           IsExpanded="{Binding IsIssueTrackerExpanded}"-->
         <local:RefinedExpander.Style>
             <Style TargetType="local:RefinedExpander" BasedOn="{StaticResource {x:Type local:RefinedExpander}}">
                 <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonForegroundColorBrush}"/>
@@ -123,12 +125,12 @@
                                          IsRequired="{Binding ActiveLayout.HasMultipleDecks}"/>
                 <TextBlock Text="Issues per deck" FontSize="18" Margin="0,16,0,0"/>
                 <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
-                              GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
-                              CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False"
-                              CanUserSortColumns="False" HorizontalScrollBarVisibility="Disabled"
-                              ItemsSource="{Binding ActiveLayout.CabinDecks}"
-                              PreviewMouseWheel="DeckProblemsList_PreviewMouseWheel"
-                              Margin="0,0,0,0">
+                          GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
+                          CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False"
+                          CanUserSortColumns="False" HorizontalScrollBarVisibility="Disabled"
+                          ItemsSource="{Binding ActiveLayout.CabinDecks}"
+                          PreviewMouseWheel="DeckProblemsList_PreviewMouseWheel"
+                          Margin="0,0,0,0">
                     <DataGrid.Resources>
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
@@ -155,7 +157,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
-                                                       Margin="0,0,0,12" Width="297">
+                                                Margin="0,0,0,12" Width="297">
                                         <TextBlock FontSize="16" DockPanel.Dock="Top" Margin="0,0,0,0"
                                                            Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
                                             <TextBlock.Style>
@@ -173,24 +175,31 @@
                                             </TextBlock.Style>
                                         </TextBlock>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Deck slots valid"
-                                                                            InvalidText="Invalid amount of deck slots!"
-                                                                            IsValid="{Binding AreSlotsValid}"
-                                                                            ShowAutoFix="True"
-                                                                            AutoFixTarget="{Binding}"
-                                                                            AutoFixApplying="Slots_AutoFixApplying"
-                                                                            Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
+                                                                 InvalidText="Invalid amount of deck slots!"
+                                                                 IsValid="{Binding AreSlotsValid}"
+                                                                 ShowAutoFix="True"
+                                                                 AutoFixTarget="{Binding}"
+                                                                 AutoFixApplying="Slots_AutoFixApplying"
+                                                                 Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
-                                                                            InvalidText="No doors for this deck!"
-                                                                            IsValid="{Binding AreDoorsValid}"
-                                                                            Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
+                                                                 InvalidText="No doors for this deck!"
+                                                                 IsValid="{Binding AreDoorsValid}"
+                                                                 Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="CAT/LB on correct side"
-                                                                            InvalidText="CAT/LB detected on the left side"
-                                                                            InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
-                                                                            ShowEye="True" 
-                                                                            ShowProblemsChanged="CateringAndLoadingBays_ShowProblemsChanged"
-                                                                            ShowProblems="{Binding ShowCateringAndLoadingBayIssues}"
-                                                                            IsValid="{Binding AreCateringAndLoadingBaysValid}" IsSevereProblem="False"
-                                                                            Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
+                                                                 InvalidText="CAT/LB detected on the left side"
+                                                                 InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
+                                                                 ShowEye="True" 
+                                                                 ShowProblemsChanged="CateringAndLoadingBays_ShowProblemsChanged"
+                                                                 ShowProblems="{Binding ShowCateringAndLoadingBayIssues}"
+                                                                 IsValid="{Binding AreCateringAndLoadingBaysValid}" IsSevereProblem="False"
+                                                                 Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
+                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All slots are reachable"
+                                                                 InvalidText="Unreachable slots detected!"
+                                                                 IsValid="{Binding AreSlotsValid}"
+                                                                 ShowAutoFix="True"
+                                                                 AutoFixTarget="{Binding}"
+                                                                 AutoFixApplying="Slots_AutoFixApplying"
+                                                                 Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
                                         <Separator Margin="0,4"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
                                                                             InvalidText="Invalid service points!"

@@ -126,6 +126,7 @@
     <Compile Include="Converter\UpdateIconVisibilityConverter.cs" />
     <Compile Include="Converter\UpdateProgressBarIndeterminateConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
+    <Compile Include="Core\Cabin\AdjacentSlots.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
