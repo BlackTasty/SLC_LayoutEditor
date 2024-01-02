@@ -64,11 +64,11 @@ namespace SLC_LayoutEditor.Core
 
         public static Adorner AttachAdorner(this UIElement uiElement, Type adornerType, params object[] args)
         {
-            List<Type> constructorTypes = new List<Type> { typeof(UIElement) };
+            IEnumerable<Type> constructorTypes = adornerType.GetConstructors().First().GetParameters().Select(x => x.ParameterType);
             List<object> constructorParams = new List<object> { uiElement };
             if (args?.Length > 0)
             {
-                constructorTypes.AddRange(args.Select(t => t.GetType()));
+                //constructorTypes.AddRange(args.Select(t => t.GetType()));
                 constructorParams.AddRange(args);
             }
 

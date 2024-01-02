@@ -142,7 +142,7 @@
                 </Border>
             </StackPanel>
             <ToggleButton HorizontalAlignment="Right" Style="{DynamicResource ToggleDeckViewButtonStyle}" VerticalAlignment="Center" Visibility="Collapsed"/>
-            <Border Height="55" MinWidth="460">
+            <Border Height="55" MinWidth="460" x:Name="card_layoutTitle">
             <Border.Style>
                     <Style TargetType="Border" BasedOn="{StaticResource CardLayoutTitleStyle}">
                         <Setter Property="BorderThickness" Value="1.5,0,1.5,1.5"/>

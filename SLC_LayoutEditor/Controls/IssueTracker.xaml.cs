@@ -1,6 +1,7 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace SLC_LayoutEditor.Controls
     /// </summary>
     public partial class IssueTracker : UserControl
     {
+        public event EventHandler<ShowIssuesChangedEventArgs> ShowIssuesChanged;
+
         public bool IsExpanded
         {
             get { return (bool)GetValue(IsExpandedProperty); }
@@ -38,64 +41,54 @@ namespace SLC_LayoutEditor.Controls
             InitializeComponent();
         }
 
-        private void EconomyClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void EconomyClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.EconomyClassSeat);
+            ToggleProblemHighlight(e, CabinSlotType.EconomyClassSeat);
         }
 
-        private void BusinessClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void BusinessClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.BusinessClassSeat);
+            ToggleProblemHighlight(e, CabinSlotType.BusinessClassSeat);
         }
 
-        private void Premium_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void Premium_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.PremiumClassSeat);
+            ToggleProblemHighlight(e, CabinSlotType.PremiumClassSeat);
         }
 
-        private void FirstClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void FirstClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.FirstClassSeat);
+            ToggleProblemHighlight(e, CabinSlotType.FirstClassSeat);
         }
 
-        private void SupersonicClass_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void SupersonicClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.SupersonicClassSeat);
+            ToggleProblemHighlight(e, CabinSlotType.SupersonicClassSeat);
         }
 
-        private void UnavailableSeats_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void UnavailableSeats_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.UnavailableSeat);
+            ToggleProblemHighlight(e, CabinSlotType.UnavailableSeat);
         }
 
-        private void StairwayPositions_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void StairwayPositions_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Stairway);
+            ToggleProblemHighlight(e, CabinSlotType.Stairway);
         }
 
-        private void DuplicateDoors_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void DuplicateDoors_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
+            ToggleProblemHighlight(e, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
         }
 
-        private void ToggleProblemHighlight(bool showProblems, IEnumerable<CabinSlot> problematicSlots, params CabinSlotType[] targetTypes)
+        private void ToggleProblemHighlight(ShowIssuesChangedEventArgs e, params CabinSlotType[] targetTypes)
         {
-            /*List<CabinSlotType> targetTypesList = targetTypes.ToList();
-
-            if (vm.ActiveLayout?.CabinDecks != null)
-            {
-                foreach (CabinSlot cabinSlot in vm.ActiveLayout.CabinDecks
-                                                    .SelectMany(x => x.CabinSlots)
-                                                    .Where(x => targetTypesList.Contains(x.Type)))
-                {
-                    cabinSlot.IsProblematic = showProblems && problematicSlots.Any(x => x.Guid == cabinSlot.Guid);
-                }
-            }*/
+            OnShowIssuesChanged(new ShowIssuesChangedEventArgs(e, targetTypes.ToList()));
         }
 
-        private void CateringAndLoadingBays_ShowProblemsChanged(object sender, ShowProblemsChangedEventArgs e)
+        private void CateringAndLoadingBays_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e.ShowProblems, e.ProblematicSlots, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
+            ToggleProblemHighlight(e, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
         }
 
         private void DeckProblemsList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -126,6 +119,11 @@ namespace SLC_LayoutEditor.Controls
             {
                 target.FixDuplicateDoors();
             }
+        }
+
+        protected virtual void OnShowIssuesChanged(ShowIssuesChangedEventArgs e)
+        {
+            ShowIssuesChanged?.Invoke(this, e);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Guide;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -97,7 +99,7 @@ namespace SLC_LayoutEditor.Controls
 
         #region IsCircleCutout property
         public static readonly DependencyProperty IsCircleCutoutProperty =
-            DependencyProperty.RegisterAttached("IsCircleCutout",
+            DependencyProperty.RegisterAttached("IsCircularCutout",
                 typeof(bool), typeof(GuideAssist), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static bool GetIsCircleCutout(UIElement target) =>
@@ -201,6 +203,18 @@ namespace SLC_LayoutEditor.Controls
 
         public static void SetTextAreaYOffset(UIElement target, double value) =>
             target.SetValue(TextAreaYOffsetProperty, value);
+        #endregion
+
+        #region Overrides
+        public static readonly DependencyProperty OverridesProperty =
+            DependencyProperty.RegisterAttached("Overrides",
+                typeof(GuideAssistOverrides), typeof(GuideAssist), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static GuideAssistOverrides GetOverrides(UIElement target) =>
+            (GuideAssistOverrides)target.GetValue(OverridesProperty);
+
+        public static void SetOverrides(UIElement target, GuideAssistOverrides value) =>
+            target.SetValue(OverridesProperty, value);
         #endregion
     }
 }

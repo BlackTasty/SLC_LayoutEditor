@@ -25,7 +25,7 @@ namespace SLC_LayoutEditor.Controls
     /// </summary>
     public partial class LayoutProblemText : DockPanel
     {
-        public event EventHandler<ShowProblemsChangedEventArgs> ShowProblemsChanged;
+        public event EventHandler<ShowIssuesChangedEventArgs> ShowProblemsChanged;
         public event EventHandler<AutoFixApplyingEventArgs> AutoFixApplying;
 
         #region ValidText property
@@ -81,7 +81,7 @@ namespace SLC_LayoutEditor.Controls
             if (sender is LayoutProblemText control)
             {
                 control.OnShowProblemsChanged(
-                    new ShowProblemsChangedEventArgs(control.ShowProblems, e.NewValue as IEnumerable<CabinSlot>, control.Floor));
+                    new ShowIssuesChangedEventArgs(control.ShowProblems, e.NewValue as IEnumerable<CabinSlot>, control.Floor));
             }
         }
         #endregion
@@ -115,7 +115,7 @@ namespace SLC_LayoutEditor.Controls
             if (sender is LayoutProblemText control)
             {
                 control.OnShowProblemsChanged(
-                    new ShowProblemsChangedEventArgs(control.ShowProblems, control.InvalidSlots, control.Floor));
+                    new ShowIssuesChangedEventArgs(control.ShowProblems, control.InvalidSlots, control.Floor));
             }
         }
         #endregion
@@ -214,7 +214,7 @@ namespace SLC_LayoutEditor.Controls
             ShowProblems = !ShowProblems;
         }
 
-        protected virtual void OnShowProblemsChanged(ShowProblemsChangedEventArgs e)
+        protected virtual void OnShowProblemsChanged(ShowIssuesChangedEventArgs e)
         {
             ShowProblemsChanged?.Invoke(this, e);
         }

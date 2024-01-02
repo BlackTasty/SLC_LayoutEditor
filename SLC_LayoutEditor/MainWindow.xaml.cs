@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Controls;
 using SLC_LayoutEditor.Core;
+using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
@@ -58,9 +59,9 @@ namespace SLC_LayoutEditor
 
             Mediator.Instance.Register(o =>
             {
-                if (o is UIElement guidedElement)
+                if (o is LiveGuideData data)
                 {
-                    SetGuideAdorner(guidedElement);
+                    SetGuideAdorner(data);
                 }
             }, ViewModelMessage.GuideAdornerShowing);
 
@@ -179,13 +180,13 @@ namespace SLC_LayoutEditor
             RefreshGuideAdorner();
         }
 
-        private void SetGuideAdorner(UIElement guidedElement)
+        private void SetGuideAdorner(LiveGuideData data)
         {
-            if (guidedElement != null)
+            if (data?.GuidedElement != null)
             {
                 if (Content is UIElement rootElement)
                 {
-                    currentGuideAdorner = (LiveGuideAdorner)LiveGuideAdorner.AttachAdorner(rootElement, guidedElement);
+                    currentGuideAdorner = (LiveGuideAdorner)LiveGuideAdorner.AttachAdorner(rootElement, data.GuidedElement);
                     currentGuideAdorner.Closed += CurrentGuideAdorner_Closed;
                 }
             }
@@ -195,7 +196,7 @@ namespace SLC_LayoutEditor
         {
             currentGuideAdorner.Closed -= CurrentGuideAdorner_Closed;
             currentGuideAdorner = null;
-            if (App.isGuidedTourRunning)
+            if (App.IsGuidedTourRunning)
             {
                 App.GuidedTour.ContinueTour();
             }

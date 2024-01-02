@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Core;
+using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.Core.Patcher;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace SLC_LayoutEditor
 
         public static bool IsStartup { get; set; } = true;
 
-        public static bool isGuidedTourRunning { get; set; }
+        public static bool IsGuidedTourRunning { get; set; }
 
         internal static GuidedTour GuidedTour { get; set; }
 

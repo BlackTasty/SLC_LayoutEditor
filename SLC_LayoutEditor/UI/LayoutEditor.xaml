@@ -194,6 +194,7 @@
                                   controls:GuideAssist.HasGuide="True"
                                   controls:GuideAssist.RadiusOffset="-8"
                                   controls:GuideAssist.HighlightXOffset="-2"
+                                  controls:GuideAssist.TextPosition="Right"
                                   Cursor="Help"
                                   ContextMenu="{StaticResource GuideMenu}"/>
                     <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
@@ -211,7 +212,7 @@
                     </TextBlock>
                     <TextBlock Text="Aircrafts" Margin="4,0" Style="{StaticResource Title3TextStyle}"/>
                 </DockPanel>
-                <DockPanel Margin="8,0">
+                <DockPanel Margin="8,0" x:Name="area_aircrafts">
                     <Button x:Name="btn_createAircraft" DockPanel.Dock="Right" Width="22" Height="22" ToolTip="Add a new aircraft"
                             Click="AddAircraft_Click" Style="{StaticResource DefaultBorderedIconButtonStyle}" Content="{StaticResource Add}"
                             controls:GuideAssist.Title="{StaticResource GuideCreateAircraftTitle}"
@@ -296,7 +297,8 @@
                                              Margin="10,0,0,-2" Height="16" Width="16" VerticalAlignment="Center"
                                              Visibility="{Binding SelectedLayoutSet.IsLoadingLayouts, Converter={StaticResource BooleanToVisibilityConverter}, TargetNullValue=Collapsed, FallbackValue=Collapsed}"/>
                             </StackPanel>
-                            <DockPanel DockPanel.Dock="Top" IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}" Margin="4,0">
+                            <DockPanel x:Name="area_layouts" 
+                                       DockPanel.Dock="Top" IsEnabled="{Binding IsAddCabinLayoutButtonEnabled}" Margin="4,0">
                                 <Button x:Name="btn_createLayout" DockPanel.Dock="Right" Width="22" Height="22" ToolTip="{Binding AddLayoutTooltip}" Content="{StaticResource Add}"
                                         Click="CreateCabinLayout_Click" Style="{Binding AddLayoutButtonStyle}"
                                         controls:GuideAssist.Title="{Binding AddLayoutGuideTitle}"
@@ -379,7 +381,8 @@
         </Border>
         <controls:IssueTracker x:Name="issue_tracker" DockPanel.Dock="Bottom" DataContext="{Binding}" 
                                IsExpanded="{Binding IsIssueTrackerExpanded}"
-                               ContextMenu="{StaticResource GuideMenu}">
+                               ContextMenu="{StaticResource GuideMenu}"
+                               ShowIssuesChanged="issue_tracker_ShowIssuesChanged">
             <controls:IssueTracker.Style>
                 <Style TargetType="controls:IssueTracker">
                     <Setter Property="Margin" Value="0,0,0,4"/>

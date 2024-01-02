@@ -127,6 +127,8 @@
     <Compile Include="Converter\UpdateProgressBarIndeterminateConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Cabin\AdjacentSlots.cs" />
+    <Compile Include="Core\Cabin\CabinSlotIssue.cs" />
+    <Compile Include="Core\Cabin\CabinSlotIssues.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
@@ -144,10 +146,12 @@
     <Compile Include="Core\Events\RemoveCabinDeckEventArgs.cs" />
     <Compile Include="Core\Events\SelectedSlotsChangedEventArgs.cs" />
     <Compile Include="Core\Events\SelectionRollbackEventArgs.cs" />
-    <Compile Include="Core\Events\ShowProblemsChangedEventArgs.cs" />
+    <Compile Include="Core\Events\ShowIssuesChangedEventArgs.cs" />
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\Dialogs\IDialog.cs" />
-    <Compile Include="Core\GuidedTour.cs" />
+    <Compile Include="Core\Guide\GuideAssistOverrides.cs" />
+    <Compile Include="Core\Guide\GuidedTour.cs" />
+    <Compile Include="Core\Guide\LiveGuideData.cs" />
     <Compile Include="Core\IThemeManager.cs" />
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
@@ -164,6 +168,11 @@
     <Compile Include="Core\Patcher\PatcherUtil.cs" />
     <Compile Include="Core\Patcher\VersionData.cs" />
     <Compile Include="Core\Cabin\ServiceGroup.cs" />
+    <Compile Include="Core\PathFinding\AStar.cs" />
+    <Compile Include="Core\PathFinding\CabinPathGrid.cs" />
+    <Compile Include="Core\PathFinding\Dijkstra.cs" />
+    <Compile Include="Core\PathFinding\FindDirection.cs" />
+    <Compile Include="Core\PathFinding\Node.cs" />
     <Compile Include="Core\Unset.cs" />
     <Compile Include="FixedValues.cs" />
     <Compile Include="StyleTester.xaml.cs">

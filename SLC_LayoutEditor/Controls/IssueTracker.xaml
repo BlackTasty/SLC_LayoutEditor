@@ -17,9 +17,7 @@
     </UserControl.DataContext>
     <local:RefinedExpander IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                            Description="{Binding ActiveLayout.IssuesCountText}" ExpandDirection="Up"
-                           IsExpanded="True">
-        <!--
-                           IsExpanded="{Binding IsIssueTrackerExpanded}"-->
+                           IsExpanded="{Binding IsIssueTrackerExpanded}">
         <local:RefinedExpander.Style>
             <Style TargetType="local:RefinedExpander" BasedOn="{StaticResource {x:Type local:RefinedExpander}}">
                 <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonForegroundColorBrush}"/>
@@ -63,59 +61,66 @@
                     </TextBlock.Style>
                 </TextBlock>
                 <local:LayoutProblemText ValidText="No duplicate Economy Class seats"
-                                         InvalidText="Duplicate Economy Class seats found!"
+                                         InvalidText="{Binding ActiveLayout.DuplicateEconomySeats.Count, StringFormat={}{0} duplicate Economy Class seats found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateEconomySeats}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicateEconomySeats}"
-                                         ShowEye="True" ShowProblemsChanged="EconomyClass_ShowProblemsChanged"
+                                         ShowEye="True" ShowProblemsChanged="EconomyClass_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowEconomyClassIssues}"/>
+
                 <local:LayoutProblemText ValidText="No duplicate Business Class seats"
-                                         InvalidText="Duplicate Business Class seats found!"
+                                         InvalidText="{Binding ActiveLayout.DuplicateBusinessSeats.Count, StringFormat={}{0} duplicate Business Class seats found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateBusinessSeats}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicateBusinessSeats}"
-                                         ShowEye="True" ShowProblemsChanged="BusinessClass_ShowProblemsChanged"
+                                         ShowEye="True" ShowProblemsChanged="BusinessClass_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowBusinessClassIssues, UpdateSourceTrigger=PropertyChanged}"/>
+
                 <local:LayoutProblemText ValidText="No duplicate Premium Class seats"
-                                         InvalidText="Duplicate Premium Class seats found!"
+                                         InvalidText="{Binding ActiveLayout.DuplicatePremiumSeats.Count, StringFormat={}{0} duplicate Premium Class seats found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicatePremiumSeats}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicatePremiumSeats}"
-                                         ShowEye="True" ShowProblemsChanged="Premium_ShowProblemsChanged"
+                                         ShowEye="True" ShowProblemsChanged="Premium_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowPremiumClassIssues}"/>
+
                 <local:LayoutProblemText ValidText="No duplicate First Class seats"
-                                         InvalidText="Duplicate First Class seats found!"
+                                         InvalidText="{Binding ActiveLayout.DuplicateFirstClassSeats.Count, StringFormat={}{0} duplicate First Class seats found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateFirstClassSeats}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicateFirstClassSeats}"
-                                         ShowEye="True" ShowProblemsChanged="FirstClass_ShowProblemsChanged"
+                                         ShowEye="True" ShowProblemsChanged="FirstClass_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowFirstClassIssues}"/>
+
                 <local:LayoutProblemText ValidText="No duplicate Supersonic Class seats"
-                                         InvalidText="Duplicate Supersonic Class seats found!"
+                                         InvalidText="{Binding ActiveLayout.DuplicateSupersonicSeats.Count, StringFormat={}{0} duplicate Supersonic Class seats found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateSupersonicSeats}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicateSupersonicSeats}"
-                                         ShowEye="True" ShowProblemsChanged="SupersonicClass_ShowProblemsChanged"
+                                         ShowEye="True" ShowProblemsChanged="SupersonicClass_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowSupersonicClassIssues}"/>
+
                 <local:LayoutProblemText ValidText="No duplicate Unavailable seats"
-                                         InvalidText="Duplicate Unavailable seats found!"
+                                         InvalidText="{Binding ActiveLayout.DuplicateUnavailableSeats.Count, StringFormat={}{0} duplicate Unavailable Class seats found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateUnavailableSeats}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicateUnavailableSeats}"
-                                         ShowEye="True" ShowProblemsChanged="UnavailableSeats_ShowProblemsChanged"
+                                         ShowEye="True" ShowProblemsChanged="UnavailableSeats_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowUnavailableSeatsIssues}"/>
+
                 <Separator Margin="0,4"/>
                 <local:LayoutProblemText DockPanel.Dock="Top" ValidText="No duplicate doors"
-                                         InvalidText="Duplicate doors found!"
+                                         InvalidText="{Binding ActiveLayout.DuplicateDoors.Count, StringFormat={}{0} duplicate doors found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateDoors}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicateDoors}"
                                          ShowEye="True"
-                                         ShowProblemsChanged="DuplicateDoors_ShowProblemsChanged"
+                                         ShowProblemsChanged="DuplicateDoors_ShowIssuesChanged"
                                          ShowProblems="{Binding ActiveLayout.ShowDuplicateDoorsIssues}"
                                          AutoFixTarget="{Binding ActiveLayout}"
                                          ShowAutoFix="True"
                                          AutoFixApplying="DuplicateDoors_AutoFixApplying"
                                          Description="Make sure that each door has a unique number across all decks"/>
+
                 <local:LayoutProblemText ValidText="Stairway positions valid"
                                          InvalidText="{Binding StairwayErrorMessage}"
                                          IsValid="{Binding ActiveLayout.StairwaysValid}"
                                          InvalidSlots="{Binding ActiveLayout.InvalidStairways}"
                                          ShowEye="True" 
-                                         ShowProblemsChanged="StairwayPositions_ShowProblemsChanged"
+                                         ShowProblemsChanged="StairwayPositions_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowStairwayIssues}"
                                          ShowAutoFix="True"
                                          AutoFixApplying="StairwayPositions_AutoFixApplying"
@@ -123,6 +128,7 @@
                                          Description="When using multiple decks and adding stairways, make sure to align them on the same x/y coordinate"
                                          NotRequiredText="No stairways required"
                                          IsRequired="{Binding ActiveLayout.HasMultipleDecks}"/>
+                
                 <TextBlock Text="Issues per deck" FontSize="18" Margin="0,16,0,0"/>
                 <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
                           GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
@@ -181,49 +187,58 @@
                                                                  AutoFixTarget="{Binding}"
                                                                  AutoFixApplying="Slots_AutoFixApplying"
                                                                  Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
+                                        
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
                                                                  InvalidText="No doors for this deck!"
                                                                  IsValid="{Binding AreDoorsValid}"
                                                                  Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
+                                        
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="CAT/LB on correct side"
                                                                  InvalidText="CAT/LB detected on the left side"
                                                                  InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
                                                                  ShowEye="True" 
-                                                                 ShowProblemsChanged="CateringAndLoadingBays_ShowProblemsChanged"
+                                                                 ShowProblemsChanged="CateringAndLoadingBays_ShowIssuesChanged"
                                                                  ShowProblems="{Binding ShowCateringAndLoadingBayIssues}"
                                                                  IsValid="{Binding AreCateringAndLoadingBaysValid}" IsSevereProblem="False"
                                                                  Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All slots are reachable"
-                                                                 InvalidText="Unreachable slots detected!"
-                                                                 IsValid="{Binding AreSlotsValid}"
-                                                                 ShowAutoFix="True"
-                                                                 AutoFixTarget="{Binding}"
-                                                                 AutoFixApplying="Slots_AutoFixApplying"
-                                                                 Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
+                                                                 IsValid="{Binding AllSlotsReachable}"
+                                                                 Description="If there are unreachable &quot;interactable&quot; slots (seats, intercoms, toilets, etc.), it will show up as an issue here">
+                                            <local:LayoutProblemText.Style>
+                                                <Style TargetType="local:LayoutProblemText">
+                                                    <Setter Property="InvalidText" Value="{Binding UnreachableSlots.Count, StringFormat={}{0} unreachable slots detected!}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding UnreachableSlots.Count}" Value="1">
+                                                            <Setter Property="InvalidText" Value="1 unreachable slot detected!"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </local:LayoutProblemText.Style>
+                                        </local:LayoutProblemText>
                                         <Separator Margin="0,4"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
-                                                                            InvalidText="Invalid service points!"
-                                                                            IsValid="{Binding AreServicePointsValid}"
-                                                                            Description="Each service start point (&lt;) also requires an end point (&gt;) in the same column"/>
+                                                                 InvalidText="Invalid service points!"
+                                                                 IsValid="{Binding AreServicePointsValid}"
+                                                                 Description="Each service start point (&lt;) also requires an end point (&gt;) in the same column"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All seat rows covered by service"
-                                                                            InvalidText="Some rows aren't covered by service!"
-                                                                            IsValid="{Binding AreSeatsReachableByService}"
-                                                                            IsRequired="{Binding AreKitchensValid}"
-                                                                            NotRequiredText="No service coverage required (no kitchen)"
-                                                                            Description="In case you have a kitchen on this deck, make sure to cover all rows with the service start- and endpoints"/>
+                                                                 InvalidText="Some rows aren't covered by service!"
+                                                                 IsValid="{Binding AreSeatsReachableByService}"
+                                                                 IsRequired="{Binding AreKitchensValid}"
+                                                                 NotRequiredText="No service coverage required (no kitchen)"
+                                                                 Description="In case you have a kitchen on this deck, make sure to cover all rows with the service start- and endpoints"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Valid galley count"
-                                                                            InvalidText="Insufficient galley seats for servicing!"
-                                                                            IsValid="{Binding AreGalleysValid}"
-                                                                            Description="Make sure to have at least as many galley seats on this deck as there are service areas (denoted by &lt; and &gt;)"/>
+                                                                 InvalidText="Insufficient galley seats for servicing!"
+                                                                 IsValid="{Binding AreGalleysValid}"
+                                                                 Description="Make sure to have at least as many galley seats on this deck as there are service areas (denoted by &lt; and &gt;)"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Kitchen accessible (In-Flight services available)"
-                                                                            InvalidText="No kitchen available! (No In-Flight services)"
-                                                                            IsValid="{Binding AreKitchensValid}" IsSevereProblem="False"
-                                                                            Description="If you wanna be able to offer in-flight services, make sure to place down a kitchen"/>
+                                                                 InvalidText="No kitchen available! (No In-Flight services)"
+                                                                 IsValid="{Binding AreKitchensValid}" IsSevereProblem="False"
+                                                                 Description="If you wanna be able to offer in-flight services, make sure to place down a kitchen"/>
                                         <Separator Margin="0,4"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
-                                                                            InvalidText="No toilets on this deck!"
-                                                                            IsValid="{Binding AreToiletsAvailable}" IsSevereProblem="False"
-                                                                            Description="In order to satisfy the needs of your passengers, one or more toilets are required"/>
+                                                                 InvalidText="No toilets on this deck!"
+                                                                 IsValid="{Binding AreToiletsAvailable}" IsSevereProblem="False"
+                                                                 Description="In order to satisfy the needs of your passengers, one or more toilets are required"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

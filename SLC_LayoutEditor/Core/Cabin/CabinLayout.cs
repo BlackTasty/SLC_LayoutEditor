@@ -28,6 +28,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         private bool mShowDuplicateDoorsIssues;
         private bool isLoaded;
 
+        private string currentHash;
+
         public string LayoutName
         {
             get => mLayoutName;
@@ -211,6 +213,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             isTemplate = !layoutFile.Directory.Parent.FullName.Equals(App.Settings.CabinLayoutsEditPath) &&
                 layoutFile.Directory.Name.Equals("templates", StringComparison.OrdinalIgnoreCase);
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
+
+            currentHash = Util.GetSHA256Hash(ToLayoutFile());
         }
 
         /// <summary>
@@ -648,48 +652,55 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void RefreshProblemChecks()
         {
-            Logger.Default.WriteLog("Checking layout for issues...");
-            InvokePropertyChanged(nameof(DuplicateEconomySeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateEconomySeats));
-            InvokePropertyChanged(nameof(DuplicateBusinessSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateBusinessSeats));
-            InvokePropertyChanged(nameof(DuplicatePremiumSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicatePremiumSeats));
-            InvokePropertyChanged(nameof(DuplicateFirstClassSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateFirstClassSeats));
-            InvokePropertyChanged(nameof(DuplicateSupersonicSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateSupersonicSeats));
-            InvokePropertyChanged(nameof(DuplicateUnavailableSeats));
-            InvokePropertyChanged(nameof(HasNoDuplicateUnavailableSeats));
-            InvokePropertyChanged(nameof(InvalidStairways));
-            InvokePropertyChanged(nameof(StairwaysValid));
-            InvokePropertyChanged(nameof(DuplicateDoors));
-            InvokePropertyChanged(nameof(HasNoDuplicateDoors));
+            string newHash = Util.GetSHA256Hash(ToLayoutFile());
 
-            InvokePropertyChanged(nameof(MinorIssuesCountSum));
-            InvokePropertyChanged(nameof(HasMinorIssues));
-            InvokePropertyChanged(nameof(SevereIssuesCountSum));
-            InvokePropertyChanged(nameof(HasSevereIssues));
-            InvokePropertyChanged(nameof(HasAnyIssues));
-            InvokePropertyChanged(nameof(IssuesCountText));
-            InvokePropertyChanged(nameof(MinorIssuesList));
-            InvokePropertyChanged(nameof(SevereIssuesList));
-
-            IEnumerable<CabinSlot> invalidSlots = GetInvalidSlots();
-
-            if (invalidSlots.Any())
+            if (currentHash != newHash)
             {
-                Logger.Default.WriteLog("{0} invalid slots detected, setting IsProblematic flag", invalidSlots.Count());
-            }
-            else
-            {
-                Logger.Default.WriteLog("No issues detected!");
+                Logger.Default.WriteLog("Checking layout for issues...");
+                InvokePropertyChanged(nameof(DuplicateEconomySeats));
+                InvokePropertyChanged(nameof(HasNoDuplicateEconomySeats));
+                InvokePropertyChanged(nameof(DuplicateBusinessSeats));
+                InvokePropertyChanged(nameof(HasNoDuplicateBusinessSeats));
+                InvokePropertyChanged(nameof(DuplicatePremiumSeats));
+                InvokePropertyChanged(nameof(HasNoDuplicatePremiumSeats));
+                InvokePropertyChanged(nameof(DuplicateFirstClassSeats));
+                InvokePropertyChanged(nameof(HasNoDuplicateFirstClassSeats));
+                InvokePropertyChanged(nameof(DuplicateSupersonicSeats));
+                InvokePropertyChanged(nameof(HasNoDuplicateSupersonicSeats));
+                InvokePropertyChanged(nameof(DuplicateUnavailableSeats));
+                InvokePropertyChanged(nameof(HasNoDuplicateUnavailableSeats));
+                InvokePropertyChanged(nameof(InvalidStairways));
+                InvokePropertyChanged(nameof(StairwaysValid));
+                InvokePropertyChanged(nameof(DuplicateDoors));
+                InvokePropertyChanged(nameof(HasNoDuplicateDoors));
+
+                InvokePropertyChanged(nameof(MinorIssuesCountSum));
+                InvokePropertyChanged(nameof(HasMinorIssues));
+                InvokePropertyChanged(nameof(SevereIssuesCountSum));
+                InvokePropertyChanged(nameof(HasSevereIssues));
+                InvokePropertyChanged(nameof(HasAnyIssues));
+                InvokePropertyChanged(nameof(IssuesCountText));
+                InvokePropertyChanged(nameof(MinorIssuesList));
+                InvokePropertyChanged(nameof(SevereIssuesList));
+
+                IEnumerable<CabinSlot> invalidSlots = GetInvalidSlots();
+
+                if (invalidSlots.Any())
+                {
+                    Logger.Default.WriteLog("{0} invalid slots detected, setting IsProblematic flag", invalidSlots.Count());
+                }
+                else
+                {
+                    Logger.Default.WriteLog("No issues detected!");
+                }
+
+                foreach (CabinSlot cabinSlot in mCabinDecks.SelectMany(x => x.CabinSlots))
+                {
+                    cabinSlot.IsProblematic = invalidSlots.Any(x => x.Guid == cabinSlot.Guid);
+                }
             }
 
-            foreach (CabinSlot cabinSlot in mCabinDecks.SelectMany(x => x.CabinSlots))
-            {
-                cabinSlot.IsProblematic = invalidSlots.Any(x => x.Guid == cabinSlot.Guid);
-            }
+            currentHash = newHash;
         }
 
         public override string ToString()

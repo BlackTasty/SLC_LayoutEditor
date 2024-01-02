@@ -186,7 +186,7 @@ namespace SLC_LayoutEditor.Core
             return !GetSHA256Hash(File.ReadAllText(originalFilePath).ToUpper()).Equals(GetSHA256Hash(current));
         }
 
-        private static string GetSHA256Hash(string value)
+        public static string GetSHA256Hash(string value)
         {
             using (SHA256 hash = SHA256Managed.Create())
             {

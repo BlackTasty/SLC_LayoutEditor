@@ -1,11 +1,13 @@
 ﻿using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Memento;
+using SLC_LayoutEditor.Core.PathFinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
@@ -21,6 +23,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         private CabinSlotType mType;
         private int mSlotNumber; // Only in use when SlotType is one of the seats or a door
         private char mSeatLetter; // Only in use when SlotType is one of the seats
+
+        private CabinSlotIssues slotIssues = new CabinSlotIssues();
         private bool mIsProblematic;
         private bool mIsHitTestVisible = true;
 
@@ -272,9 +276,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             if (deck != null)
             {
                 AdjacentSlots adjacentSlots = new AdjacentSlots(deck, this);
+
                 if (adjacentSlots.HasAdjacentAisle)
                 {
-
+                    bool hasPath = deck.PathGrid.HasPathToAny(this, deck.CabinSlots.Where(x => x.Type == CabinSlotType.Door));
+                    return hasPath;
                 }
                 else
                 {
@@ -285,6 +291,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 return true;
             }
+        }
+
+        public Point GetPosition()
+        {
+            return new Point(Row, Column);
         }
 
         public void Validate()

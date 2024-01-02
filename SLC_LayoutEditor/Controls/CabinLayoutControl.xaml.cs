@@ -482,11 +482,14 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
-        public void RefreshState()
+        public void RefreshState(bool refreshProblemChecks = true)
         {
             InvokePropertyChanged(nameof(LayoutOverviewTitle));
             InvokePropertyChanged(nameof(HasUnsavedChanges));
-            CabinLayout?.DeepRefreshProblemChecks();
+            if (refreshProblemChecks)
+            {
+                CabinLayout?.DeepRefreshProblemChecks();
+            }
         }
 
         private void MakeTemplate_Click(object sender, RoutedEventArgs e)

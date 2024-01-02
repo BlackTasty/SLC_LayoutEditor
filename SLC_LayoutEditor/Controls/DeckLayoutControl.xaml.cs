@@ -1002,46 +1002,39 @@ namespace SLC_LayoutEditor.Controls
                 Point currentPosition = e.GetPosition(layout_deck);
                 if (currentPosition.X >= 65 && currentPosition.Y >= 65)
                 {
-                    if (dragStartPoint.ExceedsSelectionThreshold(currentPosition, 5, 25))
+                    Rect selectionRect = new Rect(dragStartPoint, currentPosition);
+                    if (selectionBox == null)
                     {
-                        Rect selectionRect = new Rect(dragStartPoint, currentPosition);
-                        if (selectionBox == null)
+                        selectionBox = new Rectangle()
                         {
-                            selectionBox = new Rectangle()
-                            {
-                                Fill = (Brush)App.Current.FindResource("DisabledColorBrush"),
-                                Stroke = (Brush)App.Current.FindResource("BackdropColorBrush"),
-                                StrokeThickness = 1.5,
-                                RadiusX = 2,
-                                RadiusY = 2,
-                                Width = selectionRect.Width,
-                                Height = selectionRect.Height,
-                                IsHitTestVisible = false
-                            };
+                            Fill = (Brush)App.Current.FindResource("DisabledColorBrush"),
+                            Stroke = (Brush)App.Current.FindResource("BackdropColorBrush"),
+                            StrokeThickness = 1.5,
+                            RadiusX = 2,
+                            RadiusY = 2,
+                            Width = selectionRect.Width,
+                            Height = selectionRect.Height,
+                            IsHitTestVisible = false
+                        };
 
-                            Canvas.SetZIndex(selectionBox, 1000);
-                            layout_deck.Children.Add(selectionBox);
-                        }
-                        else
-                        {
-                            selectionBox.Width = selectionRect.Width;
-                            selectionBox.Height = selectionRect.Height;
-                        }
-
-                        if (selectionBox.Visibility == Visibility.Collapsed)
-                        {
-                            selectionBox.Visibility = Visibility.Visible;
-                        }
-
-                        Canvas.SetLeft(selectionBox, selectionRect.Left);
-                        Canvas.SetTop(selectionBox, selectionRect.Top);
-
-                        DragHighlightSlots(selectionRect);
+                        Canvas.SetZIndex(selectionBox, 1000);
+                        layout_deck.Children.Add(selectionBox);
                     }
-                    else if (selectionBox?.Visibility == Visibility.Visible)
+                    else
                     {
-                        selectionBox.Visibility = Visibility.Collapsed;
+                        selectionBox.Width = selectionRect.Width;
+                        selectionBox.Height = selectionRect.Height;
                     }
+
+                    if (selectionBox.Visibility == Visibility.Collapsed)
+                    {
+                        selectionBox.Visibility = Visibility.Visible;
+                    }
+
+                    Canvas.SetLeft(selectionBox, selectionRect.Left);
+                    Canvas.SetTop(selectionBox, selectionRect.Top);
+
+                    DragHighlightSlots(selectionRect);
                 }
                 else if (selectionBox?.Visibility == Visibility.Visible)
                 {

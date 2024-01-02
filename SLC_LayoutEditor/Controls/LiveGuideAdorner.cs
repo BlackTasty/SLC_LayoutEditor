@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
@@ -47,8 +48,15 @@ namespace SLC_LayoutEditor.Controls
         private readonly GuideTextPosition textPosition;
         private readonly bool isCircularCutout;
 
+        private readonly bool areTourStepsVisible;
+        private readonly int currentTourStep;
+        private readonly int totalTourSteps;
+        private readonly bool applyOverlayToAll;
+
         private readonly Window window;
         private readonly UIElement guidedElement;
+
+        private readonly bool areOverridesSet;
 
         public UIElement GuidedElement => guidedElement;
 
@@ -60,7 +68,7 @@ namespace SLC_LayoutEditor.Controls
                 GuideAssist.GetTextPosition(guidedElement), GuideAssist.GetTextAreaXOffset(guidedElement), GuideAssist.GetTextAreaYOffset(guidedElement), 
                 GuideAssist.GetWidthOffset(guidedElement), GuideAssist.GetHeightOffset(guidedElement),
                 GuideAssist.GetRadiusOffset(guidedElement), GuideAssist.GetHighlightXOffset(guidedElement), GuideAssist.GetHighlightYOffset(guidedElement),
-                GuideAssist.GetSafeZoneSize(guidedElement));
+                GuideAssist.GetSafeZoneSize(guidedElement), GuideAssist.GetOverrides(guidedElement));
 
             return adorner;
         }
@@ -77,27 +85,36 @@ namespace SLC_LayoutEditor.Controls
         public LiveGuideAdorner(UIElement rootElement, UIElement guidedElement, double margin, double padding, double cornerRadius, string title, string description, 
             Brush overlayBrush, Window window, bool isCircularCutout, GuideTextPosition textPosition,
             double textAreaXOffset, double textAreaYOffset, double widthOffset, double heightOffset, double radiusOffset, 
-            double highlightXOffset, double highlightYOffset, double safeZoneSize) : base(rootElement)
+            double highlightXOffset, double highlightYOffset, double safeZoneSize, GuideAssistOverrides overrides) : base(rootElement)
         {
             this.guidedElement = guidedElement;
+            areOverridesSet = overrides?.AreOverridesSet ?? false;
+            areTourStepsVisible = overrides?.AreTourStepsSet ?? false;
+            applyOverlayToAll = overrides?.ApplyOverlayToAll ?? false;
 
-            this.radiusOffset = radiusOffset;
-            this.widthOffset = widthOffset;
-            this.heightOffset = heightOffset;
-            this.highlightXOffset = highlightXOffset;
-            this.highlightYOffset = highlightYOffset;
-            this.textAreaXOffset = textAreaXOffset;
-            this.textAreaYOffset = textAreaYOffset;
-            this.safeZoneSize = safeZoneSize;
+            if (areTourStepsVisible)
+            {
+                currentTourStep = overrides.CurrentTourStep.HasValue ? overrides.CurrentTourStep.Value : 0;
+                totalTourSteps = overrides.TotalTourSteps.HasValue ? overrides.TotalTourSteps.Value : 0;
+            }
 
-            this.isCircularCutout = isCircularCutout;
-            this.margin = margin;
-            this.padding = padding;
-            this.cornerRadius = cornerRadius;
+            this.radiusOffset = !overrides?.RadiusOffset.HasValue ?? true ? radiusOffset : overrides.RadiusOffset.Value;
+            this.widthOffset = !overrides?.WidthOffset.HasValue ?? true ? widthOffset : overrides.WidthOffset.Value;
+            this.heightOffset = !overrides?.HeightOffset.HasValue ?? true ? heightOffset : overrides.HeightOffset.Value;
+            this.highlightXOffset = !overrides?.HighlightXOffset.HasValue ?? true ? highlightXOffset : overrides.HighlightXOffset.Value;
+            this.highlightYOffset = !overrides?.HighlightYOffset.HasValue ?? true ? highlightYOffset : overrides.HighlightYOffset.Value;
+            this.textAreaXOffset = !overrides?.TextAreaXOffset.HasValue ?? true ? textAreaXOffset : overrides.TextAreaXOffset.Value;
+            this.textAreaYOffset = !overrides?.TextAreaYOffset.HasValue ?? true ? textAreaYOffset : overrides.TextAreaYOffset.Value;
+            this.safeZoneSize = !overrides?.SafeZoneSize.HasValue ?? true ? safeZoneSize : overrides.SafeZoneSize.Value;
+
+            this.isCircularCutout = !overrides?.IsCircularCutout.HasValue ?? true ? isCircularCutout : overrides.IsCircularCutout.Value;
+            this.margin = !overrides?.Margin.HasValue ?? true ? margin : overrides.Margin.Value;
+            this.padding = !overrides?.Padding.HasValue ?? true ? padding : overrides.Padding.Value;
+            this.cornerRadius = !overrides?.CornerRadius.HasValue ?? true ? cornerRadius : overrides.CornerRadius.Value;
             this.radius = GetRadius(guidedElement, margin);
-            this.title = title;
-            this.description = description;
-            this.textPosition = textPosition;
+            this.title = overrides?.Title == null ? title : overrides.Title;
+            this.description = overrides?.Description == null ? description : overrides.Description;
+            this.textPosition = overrides?.TextPosition== null ? textPosition : overrides.TextPosition.Value;
             this.overlayBrush = overlayBrush;
 
             this.window = window;
@@ -107,9 +124,18 @@ namespace SLC_LayoutEditor.Controls
 
         private void LiveGuideAdorner_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            RemoveOverrides();
             AdornedElement.RemoveAdorner(this);
             Mediator.Instance.NotifyColleagues(ViewModelMessage.GuideAdornerClosed);
             OnClosed(EventArgs.Empty);
+        }
+
+        private void RemoveOverrides()
+        {
+            if (areOverridesSet)
+            {
+                GuideAssist.SetOverrides(guidedElement, null);
+            }
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -130,15 +156,28 @@ namespace SLC_LayoutEditor.Controls
             // Generate texts
             FormattedText formattedTitle = GetFormattedText(title, FontWeights.Bold, 32, FixedValues.DEFAULT_BRUSH);
             FormattedText formattedDescription = GetFormattedText(description, FontWeights.Thin, 16, FixedValues.DEFAULT_SECONDARY_BRUSH);
-            FormattedText formattedCloseInfo = GetFormattedText("Click anywhere to close this info", FontWeights.Thin, 10, FixedValues.YELLOW_BRUSH);
+            FormattedText formattedCloseInfo = GetFormattedText(!areTourStepsVisible ? "Click anywhere to close this info" :
+                string.Format("Guided tour - {0}/{1}", currentTourStep, totalTourSteps), FontWeights.Thin, !areTourStepsVisible ? 10 : 12, FixedValues.YELLOW_BRUSH);
 
             Rect textAreaRect = GetTextAreaRect(textPosition, adornedElementRect, adornedElementCenter, formattedTitle, formattedDescription, formattedCloseInfo);
 
-            Point titlePosition = textAreaRect.Location.MakeOffset(padding, 0);
-            Point descriptionPosition = titlePosition.MakeOffset(8, formattedTitle.Height + 8);
+            Point titlePosition = textAreaRect.Location.MakeOffset(padding * 2, 8);
+            Point descriptionPosition = titlePosition.MakeOffset(0, formattedTitle.Height + 8);
             Point closeInfoPosition = descriptionPosition.MakeOffset(0, formattedDescription.Height + 12);
 
-            ApplyOpacityMask(drawingContext, drawingRect, adornedElementRect, adornedElementCenter, textAreaRect);
+            if (areOverridesSet)
+            {
+                closeInfoPosition = GetChildCenterPosition(textAreaRect, new Rect(
+                        closeInfoPosition, 
+                        new Size(formattedCloseInfo.Width, formattedCloseInfo.Height)
+                    ), true, false);
+            }
+
+            if (!applyOverlayToAll)
+            {
+                ApplyOpacityMask(drawingContext, drawingRect, adornedElementRect, adornedElementCenter, textAreaRect);
+            }
+
             drawingContext.DrawRectangle(overlayBrush, null, drawingRect);
 
             drawingContext.DrawRoundedRectangle(FixedValues.LIVE_GUIDE_TEXT_BACK_BRUSH, 
@@ -224,11 +263,13 @@ namespace SLC_LayoutEditor.Controls
         {
             double offset = (isCircularCutout ? radius + margin : margin) - padding;
             Point titlePosition = new Point(16, 16);
-            double textAreaCenterX = Math.Max(formattedDescription.Width, formattedTitle.Width) / 2 + highlightXOffset;
-            double textAreaCenterY = Math.Max(formattedDescription.Height, formattedTitle.Height) / 2 + highlightYOffset;
 
-            double textAreaWidth = Math.Max(formattedTitle.Width, formattedDescription.Width + 8) + padding * 2;
-            double textAreaHeight = formattedTitle.Height + formattedDescription.Height + formattedCloseInfo.Height + padding * 4;
+            double textAreaWidth = Math.Max(formattedTitle.Width, formattedDescription.Width) + 16 + padding * 2;
+
+            double textAreaHeight = formattedTitle.Height + formattedDescription.Height + formattedCloseInfo.Height + padding * 5;
+
+            double textAreaCenterX = textAreaWidth / 2 + highlightXOffset;
+            double textAreaCenterY = textAreaHeight / 2 + highlightYOffset;
 
             switch (textPosition)
             {
@@ -295,35 +336,43 @@ namespace SLC_LayoutEditor.Controls
             //titlePosition.Offset(-padding, -padding);
 
             Rect textAreaRect = new Rect(titlePosition.X, titlePosition.Y, textAreaWidth, textAreaHeight);
-            double totalRightOffset = textAreaRect.Right + safeZoneSize;
-            totalRightOffset = (totalRightOffset > AdornedElement.RenderSize.Width ? AdornedElement.RenderSize.Width - totalRightOffset : 0) + textAreaXOffset;
-            if (totalRightOffset < 0)
+            textAreaRect.Offset(textAreaXOffset, textAreaYOffset);
+
+            double totalRightOffset = textAreaRect.Right;
+            if (totalRightOffset > AdornedElement.RenderSize.Width)
             {
-                textAreaRect.Offset(totalRightOffset, 0);
+                textAreaRect.Offset(AdornedElement.RenderSize.Width - totalRightOffset - safeZoneSize, 0);
             }
 
-            double totalTopOffset = textAreaRect.Top - safeZoneSize;
-            totalTopOffset = (totalTopOffset > AdornedElement.RenderSize.Height ? AdornedElement.RenderSize.Height - totalTopOffset : 0) + textAreaYOffset;
+            double totalTopOffset = textAreaRect.Top;
             if (totalTopOffset < 0)
             {
-                textAreaRect.Offset(0, totalTopOffset);
+                textAreaRect.Offset(0, safeZoneSize + Math.Abs(totalTopOffset));
             }
 
-            double totalLeftOffset = textAreaRect.Left - safeZoneSize;
-            totalLeftOffset = (totalLeftOffset < 0 ? Math.Abs(totalLeftOffset) : 0) + textAreaXOffset;
-            if (totalLeftOffset > 0)
+            double totalLeftOffset = textAreaRect.Left;
+            if (totalLeftOffset < 0)
             {
-                textAreaRect.Offset(totalLeftOffset, 0);
+                textAreaRect.Offset(Math.Abs(totalLeftOffset) + safeZoneSize, 0);
             }
 
-            double totalBottomOffset = textAreaRect.Bottom + safeZoneSize;
-            totalBottomOffset = (totalBottomOffset < 0 ? Math.Abs(totalBottomOffset) : 0) + textAreaYOffset;
-            if (totalBottomOffset > 0)
+            double totalBottomOffset = textAreaRect.Bottom;
+            if (totalBottomOffset > AdornedElement.RenderSize.Height)
             {
-                textAreaRect.Offset(0, totalBottomOffset);
+                textAreaRect.Offset(0, AdornedElement.RenderSize.Height - totalBottomOffset - safeZoneSize);
             }
 
             return textAreaRect;
+        }
+
+        private Point GetChildCenterPosition(Rect parent, Rect child, bool centerHorizontally,
+            bool centerVertically)
+        {
+            double centerX = parent.X + parent.Width / 2 - child.Width / 2;
+            double centerY = parent.Y + parent.Height / 2 - child.Height / 2;
+
+            return new Point(centerHorizontally ? centerX : child.X,
+                centerVertically ? centerY : child.Y);
         }
 
         protected virtual void OnClosed(EventArgs e)

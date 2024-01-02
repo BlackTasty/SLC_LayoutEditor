@@ -9,6 +9,7 @@ namespace SLC_LayoutEditor.Core.Cabin
     internal class AdjacentSlots
     {
         private List<CabinSlot> adjacentSlots = new List<CabinSlot>();
+        private CabinSlot center;
 
         public CabinSlot LeftSlot => adjacentSlots[0];
 
@@ -18,10 +19,14 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinSlot BottomSlot => adjacentSlots[3];
 
-        public bool HasAdjacentAisle => adjacentSlots.Any(x => x?.Type == Enum.CabinSlotType.Aisle);
+        public bool HasAdjacentAisle => adjacentSlots.Any(x => x?.Type == Enum.CabinSlotType.Aisle) ||
+             center.IsSeat && (TopSlot.IsSeat || BottomSlot.IsSeat);
+
+        public List<CabinSlot> Adjacent => adjacentSlots;
 
         public AdjacentSlots(CabinDeck cabinDeck, CabinSlot center)
         {
+            this.center = center;
             adjacentSlots.Add(cabinDeck.GetSlotAtPosition(center.Row - 1, center.Column)); // left slot
             adjacentSlots.Add(cabinDeck.GetSlotAtPosition(center.Row + 1, center.Column)); // right slot
             adjacentSlots.Add(cabinDeck.GetSlotAtPosition(center.Row, center.Column - 1)); // top slot

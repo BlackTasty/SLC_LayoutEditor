@@ -5,6 +5,7 @@ using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
@@ -310,10 +311,15 @@ namespace SLC_LayoutEditor.UI
                     cabinSlot.IsEvaluationActive = true;
                 }
 
-                vm.ActiveLayout.RefreshCalculated();
-                vm.RefreshUnsavedChanges();
-                control_layout.RefreshState();
+                RefreshLayoutFlags();
             }
+        }
+
+        private void RefreshLayoutFlags()
+        {
+            vm.ActiveLayout.RefreshCalculated();
+            vm.RefreshUnsavedChanges();
+            control_layout.RefreshState(false);
         }
 
         private void Automate_Click(object sender, RoutedEventArgs e)
@@ -639,7 +645,6 @@ namespace SLC_LayoutEditor.UI
                     }
                 }
 
-                // TODO: Implement guided tour
                 if (!App.Settings.GettingStartedGuideShown)
                 {
                     ConfirmationDialog dialog = new ConfirmationDialog("Getting started",
@@ -657,7 +662,7 @@ namespace SLC_LayoutEditor.UI
         {
             if (e.DialogResult == DialogResultType.CustomMiddle)
             {
-                App.GuidedTour.ContinueTour();
+                App.GuidedTour.StartTour();
             }
 
             return;
@@ -671,6 +676,19 @@ namespace SLC_LayoutEditor.UI
         private void Layout_LayoutReloaded(object sender, EventArgs e)
         {
             vm.ClearSelection();
+        }
+
+        private void issue_tracker_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
+        {
+            if (vm.ActiveLayout?.CabinDecks != null)
+            {
+                foreach (CabinSlot cabinSlot in vm.ActiveLayout.CabinDecks
+                                                    .SelectMany(x => x.CabinSlots)
+                                                    .Where(x => e.TargetTypes.Contains(x.Type)))
+                {
+                    cabinSlot.IsProblematic = e.ShowProblems && e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid);
+                }
+            }
         }
     }
 }
