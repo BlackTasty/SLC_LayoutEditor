@@ -78,7 +78,7 @@ namespace SLC_LayoutEditor.ViewModel
         public bool HasTemplateThumbnails => mSelectedTemplate?.HasThumbnails ?? false;
 
         public CreateCabinLayoutDialogViewModel() : 
-            base("A cabin layout with this name exists already!", "Default")
+            base("A cabin layout with this name exists already!", null)
         {
 
         }

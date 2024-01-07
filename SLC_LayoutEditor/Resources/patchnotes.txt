@@ -1,6 +1,12 @@
 ﻿02.01.2023 m
 Added: Slots that are "interactable" (seats, intercoms, cockpits, etc) are now checked if they are reachable
 Added: There is now a newcomers guide included! This guides you through the application and also teaches you how to create your first layout
+Added: Slots that belong to the interior of your layout (seats, toilets, kitchens, etc) now get checked if they are not on the border of your layout
 Updated: The issue trackers for duplicate seats and doors now shows how many duplicates have been found
 Fixed: Increased performance when changing your layout
 Fixed: Pressing on the eye icon on issue tracker entries would not toggle the error highlighting on your layout
+Fixed: The issue visibility toggle for duplicate doors had a wrong default state
+Fixed: When creating a new layout, the pre-set name was not initially checked if a layout with the same name exists
+Fixed: Fixed some text alignment issues in expander titles
+Fixed: Creating a new layout would save the file to the wrong directory
+Fixed: Deleting a layout with unsaved changes would result in the editor asking if you want to save your changes after deleting the layout

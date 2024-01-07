@@ -15,6 +15,8 @@ namespace SLC_LayoutEditor.Core.AutoFix
         private string failText;
         private int failCount;
 
+        public bool AllSucceeded => failCount == 0;
+
         public void CountSuccess()
         {
             successCount++;

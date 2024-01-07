@@ -9,15 +9,17 @@
              local:GuideAssist.Title="{StaticResource GuideIssueTrackerTitle}"
              local:GuideAssist.Description="{StaticResource GuideIssueTrackerDescription}"
              local:GuideAssist.HasGuide="True"
-             local:GuideAssist.IsCircleCutout="False"
+             local:GuideAssist.IsCircularCutout="False"
              local:GuideAssist.RadiusOffset="-12"
+             UseLayoutRounding="True"
              Cursor="Help">
     <UserControl.DataContext>
         <vm:LayoutEditorViewModel/>
     </UserControl.DataContext>
     <local:RefinedExpander IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                            Description="{Binding ActiveLayout.IssuesCountText}" ExpandDirection="Up"
-                           IsExpanded="{Binding IsIssueTrackerExpanded}">
+                           IsExpanded="{Binding IsIssueTrackerExpanded}"
+                           PlayAnimations="{Binding PlayExpanderAnimations}">
         <local:RefinedExpander.Style>
             <Style TargetType="local:RefinedExpander" BasedOn="{StaticResource {x:Type local:RefinedExpander}}">
                 <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonForegroundColorBrush}"/>
@@ -32,7 +34,7 @@
             </Style>
         </local:RefinedExpander.Style>
         <Expander.Header>
-            <TextBlock FontSize="16" Text="Issues" FontWeight="Bold">
+            <TextBlock FontSize="16" Text="Issues" FontWeight="Bold" VerticalAlignment="Center">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                         <Style.Triggers>
@@ -47,19 +49,6 @@
         <ScrollViewer VerticalScrollBarVisibility="Visible" Padding="0,4" x:Name="list_scroll">
             <StackPanel Margin="12,4,4,4">
                 <TextBlock Text="Issues across all decks" FontSize="18"/>
-                <TextBlock Visibility="Collapsed">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
-                            <Setter Property="Text" Value="No duplicate doors"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ActiveLayout.HasNoDuplicateDoors, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                    <Setter Property="Text" Value="Duplicate doors found!"/>
-                                    <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
                 <local:LayoutProblemText ValidText="No duplicate Economy Class seats"
                                          InvalidText="{Binding ActiveLayout.DuplicateEconomySeats.Count, StringFormat={}{0} duplicate Economy Class seats found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateEconomySeats}"
@@ -109,7 +98,7 @@
                                          InvalidSlots="{Binding ActiveLayout.DuplicateDoors}"
                                          ShowEye="True"
                                          ShowProblemsChanged="DuplicateDoors_ShowIssuesChanged"
-                                         ShowProblems="{Binding ActiveLayout.ShowDuplicateDoorsIssues}"
+                                         ShowProblems="{Binding ShowDuplicateDoorsIssues}"
                                          AutoFixTarget="{Binding ActiveLayout}"
                                          ShowAutoFix="True"
                                          AutoFixApplying="DuplicateDoors_AutoFixApplying"
@@ -130,11 +119,7 @@
                                          IsRequired="{Binding ActiveLayout.HasMultipleDecks}"/>
                 
                 <TextBlock Text="Issues per deck" FontSize="18" Margin="0,16,0,0"/>
-                <DataGrid AutoGenerateColumns="False" Background="Transparent" HeadersVisibility="None"
-                          GridLinesVisibility="None" BorderBrush="Transparent" CanUserAddRows="False" 
-                          CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False"
-                          CanUserSortColumns="False" HorizontalScrollBarVisibility="Disabled"
-                          ItemsSource="{Binding ActiveLayout.CabinDecks}"
+                <DataGrid ItemsSource="{Binding ActiveLayout.CabinDecks}"
                           PreviewMouseWheel="DeckProblemsList_PreviewMouseWheel"
                           Margin="0,0,0,0">
                     <DataGrid.Resources>
@@ -144,20 +129,6 @@
                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Transparent" />
                         <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
                     </DataGrid.Resources>
-                    <DataGrid.RowStyle>
-                        <Style TargetType="DataGridRow">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </DataGrid.RowStyle>
-                    <DataGrid.CellStyle>
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                        </Style>
-                    </DataGrid.CellStyle>
                     <DataGrid.Columns>
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
@@ -203,6 +174,10 @@
                                                                  Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All slots are reachable"
                                                                  IsValid="{Binding AllSlotsReachable}"
+                                                                 InvalidSlots="{Binding UnreachableSlots}"
+                                                                 ShowEye="True" 
+                                                                 ShowProblemsChanged="UnreachableSlots_ShowProblemsChanged"
+                                                                 ShowProblems="{Binding ShowUnreachableSlots}"
                                                                  Description="If there are unreachable &quot;interactable&quot; slots (seats, intercoms, toilets, etc.), it will show up as an issue here">
                                             <local:LayoutProblemText.Style>
                                                 <Style TargetType="local:LayoutProblemText">
@@ -210,6 +185,25 @@
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding UnreachableSlots.Count}" Value="1">
                                                             <Setter Property="InvalidText" Value="1 unreachable slot detected!"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </local:LayoutProblemText.Style>
+                                        </local:LayoutProblemText>
+
+                                        <local:LayoutProblemText ValidText="All interior slots on valid positions"
+                                                                 IsValid="{Binding AllInteriorSlotPositionsValid}"
+                                                                 InvalidSlots="{Binding InvalidPositionedSlots}"
+                                                                 ShowEye="True" 
+                                                                 ShowProblemsChanged="InvalidPositionedSlots_ShowProblemsChanged"
+                                                                 ShowProblems="{Binding ShowInteriorPositionIssues}"
+                                                                 Description="Slot types like toilets, seats and so on can only be placed in the interior">
+                                            <local:LayoutProblemText.Style>
+                                                <Style TargetType="local:LayoutProblemText">
+                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedSlots.Count, StringFormat={}{0} invalid positioned interior slots!}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding UnreachableSlots.Count}" Value="1">
+                                                            <Setter Property="InvalidText" Value="1 invalid positioned interior slot!"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>

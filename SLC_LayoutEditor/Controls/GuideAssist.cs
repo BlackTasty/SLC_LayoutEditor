@@ -97,16 +97,16 @@ namespace SLC_LayoutEditor.Controls
             target.SetValue(HasGuideProperty, value);
         #endregion
 
-        #region IsCircleCutout property
-        public static readonly DependencyProperty IsCircleCutoutProperty =
+        #region IsCircularCutout property
+        public static readonly DependencyProperty IsCircularCutoutProperty =
             DependencyProperty.RegisterAttached("IsCircularCutout",
                 typeof(bool), typeof(GuideAssist), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public static bool GetIsCircleCutout(UIElement target) =>
-            (bool)target.GetValue(IsCircleCutoutProperty);
+        public static bool GetIsCircularCutout(UIElement target) =>
+            (bool)target.GetValue(IsCircularCutoutProperty);
 
-        public static void SetIsCircleCutout(UIElement target, bool value) =>
-            target.SetValue(IsCircleCutoutProperty, value);
+        public static void SetIsCircularCutout(UIElement target, bool value) =>
+            target.SetValue(IsCircularCutoutProperty, value);
         #endregion
 
         #region WidthOffset property

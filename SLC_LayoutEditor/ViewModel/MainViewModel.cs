@@ -21,6 +21,7 @@ namespace SLC_LayoutEditor.ViewModel
 {
     class MainViewModel : MementoViewModel
     {
+        private Queue<IDialog> queuedDialogs = new Queue<IDialog>();
         private IDialog mDialog;
 
         private FrameworkElement mContent;
@@ -103,6 +104,7 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     this.editor = oldEditor;
                     oldEditor.CabinLayoutSelected -= Editor_CabinLayoutSelected;
+                    oldEditor.TourRunningStateChanged -= Editor_TourRunningStateChanged;
                 }
 
                 mContent = value;
@@ -111,6 +113,7 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
                     editor.Changed += Editor_LayoutChanged;
+                    editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
                 }
 
                 InvokePropertyChanged();
@@ -120,6 +123,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public bool IsViewNotEditor => !(mContent is LayoutEditor);
 
+        public bool IsTourRunning => App.GuidedTour?.IsTourRunning ?? false;
 
         public MainViewModel()
         {
@@ -132,6 +136,7 @@ namespace SLC_LayoutEditor.ViewModel
                 LayoutEditor editor = new LayoutEditor();
                 editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
                 editor.Changed += Editor_LayoutChanged;
+                editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
                 mContent = editor;
             }
 
@@ -140,11 +145,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 if (o is IDialog dialog)
                 {
-                    Dialog = dialog;
+                    ShowDialog(dialog);
                 }
                 else
                 {
-                    Dialog = new ConfirmationDialog("Error setting dialog!", "The supplied dialog control does not inherit from IDialog!", Core.Enum.DialogType.OK);
+                    ShowDialog(new ConfirmationDialog("Error setting dialog!", "The supplied dialog control does not inherit from IDialog!", Core.Enum.DialogType.OK));
                 }
             }, ViewModelMessage.DialogOpening);
 
@@ -179,7 +184,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void ShowChangelog()
         {
-            Dialog = new ChangelogDialog();
+            ShowDialog(new ChangelogDialog());
         }
 
         public void ShowChangelogIfUpdated()
@@ -231,12 +236,26 @@ namespace SLC_LayoutEditor.ViewModel
 
         private void ShowDialog(IDialog dialog)
         {
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            if (mDialog == null)
+            {
+                Dialog = dialog;
+            }
+            else
+            {
+                queuedDialogs.Enqueue(dialog);
+            }
         }
 
         private void Dialog_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            Dialog = null;
+            if (queuedDialogs.Count == 0)
+            {
+                Dialog = null;
+            }
+            else
+            {
+                Dialog = queuedDialogs.Dequeue();
+            }
         }
 
         private void Editor_LayoutChanged(object sender, ChangedEventArgs e)
@@ -247,6 +266,11 @@ namespace SLC_LayoutEditor.ViewModel
         private void Editor_CabinLayoutSelected(object sender, CabinLayoutSelectedEventArgs e)
         {
             CabinLayoutName = e.CabinLayoutName;
+        }
+
+        private void Editor_TourRunningStateChanged(object sender, EventArgs e)
+        {
+            InvokePropertyChanged(nameof(IsTourRunning));
         }
     }
 }

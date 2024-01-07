@@ -50,6 +50,7 @@ namespace SLC_LayoutEditor.Controls
         #endregion
 
         private bool isSelected;
+        private bool isCurrentlyProblematic;
 
         public bool IsSelected
         {
@@ -80,6 +81,26 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
+        public Brush ErrorHighlightBrush
+        {
+            get { return (Brush)GetValue(ErrorHighlightBrushProperty); }
+            set { SetValue(ErrorHighlightBrushProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ErrorHighlightBrush.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ErrorHighlightBrushProperty =
+            DependencyProperty.Register("ErrorHighlightBrush", typeof(Brush), typeof(CabinSlotControl), new PropertyMetadata(Brushes.Transparent));
+
+        public Brush HighlightBrush
+        {
+            get { return (Brush)GetValue(HighlightBrushProperty); }
+            set { SetValue(HighlightBrushProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HighlightBrush.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HighlightBrushProperty =
+            DependencyProperty.Register("HighlightBrush", typeof(Brush), typeof(CabinSlotControl), new PropertyMetadata(Brushes.Transparent));
+
         private void CabinSlot_ProblematicChanged(object sender, EventArgs e)
         {
             RefreshHighlighting();
@@ -96,21 +117,27 @@ namespace SLC_LayoutEditor.Controls
             if (hasChanged)
             {
                 IsSelected = isSelected;
-                RefreshHighlighting();
+                RefreshHighlighting(true);
             }
 
             return hasChanged;
         }
 
-        public void RefreshHighlighting()
+        public void RefreshHighlighting(bool force = false)
         {
-            if (CabinSlot.IsProblematic)
+            if (!force && CabinSlot.SlotIssues.IsProblematic == isCurrentlyProblematic)
             {
-                error_highlight.Background = App.Current.FindResource(isSelected ? "ErrorSelectedHighlightColorBrush" : "ErrorHighlightColorBrush") as Brush;
+                return;
+            }
+
+            isCurrentlyProblematic = CabinSlot.SlotIssues.IsProblematic;
+            if (isCurrentlyProblematic)
+            {
+                ErrorHighlightBrush = App.Current.FindResource(isSelected ? "ErrorSelectedHighlightColorBrush" : "ErrorHighlightColorBrush") as Brush;
             }
             else
             {
-                error_highlight.Background = Brushes.Transparent;
+                ErrorHighlightBrush = Brushes.Transparent;
             }
         }
 
@@ -137,19 +164,19 @@ namespace SLC_LayoutEditor.Controls
 
         public void DisableEffects()
         {
-            storedErrorBrush = error_highlight.Background;
-            storedHoverBrush = layout.Background;
+            storedErrorBrush = ErrorHighlightBrush;
+            storedHoverBrush = HighlightBrush;
             storedSelectedFlag = isSelected;
 
-            error_highlight.Background = Brushes.Transparent;
-            layout.Background = Brushes.Transparent;
+            ErrorHighlightBrush = Brushes.Transparent;
+            HighlightBrush = Brushes.Transparent;
             IsSelected = false;
         }
 
         public void RestoreEffects()
         {
-            error_highlight.Background = storedErrorBrush;
-            layout.Background = storedHoverBrush;
+            ErrorHighlightBrush = storedErrorBrush;
+            HighlightBrush = storedHoverBrush;
             IsSelected = storedSelectedFlag;
 
             storedErrorBrush = null;
@@ -161,7 +188,7 @@ namespace SLC_LayoutEditor.Controls
             if (CabinSlot != null)
             {
                 CabinSlot.ProblematicChanged += CabinSlot_ProblematicChanged;
-                if (CabinSlot.IsProblematic)
+                if (CabinSlot.SlotIssues.IsProblematic)
                 {
                     RefreshHighlighting();
                 }
@@ -170,12 +197,12 @@ namespace SLC_LayoutEditor.Controls
 
         private void layout_MouseEnter(object sender, MouseEventArgs e)
         {
-            layout.Background = (Brush)App.Current.FindResource("CabinSlotHoverColorBrush");
+            HighlightBrush = (Brush)App.Current.FindResource("CabinSlotHoverColorBrush");
         }
 
         private void layout_MouseLeave(object sender, MouseEventArgs e)
         {
-            layout.Background = Brushes.Transparent;
+            HighlightBrush = Brushes.Transparent;
         }
     }
 }

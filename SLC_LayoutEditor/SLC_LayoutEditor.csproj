@@ -100,6 +100,9 @@
     </Compile>
     <Compile Include="Controls\Material\ToggleButtonAssist.cs" />
     <Compile Include="Controls\SidebarToggleAdorner.cs" />
+    <Compile Include="Controls\TodoList.xaml.cs">
+      <DependentUpon>TodoList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Updater.xaml.cs">
       <DependentUpon>Updater.xaml</DependentUpon>
     </Compile>
@@ -133,11 +136,13 @@
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
+    <Compile Include="Core\Enum\GuidedTourStep.cs" />
     <Compile Include="Core\Enum\GuideTextPosition.cs" />
     <Compile Include="Core\Enum\RollbackType.cs" />
     <Compile Include="Core\Enum\StateChangeType.cs" />
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
+    <Compile Include="Core\Events\LiveGuideClosedEventArgs.cs" />
     <Compile Include="Core\Events\TemplateCreatedEventArgs.cs" />
     <Compile Include="Core\Events\ChangedEventArgs.cs" />
     <Compile Include="Core\Events\CabinLayoutSelectedEventArgs.cs" />
@@ -173,6 +178,7 @@
     <Compile Include="Core\PathFinding\Dijkstra.cs" />
     <Compile Include="Core\PathFinding\FindDirection.cs" />
     <Compile Include="Core\PathFinding\Node.cs" />
+    <Compile Include="Core\TodoEntry.cs" />
     <Compile Include="Core\Unset.cs" />
     <Compile Include="FixedValues.cs" />
     <Compile Include="StyleTester.xaml.cs">
@@ -217,11 +223,13 @@
     <Compile Include="ViewModel\CreateTemplateDialogViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\LayoutEditorDesignViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
+    <Compile Include="ViewModel\DesignTime\TodoListDesignViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\UpdaterDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MakeTemplateDialogViewModel.cs" />
     <Compile Include="ViewModel\MementoViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
+    <Compile Include="ViewModel\TodoListViewModel.cs" />
     <Compile Include="ViewModel\UpdaterViewModel.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -275,6 +283,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SeatCapacityBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TodoList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -348,6 +360,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Styles\ExpanderStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\ListStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -40,6 +40,18 @@
                         </MenuItem>
                         <MenuItem Header="Editor" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
                             <MenuItem Header="Settings" Click="Settings_Click"/>
+                            <MenuItem Click="ToggleGuide_Click">
+                                <MenuItem.Style>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                        <Setter Property="Header" Value="Start tour"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTourRunning}" Value="True">
+                                                <Setter Property="Header" Value="Cancel tour"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </MenuItem.Style>
+                            </MenuItem>
                             <Separator Style="{StaticResource MenuSeparatorStyle}"/>
                             <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
                               IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>

@@ -99,7 +99,7 @@
                         local:GuideAssist.Title="{StaticResource GuideIssueCardsTitle}"
                         local:GuideAssist.Description="{StaticResource GuideLayoutIssueCardsDescription}"
                         local:GuideAssist.HasGuide="True"
-                        local:GuideAssist.IsCircleCutout="False"
+                        local:GuideAssist.IsCircularCutout="False"
                         local:GuideAssist.TextPosition="Bottom"
                         local:GuideAssist.CornerRadius="20"
                         Cursor="Help"

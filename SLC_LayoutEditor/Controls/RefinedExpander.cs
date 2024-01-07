@@ -27,6 +27,16 @@ namespace SLC_LayoutEditor.Controls
         public static readonly DependencyProperty DescriptionForegroundProperty =
             DependencyProperty.Register("DescriptionForeground", typeof(Brush), typeof(RefinedExpander), 
                 new PropertyMetadata(new SolidColorBrush(Color.FromRgb(189, 189, 189))));
+
+        public bool PlayAnimations
+        {
+            get { return (bool)GetValue(PlayAnimationsProperty); }
+            set { SetValue(PlayAnimationsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PlayAnimations.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PlayAnimationsProperty =
+            DependencyProperty.Register("PlayAnimations", typeof(bool), typeof(RefinedExpander), new PropertyMetadata(true));
     }
 
     public class RefinedExpanderToggle : ToggleButton

@@ -29,8 +29,9 @@
                                 <TextBlock Text="{TemplateBinding Description}" DockPanel.Dock="Right"
                                            VerticalAlignment="Center" Style="{DynamicResource Subtitle3TextStyle}"
                                            FontSize="12" TextAlignment="Right" Padding="0,0,0,1.5"
-                                           Foreground="{TemplateBinding DescriptionForeground}"/>
-                                <ContentPresenter Margin="4,2" RecognizesAccessKey="True" 
+                                           Foreground="{TemplateBinding DescriptionForeground}"
+                                           Margin="16,2,8,2"/>
+                                <ContentPresenter Margin="4,2,4,4" RecognizesAccessKey="True" 
                                                   SnapsToDevicePixels="True" VerticalAlignment="Center">
                                 </ContentPresenter>
                             </DockPanel>
@@ -145,9 +146,9 @@
                                 <TextBlock Text="{TemplateBinding Description}" DockPanel.Dock="Right"
                                            VerticalAlignment="Center" Style="{DynamicResource Subtitle3TextStyle}"
                                            FontSize="12" TextAlignment="Right"
-                                           Margin="0,4,8,0"
+                                           Margin="16,4,8,2"
                                            Foreground="{TemplateBinding DescriptionForeground}"/>
-                                <ContentPresenter Margin="4,2" RecognizesAccessKey="True" 
+                                <ContentPresenter Margin="4,4,4,2" RecognizesAccessKey="True" 
                                                   SnapsToDevicePixels="True" VerticalAlignment="Center">
                                 </ContentPresenter>
                             </DockPanel>
@@ -249,7 +250,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BackgroundLightBrush}"/>
-        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Margin" Value="8"/>
         <Setter Property="Template">
@@ -507,6 +508,7 @@
                     <ControlTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
+                                <Condition Property="PlayAnimations" Value="True"/>
                                 <Condition Property="IsExpanded" Value="True"/>
                                 <Condition Property="ExpandDirection" Value="Down"/>
                             </MultiTrigger.Conditions>
@@ -541,6 +543,7 @@
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
+                                <Condition Property="PlayAnimations" Value="True"/>
                                 <Condition Property="IsExpanded" Value="True"/>
                                 <Condition Property="ExpandDirection" Value="Left"/>
                             </MultiTrigger.Conditions>
@@ -575,6 +578,7 @@
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
+                                <Condition Property="PlayAnimations" Value="True"/>
                                 <Condition Property="IsExpanded" Value="True"/>
                                 <Condition Property="ExpandDirection" Value="Up"/>
                             </MultiTrigger.Conditions>
@@ -609,6 +613,7 @@
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
+                                <Condition Property="PlayAnimations" Value="True"/>
                                 <Condition Property="IsExpanded" Value="True"/>
                                 <Condition Property="ExpandDirection" Value="Right"/>
                             </MultiTrigger.Conditions>

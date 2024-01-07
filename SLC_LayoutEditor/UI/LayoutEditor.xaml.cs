@@ -27,6 +27,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace SLC_LayoutEditor.UI
 {
@@ -37,6 +38,7 @@ namespace SLC_LayoutEditor.UI
     {
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
+        public event EventHandler<EventArgs> TourRunningStateChanged;
 
         private readonly LayoutEditorViewModel vm;
         private Adorner sidebarToggleAdorner;
@@ -136,6 +138,29 @@ namespace SLC_LayoutEditor.UI
         private void CabinLayoutChanged(object sender, ChangedEventArgs e)
         {
             OnChanged(e);
+
+            if (App.GuidedTour.IsAwaitingEssentialSlots)
+            {
+                todoList.UpdateEntry(0, vm.ActiveLayout.CountSlots(CabinSlotType.Toilet));
+                todoList.UpdateEntry(1, vm.ActiveLayout.CountSlots(CabinSlotType.Kitchen));
+                todoList.UpdateEntry(2, vm.ActiveLayout.CountSlots(CabinSlotType.Cockpit));
+                todoList.UpdateEntry(3, vm.ActiveLayout.GalleyCapacity);
+                todoList.UpdateEntry(4, vm.ActiveLayout.CountSlots(CabinSlotType.Intercom));
+
+                if (todoList.AllEntriesComplete)
+                {
+                    App.GuidedTour.ContinueTour(true);
+                }
+            }
+            else if (App.GuidedTour.IsAwaitingPlacingSeats)
+            {
+                todoList.UpdateEntry(0, vm.ActiveLayout.PassengerCapacity);
+
+                if (todoList.AllEntriesComplete)
+                {
+                    App.GuidedTour.ContinueTour(true);
+                }
+            }
         }
 
         private void Vm_CabinLayoutSelected(object sender, CabinLayoutSelectedEventArgs e)
@@ -300,6 +325,11 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
+        private void SlotType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SlotTypeChangedForTour();
+        }
+
         private void MultiSelect_SlotTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!vm.IgnoreMultiSlotTypeChange && sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
@@ -312,6 +342,9 @@ namespace SLC_LayoutEditor.UI
                 }
 
                 RefreshLayoutFlags();
+
+                control_layout.SelectedCabinSlots.ForEach(x => x.SlotIssues.RefreshProblematicFlag());
+                SlotTypeChangedForTour();
             }
         }
 
@@ -327,46 +360,48 @@ namespace SLC_LayoutEditor.UI
             switch (vm.SelectedAutomationIndex)
             {
                 case 0: // Seat numeration
-                    var seatRowGroups = 
-                        (!vm.AutomationCountEmptySlots ? 
-                            control_layout.SelectedCabinSlots.Where(x => x.IsSeat) : 
-                            control_layout.SelectedCabinSlots)
-                        .GroupBy(x => x.Column).OrderBy(x => x.Key);
-
-                    char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
-                    int currentLetterIndex = 0;
-                    foreach (var group in seatRowGroups)
+                    foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
                     {
-                        int seatNumber = vm.AutomationSeatStartNumber;
-                        IEnumerable<CabinSlot> slots = group.OrderBy(x => x.Row);
-                        int firstSeatRow = slots.FirstOrDefault(x => x.IsSeat)?.Row ?? -1;
-                        if (vm.AutomationCountEmptySlots)
-                        {
-                            slots = slots.Skip(firstSeatRow);
-                        }
+                        var seatRowGroups =
+                            (!vm.AutomationCountEmptySlots ?
+                                cabinDeck.CabinSlots.Where(x => x.IsSeat) :
+                                cabinDeck.CabinSlots)
+                            .GroupBy(x => x.Column).OrderBy(x => x.Key);
 
-                        if (firstSeatRow > -1)
+                        char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
+                        int currentLetterIndex = 0;
+                        foreach (var group in seatRowGroups)
                         {
-                            foreach (CabinSlot cabinSlot in slots)
+                            int seatNumber = vm.AutomationSeatStartNumber;
+                            IEnumerable<CabinSlot> slots = group.OrderBy(x => x.Row);
+                            int firstSeatRow = slots.FirstOrDefault(x => x.IsSeat)?.Row ?? -1;
+                            if (vm.AutomationCountEmptySlots)
                             {
-                                if (!vm.AutomationCountEmptySlots && !cabinSlot.IsSeat)
+                                slots = slots.Skip(firstSeatRow);
+                            }
+
+                            if (firstSeatRow > -1)
+                            {
+                                foreach (CabinSlot cabinSlot in slots)
                                 {
-                                    continue;
+                                    if (!vm.AutomationCountEmptySlots && !cabinSlot.IsSeat)
+                                    {
+                                        continue;
+                                    }
+                                    cabinSlot.IsEvaluationActive = false;
+                                    cabinSlot.SeatLetter = seatLetters[currentLetterIndex];
+                                    cabinSlot.SlotNumber = seatNumber;
+                                    seatNumber++;
+                                    cabinSlot.IsEvaluationActive = true;
                                 }
-                                cabinSlot.IsEvaluationActive = false;
-                                cabinSlot.SeatLetter = seatLetters[currentLetterIndex];
-                                cabinSlot.SlotNumber = seatNumber;
-                                seatNumber++;
-                                cabinSlot.IsEvaluationActive = true;
+                            }
+
+                            if (currentLetterIndex + 1 < seatLetters.Length)
+                            {
+                                currentLetterIndex++;
                             }
                         }
-
-                        if (currentLetterIndex + 1 < seatLetters.Length)
-                        {
-                            currentLetterIndex++;
-                        }
                     }
-
                     break;
                 case 1: // Wall generator
                     IEnumerable<CabinSlot> wallSlots = vm.AutomationSelectedDeck.CabinSlots
@@ -380,7 +415,7 @@ namespace SLC_LayoutEditor.UI
                         wallSlot.IsEvaluationActive = true;
                     }
                     break;
-                case 2: //Service points (WIP)
+                case 2: //Service points (BETA)
                     foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
                     {
                         // Reset all service start- and endpoints to type Aisle
@@ -534,15 +569,42 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
             }
+
             vm.ActiveLayout.DeepRefreshProblemChecks();
             vm.RefreshUnsavedChanges();
             control_layout.RefreshState();
+
+            if (App.GuidedTour.IsAwaitingCompletedSeatAutomation)
+            {
+                todoList.ForceCompleteEntry(2, vm.ActiveLayout.HasNoDuplicateSeats);
+
+                if (vm.ActiveLayout.HasNoDuplicateSeats)
+                {
+                    App.GuidedTour.ContinueTour(true);
+                }
+            }
+
+            if (App.GuidedTour.IsAwaitingCompletedServicePointAutomation)
+            {
+                todoList.ForceCompleteEntry(1, vm.ActiveLayout.CabinDecks.All(x => x.AreSeatsReachableByService));
+
+                if (todoList.AllEntriesComplete)
+                {
+                    App.GuidedTour.ContinueTour(true);
+                }
+            }
         }
 
         private void CabinLayout_SelectedSlotsChanged(object sender, CabinSlotClickedEventArgs e)
         {
             vm.SelectedCabinSlots = e.Selected;
             vm.SelectedCabinSlotFloor = e.Floor;
+
+            if (App.GuidedTour.IsAwaitingBorderSlotSelection && e.Selected.All(x => e.DeckControl.CabinDeck.IsSlotValidDoorPosition(x)))
+            {
+                todoList.ForceCompleteEntry(0, true);
+                App.GuidedTour.ContinueTour(true);
+            }
         }
 
         private void Layout_TemplatingModeToggled(object sender, EventArgs e)
@@ -626,7 +688,7 @@ namespace SLC_LayoutEditor.UI
             if (sender is MenuItem menuItem && menuItem.Parent is ContextMenu contextMenu &&
                 contextMenu.PlacementTarget is UIElement element && GuideAssist.GetHasGuide(element))
             {
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.GuideAdornerShowing, element);
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.GuideAdornerShowing, new LiveGuideData(element, null));
             }
         }
 
@@ -635,6 +697,7 @@ namespace SLC_LayoutEditor.UI
             if (App.IsStartup)
             {
                 App.GuidedTour = new GuidedTour(this);
+                App.GuidedTour.TourRunningStateChanged += GuidedTour_TourRunningStateChanged;
 
                 if (App.Settings.RememberLastLayout && App.Settings.LastLayout != null)
                 {
@@ -645,7 +708,7 @@ namespace SLC_LayoutEditor.UI
                     }
                 }
 
-                if (!App.Settings.GettingStartedGuideShown)
+                if (!App.IsDesignMode && !App.Settings.GettingStartedGuideShown)
                 {
                     ConfirmationDialog dialog = new ConfirmationDialog("Getting started",
                         "It looks like this is your first time starting the editor.\nDo you wish to partake in a guided tour through the editor?",
@@ -658,18 +721,16 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
+        private void GuidedTour_TourRunningStateChanged(object sender, EventArgs e)
+        {
+            OnTourRunningStateChanged(e);
+        }
+
         private void GuidedTour_DialogClosing(object sender, DialogClosingEventArgs e)
         {
             if (e.DialogResult == DialogResultType.CustomMiddle)
             {
                 App.GuidedTour.StartTour();
-            }
-
-            return;
-            if (e.DialogResult != DialogResultType.CustomLeft)
-            {
-                App.Settings.GettingStartedGuideShown = true;
-                App.SaveAppSettings();
             }
         }
 
@@ -686,9 +747,92 @@ namespace SLC_LayoutEditor.UI
                                                     .SelectMany(x => x.CabinSlots)
                                                     .Where(x => e.TargetTypes.Contains(x.Type)))
                 {
-                    cabinSlot.IsProblematic = e.ShowProblems && e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid);
+                    cabinSlot.SlotIssues.ToggleIssueHighlighting(e.IssueKey, e.ShowProblems);
+                    var test = e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid);
+                    cabinSlot.SlotIssues.ToggleIssue(e.IssueKey, e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid));
                 }
             }
+        }
+
+        private void Aircrafts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (App.GuidedTour.IsAwaitingAircraftSelection)
+            {
+                App.GuidedTour.ContinueTour(true);
+            }
+        }
+
+        private void Layouts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (App.GuidedTour.IsAwaitingLayoutSelection)
+            {
+                App.GuidedTour.ContinueTour(true);
+            }
+        }
+
+        private void SlotTypeChangedForTour()
+        {
+            if (App.GuidedTour.IsAwaitingSlotChangeToDoor)
+            {
+                int doorCount = vm.ActiveLayout.CountSlots(CabinSlotType.Door);
+                int loadingBayCount = vm.ActiveLayout.CountSlots(CabinSlotType.LoadingBay);
+                int cateringDoorCount = vm.ActiveLayout.CountSlots(CabinSlotType.CateringDoor);
+
+                todoList.UpdateEntry(1, doorCount);
+                todoList.UpdateEntry(2, loadingBayCount);
+                todoList.UpdateEntry(3, cateringDoorCount);
+
+                if (todoList.AllEntriesComplete)
+                {
+                    App.GuidedTour.ContinueTour(true);
+                }
+            }
+        }
+
+        private void SlotConfigModeToggle_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            if (App.GuidedTour.IsAwaitingSlotAutomationMode ||
+                App.GuidedTour.IsAwaitingSeatAutomationSelection)
+            {
+                todoList.ForceCompleteEntry(1, toggle_slotConfigMode.IsChecked == true);
+            }
+
+            if (App.GuidedTour.IsAwaitingSlotAutomationMode)
+            {
+                App.GuidedTour.ContinueTour(true);
+            }
+        }
+
+        private void Automation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (App.GuidedTour.IsAwaitingSeatAutomationSelection)
+            {
+                todoList.ForceCompleteEntry(2, combo_slotAutomationType.SelectedIndex == 0);
+
+                if (todoList.GetIsCompleteForEntry(2))
+                {
+                    App.GuidedTour.ContinueTour(true);
+                }
+            }
+
+            if (App.GuidedTour.IsAwaitingServicePointAutomationSelection ||
+                App.GuidedTour.IsAwaitingCompletedServicePointAutomation)
+            {
+                todoList.ForceCompleteEntry(0, combo_slotAutomationType.SelectedIndex == 2);
+            }
+
+            if (App.GuidedTour.IsAwaitingServicePointAutomationSelection)
+            {
+                if (todoList.AllEntriesComplete)
+                {
+                    App.GuidedTour.ContinueTour(true);
+                }
+            }
+        }
+
+        protected virtual void OnTourRunningStateChanged(EventArgs e)
+        {
+            TourRunningStateChanged?.Invoke(this, e);
         }
     }
 }

@@ -50,8 +50,6 @@ namespace SLC_LayoutEditor
 
         public static bool IsStartup { get; set; } = true;
 
-        public static bool IsGuidedTourRunning { get; set; }
-
         internal static GuidedTour GuidedTour { get; set; }
 
         [STAThread]

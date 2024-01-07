@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Controls;
 using SLC_LayoutEditor.Core;
+using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.ViewModel;
@@ -192,13 +193,20 @@ namespace SLC_LayoutEditor
             }
         }
 
-        private void CurrentGuideAdorner_Closed(object sender, EventArgs e)
+        private void CurrentGuideAdorner_Closed(object sender, LiveGuideClosedEventArgs e)
         {
             currentGuideAdorner.Closed -= CurrentGuideAdorner_Closed;
             currentGuideAdorner = null;
-            if (App.IsGuidedTourRunning)
+            if (App.GuidedTour.IsTourRunning)
             {
-                App.GuidedTour.ContinueTour();
+                if (!e.IsTourStepOffsetSet)
+                {
+                    App.GuidedTour.ContinueTour();
+                }
+                else
+                {
+                    App.GuidedTour.ContinueTour(true, e.TourStepOffset);
+                }
             }
         }
 
@@ -216,6 +224,18 @@ namespace SLC_LayoutEditor
 
         private void Updater_InstallUpdateClicked(object sender, EventArgs e)
         {
+        }
+
+        private void ToggleGuide_Click(object sender, RoutedEventArgs e)
+        {
+            if (!App.GuidedTour.IsTourRunning)
+            {
+                App.GuidedTour.StartTour();
+            }
+            else
+            {
+                App.GuidedTour.StopTour();
+            }
         }
     }
 }

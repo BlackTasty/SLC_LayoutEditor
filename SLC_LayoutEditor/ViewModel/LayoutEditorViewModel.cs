@@ -77,9 +77,11 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mShowSupersonicClassIssues = true;
         private bool mShowUnavailableSeatsIssues = true;
         private bool mShowStairwayIssues = true;
+        private bool mShowDuplicateDoorsIssues = true;
 
         private bool mIsSidebarOpen = true;
         private bool mIsIssueTrackerExpanded;
+        private bool mPlayExpanderAnimations = true;
 
         #region Input error checks & texts
         public string SeatLetterError => SelectedCabinSlot != null && !Regex.IsMatch(SelectedCabinSlot.SeatLetter.ToString(), @"^[a-zA-Z]+$") ?
@@ -159,7 +161,18 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public string StairwayErrorMessage => ActiveLayout?.StairwayErrorMessage;
+        public bool ShowDuplicateDoorsIssues
+        {
+            get => mShowDuplicateDoorsIssues;
+            set
+            {
+                mShowDuplicateDoorsIssues = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public string StairwayErrorMessage => ActiveLayout?.CabinDecks?.Count > 1 ? "Invalid stairway positions!" :
+                "Stairway can be removed!";
         #endregion
 
         public VeryObservableCollection<CabinLayoutSet> LayoutSets
@@ -408,6 +421,16 @@ namespace SLC_LayoutEditor.ViewModel
             set
             {
                 mIsIssueTrackerExpanded = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool PlayExpanderAnimations
+        {
+            get => mPlayExpanderAnimations;
+            set
+            {
+                mPlayExpanderAnimations = value;
                 InvokePropertyChanged();
             }
         }
@@ -764,6 +787,7 @@ namespace SLC_LayoutEditor.ViewModel
                 current.CabinDeckCountChanged -= SelectedLayout_LayoutChanged;
                 current.CabinSlotsChanged -= SelectedLayout_LayoutChanged;
                 current.Deleted -= deletedCallback;
+                current.Deleting -= SelectedLayout_Deleting;
             }
 
             updated?.LoadCabinLayoutFromFile();
@@ -778,6 +802,7 @@ namespace SLC_LayoutEditor.ViewModel
                 updated.CabinDeckCountChanged += SelectedLayout_LayoutChanged;
                 updated.CabinSlotsChanged += SelectedLayout_LayoutChanged;
                 updated.Deleted += deletedCallback;
+                updated.Deleting += SelectedLayout_Deleting;
             }
             InvokePropertyChanged(nameof(StairwayErrorMessage));
             InvokePropertyChanged(nameof(LayoutOverviewTitle));
@@ -791,6 +816,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 IsSidebarOpen = false;
             }
+        }
+
+        private void SelectedLayout_Deleting(object sender, EventArgs e)
+        {
+            HasUnsavedChanges = false;
         }
 
         private void SelectedCabinLayout_Deleted(object sender, EventArgs e)

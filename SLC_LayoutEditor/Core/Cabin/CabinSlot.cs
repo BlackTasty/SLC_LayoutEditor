@@ -57,10 +57,16 @@ namespace SLC_LayoutEditor.Core.Cabin
             get => mType;
             set
             {
+                if (mType == value)
+                {
+                    return;
+                }
+
                 bool wasSeat = IsSeat;
                 bool wasDoor = IsDoor;
 
                 mType = value;
+                slotIssues.ClearIssues();
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(TypeId));
                 InvokePropertyChanged(nameof(DisplayText));
@@ -78,9 +84,9 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     SlotNumber = 0;
                 }
+
                 OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
                 OnSlotTypeChanged(EventArgs.Empty);
-                //IsProblematic = false;
             }
         }
 
@@ -134,11 +140,17 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool IsInteractable => IsSeat || IsDoor || mType == CabinSlotType.Cockpit || mType == CabinSlotType.Galley ||
             mType == CabinSlotType.Toilet || mType == CabinSlotType.Kitchen || mType == CabinSlotType.Intercom || mType == CabinSlotType.Stairway;
 
+        public bool IsInterior => IsSeat || mType == CabinSlotType.Galley ||
+            mType == CabinSlotType.Toilet || mType == CabinSlotType.Kitchen || mType == CabinSlotType.Intercom || mType == CabinSlotType.Stairway ||
+            mType == CabinSlotType.ServiceEndPoint || mType == CabinSlotType.ServiceStartPoint;
+
+        public bool IsAir => mType == CabinSlotType.Aisle || mType == CabinSlotType.ServiceEndPoint || mType == CabinSlotType.ServiceStartPoint;
+
         public string DisplayText => ToString().Trim();
 
-        public bool IsProblematic
+        /*public bool IsProblematic
         {
-            get => mIsProblematic;
+            get => slotIssues.IsProblematic;
             set
             {
                 bool oldValue = mIsProblematic;
@@ -149,10 +161,12 @@ namespace SLC_LayoutEditor.Core.Cabin
                     InvokePropertyChanged();
                 }
             }
-        }
+        }*/
 
-        public bool IsEvaluationActive { get; set; } = true;
+        public CabinSlotIssues SlotIssues => slotIssues;
 
+        public bool IsEvaluationActive { get => slotIssues.IsEvaluationActive; 
+            set => slotIssues.IsEvaluationActive = value; }
 
         public bool IsHitTestVisible
         {
@@ -170,10 +184,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         }
 
-        public CabinSlot(string slotData, int row, int column)
+        public CabinSlot(string slotData, int row, int column) : this()
         {
-            guid = System.Guid.NewGuid().ToString();
-
             mRow = row;
             mColumn = column;
 
@@ -261,14 +273,23 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public CabinSlot(int row, int column, CabinSlotType type, int slotNumber)
+        public CabinSlot(int row, int column, CabinSlotType type, int slotNumber) : this()
         {
-            guid = System.Guid.NewGuid().ToString();
-
             mRow = row;
             mColumn = column;
             mType = type;
             mSlotNumber = slotNumber;
+        }
+
+        private CabinSlot()
+        {
+            guid = System.Guid.NewGuid().ToString();
+            slotIssues.ProblematicChanged += SlotIssues_ProblematicChanged;
+        }
+
+        private void SlotIssues_ProblematicChanged(object sender, EventArgs e)
+        {
+            OnProblematicChanged(e);
         }
 
         public bool IsReachable(CabinDeck deck)

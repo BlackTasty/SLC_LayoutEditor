@@ -86,7 +86,7 @@
                     CornerRadius="4" Margin="-16,0,-14,-14"
                     Visibility="{Binding SelectedTemplate.IsDefault, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <Grid>
-                    <Image Source="{Binding SelectedDeckThumbnail}" Height="180"/>
+                    <Image Source="{Binding SelectedDeckThumbnail}" Height="180" Stretch="Uniform"/>
                     <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundSecondaryColorBrush}"
                            VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock.Style>

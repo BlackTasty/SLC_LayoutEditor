@@ -66,5 +66,10 @@ namespace SLC_LayoutEditor.ViewModel
             mName = defaultName;
             this.nameExistsErrorMessage = nameExistsErrorMessage;
         }
+
+        public void RefreshIsValidFlag()
+        {
+            InvokePropertyChanged(nameof(IsValid));
+        }
     }
 }

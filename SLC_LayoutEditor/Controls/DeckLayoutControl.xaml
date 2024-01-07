@@ -40,7 +40,7 @@
                             local:GuideAssist.Title="{StaticResource GuideIssueCardsTitle}"
                             local:GuideAssist.Description="{StaticResource GuideDeckIssueCardsDescription}"
                             local:GuideAssist.HasGuide="True"
-                            local:GuideAssist.IsCircleCutout="False"
+                            local:GuideAssist.IsCircularCutout="False"
                             local:GuideAssist.TextPosition="Right"
                             local:GuideAssist.CornerRadius="20"
                             local:GuideAssist.TextAreaYOffset="40"

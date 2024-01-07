@@ -47,6 +47,8 @@ namespace SLC_LayoutEditor.Core.Guide
 
         public bool ApplyOverlayToAll { get; set; }
 
+        public string TourStepCategory { get; set; }
+
         public bool AreTourStepsSet => CurrentTourStep != null && TotalTourSteps != null;
 
         public bool AreOverridesSet => Margin != null || Padding != null || CornerRadius != null || Title != null || Description != null ||

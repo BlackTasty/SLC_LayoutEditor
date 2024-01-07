@@ -26,8 +26,9 @@ namespace SLC_LayoutEditor.UI.Dialogs
             vm.ExistingNames.AddRange(existingCabinLayouts);
             vm.IsSaveAs = isSaveAs;
             vm.IsTemplate = isTemplate;
+            vm.Name = "Default";
 
-            if (templates != null )
+            if (templates != null)
             {
                 vm.Templates = new List<TemplatePreview>(templates);
             }

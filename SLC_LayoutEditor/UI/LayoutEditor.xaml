@@ -160,7 +160,7 @@
                                  controls:GuideAssist.Description="{StaticResource GuideEditorAreaDescription}"
                                  controls:GuideAssist.HasGuide="True"
                                  controls:GuideAssist.TextPosition="Over"
-                                 controls:GuideAssist.IsCircleCutout="False"
+                                 controls:GuideAssist.IsCircularCutout="False"
                                  controls:GuideAssist.Margin="32">
         <controls:CabinLayoutControl.Style>
             <Style TargetType="controls:CabinLayoutControl">
@@ -175,6 +175,18 @@
             </Style>
         </controls:CabinLayoutControl.Style>
     </controls:CabinLayoutControl>
+    <controls:TodoList x:Name="todoList" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <controls:TodoList.Style>
+            <Style TargetType="controls:TodoList">
+                <Setter Property="Margin" Value="0,84,0,0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=control_layout, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                        <Setter Property="Margin" Value="0,84,12,0"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </controls:TodoList.Style>
+    </controls:TodoList>
     <DockPanel Margin="8,0" LastChildFill="False">
         <Border x:Name="card_layoutSelect" DockPanel.Dock="Top" Style="{DynamicResource CardStyle}"
                 Visibility="{Binding IsSidebarOpen, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -182,7 +194,7 @@
                 controls:GuideAssist.Description="{StaticResource GuideSelectorCardDescription}"
                 controls:GuideAssist.HasGuide="True"
                 controls:GuideAssist.TextPosition="Right"
-                controls:GuideAssist.IsCircleCutout="False"
+                controls:GuideAssist.IsCircularCutout="False"
                 Cursor="Help"
                 ContextMenu="{StaticResource GuideMenu}">
             <StackPanel>
@@ -225,7 +237,8 @@
                                               ItemsSource="{Binding LayoutSets, Converter={StaticResource AircraftListSortConverter}}"
                                               SelectedItem="{Binding SelectedLayoutSet}" Grid.IsSharedSizeScope="True"
                                               Watermark="{Binding SelectedLayoutSetText}"
-                                              Text="{Binding SelectedLayoutSet.AircraftName, Mode=OneWay}">
+                                              Text="{Binding SelectedLayoutSet.AircraftName, Mode=OneWay}"
+                                              SelectionChanged="Aircrafts_SelectionChanged">
                         <controls:RefinedComboBox.Style>
                             <Style TargetType="controls:RefinedComboBox" BasedOn="{StaticResource {x:Type controls:RefinedComboBox}}">
                                 <Setter Property="ItemTemplate">
@@ -314,7 +327,8 @@
                                                               SelectedItem="{Binding SelectedCabinLayout}"
                                                               Watermark="{Binding SelectedLayoutText}"
                                                               IsEnabled="{Binding SelectedLayoutSet.IsCabinLayoutSelectionEnabled}"
-                                                              Visibility="{Binding IsTemplatingMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                                              Visibility="{Binding IsTemplatingMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                                              SelectionChanged="Layouts_SelectionChanged"/>
                                     <controls:RefinedComboBox x:Name="combo_templates" Margin="0,4,8,4"
                                                               DisplayMemberPath="LayoutName"
                                                               ItemsSource="{Binding SelectedLayoutSet.Templates, UpdateSourceTrigger=PropertyChanged}"
@@ -408,7 +422,7 @@
             controls:GuideAssist.Title="{Binding SlotSettingsGuideTitle}"
             controls:GuideAssist.Description="{Binding SlotSettingsGuideDescription}"
             controls:GuideAssist.HasGuide="True"
-            controls:GuideAssist.IsCircleCutout="False"
+            controls:GuideAssist.IsCircularCutout="False"
             controls:GuideAssist.TextPosition="Top"
             controls:GuideAssist.HeightOffset="1"
             Cursor="Help"
@@ -447,6 +461,8 @@
                                   controls:GuideAssist.TextPosition="Top"
                                   controls:GuideAssist.RadiusOffset="-8"
                                   Cursor="Help"
+                                  Checked="SlotConfigModeToggle_CheckedChanged"
+                                  Unchecked="SlotConfigModeToggle_CheckedChanged"
                                   ContextMenu="{StaticResource GuideMenu}"/>
                     <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
                                Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
@@ -546,7 +562,8 @@
                             <TextBlock Text="Slot type" Margin="0,0,0,4"/>
                             <ComboBox ItemsSource="{Binding Source={enum:EnumBindingSource {x:Type enum:CabinSlotType}}}"
                                       SelectedIndex="{Binding SelectedCabinSlotTypeId}"
-                                      Style="{StaticResource CabinSlotDropdownStyle}"/>
+                                      Style="{StaticResource CabinSlotDropdownStyle}"
+                                      SelectionChanged="SlotType_SelectionChanged"/>
                         </StackPanel>
                         <StackPanel Margin="4">
                             <DockPanel>
@@ -625,11 +642,12 @@
                         <CheckBox Content="Count empty slots" IsChecked="{Binding AutomationCountEmptySlots}"/>
                     </StackPanel>
                     <UniformGrid Rows="1">
-                        <StackPanel Margin="4">
+                        <StackPanel Margin="4" x:Name="area_automationDropdown">
                             <TextBlock Text="Automation" Margin="0,0,0,4"/>
-                            <ComboBox SelectedIndex="{Binding SelectedAutomationIndex}"
-                                          Style="{StaticResource TopListComboBoxStyle}"
-                                          Margin="0,0,0,14">
+                            <ComboBox x:Name="combo_slotAutomationType" SelectedIndex="{Binding SelectedAutomationIndex}"
+                                      Style="{StaticResource TopListComboBoxStyle}"
+                                      Margin="0,0,0,14"
+                                      SelectionChanged="Automation_SelectionChanged">
                                 <ComboBoxItem Content="Seat numeration" ToolTip="Sets numeration and letters automatically for you"/>
                                 <ComboBoxItem Content="Auto walls" ToolTip="Automatically sets walls around your layout"/>
                                 <ComboBoxItem Content="(BETA) Service points" ToolTip="Generate service start- and endpoints automatically"/>

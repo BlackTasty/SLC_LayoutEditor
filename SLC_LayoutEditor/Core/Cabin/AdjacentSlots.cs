@@ -19,8 +19,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinSlot BottomSlot => adjacentSlots[3];
 
-        public bool HasAdjacentAisle => adjacentSlots.Any(x => x?.Type == Enum.CabinSlotType.Aisle) ||
-             center.IsSeat && (TopSlot.IsSeat || BottomSlot.IsSeat);
+        public bool HasAdjacentAisle => adjacentSlots.Any(x => x?.IsAir ?? false) ||
+             center.IsSeat && ((TopSlot?.IsSeat ?? false) || (BottomSlot?.IsSeat ?? false));
 
         public List<CabinSlot> Adjacent => adjacentSlots;
 

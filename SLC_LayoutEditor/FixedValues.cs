@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Media;
 
 namespace SLC_LayoutEditor
 {
@@ -34,5 +35,22 @@ namespace SLC_LayoutEditor
         internal static readonly string GUIDE_SLOT_CONFIGURATOR_DESC = (string)App.Current.FindResource("GuideSlotConfigurationDescription");
         internal static readonly string GUIDE_SLOT_AUTOMATION_TITLE = (string)App.Current.FindResource("GuideSlotAutomationTitle");
         internal static readonly string GUIDE_SLOT_AUTOMATION_DESC = (string)App.Current.FindResource("GuideSlotAutomationDescription");
+
+        internal static readonly StreamGeometry ICON_CHEVRON_LEFT = (StreamGeometry)App.Current.FindResource("ChevronLeft");
+        internal static readonly StreamGeometry ICON_CHEVRON_RIGHT = (StreamGeometry)App.Current.FindResource("ChevronRight");
+
+        internal static readonly Style STYLE_ICON_BUTTON = (Style)App.Current.FindResource("ForegroundIconButtonStyle");
+
+        internal const string KEY_ISSUE_STAIRWAY = "stairway";
+        internal const string KEY_ISSUE_ECO_CLASS = "eco_class";
+        internal const string KEY_ISSUE_BUSINESS_CLASS = "business_class";
+        internal const string KEY_ISSUE_PREMIUM_CLASS = "premium_class";
+        internal const string KEY_ISSUE_FIRST_CLASS = "first_class";
+        internal const string KEY_ISSUE_SUPERSONIC_CLASS = "supersonic_class";
+        internal const string KEY_ISSUE_UNAVAILABLE_SEAT = "unavailable_seat";
+        internal const string KEY_ISSUE_DOORS_DUPLICATE = "doors_duplicate";
+        internal const string KEY_ISSUE_DOORS_SERVICE_WRONG_SIDE = "cat/lb";
+        internal const string KEY_ISSUE_INVALID_INTERIOR_POSITIONS = "interior";
+        internal const string KEY_ISSUE_UNREACHABLE_SLOTS = "unreachable";
     }
 }

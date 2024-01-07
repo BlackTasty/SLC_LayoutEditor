@@ -5,6 +5,7 @@
         <ResourceDictionary Source="Styles/CheckBoxStyle.xaml"/>
         <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"/>
         <ResourceDictionary Source="Styles/ExpanderStyle.xaml"/>
+        <ResourceDictionary Source="Styles/ListStyle.xaml"/>
         <ResourceDictionary Source="Styles/TextBoxStyle.xaml"/>
         <ResourceDictionary Source="Styles/MenuStyle.xaml"/>
         <ResourceDictionary Source="Styles/ProgressBarStyle.xaml"/>

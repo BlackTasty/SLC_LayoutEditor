@@ -25,12 +25,16 @@ namespace SLC_LayoutEditor.Core.Cabin
         private int mFloor;
 
         private bool mShowCateringAndLoadingBayIssues = true;
+        private bool mShowStairwayIssues = true;
+        private bool mShowInteriorPositionIssues = true;
+        private bool mShowUnreachableSlots = true;
 
         private CabinPathGrid pathGrid;
 
         private IEnumerable<CabinSlot> doorSlots;
         private IEnumerable<CabinSlot> invalidCateringDoorsAndLoadingBays;
         private IEnumerable<CabinSlot> unreachableSlots;
+        private IEnumerable<CabinSlot> invalidPositionedSlots;
         private string currentHash;
 
         public double Width { get; set; }
@@ -66,13 +70,15 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool HasDoors => mCabinSlots.Any(x => x.IsDoor);
 
-        public IEnumerable<CabinSlot> DoorSlots => doorSlots;
-
         public IEnumerable<CabinSlot> InvalidSlots => GetInvalidSlots();
+
+        public IEnumerable<CabinSlot> DoorSlots => doorSlots;
 
         public IEnumerable<CabinSlot> InvalidCateringDoorsAndLoadingBays => invalidCateringDoorsAndLoadingBays;
 
         public IEnumerable<CabinSlot> UnreachableSlots => unreachableSlots;
+
+        public IEnumerable<CabinSlot> InvalidPositionedSlots => invalidPositionedSlots;
 
         public bool AreServicePointsValid =>
             mCabinSlots.Where(x => x.Type == CabinSlotType.ServiceStartPoint).Count() ==
@@ -122,6 +128,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool AllSlotsReachable => UnreachableSlots.Count() == 0;
 
+        public bool AllInteriorSlotPositionsValid => InvalidPositionedSlots.Count() == 0;
+
         public bool HasSevereIssues => SevereIssuesCount > 0;
 
         public bool HasMinorIssues => MinorIssuesCount > 0;
@@ -129,7 +137,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool HasAnyIssues => HasSevereIssues || HasMinorIssues;
 
         public int SevereIssuesCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreServicePointsValid, AreSlotsValid, AreSeatsReachableByService,
-            AllSlotsReachable);
+            AllSlotsReachable, AllInteriorSlotPositionsValid);
 
         public int MinorIssuesCount => Util.GetProblemCount(0, AreCateringAndLoadingBaysValid, AreToiletsAvailable, AreKitchensValid);
 
@@ -147,6 +155,36 @@ namespace SLC_LayoutEditor.Core.Cabin
             set
             {
                 mShowCateringAndLoadingBayIssues = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowStairwayIssues
+        {
+            get => mShowStairwayIssues;
+            set
+            {
+                mShowStairwayIssues = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowInteriorPositionIssues
+        {
+            get => mShowInteriorPositionIssues;
+            set
+            {
+                mShowInteriorPositionIssues = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool ShowUnreachableSlots
+        {
+            get => mShowUnreachableSlots;
+            set
+            {
+                mShowUnreachableSlots = value;
                 InvokePropertyChanged();
             }
         }
@@ -245,6 +283,22 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool ContainsCabinSlot(CabinSlot target)
         {
             return target != null && mCabinSlots.Any(x => x.Guid == target.Guid);
+        }
+
+        public bool IsSlotValidDoorPosition(CabinSlot target)
+        {
+            return (target.Column == 0 || target.Column == Columns) && target.Row > 0 && target.Row < Rows;
+        }
+
+        public bool IsSlotValidCockpitPosition(CabinSlot target)
+        {
+            return target.Row == 0 && target.Column > 0 && target.Column < Columns;
+        }
+
+        public bool IsSlotValidInteriorPosition(CabinSlot target)
+        {
+            return target.Row > 0 && target.Row < Rows && target.Column > 0 && target.Column < Columns &&
+                target.Type != CabinSlotType.Wall;
         }
 
         public IEnumerable<int> GetRowsWithSeats()
@@ -399,7 +453,11 @@ namespace SLC_LayoutEditor.Core.Cabin
                 }
                 if (!AllSlotsReachable)
                 {
-                    AppendBulletPoint(sb, "Unreachable slots detected!", indented);
+                    AppendBulletPoint(sb, string.Format("{0} unreachable slots detected!", unreachableSlots.Count()), indented);
+                }
+                if (!AllInteriorSlotPositionsValid)
+                {
+                    AppendBulletPoint(sb, string.Format("{0} invalid positioned interior slots!", invalidPositionedSlots.Count()), indented);
                 }
                 if (!AreServicePointsValid)
                 {
@@ -441,8 +499,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                                         .Take(seat.Column)
                                         .OrderByDescending(x => x.Column))
             {
-                if (slot.Type == CabinSlotType.Aisle || slot.Type == CabinSlotType.ServiceEndPoint || 
-                    slot.Type == CabinSlotType.ServiceStartPoint)
+                if (slot.IsAir)
                 {
                     return slot;
                 }
@@ -458,8 +515,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                                         .Skip(seat.Column)
                                         .OrderBy(x => x.Column))
             {
-                if (slot.Type == CabinSlotType.Aisle || slot.Type == CabinSlotType.ServiceEndPoint ||
-                    slot.Type == CabinSlotType.ServiceStartPoint)
+                if (slot.IsAir)
                 {
                     return slot;
                 }
@@ -551,6 +607,26 @@ namespace SLC_LayoutEditor.Core.Cabin
             return unreachableSlots;
         }
 
+        private IEnumerable<CabinSlot> GetInvalidPositionedSlots()
+        {
+            if (this.invalidPositionedSlots?.Any() ?? false)
+            {
+                foreach (CabinSlot invalidSlot in this.invalidPositionedSlots)
+                {
+                    invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_INVALID_INTERIOR_POSITIONS, false);
+                }
+            }
+
+            IEnumerable<CabinSlot> invalidPositionedSlots = mCabinSlots.Where(x => x.IsInterior && !IsSlotValidInteriorPosition(x));
+
+            foreach (CabinSlot invalidSlot in invalidPositionedSlots)
+            {
+                invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_INVALID_INTERIOR_POSITIONS, true);
+            }
+
+            return invalidPositionedSlots;
+        }
+
         private IEnumerable<CabinSlot> GetInvalidSlots()
         {
             List<CabinSlot> invalidSlots = new List<CabinSlot>();
@@ -559,8 +635,9 @@ namespace SLC_LayoutEditor.Core.Cabin
                 RefreshCalculated();
             }
 
-            invalidSlots.AddRange(InvalidCateringDoorsAndLoadingBays);
-            invalidSlots.AddRange(UnreachableSlots);
+            invalidSlots.AddRangeDistinct(InvalidCateringDoorsAndLoadingBays);
+            invalidSlots.AddRangeDistinct(UnreachableSlots);
+            invalidSlots.AddRangeDistinct(InvalidPositionedSlots);
 
             return invalidSlots;
         }
@@ -611,6 +688,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 InvokePropertyChanged(nameof(AllSlotsReachable));
                 InvokePropertyChanged(nameof(AreCateringAndLoadingBaysValid));
                 InvokePropertyChanged(nameof(InvalidCateringDoorsAndLoadingBays));
+                InvokePropertyChanged(nameof(InvalidPositionedSlots));
+                InvokePropertyChanged(nameof(AllInteriorSlotPositionsValid));
 
                 InvokePropertyChanged(nameof(MinorIssuesCount));
                 InvokePropertyChanged(nameof(HasMinorIssues));
@@ -629,9 +708,24 @@ namespace SLC_LayoutEditor.Core.Cabin
         private void RefreshCalculated()
         {
             doorSlots = mCabinSlots.Where(x => x.IsDoor);
+            if (invalidCateringDoorsAndLoadingBays?.Any() ?? false)
+            {
+                foreach(CabinSlot invalidSlot in invalidCateringDoorsAndLoadingBays)
+                {
+                    invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, false);
+                }
+            }
+
             invalidCateringDoorsAndLoadingBays = mCabinSlots.Where(x => (x.Type == CabinSlotType.CateringDoor || x.Type == CabinSlotType.LoadingBay)
                                                         && x.Column != 0);
+
+            foreach (CabinSlot invalidSlot in invalidCateringDoorsAndLoadingBays)
+            {
+                invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, true);
+            }
+
             unreachableSlots = GetUnreachableSlots();
+            invalidPositionedSlots = GetInvalidPositionedSlots();
         }
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)

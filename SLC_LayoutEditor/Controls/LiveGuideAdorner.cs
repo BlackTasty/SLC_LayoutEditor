@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
@@ -12,7 +13,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Controls
@@ -24,9 +27,11 @@ namespace SLC_LayoutEditor.Controls
     /// </summary>
     internal class LiveGuideAdorner : Adorner
     {
-        public event EventHandler<EventArgs> Closed;
+        public event EventHandler<LiveGuideClosedEventArgs> Closed;
 
         private const double BACKDROP_SAFEZONE_SIZE = 250;
+        private const double STEPPER_BUTTON_SIZE = 12;
+        private const double STEPPER_BUTTON_PADDING = 8;
 
         private readonly double margin;
         private readonly double padding;
@@ -51,12 +56,19 @@ namespace SLC_LayoutEditor.Controls
         private readonly bool areTourStepsVisible;
         private readonly int currentTourStep;
         private readonly int totalTourSteps;
+        private readonly string tourStepCategory;
+
         private readonly bool applyOverlayToAll;
+
+        private Rect stepBackHitRect;
 
         private readonly Window window;
         private readonly UIElement guidedElement;
 
         private readonly bool areOverridesSet;
+
+        private bool isMouseDown;
+        private bool isStepBackMouseDown;
 
         public UIElement GuidedElement => guidedElement;
 
@@ -64,7 +76,7 @@ namespace SLC_LayoutEditor.Controls
         {
             Adorner adorner = rootElement.AttachAdorner(typeof(LiveGuideAdorner), (UIElement)guidedElement, GuideAssist.GetMargin(guidedElement), GuideAssist.GetPadding(guidedElement),
                 GuideAssist.GetCornerRadius(guidedElement), GuideAssist.GetTitle(guidedElement), GuideAssist.GetDescription(guidedElement), 
-                FixedValues.LIVE_GUIDE_OVERLAY_BRUSH, Window.GetWindow(guidedElement), GuideAssist.GetIsCircleCutout(guidedElement), 
+                FixedValues.LIVE_GUIDE_OVERLAY_BRUSH, Window.GetWindow(guidedElement), GuideAssist.GetIsCircularCutout(guidedElement), 
                 GuideAssist.GetTextPosition(guidedElement), GuideAssist.GetTextAreaXOffset(guidedElement), GuideAssist.GetTextAreaYOffset(guidedElement), 
                 GuideAssist.GetWidthOffset(guidedElement), GuideAssist.GetHeightOffset(guidedElement),
                 GuideAssist.GetRadiusOffset(guidedElement), GuideAssist.GetHighlightXOffset(guidedElement), GuideAssist.GetHighlightYOffset(guidedElement),
@@ -76,12 +88,6 @@ namespace SLC_LayoutEditor.Controls
         /// <summary>
         /// Attach the adorner to an element.
         /// </summary>
-        /// <param name="rootElement">The element to attach the adorner to</param>
-        /// <param name="margin">The margin between the circle around the adorned element and the element itself</param>
-        /// <param name="title">The title for this guide</param>
-        /// <param name="description">A short description describing the action</param>
-        /// <param name="overlayBrush">The color of the overlay blending out other elements</param>
-        /// <param name="windowSize">The size of the window</param>
         public LiveGuideAdorner(UIElement rootElement, UIElement guidedElement, double margin, double padding, double cornerRadius, string title, string description, 
             Brush overlayBrush, Window window, bool isCircularCutout, GuideTextPosition textPosition,
             double textAreaXOffset, double textAreaYOffset, double widthOffset, double heightOffset, double radiusOffset, 
@@ -96,6 +102,7 @@ namespace SLC_LayoutEditor.Controls
             {
                 currentTourStep = overrides.CurrentTourStep.HasValue ? overrides.CurrentTourStep.Value : 0;
                 totalTourSteps = overrides.TotalTourSteps.HasValue ? overrides.TotalTourSteps.Value : 0;
+                tourStepCategory = overrides.TourStepCategory;
             }
 
             this.radiusOffset = !overrides?.RadiusOffset.HasValue ?? true ? radiusOffset : overrides.RadiusOffset.Value;
@@ -118,16 +125,30 @@ namespace SLC_LayoutEditor.Controls
             this.overlayBrush = overlayBrush;
 
             this.window = window;
+            PreviewMouseDown += LiveGuideAdorner_PreviewMouseDown;
             PreviewMouseUp += LiveGuideAdorner_PreviewMouseUp;
             ClipToBounds = false;
         }
 
+        private void LiveGuideAdorner_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            isMouseDown = true;
+
+            if (areTourStepsVisible && stepBackHitRect.Contains(e.GetPosition(this)))
+            {
+                isStepBackMouseDown = true;
+            }
+        }
+
         private void LiveGuideAdorner_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            RemoveOverrides();
-            AdornedElement.RemoveAdorner(this);
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.GuideAdornerClosed);
-            OnClosed(EventArgs.Empty);
+            if (isMouseDown)
+            {
+                RemoveOverrides();
+                AdornedElement.RemoveAdorner(this);
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.GuideAdornerClosed);
+                OnClosed(!isStepBackMouseDown ? new LiveGuideClosedEventArgs() : new LiveGuideClosedEventArgs(-1));
+            }
         }
 
         private void RemoveOverrides()
@@ -142,8 +163,8 @@ namespace SLC_LayoutEditor.Controls
         {
             Point relativePosition = guidedElement.TransformToAncestor(AdornedElement).Transform(new Point(0, 0));
             Rect adornedElementRect = new Rect(relativePosition, guidedElement.RenderSize);
-            adornedElementRect.X += highlightXOffset;
-            adornedElementRect.Y += highlightYOffset;
+            adornedElementRect.X += highlightXOffset - widthOffset / 2;
+            adornedElementRect.Y += highlightYOffset - heightOffset / 2;
 
             adornedElementRect.Width += widthOffset;
             adornedElementRect.Height += heightOffset;
@@ -156,8 +177,13 @@ namespace SLC_LayoutEditor.Controls
             // Generate texts
             FormattedText formattedTitle = GetFormattedText(title, FontWeights.Bold, 32, FixedValues.DEFAULT_BRUSH);
             FormattedText formattedDescription = GetFormattedText(description, FontWeights.Thin, 16, FixedValues.DEFAULT_SECONDARY_BRUSH);
-            FormattedText formattedCloseInfo = GetFormattedText(!areTourStepsVisible ? "Click anywhere to close this info" :
-                string.Format("Guided tour - {0}/{1}", currentTourStep, totalTourSteps), FontWeights.Thin, !areTourStepsVisible ? 10 : 12, FixedValues.YELLOW_BRUSH);
+
+            string closeInfoText = !areTourStepsVisible ? "Click anywhere to close this info" :
+                !string.IsNullOrWhiteSpace(tourStepCategory) ? 
+                string.Format("Guided tour - {0} - {1}/{2}", tourStepCategory, currentTourStep, totalTourSteps) :
+                string.Format("Guided tour - {0}/{1}", currentTourStep, totalTourSteps);
+            FormattedText formattedCloseInfo = GetFormattedText(closeInfoText, 
+                FontWeights.Thin, !areTourStepsVisible ? 10 : 12, FixedValues.YELLOW_BRUSH);
 
             Rect textAreaRect = GetTextAreaRect(textPosition, adornedElementRect, adornedElementCenter, formattedTitle, formattedDescription, formattedCloseInfo);
 
@@ -189,15 +215,39 @@ namespace SLC_LayoutEditor.Controls
             drawingContext.DrawText(formattedDescription, descriptionPosition);
             drawingContext.DrawText(formattedCloseInfo, closeInfoPosition);
 
+            #region Render guide stepper buttons if part of a guided tour
+            if (areTourStepsVisible)
+            {
+                if (currentTourStep > 1)
+                {
+                    // Render step back button
+                    stepBackHitRect = new Rect(textAreaRect.Left + margin,
+                        textAreaRect.Bottom - margin - padding - STEPPER_BUTTON_SIZE,
+                        STEPPER_BUTTON_SIZE, STEPPER_BUTTON_SIZE);
+
+                    //RenderButton(drawingContext, stepBackHitRect, FixedValues.ICON_CHEVRON_LEFT);
+                }
+            }
+            #endregion
+
             base.OnRender(drawingContext);
         }
 
         protected override Size MeasureOverride(Size constraint)
         {
-            var result = base.MeasureOverride(constraint);
+            Size result = base.MeasureOverride(constraint);
             // ... add custom measure code here if desired ...
             InvalidateVisual();
+
             return result;
+        }
+
+        private void RenderButton(DrawingContext context, Rect iconRect, StreamGeometry icon)
+        {
+            TranslateTransform translation = new TranslateTransform(iconRect.X, iconRect.Y);
+            context.PushTransform(translation);
+            context.DrawGeometry(FixedValues.DEFAULT_BRUSH, null, icon);
+            context.Pop();
         }
 
         private void ApplyOpacityMask(DrawingContext context, Rect drawingRect, Rect adornedElementRect, Point adornedElementCenter,
@@ -375,7 +425,7 @@ namespace SLC_LayoutEditor.Controls
                 centerVertically ? centerY : child.Y);
         }
 
-        protected virtual void OnClosed(EventArgs e)
+        protected virtual void OnClosed(LiveGuideClosedEventArgs e)
         {
             Closed?.Invoke(this, e);
         }
