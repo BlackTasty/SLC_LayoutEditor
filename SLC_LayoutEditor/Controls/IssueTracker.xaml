@@ -228,6 +228,10 @@
                                                                  InvalidText="No kitchen available! (No In-Flight services)"
                                                                  IsValid="{Binding AreKitchensValid}" IsSevereProblem="False"
                                                                  Description="If you wanna be able to offer in-flight services, make sure to place down a kitchen"/>
+                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Intercom available"
+                                                                 InvalidText="No intercom on this deck!"
+                                                                 IsValid="{Binding AreIntercomsValid}"
+                                                                 Description="Intercoms are used by your cabin crew to communicate to both the captain as well as the passengers"/>
                                         <Separator Margin="0,4"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
                                                                  InvalidText="No toilets on this deck!"

@@ -15,6 +15,8 @@ namespace SLC_LayoutEditor.Core.Guide
 
         public double? CornerRadius { get; set; }
 
+        public double? HighlightCornerRadius { get; set; }
+
         public string Title { get; set; }
 
         public string Description { get; set; }
@@ -51,7 +53,11 @@ namespace SLC_LayoutEditor.Core.Guide
 
         public bool AreTourStepsSet => CurrentTourStep != null && TotalTourSteps != null;
 
-        public bool AreOverridesSet => Margin != null || Padding != null || CornerRadius != null || Title != null || Description != null ||
+        public string GIFName { get; set; }
+
+        public double GIFScaling { get; set; } = .75;
+
+        public bool AreOverridesSet => Margin != null || Padding != null || CornerRadius != null || HighlightCornerRadius != null || Title != null || Description != null ||
             TextPosition != null || HasGuide != null || IsCircularCutout != null || WidthOffset != null || HeightOffset != null || RadiusOffset != null ||
             HighlightXOffset != null || HighlightYOffset != null || SafeZoneSize != null || TextAreaXOffset != null || TextAreaYOffset != null ||
             AreTourStepsSet;

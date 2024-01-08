@@ -15,7 +15,11 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using System.Windows.Resources;
+using System.Windows.Threading;
+using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Controls
@@ -32,10 +36,12 @@ namespace SLC_LayoutEditor.Controls
         private const double BACKDROP_SAFEZONE_SIZE = 250;
         private const double STEPPER_BUTTON_SIZE = 12;
         private const double STEPPER_BUTTON_PADDING = 8;
+        private const double GIF_CORNER_RADIUS = 16;
 
         private readonly double margin;
         private readonly double padding;
         private readonly double cornerRadius;
+        private readonly double highlightCornerRadius;
         private readonly double safeZoneSize;
 
         private readonly double widthOffset;
@@ -70,12 +76,26 @@ namespace SLC_LayoutEditor.Controls
         private bool isMouseDown;
         private bool isStepBackMouseDown;
 
+
+        private string gifFile;
+        private double gifScaling;
+
+        private GifBitmapDecoder gifDecoder;
+        private DispatcherTimer gifRenderer;
+        private int currentFrameIndex;
+        private BitmapSource renderedFrame;
+        Point gifPosition;
+        Size gifSize;
+        BitmapSource firstFrame;
+        Rect renderRect;
+        DrawingBrush maskBrush;
+
         public UIElement GuidedElement => guidedElement;
 
         public static Adorner AttachAdorner(UIElement rootElement, UIElement guidedElement)
         {
             Adorner adorner = rootElement.AttachAdorner(typeof(LiveGuideAdorner), (UIElement)guidedElement, GuideAssist.GetMargin(guidedElement), GuideAssist.GetPadding(guidedElement),
-                GuideAssist.GetCornerRadius(guidedElement), GuideAssist.GetTitle(guidedElement), GuideAssist.GetDescription(guidedElement), 
+                GuideAssist.GetCornerRadius(guidedElement), GuideAssist.GetHighlightCornerRadius(guidedElement), GuideAssist.GetTitle(guidedElement), GuideAssist.GetDescription(guidedElement), 
                 FixedValues.LIVE_GUIDE_OVERLAY_BRUSH, Window.GetWindow(guidedElement), GuideAssist.GetIsCircularCutout(guidedElement), 
                 GuideAssist.GetTextPosition(guidedElement), GuideAssist.GetTextAreaXOffset(guidedElement), GuideAssist.GetTextAreaYOffset(guidedElement), 
                 GuideAssist.GetWidthOffset(guidedElement), GuideAssist.GetHeightOffset(guidedElement),
@@ -88,7 +108,8 @@ namespace SLC_LayoutEditor.Controls
         /// <summary>
         /// Attach the adorner to an element.
         /// </summary>
-        public LiveGuideAdorner(UIElement rootElement, UIElement guidedElement, double margin, double padding, double cornerRadius, string title, string description, 
+        public LiveGuideAdorner(UIElement rootElement, UIElement guidedElement, double margin, double padding
+            , double cornerRadius, double highlightCornerRadius, string title, string description, 
             Brush overlayBrush, Window window, bool isCircularCutout, GuideTextPosition textPosition,
             double textAreaXOffset, double textAreaYOffset, double widthOffset, double heightOffset, double radiusOffset, 
             double highlightXOffset, double highlightYOffset, double safeZoneSize, GuideAssistOverrides overrides) : base(rootElement)
@@ -105,6 +126,33 @@ namespace SLC_LayoutEditor.Controls
                 tourStepCategory = overrides.TourStepCategory;
             }
 
+            if (overrides?.GIFName != null)
+            {
+                gifFile = "Resources/Guides/" + overrides.GIFName;
+                gifScaling = overrides.GIFScaling;
+
+                StreamResourceInfo streamInfo = Application.GetResourceStream(new Uri(gifFile, UriKind.Relative));
+                if (streamInfo == null)
+                {
+                    Logger.Default.WriteLog($"Resource '{gifFile}' not found.");
+                }
+                else
+                {
+                    gifDecoder = new GifBitmapDecoder(streamInfo.Stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                    gifRenderer = new DispatcherTimer(DispatcherPriority.Render);
+                    gifRenderer.Interval = TimeSpan.FromMilliseconds(16);
+                    gifRenderer.Tick += GifRenderer_Tick;
+                    gifRenderer.Start();
+
+                    firstFrame = gifDecoder.Frames[0];
+                    gifSize = new Size(firstFrame.Width * gifScaling, firstFrame.Height * gifScaling);
+                    renderRect = new Rect(0, 0, firstFrame.Width, firstFrame.Height);
+
+                    maskBrush = new DrawingBrush(new GeometryDrawing(Brushes.Blue, null, 
+                        new RectangleGeometry(renderRect, GIF_CORNER_RADIUS, GIF_CORNER_RADIUS)));
+                }
+            }
+
             this.radiusOffset = !overrides?.RadiusOffset.HasValue ?? true ? radiusOffset : overrides.RadiusOffset.Value;
             this.widthOffset = !overrides?.WidthOffset.HasValue ?? true ? widthOffset : overrides.WidthOffset.Value;
             this.heightOffset = !overrides?.HeightOffset.HasValue ?? true ? heightOffset : overrides.HeightOffset.Value;
@@ -118,6 +166,7 @@ namespace SLC_LayoutEditor.Controls
             this.margin = !overrides?.Margin.HasValue ?? true ? margin : overrides.Margin.Value;
             this.padding = !overrides?.Padding.HasValue ?? true ? padding : overrides.Padding.Value;
             this.cornerRadius = !overrides?.CornerRadius.HasValue ?? true ? cornerRadius : overrides.CornerRadius.Value;
+            this.highlightCornerRadius = !overrides?.HighlightCornerRadius.HasValue ?? true ? highlightCornerRadius : overrides.HighlightCornerRadius.Value;
             this.radius = GetRadius(guidedElement, margin);
             this.title = overrides?.Title == null ? title : overrides.Title;
             this.description = overrides?.Description == null ? description : overrides.Description;
@@ -128,6 +177,11 @@ namespace SLC_LayoutEditor.Controls
             PreviewMouseDown += LiveGuideAdorner_PreviewMouseDown;
             PreviewMouseUp += LiveGuideAdorner_PreviewMouseUp;
             ClipToBounds = false;
+        }
+
+        private void GifRenderer_Tick(object sender, EventArgs e)
+        {
+            InvalidateVisual();
         }
 
         private void LiveGuideAdorner_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -191,6 +245,75 @@ namespace SLC_LayoutEditor.Controls
             Point descriptionPosition = titlePosition.MakeOffset(0, formattedTitle.Height + 8);
             Point closeInfoPosition = descriptionPosition.MakeOffset(0, formattedDescription.Height + 12);
 
+            #region Prepare GIF animation frame if set
+            if (gifDecoder != null)
+            {
+                double textAreaGifWidthOffset = Math.Max(gifSize.Width + 2 - textAreaRect.Width, 0);
+                double textAreaGifXOffset = textAreaGifWidthOffset / 2;
+                if (textAreaGifWidthOffset > 0)
+                {
+                    textAreaRect.Width += textAreaGifWidthOffset;
+                    textAreaRect.X -= textAreaGifXOffset;
+                }
+
+                double textAreaOffset = gifSize.Height / 2 + 8;
+                textAreaRect.Y -= textAreaOffset;
+                titlePosition.Offset(-textAreaGifXOffset, -textAreaOffset);
+                descriptionPosition.Offset(-textAreaGifXOffset, -textAreaOffset);
+                closeInfoPosition.Offset(-textAreaGifXOffset, gifSize.Height + 8 - textAreaOffset);
+
+                textAreaRect.Height += gifSize.Height + 8 * 2;
+
+                gifPosition = new Point((textAreaRect.Right - textAreaRect.Width / 2 - gifSize.Width / 2) / gifScaling,
+                    (formattedDescription.Height + descriptionPosition.Y + 8) / gifScaling);
+
+                DrawingVisual drawingImage = new DrawingVisual();
+
+                using (DrawingContext renderContext = drawingImage.RenderOpen())
+                {
+
+                    Rect newRenderRect = currentFrameIndex != 0 ? new Rect(0, 0, renderedFrame.Width, renderedFrame.Height) :
+                         new Rect(0, 0, firstFrame.Width, firstFrame.Height);
+
+                    if (renderRect != newRenderRect)
+                    {
+                        renderRect = newRenderRect;
+                        maskBrush = new DrawingBrush(new GeometryDrawing(Brushes.Blue, null, 
+                            new RectangleGeometry(renderRect, GIF_CORNER_RADIUS, GIF_CORNER_RADIUS)));
+                    }
+
+                    if (currentFrameIndex != 0)
+                    {
+                        renderContext.DrawImage(renderedFrame, renderRect);
+
+                        BitmapSource dynamicFrame = gifDecoder.Frames[currentFrameIndex];
+                        Point frameOffset = GetFrameOffset((BitmapMetadata)dynamicFrame.Metadata);
+                        //renderContext.PushTransform(new ScaleTransform(gifScaling, gifScaling));
+                        renderContext.DrawImage(dynamicFrame,
+                            new Rect(frameOffset, new Size(dynamicFrame.Width, dynamicFrame.Height)));
+                    }
+                    else
+                    {
+                        renderContext.PushOpacityMask(maskBrush);
+                        renderContext.DrawImage(firstFrame, renderRect);
+                    }
+                }
+
+                RenderTargetBitmap renderBitmap = new RenderTargetBitmap((int)drawingRect.Width, (int)drawingRect.Height,
+                    96, 96, PixelFormats.Pbgra32);
+                
+
+                renderBitmap.Render(drawingImage);
+                renderBitmap.Freeze();
+                renderedFrame = renderBitmap;
+
+                gifRenderer.Interval = TimeSpan.FromMilliseconds(double.Parse(((BitmapMetadata)gifDecoder.Frames[currentFrameIndex].Metadata)
+                    .GetQuery("/grctlext/Delay").ToString()) * 4);
+                // Update the frame index for the next rendering
+                currentFrameIndex = (currentFrameIndex + 1) % gifDecoder.Frames.Count;
+            }
+            #endregion
+
             if (areOverridesSet)
             {
                 closeInfoPosition = GetChildCenterPosition(textAreaRect, new Rect(
@@ -210,27 +333,54 @@ namespace SLC_LayoutEditor.Controls
                 new Pen(FixedValues.LIVE_GUIDE_TEXT_BORDER_BRUSH, 1.5), 
                 textAreaRect, cornerRadius, cornerRadius);
 
+            // Render GIF frame if available
+            if (renderedFrame != null)
+            {
+                // Apply a ScaleTransform to the DrawingContext
+                drawingContext.PushTransform(new ScaleTransform(gifScaling, gifScaling));
+
+                drawingContext.DrawImage(renderedFrame, new Rect(gifPosition, new Size(renderedFrame.Width, renderedFrame.Height)));
+
+                // Pop the ScaleTransform to avoid affecting subsequent drawings
+                drawingContext.Pop();
+            }
+
             // Render texts onto adorner
             drawingContext.DrawText(formattedTitle, titlePosition);
             drawingContext.DrawText(formattedDescription, descriptionPosition);
             drawingContext.DrawText(formattedCloseInfo, closeInfoPosition);
 
-            #region Render guide stepper buttons if part of a guided tour
-            if (areTourStepsVisible)
-            {
-                if (currentTourStep > 1)
-                {
-                    // Render step back button
-                    stepBackHitRect = new Rect(textAreaRect.Left + margin,
-                        textAreaRect.Bottom - margin - padding - STEPPER_BUTTON_SIZE,
-                        STEPPER_BUTTON_SIZE, STEPPER_BUTTON_SIZE);
+            base.OnRender(drawingContext);
+        }
 
-                    //RenderButton(drawingContext, stepBackHitRect, FixedValues.ICON_CHEVRON_LEFT);
+        private void PrintMetadata(BitmapMetadata metadata)
+        {
+            foreach (var query in metadata)
+            {
+                dynamic data = metadata.GetQuery(query);
+
+                if (data is BitmapMetadata subMetadata)
+                {
+                    PrintMetadata(subMetadata);
+                }
+                else
+                {
+                    Console.WriteLine("  Query: {0}; Parent: {1}; Value: {2}", query, metadata.Location, data);
                 }
             }
-            #endregion
+        }
 
-            base.OnRender(drawingContext);
+        private Point GetFrameOffset(BitmapMetadata metadata)
+        {
+            object xQuery = metadata.GetQuery("/imgdesc/Left");
+            object yQuery = metadata.GetQuery("/imgdesc/Top");
+
+            if (double.TryParse(xQuery.ToString(), out double x) && double.TryParse(yQuery.ToString(), out double y))
+            {
+                return new Point(x, y);
+            }
+
+            return new Point();
         }
 
         protected override Size MeasureOverride(Size constraint)
@@ -275,7 +425,7 @@ namespace SLC_LayoutEditor.Controls
                 {
                     geometry = new CombinedGeometry(GeometryCombineMode.Xor,
                        new RectangleGeometry(drawingRect),
-                       new RectangleGeometry(adjustedHighlightRect, cornerRadius, cornerRadius));
+                       new RectangleGeometry(adjustedHighlightRect, highlightCornerRadius, highlightCornerRadius));
                 }
                 else
                 {
@@ -284,14 +434,13 @@ namespace SLC_LayoutEditor.Controls
                     geometry = new CombinedGeometry(GeometryCombineMode.Union,
                         new CombinedGeometry(GeometryCombineMode.Xor,
                            new RectangleGeometry(drawingRect),
-                           new RectangleGeometry(adjustedHighlightRect, cornerRadius, cornerRadius)),
-                        new RectangleGeometry(adjustedTextAreaRect, cornerRadius, cornerRadius));
+                           new RectangleGeometry(adjustedHighlightRect, highlightCornerRadius, highlightCornerRadius)),
+                        new RectangleGeometry(adjustedTextAreaRect, highlightCornerRadius, highlightCornerRadius));
                 }
             }
 
             DrawingBrush mask = new DrawingBrush(new GeometryDrawing(Brushes.Blue, null, geometry));
             context.PushOpacityMask(mask);
-            AddLogicalChild(new Button());
         }
 
         private double GetRadius(UIElement adornedElement, double margin)
@@ -427,6 +576,11 @@ namespace SLC_LayoutEditor.Controls
 
         protected virtual void OnClosed(LiveGuideClosedEventArgs e)
         {
+            if (gifRenderer != null)
+            {
+                gifRenderer.Tick -= GifRenderer_Tick;
+                gifRenderer.Stop();
+            }
             Closed?.Invoke(this, e);
         }
     }

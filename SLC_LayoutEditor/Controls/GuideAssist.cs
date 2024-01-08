@@ -49,6 +49,18 @@ namespace SLC_LayoutEditor.Controls
             target.SetValue(CornerRadiusProperty, value);
         #endregion
 
+        #region HighlightCornerRadius property
+        public static readonly DependencyProperty HighlightCornerRadiusProperty =
+            DependencyProperty.RegisterAttached("HighlightCornerRadius",
+                typeof(double), typeof(GuideAssist), new FrameworkPropertyMetadata(8d, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static double GetHighlightCornerRadius(UIElement target) =>
+            (double)target.GetValue(HighlightCornerRadiusProperty);
+
+        public static void SetHighlightCornerRadius(UIElement target, double value) =>
+            target.SetValue(HighlightCornerRadiusProperty, value);
+        #endregion
+
         #region Title property
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.RegisterAttached("Title",

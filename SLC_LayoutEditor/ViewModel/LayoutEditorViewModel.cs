@@ -32,6 +32,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         private const string TEXT_ERROR_SLOT_NUMBER_INVALID = "Only values from 0-99 allowed!";
         private const string TEXT_ERROR_SLOT_LETTER_INVALID = "Only alphanumeric values allowed!";
+        private const string TEXT_ERROR_SLOT_LETTER_COUNT = "At least {0} letters required!";
 
         private static readonly Style ADD_LAYOUT_BUTTON_STYLE = (Style)App.Current.FindResource("DefaultBorderedIconButtonStyle");
         private static readonly Style ADD_TEMPLATE_BUTTON_STYLE = (Style)App.Current.FindResource("TemplateBorderedIconButtonStyle");
@@ -60,6 +61,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         private int mSelectedAutomationIndex = -1;
         private string mAutomationSeatLetters = "";
+        private int mRequiredLettersForAutomation;
         private int mAutomationSeatStartNumber = 1;
         private bool mAutomationCountEmptySlots;
         private bool mIsAutomationChecked;
@@ -87,7 +89,9 @@ namespace SLC_LayoutEditor.ViewModel
         public string SeatLetterError => SelectedCabinSlot != null && !Regex.IsMatch(SelectedCabinSlot.SeatLetter.ToString(), @"^[a-zA-Z]+$") ?
             TEXT_ERROR_SLOT_LETTER_INVALID : null;
 
-        public string SeatLettersError => !AutomationLettersValid ? TEXT_ERROR_SLOT_LETTER_INVALID : null;
+        public string SeatLettersError => !AutomationLettersValid ? TEXT_ERROR_SLOT_LETTER_INVALID :
+            !IsSeatLetterCountForAutomationMatching ? 
+            string.Format(TEXT_ERROR_SLOT_LETTER_COUNT, RequiredLettersForAutomation) : null;
         #endregion
 
         #region Problem visibility properties
@@ -305,6 +309,8 @@ namespace SLC_LayoutEditor.ViewModel
                 }
                 IgnoreMultiSlotTypeChange = false;
                 InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
+                InvokePropertyChanged(nameof(RequiredLettersForAutomation));
+                InvokePropertyChanged(nameof(SeatLettersError));
             }
         }
 
@@ -324,6 +330,8 @@ namespace SLC_LayoutEditor.ViewModel
                 }
 
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(RequiredLettersForAutomation));
+                InvokePropertyChanged(nameof(SeatLettersError));
             }
         }
 
@@ -444,6 +452,8 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(SlotSettingsGuideTitle));
                 InvokePropertyChanged(nameof(SlotSettingsGuideDescription));
+                InvokePropertyChanged(nameof(RequiredLettersForAutomation));
+                InvokePropertyChanged(nameof(SeatLettersError));
             }
         }
         
@@ -490,8 +500,22 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(AutomationLettersValid));
                 InvokePropertyChanged(nameof(SeatLettersError));
+                InvokePropertyChanged(nameof(IsSeatLetterCountForAutomationMatching));
             }
         }
+
+        public int RequiredLettersForAutomation
+        {
+            get => ActiveLayout.CabinDecks.Max(x => x.CountRowsWithSeats());
+            set
+            {
+                mRequiredLettersForAutomation = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(SeatLettersError));
+            }
+        }
+
+        public bool IsSeatLetterCountForAutomationMatching => RequiredLettersForAutomation <= AutomationSeatLetters.Length;
 
         public int AutomationSeatStartNumber
         {

@@ -42,8 +42,8 @@
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.IsCircularCutout="False"
                             local:GuideAssist.TextPosition="Right"
-                            local:GuideAssist.CornerRadius="20"
                             local:GuideAssist.TextAreaYOffset="40"
+                            local:GuideAssist.HighlightCornerRadius="20"
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=GuideMenu}">
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"

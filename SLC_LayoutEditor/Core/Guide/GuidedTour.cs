@@ -21,6 +21,8 @@ namespace SLC_LayoutEditor.Core.Guide
     {
         public event EventHandler<EventArgs> TourRunningStateChanged;
 
+        private UIElement rootContainer;
+
         private UIElement layoutSelectCard;
         private UIElement editorModeToggle;
         private UIElement aircraftsArea;
@@ -97,6 +99,7 @@ namespace SLC_LayoutEditor.Core.Guide
 
         public GuidedTour(LayoutEditor editorContainer)
         {
+            rootContainer = App.Current.MainWindow.Content as UIElement;
             editorArea = editorContainer.control_layout;
 
             this.layoutSelectCard = editorContainer.card_layoutSelect;
@@ -191,7 +194,7 @@ namespace SLC_LayoutEditor.Core.Guide
                         overrides.ApplyOverlayToAll = true;
                         overrides.TextPosition = GuideTextPosition.Over;
                         overrides.Margin = 0;
-                        guidedElement = App.Current.MainWindow.Content as UIElement;
+                        guidedElement = rootContainer;
                         break;
                     case GuidedTourStep.LayoutSelectionCard:
                         guidedElement = layoutSelectCard;
@@ -257,7 +260,8 @@ namespace SLC_LayoutEditor.Core.Guide
                             "Loading bays as well as catering doors have to be placed on the top side of your aircraft, but SLC doesn't require them to be present currently, as there isn't any functionality tied to it.\n\n" + 
                             "Click on any slot at the top or bottom of the deck to proceed with the guide!";
                         overrides.ApplyOverlayToAll = true;
-                        guidedElement = editorArea;
+                        overrides.TextPosition = GuideTextPosition.Over;
+                        guidedElement = rootContainer;
                         AwaitUserInput = true;
                         todoList.SetTodoListEntries(new TodoEntry("Select any slot around your border"),
                             new TodoEntry("Place down at least 1 door", 1, vm.ActiveLayout.CountSlots(CabinSlotType.Door)),
@@ -295,6 +299,32 @@ namespace SLC_LayoutEditor.Core.Guide
                     case GuidedTourStep.DeckIssueCards:
                         guidedElement = editorArea.GetDeckIssueElement();
                         break;
+                    case GuidedTourStep.SelectingSlots:
+                        overrides.Title = "Selecting slots";
+                        overrides.Description = "You can select multiple slots by holding down your left mouse button, and dragging it across your layout.\n" +
+                            "You're also able to add slots to your selection by holding down the Shift key!";
+                        overrides.GIFName = "Select_multiple_slots.gif";
+                        overrides.ApplyOverlayToAll = true;
+                        overrides.TextPosition = GuideTextPosition.Over;
+                        guidedElement = rootContainer;
+                        break;
+                    case GuidedTourStep.DeselectingSlots:
+                        overrides.Title = "Deselecting slots";
+                        overrides.Description = "You're also able to remove slots from your selection by holding down the Ctrl key, and dragging your cursor over the slots you want to deselect.";
+                        overrides.GIFName = "Deselecting_slots.gif";
+                        overrides.ApplyOverlayToAll = true;
+                        overrides.TextPosition = GuideTextPosition.Over;
+                        guidedElement = rootContainer;
+                        break;
+                    case GuidedTourStep.RowAndColumnSelect:
+                        overrides.Title = "Row and column select buttons";
+                        overrides.Description = "If you want to select a whole row or column without having to drag your cursor across, click the respective select buttons at the edge of your layout.\n" +
+                            "These also support the Shift and Ctrl keys, so holding either key down while clicking a select button will add or remove the row/column from your selection!";
+                        overrides.GIFName = "Selecting_Rows_And_Columns.gif";
+                        overrides.ApplyOverlayToAll = true;
+                        overrides.TextPosition = GuideTextPosition.Over;
+                        guidedElement = rootContainer;
+                        break;
                     case GuidedTourStep.PlacingEssentials:
                         todoList.SetTodoListEntries(
                             new TodoEntry("Add a toilet", 1, vm.ActiveLayout.CountSlots(CabinSlotType.Toilet)),
@@ -309,12 +339,13 @@ namespace SLC_LayoutEditor.Core.Guide
                             "An intercom meanwhile provide your crew with a way to communicate to both the captain as well as the passengers.\n\n" +
                             (!todoList.AllEntriesComplete ? "Once you're done the tour will continue!" : "Since your layout already contains all the neccessary slots, we will proceed to the next step.");
                         overrides.ApplyOverlayToAll = true;
-                        guidedElement = editorArea;
+                        overrides.TextPosition = GuideTextPosition.Over;
+                        guidedElement = rootContainer;
                         AwaitUserInput = !todoList.AllEntriesComplete;
                         break;
                     case GuidedTourStep.CompletingTheInterior:
                         todoList.SetTodoListEntries(
-                            new TodoEntry("Add 12 seats of any kind (excluding galleys)", 12, vm.ActiveLayout.PassengerCapacity));
+                            new TodoEntry("Add at least 12 passenger seats", 12, vm.ActiveLayout.PassengerCapacity));
 
                         overrides.Title = "Completing the interior";
                         overrides.Description = "The layout is almost complete now! All that's missing are seats for passengers to use as well as service areas.\n" +
@@ -326,7 +357,8 @@ namespace SLC_LayoutEditor.Core.Guide
                             overrides.Description += "\n\nLooks like your layout already has all the required seats, so let's proceed.";
                         }
                         overrides.ApplyOverlayToAll = true;
-                        guidedElement = editorArea;
+                        guidedElement = rootContainer;
+                        overrides.TextPosition = GuideTextPosition.Over;
                         AwaitUserInput = !todoList.AllEntriesComplete;
                         break;
                     case GuidedTourStep.SlotConfiguratorToggle:
@@ -437,7 +469,7 @@ namespace SLC_LayoutEditor.Core.Guide
                         overrides.ApplyOverlayToAll = true;
                         overrides.TextPosition = GuideTextPosition.Over;
                         overrides.Margin = 0;
-                        guidedElement = App.Current.MainWindow.Content as UIElement;
+                        guidedElement = rootContainer;
                         App.Settings.GettingStartedGuideShown = true;
                         App.SaveAppSettings();
                         break;
@@ -477,6 +509,9 @@ namespace SLC_LayoutEditor.Core.Guide
                 case GuidedTourStep.IssueTracker:
                 case GuidedTourStep.LayoutIssueCards:
                 case GuidedTourStep.DeckIssueCards:
+                case GuidedTourStep.SelectingSlots:
+                case GuidedTourStep.DeselectingSlots:
+                case GuidedTourStep.RowAndColumnSelect:
                 case GuidedTourStep.PlacingEssentials:
                 case GuidedTourStep.CompletingTheInterior:
                 case GuidedTourStep.SlotConfiguratorToggle:

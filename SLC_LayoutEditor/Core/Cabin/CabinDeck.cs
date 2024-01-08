@@ -90,6 +90,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool AreKitchensValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Kitchen).Count() > 0;
 
+        public bool AreIntercomsValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Intercom).Count() > 0;
+
         public bool AreDoorsValid => mCabinSlots.Where(x => x.Type == CabinSlotType.Door).Count() > 0;
 
         public bool AreCateringAndLoadingBaysValid => InvalidCateringDoorsAndLoadingBays.Count() == 0;
@@ -137,7 +139,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool HasAnyIssues => HasSevereIssues || HasMinorIssues;
 
         public int SevereIssuesCount => Util.GetProblemCount(0, AreDoorsValid, AreGalleysValid, AreServicePointsValid, AreSlotsValid, AreSeatsReachableByService,
-            AllSlotsReachable, AllInteriorSlotPositionsValid);
+            AllSlotsReachable, AllInteriorSlotPositionsValid, AreIntercomsValid);
 
         public int MinorIssuesCount => Util.GetProblemCount(0, AreCateringAndLoadingBaysValid, AreToiletsAvailable, AreKitchensValid);
 
@@ -260,6 +262,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         ~CabinDeck()
         {
             Dispose();
+        }
+
+        public int CountRowsWithSeats()
+        {
+            return CabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).Count();
         }
 
         public bool ContainsCabinSlots(IEnumerable<CabinSlot> targets)
@@ -471,6 +478,10 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     AppendBulletPoint(sb, "Insufficient galley seats for servicing!", indented);
                 }
+                if (!AreIntercomsValid)
+                {
+                    AppendBulletPoint(sb, "No intercom on this deck!", indented);
+                }
             }
             else if (!getSevereIssues && HasMinorIssues)
             {
@@ -679,6 +690,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 InvokePropertyChanged(nameof(AreServicePointsValid));
                 InvokePropertyChanged(nameof(AreGalleysValid));
                 InvokePropertyChanged(nameof(AreKitchensValid));
+                InvokePropertyChanged(nameof(AreIntercomsValid));
                 InvokePropertyChanged(nameof(AreDoorsValid));
                 InvokePropertyChanged(nameof(AreToiletsAvailable));
                 InvokePropertyChanged(nameof(AreSeatsReachableByService));

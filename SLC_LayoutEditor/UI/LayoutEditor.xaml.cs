@@ -372,6 +372,10 @@ namespace SLC_LayoutEditor.UI
                         int currentLetterIndex = 0;
                         foreach (var group in seatRowGroups)
                         {
+                            if (!group.Any(x => x.IsSeat))
+                            {
+                                continue;
+                            }
                             int seatNumber = vm.AutomationSeatStartNumber;
                             IEnumerable<CabinSlot> slots = group.OrderBy(x => x.Row);
                             int firstSeatRow = slots.FirstOrDefault(x => x.IsSeat)?.Row ?? -1;

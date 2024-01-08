@@ -534,5 +534,10 @@
     <EmbeddedResource Include="Resources\LayoutTemplates\L101 - Lockheed L1011.txt" />
     <EmbeddedResource Include="Resources\LayoutTemplates\MD11 - McDonnell Douglas MD-11.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Guides\Deselecting_slots.gif" />
+    <Resource Include="Resources\Guides\Selecting_Rows_And_Columns.gif" />
+    <Resource Include="Resources\Guides\Select_multiple_slots.gif" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

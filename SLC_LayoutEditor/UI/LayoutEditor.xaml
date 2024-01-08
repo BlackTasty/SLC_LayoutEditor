@@ -403,13 +403,14 @@
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
                             <Setter Property="MaxHeight" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutEditor}, Path=ActualHeight, Converter={StaticResource ModifyNumberConverter}, ConverterParameter=-91}"/>
+                            <Setter Property="Margin" Value="24,0,-24,4"/>
                         </DataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsSidebarOpen}" Value="False"/>
                                 <Condition Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Margin" Value="0,0,0,17"/>
+                            <Setter Property="Margin" Value="24,0,-24,17"/>
                         </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -610,6 +611,7 @@
                     <Button Margin="4,8" Content="Automate" Click="Automate_Click" VerticalAlignment="Top" DockPanel.Dock="Right">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="IsEnabled" Value="False"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SelectedAutomationIndex}" Value="-1">
                                         <Setter Property="IsEnabled" Value="False"/>
@@ -617,21 +619,23 @@
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding SelectedAutomationIndex}" Value="0"/>
-                                            <Condition Binding="{Binding AutomationLettersValid}"
-                                                       Value="False">
-                                            </Condition>
+                                            <Condition Binding="{Binding AutomationLettersValid}" Value="True"/>
+                                            <Condition Binding="{Binding IsSeatLetterCountForAutomationMatching}" Value="True"/>
                                         </MultiDataTrigger.Conditions>
-                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="IsEnabled" Value="True"/>
                                     </MultiDataTrigger>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding SelectedAutomationIndex}" Value="1"/>
                                             <Condition Binding="{Binding AutomationSelectedDeckValid}"
-                                                       Value="False">
+                                                       Value="True">
                                             </Condition>
                                         </MultiDataTrigger.Conditions>
-                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="IsEnabled" Value="True"/>
                                     </MultiDataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedAutomationIndex}" Value="2">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
