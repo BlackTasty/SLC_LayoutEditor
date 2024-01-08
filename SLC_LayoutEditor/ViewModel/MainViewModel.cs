@@ -8,6 +8,7 @@ using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -121,7 +122,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public bool IsViewNotEditor => !(mContent is LayoutEditor);
+        public bool IsViewNotEditor => !(mContent is LayoutEditor) && App.Settings.WelcomeScreenShown;
 
         public bool IsTourRunning => App.GuidedTour?.IsTourRunning ?? false;
 
@@ -137,7 +138,7 @@ namespace SLC_LayoutEditor.ViewModel
                 editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
                 editor.Changed += Editor_LayoutChanged;
                 editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
-                mContent = editor;
+                mContent = GetEditor();
             }
 
 
@@ -179,7 +180,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void ReturnToEditor()
         {
-            Content = editor;
+            Content = GetEditor();
         }
 
         public void ShowChangelog()
@@ -222,6 +223,20 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 this.editor?.RememberLayout();
             }
+        }
+
+        private LayoutEditor GetEditor()
+        {
+            if (this.editor != null)
+            {
+                return this.editor;
+            }
+            LayoutEditor editor = new LayoutEditor();
+            editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
+            editor.Changed += Editor_LayoutChanged;
+            editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
+
+            return editor;
         }
 
         private void Welcome_WelcomeConfirmed(object sender, EventArgs e)

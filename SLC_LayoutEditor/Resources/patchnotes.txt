@@ -1,24 +1,3 @@
-﻿08.01.2023 m
-Added: When automating seat numeration you can now enable counting non-seat rows when adjusting the seat number
-Added: Slots that are "interactable" (seats, intercoms, cockpits, etc) are now checked if they are reachable
-Added: There is now a newcomers guide included! This guides you through the editor and also teaches you how to create your first layout
-Added: Slots that belong to the interior of your layout (seats, toilets, kitchens, etc) now get checked if they are not on the border of your layout
-Added: The issue tracker now also checks if an intercom is available on each deck
-Updated: The issue tracker for duplicate seats and doors now shows how many duplicates have been found
-Updated: The seat numeration feature no longer requires selecting slots, and is now applied across your layout
-Updated: Updated some status texts for the updater 
-Updated: The issue tracker has an added margin at the bottom when the scrollbar is visible and the sidebar is collapsed
-Updated: Seat numeration automation now checks how many seat rows your layout has per deck, and requires you to input at least as many letters
-Fixed: Increased performance when changing your layout
-Fixed: Pressing on the eye icon on issue tracker entries would not toggle the error highlighting on your layout
-Fixed: The issue visibility toggle for duplicate doors had a wrong default state
-Fixed: When creating a new layout, the pre-set name was not initially checked if a layout with the same name exists
-Fixed: Fixed some text alignment issues in expander titles
-Fixed: Creating a new layout would save the file to the wrong directory
-Fixed: Deleting a layout with unsaved changes would result in the editor asking if you want to save your changes after deleting the layout
-Fixed: The guide for deck issues had corners that were too rounded
-Fixed: When the sidebar was retracted, the toggle button was overlapping the issue tracker when expanded
-Fixed: Changing multiple slots at once would not affect the unsaved changes flag, causing the UI to not show that there are unsaved changes
-Fixed: Clicking on the updater after an update was found wouldn't restart the editor as it should
-Fixed: Multi-selecting one or more rows/columns would sometimes disable the slot type dropdown
-Fixed: Changing the slot type of multiple slots at once would not refresh the seat counts
+﻿08.01.2023
+Updated: The "Return to editor" button is now hidden on the first startup
+Fixed: Fixed a small error in the select rows/columns animation
