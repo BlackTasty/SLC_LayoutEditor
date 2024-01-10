@@ -6,9 +6,6 @@
         xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
         mc:Ignorable="d"
         d:DesignHeight="450" d:DesignWidth="800">
-    <!--<local:BindableScrollBar BoundScrollViewer="{Binding ElementName=deck_scroll}" Orientation="Horizontal"
-                             DockPanel.Dock="Bottom"
-                             Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
     <Border BorderThickness="1.5" CornerRadius="6" Background="{DynamicResource BackgroundColorBrush}">
         <Border.Style>
             <Style TargetType="Border">
@@ -193,7 +190,7 @@
                             Margin="15.5,-9,-6.5,-7"
                             Padding="16.5,16,14.5,14.5"
                             Width="53" Height="53"/>
-                    <Button x:Name="btn_reloadLayout" Content="{DynamicResource Refresh}" Click="ReloadDeck_Click"
+                    <Button x:Name="btn_reloadLayout" Content="{DynamicResource Refresh}" Click="ReloadLayout_Click"
                             Margin="-4,0,24,0" Height="32" Width="32" Padding="6,6,4,6"
                             local:GuideAssist.Title="{StaticResource GuideReloadLayoutTitle}"
                             local:GuideAssist.Description="{StaticResource GuideReloadLayoutDescription}"

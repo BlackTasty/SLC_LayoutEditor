@@ -16,6 +16,20 @@
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding OpenLayoutFolderCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenLayoutInTextEditor}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="S" Modifiers="Ctrl+Shift" Command="{Binding SaveLayoutAsCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="A" Modifiers="Ctrl+Shift" Command="{Binding SelectAllSlotsCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="T" Modifiers="Ctrl" Command="{Binding MakeTemplateCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding RenameLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="R" Modifiers="Ctrl+Alt" Command="{Binding ReloadLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="A" Modifiers="Ctrl" Command="{Binding SelectAllSlotsOnDeckCommand}" CommandParameter="{Binding SelectedDeck}"/>
+        <KeyBinding Key="K" Modifiers="Ctrl" Command="{Binding ShowKeybindsWindowCommand}"/>
+
+        <KeyBinding Key="Esc" Command="{Binding CancelDialogCommand}" CommandParameter="{Binding Dialog}"/>
+    </Window.InputBindings>
     <Grid>
         <DockPanel>
             <DockPanel.Style>
@@ -35,11 +49,65 @@
                 <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0" InstallUpdateClicked="Updater_InstallUpdateClicked"/>
                 <DockPanel LastChildFill="False">
                     <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14">
-                        <MenuItem Header="File" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
-                            <MenuItem Header="Welcome" Click="OpenWelcomeScreen_Click"/>
+                        <MenuItem Height="40" Background="{DynamicResource BackgroundDarkBrush}">
+                            <MenuItem.Style>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Header" Value="Layout"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
+                                            <Setter Property="Header" Value="Template"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </MenuItem.Style>
+                            <MenuItem Command="{Binding RenameLayoutCommand}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+R">
+                                <MenuItem.Style>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                        <Setter Property="Header" Value="Rename layout"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
+                                                <Setter Property="Header" Value="Rename template"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </MenuItem.Style>
+                            </MenuItem>
+                            <MenuItem Header="Save" Command="{Binding SaveLayoutCommand}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+S"/>
+                            <MenuItem Header="Save as..." Command="{Binding SaveLayoutAsCommand}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+Shift+S"/>
+                            <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                            <MenuItem Header="Make into template" Command="{Binding MakeTemplateCommand}"
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+T"/>
+                            <MenuItem Command="{Binding ReloadLayoutCommand}"
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+Alt+R">
+                                <MenuItem.Style>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                        <Setter Property="Header" Value="Reload layout"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
+                                                <Setter Property="Header" Value="Reload template"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </MenuItem.Style>
+                            </MenuItem>
+                            <MenuItem Header="Open layout file" Command="{Binding OpenLayoutInTextEditor}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+O"
+                                      Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                            <MenuItem Header="Open in explorer" Command="{Binding OpenLayoutFolderCommand}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+E"
+                                      Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                         </MenuItem>
                         <MenuItem Header="Editor" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
                             <MenuItem Header="Settings" Click="Settings_Click"/>
+                            <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
+                            <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                            <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
+                              IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Help" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
                             <MenuItem Click="ToggleGuide_Click">
                                 <MenuItem.Style>
                                     <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -52,9 +120,9 @@
                                     </Style>
                                 </MenuItem.Style>
                             </MenuItem>
+                            <MenuItem Header="Show keybinds" Command="{Binding ShowKeybindsWindowCommand}"
+                                      InputGestureText="Ctrl+K"/>
                             <Separator Style="{StaticResource MenuSeparatorStyle}"/>
-                            <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
-                              IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
                             <MenuItem Header="What's new?" Click="Changelog_Click"/>
                             <MenuItem Header="Roadmap" Click="Roadmap_Click"/>
                         </MenuItem>

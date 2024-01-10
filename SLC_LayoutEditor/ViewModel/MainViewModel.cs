@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
+using SLC_LayoutEditor.Controls;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.UI.Dialogs;
+using SLC_LayoutEditor.ViewModel.Commands;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
@@ -30,7 +32,33 @@ namespace SLC_LayoutEditor.ViewModel
         private string mCabinLayoutName;
         private bool mHasUnsavedChanges;
 
+        private DeckLayoutControl mSelectedDeck;
+
         private bool mIsSearching;
+
+        #region Commands
+        public MakeTemplateCommand MakeTemplateCommand => CommandInterface.MakeTemplateCommand;
+
+        public OpenLayoutFolderCommand OpenLayoutFolderCommand => CommandInterface.OpenLayoutFolderCommand;
+
+        public OpenLayoutInTextEditor OpenLayoutInTextEditor => CommandInterface.OpenLayoutInTextEditor;
+
+        public ReloadLayoutCommand ReloadLayoutCommand => CommandInterface.ReloadLayoutCommand;
+
+        public RenameLayoutCommand RenameLayoutCommand => CommandInterface.RenameLayoutCommand;
+
+        public SaveLayoutCommand SaveLayoutCommand => CommandInterface.SaveLayoutCommand;
+
+        public SaveLayoutAsCommand SaveLayoutAsCommand => CommandInterface.SaveLayoutAsCommand;
+
+        public SelectAllSlotsCommand SelectAllSlotsCommand => CommandInterface.SelectAllSlotsCommand;
+
+        public SelectAllSlotsOnDeckCommand SelectAllSlotsOnDeckCommand => CommandInterface.SelectAllSlotsOnDeckCommand;
+
+        public ShowKeybindsWindowCommand ShowKeybindsWindowCommand => CommandInterface.ShowKeybindsWindowCommand;
+
+        public CancelDialogCommand CancelDialogCommand => CommandInterface.CancelDialogCommand;
+        #endregion
 
         public string Title => string.Format("SLC Layout Editor ({0}) {1} {2}", App.GetVersionText(), 
             mCabinLayoutName != null ? "- " + mCabinLayoutName : "", mHasUnsavedChanges ? "(UNSAVED CHANGES)" : "");
@@ -105,7 +133,9 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     this.editor = oldEditor;
                     oldEditor.CabinLayoutSelected -= Editor_CabinLayoutSelected;
+                    oldEditor.Changed -= Editor_LayoutChanged;
                     oldEditor.TourRunningStateChanged -= Editor_TourRunningStateChanged;
+                    oldEditor.SelectedDeckChanged -= Editor_SelectedDeckChanged;
                 }
 
                 mContent = value;
@@ -115,10 +145,23 @@ namespace SLC_LayoutEditor.ViewModel
                     editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
                     editor.Changed += Editor_LayoutChanged;
                     editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
+                    editor.SelectedDeckChanged += Editor_SelectedDeckChanged;
                 }
 
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsViewNotEditor));
+            }
+        }
+
+        public LayoutEditorViewModel EditorViewModel => editor != null ? editor.DataContext as LayoutEditorViewModel : null;
+
+        public DeckLayoutControl SelectedDeck
+        {
+            get => mSelectedDeck;
+            set
+            {
+                mSelectedDeck = value;
+                InvokePropertyChanged();
             }
         }
 
@@ -134,10 +177,6 @@ namespace SLC_LayoutEditor.ViewModel
             }
             else
             {
-                LayoutEditor editor = new LayoutEditor();
-                editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
-                editor.Changed += Editor_LayoutChanged;
-                editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
                 mContent = GetEditor();
             }
 
@@ -231,12 +270,19 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 return this.editor;
             }
-            LayoutEditor editor = new LayoutEditor();
+            editor = new LayoutEditor();
             editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
             editor.Changed += Editor_LayoutChanged;
             editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
+            editor.SelectedDeckChanged += Editor_SelectedDeckChanged;
+            InvokePropertyChanged(nameof(EditorViewModel));
 
             return editor;
+        }
+
+        private void Editor_SelectedDeckChanged(object sender, SelectedDeckChangedEventArgs e)
+        {
+            SelectedDeck = e.NewValue;
         }
 
         private void Welcome_WelcomeConfirmed(object sender, EventArgs e)

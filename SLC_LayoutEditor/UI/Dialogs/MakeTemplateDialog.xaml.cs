@@ -27,10 +27,12 @@ namespace SLC_LayoutEditor.UI.Dialogs
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
+        private MakeTemplateDialogViewModel vm;
+
         public MakeTemplateDialog(IEnumerable<string> templateNames, string layoutName, CabinLayout source)
         {
             InitializeComponent();
-            MakeTemplateDialogViewModel vm = DataContext as MakeTemplateDialogViewModel;
+            vm = DataContext as MakeTemplateDialogViewModel;
             vm.CalculateSlotsCount(source);
             vm.ExistingNames.AddRange(templateNames);
             vm.Name = layoutName;
@@ -38,17 +40,41 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, DataContext as MakeTemplateDialogViewModel));
+            ConfirmDialog();
+        }
+
+        private void ConfirmDialog()
+        {
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, vm));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
+            CancelDialog();
         }
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)
         {
             DialogClosing?.Invoke(this, e);
+        }
+
+        public void CancelDialog()
+        {
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
+        }
+
+        private void DockPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            input.Focus();
+            input.CaretIndex = input.Text.Length;
+        }
+
+        private void input_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter && vm.IsValid)
+            {
+                ConfirmDialog();
+            }
         }
     }
 }

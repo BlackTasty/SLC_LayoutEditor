@@ -52,6 +52,8 @@ namespace SLC_LayoutEditor
 
         internal static GuidedTour GuidedTour { get; set; }
 
+        internal static bool IsKeybindSheetOpen { get; set; }
+
         [STAThread]
         public static void Main(string[] args)
         {

@@ -66,9 +66,11 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<EventArgs> TemplatingModeToggled;
         public event EventHandler<TemplateCreatedEventArgs> TemplateCreated;
+        public event EventHandler<SelectedDeckChangedEventArgs> SelectedDeckChanged;
 
-        private DeckLayoutControl activeDeckControl;
         private CabinDeck currentRemoveTarget;
+
+        private DeckLayoutControl selectedDeck;
 
         #region CabinLayout property
         public CabinLayout CabinLayout
@@ -199,6 +201,19 @@ namespace SLC_LayoutEditor.Controls
             {
                 IsTemplatingMode = (bool)o;
             }, ViewModelMessage.ForceTemplatingToggleState);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is CabinLayout cabinLayout)
+                {
+                    MakeTemplate(cabinLayout);
+                }
+            }, ViewModelMessage.Keybind_MakeTemplate);
+
+            Mediator.Instance.Register(o =>
+            {
+                StartReloadLayout();
+            }, ViewModelMessage.Keybind_ReloadLayout);
         }
 
         public void GenerateThumbnailForLayout(bool overwrite = false)
@@ -331,17 +346,18 @@ namespace SLC_LayoutEditor.Controls
 
         private void CabinDeckControl_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
         {
-            if (activeDeckControl != null &&
-                (activeDeckControl.CabinDeck.Floor != e.DeckControl.CabinDeck.Floor || e.Selected.Count == 0))
+            if (selectedDeck != null &&
+                (selectedDeck.CabinDeck.Floor != e.DeckControl.CabinDeck.Floor || e.Selected.Count == 0))
             {
-                activeDeckControl.SetSlotSelected(null);
+                selectedDeck.SetSlotSelected(null);
             }
 
             SelectedCabinSlots = e.Selected;
             SelectedCabinSlotFloor = e.Floor;
-            activeDeckControl = e.DeckControl;
+            selectedDeck = e.DeckControl;
 
             OnSelectedSlotsChanged(e);
+            OnSelectedDeckChanged(new SelectedDeckChangedEventArgs(selectedDeck));
         }
 
         private void CabinDeckControl_LayoutRegenerated(object sender, EventArgs e)
@@ -427,7 +443,12 @@ namespace SLC_LayoutEditor.Controls
             CabinLayout.RefreshCalculated();
         }
 
-        private void ReloadDeck_Click(object sender, RoutedEventArgs e)
+        private void ReloadLayout_Click(object sender, RoutedEventArgs e)
+        {
+            StartReloadLayout();
+        }
+
+        private void StartReloadLayout()
         {
             if (Util.HasLayoutChanged(CabinLayout))
             {
@@ -440,7 +461,7 @@ namespace SLC_LayoutEditor.Controls
             }
             else
             {
-                ReloadDeck();
+                ReloadLayout();
             }
         }
 
@@ -448,14 +469,14 @@ namespace SLC_LayoutEditor.Controls
         {
             if (e.DialogResult == DialogResultType.Yes)
             {
-                ReloadDeck();
+                ReloadLayout();
             }
         }
 
-        private void ReloadDeck()
+        private void ReloadLayout()
         {
             SelectedCabinSlots.Clear();
-            activeDeckControl?.SetMultipleSlotsSelected(SelectedCabinSlots, true);
+            selectedDeck?.SetMultipleSlotsSelected(SelectedCabinSlots, true);
             CabinLayout.LoadCabinLayoutFromFile(true);
             RefreshCabinLayout();
             OnLayoutReloaded(EventArgs.Empty);
@@ -494,13 +515,18 @@ namespace SLC_LayoutEditor.Controls
 
         private void MakeTemplate_Click(object sender, RoutedEventArgs e)
         {
-            string templatesPath = !IsTemplatingMode ? App.GetTemplatePath(CabinLayout.LayoutFile.Directory.Name) :
-                CabinLayout.LayoutFile.DirectoryName;
+            MakeTemplate(CabinLayout);
+        }
+
+        private void MakeTemplate(CabinLayout cabinLayout)
+        {
+            string templatesPath = !IsTemplatingMode ? App.GetTemplatePath(cabinLayout.LayoutFile.Directory.Name) :
+                cabinLayout.LayoutFile.DirectoryName;
             IEnumerable<string> existingTemplates = Directory.Exists(templatesPath) ?
                 new DirectoryInfo(templatesPath).EnumerateFiles("*.txt").Select(x => x.Name.Replace(".txt", "")) :
                 new List<string>();
 
-            MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, CabinLayout.LayoutName + " - Template", CabinLayout);
+            MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, cabinLayout.LayoutName + " - Template", cabinLayout);
             dialog.DialogClosing += MakeTemplate_DialogClosing;
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
@@ -594,6 +620,11 @@ namespace SLC_LayoutEditor.Controls
         private void EditCabinLayoutName_Click(object sender, RoutedEventArgs e)
         {
             Mediator.Instance.NotifyColleagues(ViewModelMessage.EditLayoutNameRequested, CabinLayout);
+        }
+
+        protected virtual void OnSelectedDeckChanged(SelectedDeckChangedEventArgs e)
+        {
+            SelectedDeckChanged?.Invoke(this, e);
         }
     }
 }

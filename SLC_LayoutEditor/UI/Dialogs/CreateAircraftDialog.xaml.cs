@@ -16,18 +16,31 @@ namespace SLC_LayoutEditor.UI.Dialogs
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
+        private AddEditDialogViewModel vm;
+
         public CreateAircraftDialog(IEnumerable<string> aircraftNames)
         {
             InitializeComponent();
-            (DataContext as AddEditDialogViewModel).ExistingNames.AddRange(aircraftNames);
+            vm = DataContext as AddEditDialogViewModel;
+            vm.ExistingNames.AddRange(aircraftNames);
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
+        {
+            ConfirmDialog();
+        }
+
+        private void ConfirmDialog()
         {
             OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddEditDialogViewModel).Name)));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            CancelDialog();
+        }
+
+        public void CancelDialog()
         {
             OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
         }
@@ -35,6 +48,19 @@ namespace SLC_LayoutEditor.UI.Dialogs
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)
         {
             DialogClosing?.Invoke(this, e);
+        }
+
+        private void DockPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            input.Focus();
+        }
+
+        private void input_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter && vm.IsValid)
+            {
+                ConfirmDialog();
+            }
         }
     }
 }

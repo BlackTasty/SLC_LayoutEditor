@@ -16,6 +16,11 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         LayoutNameChanged,
         GuideAdornerShowing,
         GuideAdornerClosed,
-        ForceTemplatingToggleState
+        ForceTemplatingToggleState,
+        Keybind_SelectAllSlotsOnDeck,
+        Keybind_SaveLayoutAs,
+        Keybind_MakeTemplate,
+        Keybind_ReloadLayout,
+        RefocusKeybindSheet
     }
 }

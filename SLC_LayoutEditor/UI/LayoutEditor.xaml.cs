@@ -39,6 +39,7 @@ namespace SLC_LayoutEditor.UI
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<EventArgs> TourRunningStateChanged;
+        public event EventHandler<SelectedDeckChangedEventArgs> SelectedDeckChanged;
 
         private readonly LayoutEditorViewModel vm;
         private Adorner sidebarToggleAdorner;
@@ -65,6 +66,14 @@ namespace SLC_LayoutEditor.UI
                     combo_layouts.Text = vm.SelectedCabinLayout.LayoutName;
                 }
             }, ViewModelMessage.LayoutNameChanged);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is IEnumerable<string> existingLayouts)
+                {
+                    SaveLayoutAs(existingLayouts);
+                }
+            }, ViewModelMessage.Keybind_SaveLayoutAs);
         }
 
         public bool CheckUnsavedChanges(bool isClosing)
@@ -645,8 +654,13 @@ namespace SLC_LayoutEditor.UI
 
         private void CabinLayout_SaveAs_Click(object sender, RoutedEventArgs e)
         {
+            SaveLayoutAs(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName));
+        }
+
+        private void SaveLayoutAs(IEnumerable<string> existingLayouts)
+        {
             Logger.Default.WriteLog("User requested saving the current {0} under a different name...", vm.IsTemplatingMode ? "template" : "layout");
-            IDialog dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), null, vm.IsTemplatingMode, true);
+            IDialog dialog = new CreateCabinLayoutDialog(existingLayouts, null, vm.IsTemplatingMode, true);
             dialog.DialogClosing += CabinLayout_SaveAs_DialogClosing;
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
@@ -719,7 +733,8 @@ namespace SLC_LayoutEditor.UI
                     {
                         ConfirmationDialog dialog = new ConfirmationDialog("Getting started",
                             "It looks like this is your first time starting the editor.\nDo you wish to partake in a guided tour through the editor?",
-                            "Ask me later", "Yes", "No", DialogButtonStyle.Yellow, DialogButtonStyle.Green, DialogButtonStyle.Red);
+                            new DialogButtonConfig("Yes"), new DialogButtonConfig("No", DialogButtonStyle.Red),
+                            new DialogButtonConfig("Ask me later", DialogButtonStyle.Yellow, true));
 
                         dialog.DialogClosing += GuidedTour_DialogClosing;
 
@@ -838,9 +853,19 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
+        private void Layout_SelectedDeckChanged(object sender, SelectedDeckChangedEventArgs e)
+        {
+            OnSelectedDeckChanged(e);
+        }
+
         protected virtual void OnTourRunningStateChanged(EventArgs e)
         {
             TourRunningStateChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedDeckChanged(SelectedDeckChangedEventArgs e)
+        {
+            SelectedDeckChanged?.Invoke(this, e);
         }
     }
 }

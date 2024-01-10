@@ -1,3 +1,8 @@
-﻿08.01.2023
+﻿10.01.2024
+Added: You can now use keybinds to perform certain actions! For a complete list of keybinds, go to "Help" -> "Show keybinds" or press Ctrl+K
+Added: Added a menu entry "Layout" for performing basic layout actions
+Added: Added a new menu entry "Help" in the menu bar
 Updated: The "Return to editor" button is now hidden on the first startup
+Updated: Moved some entries from the "Editor" menu item to "Help"
 Fixed: Fixed a small error in the select rows/columns animation
+Fixed: Reloading a layout from disk without making any changes to it would crash the editor

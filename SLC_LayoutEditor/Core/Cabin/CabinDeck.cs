@@ -72,11 +72,44 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public IEnumerable<CabinSlot> InvalidSlots => GetInvalidSlots();
 
-        public IEnumerable<CabinSlot> DoorSlots => doorSlots;
+        public IEnumerable<CabinSlot> DoorSlots
+        {
+            get
+            {
+                if (doorSlots == null)
+                {
+                    RefreshCalculated();
+                }
 
-        public IEnumerable<CabinSlot> InvalidCateringDoorsAndLoadingBays => invalidCateringDoorsAndLoadingBays;
+                return doorSlots;
+            }
+        }
 
-        public IEnumerable<CabinSlot> UnreachableSlots => unreachableSlots;
+        public IEnumerable<CabinSlot> InvalidCateringDoorsAndLoadingBays
+        {
+            get
+            {
+                if (invalidCateringDoorsAndLoadingBays == null)
+                {
+                    RefreshCalculated();
+                }
+
+                return invalidCateringDoorsAndLoadingBays;
+            }
+        }
+
+        public IEnumerable<CabinSlot> UnreachableSlots
+        {
+            get
+            {
+                if (unreachableSlots == null)
+                {
+                    RefreshCalculated();
+                }
+
+                return unreachableSlots;
+            }
+        }
 
         public IEnumerable<CabinSlot> InvalidPositionedSlots => invalidPositionedSlots;
 
@@ -447,6 +480,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public string GetIssuesList(bool getSevereIssues, bool indented = false)
         {
+
+
             StringBuilder sb = new StringBuilder();
             if (getSevereIssues && HasSevereIssues)
             {

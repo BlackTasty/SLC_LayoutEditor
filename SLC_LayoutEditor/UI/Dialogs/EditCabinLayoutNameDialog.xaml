@@ -7,7 +7,8 @@
            xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls"
            xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
            mc:Ignorable="d" 
-           MinHeight="170" MinWidth="300" LastChildFill="False">
+           MinHeight="170" MinWidth="300" LastChildFill="False"
+           Loaded="DockPanel_Loaded">
     <DockPanel.DataContext>
         <vm:AddEditCabinLayoutDialogViewModel/>
     </DockPanel.DataContext>
@@ -35,7 +36,8 @@
             </Style>
         </TextBlock.Style>
     </TextBlock>
-    <TextBox DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"/>
+    <TextBox x:Name="input" DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"
+             KeyUp="input_KeyUp"/>
     <TextBlock DockPanel.Dock="Top" Style="{StaticResource DialogErrorTextStyle}" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"/>
 
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"

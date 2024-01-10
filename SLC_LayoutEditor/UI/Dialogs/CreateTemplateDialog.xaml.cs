@@ -16,25 +16,51 @@ namespace SLC_LayoutEditor.UI.Dialogs
     {
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
+        private AddEditDialogViewModel vm;
+
         public CreateTemplateDialog(IEnumerable<string> templateNames)
         {
             InitializeComponent();
-            (DataContext as AddEditDialogViewModel).ExistingNames.AddRange(templateNames);
+            vm = DataContext as AddEditDialogViewModel;
+            vm.ExistingNames.AddRange(templateNames);
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, (DataContext as AddEditDialogViewModel).Name));
+            ConfirmDialog();
+        }
+
+        private void ConfirmDialog()
+        {
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, vm.Name));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
+            CancelDialog();
         }
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)
         {
             DialogClosing?.Invoke(this, e);
+        }
+
+        public void CancelDialog()
+        {
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
+        }
+
+        private void DockPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            input.Focus();
+        }
+
+        private void input_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter && vm.IsValid)
+            {
+                ConfirmDialog();
+            }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK));
+            CancelDialog();
         }
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)
@@ -40,6 +40,11 @@ namespace SLC_LayoutEditor.UI.Dialogs
                 App.SaveAppSettings();
             }
             DialogClosing?.Invoke(this, e);
+        }
+
+        public void CancelDialog()
+        {
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK));
         }
     }
 }

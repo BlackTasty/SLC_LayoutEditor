@@ -27,6 +27,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
         public event EventHandler<DialogClosingEventArgs> DialogClosing;
 
         private object senderOverride;
+        private DialogResultType? cancelResult;
 
         #region Title property
         public string Title
@@ -193,6 +194,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
                     LeftButtonStyle = GetButtonStyle(DialogButtonStyle.Green);
                     MiddleButtonVisible = Visibility.Collapsed;
                     RightButtonVisible = Visibility.Collapsed;
+                    cancelResult = LeftResult;
                     break;
                 case DialogType.OKCancel:
                     LeftButtonText = "OK";
@@ -202,6 +204,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
                     MiddleResult = DialogResultType.Cancel;
                     MiddleButtonStyle = GetButtonStyle(DialogButtonStyle.Red);
                     RightButtonVisible = Visibility.Collapsed;
+                    cancelResult = MiddleResult;
                     break;
                 case DialogType.YesNo:
                     LeftButtonText = "Yes";
@@ -211,6 +214,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
                     MiddleResult = DialogResultType.No;
                     MiddleButtonStyle = GetButtonStyle(DialogButtonStyle.Red);
                     RightButtonVisible = Visibility.Collapsed;
+                    cancelResult = MiddleResult;
                     break;
                 case DialogType.YesNoCancel:
                     LeftButtonText = "Yes";
@@ -222,6 +226,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
                     RightButtonText = "Cancel";
                     RightResult = DialogResultType.Cancel;
                     RightButtonStyle = GetButtonStyle(DialogButtonStyle.Yellow);
+                    cancelResult = RightResult;
                     break;
             }
         }
@@ -231,21 +236,46 @@ namespace SLC_LayoutEditor.UI.Dialogs
             this.senderOverride = senderOverride;
         }
 
-        public ConfirmationDialog(string title, string message, 
-            string leftButtonText, string middleButtonText, string rightButtonText,
-            DialogButtonStyle isLeftButtonRed, DialogButtonStyle isMiddleButtonRed, DialogButtonStyle isRightButtonRed) : this(title, message, DialogType.Custom)
+        public ConfirmationDialog(string title, string message,
+            DialogButtonConfig leftButtonConfig, DialogButtonConfig middleButtonConfig, DialogButtonConfig rightButtonConfig) : this(title, message, DialogType.Custom)
         {
-            LeftButtonText = leftButtonText;
-            MiddleButtonText = middleButtonText;
-            RightButtonText = rightButtonText;
+            LeftButtonText = leftButtonConfig.Text;
+            MiddleButtonText = middleButtonConfig.Text;
+            RightButtonText = rightButtonConfig.Text;
 
-            LeftButtonStyle = GetButtonStyle(isLeftButtonRed);
-            MiddleButtonStyle = GetButtonStyle(isMiddleButtonRed);
-            RightButtonStyle = GetButtonStyle(isRightButtonRed);
+            LeftButtonStyle = GetButtonStyle(leftButtonConfig);
+            MiddleButtonStyle = GetButtonStyle(middleButtonConfig);
+            RightButtonStyle = GetButtonStyle(rightButtonConfig);
 
-            LeftButtonVisible = !string.IsNullOrEmpty(leftButtonText) ? Visibility.Visible : Visibility.Collapsed;
-            MiddleButtonVisible = !string.IsNullOrEmpty(middleButtonText) ? Visibility.Visible : Visibility.Collapsed;
-            RightButtonVisible = !string.IsNullOrEmpty(rightButtonText) ? Visibility.Visible : Visibility.Collapsed;
+            LeftButtonVisible = !string.IsNullOrEmpty(LeftButtonText) ? Visibility.Visible : Visibility.Collapsed;
+            MiddleButtonVisible = !string.IsNullOrEmpty(MiddleButtonText) ? Visibility.Visible : Visibility.Collapsed;
+            RightButtonVisible = !string.IsNullOrEmpty(RightButtonText) ? Visibility.Visible : Visibility.Collapsed;
+
+            if (rightButtonConfig.IsCancel)
+            {
+                cancelResult = RightResult;
+            }
+            else if (leftButtonConfig.IsCancel)
+            {
+                cancelResult = LeftResult;
+            }
+            else if (middleButtonConfig.IsCancel)
+            {
+                cancelResult = MiddleResult;
+            }
+        }
+
+        public void CancelDialog()
+        {
+            if (cancelResult.HasValue)
+            {
+                OnDialogClosing(new DialogClosingEventArgs(cancelResult.Value));
+            }
+        }
+
+        private Style GetButtonStyle(DialogButtonConfig buttonConfig)
+        {
+            return GetButtonStyle(buttonConfig.Style);
         }
 
         private Style GetButtonStyle(DialogButtonStyle dialogButtonStyle)

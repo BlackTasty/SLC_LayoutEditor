@@ -36,17 +36,40 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
+            ConfirmDialog();
+        }
+
+        private void ConfirmDialog()
+        {
             OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult(vm.Name, vm.SelectedTemplate?.TemplatePath)));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
+            CancelDialog();
         }
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)
         {
             DialogClosing?.Invoke(this, e);
+        }
+
+        public void CancelDialog()
+        {
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
+        }
+
+        private void DockPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            input.Focus();
+        }
+
+        private void input_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter && vm.IsValid)
+            {
+                ConfirmDialog();
+            }
         }
     }
 }

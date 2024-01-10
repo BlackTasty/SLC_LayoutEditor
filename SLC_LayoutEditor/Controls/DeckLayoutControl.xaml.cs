@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.UI.Dialogs;
@@ -101,6 +102,15 @@ namespace SLC_LayoutEditor.Controls
         public DeckLayoutControl()
         {
             InitializeComponent();
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is CabinDeck cabinDeck && cabinDeck == CabinDeck)
+                {
+                    SetMultipleSlotsSelected(layout_deck?.Children.OfType<CabinSlotControl>().Where(x => !x.IsSelected), false);
+                    OnCabinSlotClicked(new CabinSlotClickedEventArgs(selectedSlots, CabinDeck.Floor, this));
+                }
+            }, ViewModelMessage.Keybind_SelectAllSlotsOnDeck);
         }
 
         public void RefreshCabinDeckLayout()
@@ -412,7 +422,8 @@ namespace SLC_LayoutEditor.Controls
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Insert new row",
                 "Do you want to insert the new row to the left or right?",
-                "Left", "Right", "Cancel", DialogButtonStyle.Green, DialogButtonStyle.Green, DialogButtonStyle.Yellow);
+                new DialogButtonConfig("Left"), new DialogButtonConfig("Right"), 
+                new DialogButtonConfig("Cancel", DialogButtonStyle.Yellow, true));
 
             dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
             {
@@ -604,7 +615,8 @@ namespace SLC_LayoutEditor.Controls
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Insert new column",
                 "Do you want to insert the new column above or below?",
-                "Above", "Below", "Cancel", DialogButtonStyle.Green, DialogButtonStyle.Green, DialogButtonStyle.Yellow);
+                new DialogButtonConfig("Above"), new DialogButtonConfig("Below"), 
+                new DialogButtonConfig("Cancel", DialogButtonStyle.Yellow, true));
 
             dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e)
             {

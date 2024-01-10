@@ -76,6 +76,9 @@
     <Compile Include="Controls\IssueTracker.xaml.cs">
       <DependentUpon>IssueTracker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\KeybindInfo.xaml.cs">
+      <DependentUpon>KeybindInfo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LayoutProblemText.xaml.cs">
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
@@ -133,6 +136,7 @@
     <Compile Include="Core\Cabin\CabinSlotIssue.cs" />
     <Compile Include="Core\Cabin\CabinSlotIssues.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
+    <Compile Include="Core\Dialogs\DialogButtonConfig.cs" />
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
     <Compile Include="Core\Enum\DialogType.cs" />
@@ -143,6 +147,7 @@
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
     <Compile Include="Core\Events\LiveGuideClosedEventArgs.cs" />
+    <Compile Include="Core\Events\SelectedDeckChangedEventArgs.cs" />
     <Compile Include="Core\Events\TemplateCreatedEventArgs.cs" />
     <Compile Include="Core\Events\ChangedEventArgs.cs" />
     <Compile Include="Core\Events\CabinLayoutSelectedEventArgs.cs" />
@@ -181,6 +186,9 @@
     <Compile Include="Core\TodoEntry.cs" />
     <Compile Include="Core\Unset.cs" />
     <Compile Include="FixedValues.cs" />
+    <Compile Include="KeybindsCheatSheet.xaml.cs">
+      <DependentUpon>KeybindsCheatSheet.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StyleTester.xaml.cs">
       <DependentUpon>StyleTester.xaml</DependentUpon>
     </Compile>
@@ -216,6 +224,21 @@
       <DependentUpon>WelcomeScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\AddEditCabinLayoutDialogViewModel.cs" />
+    <Compile Include="ViewModel\Commands\CancelDialogCommand.cs" />
+    <Compile Include="ViewModel\Commands\CommandInterface.cs" />
+    <Compile Include="ViewModel\Commands\LayoutBaseCommand.cs" />
+    <Compile Include="ViewModel\Commands\MakeTemplateCommand.cs" />
+    <Compile Include="ViewModel\Commands\OpenLayoutFolderCommand.cs" />
+    <Compile Include="ViewModel\Commands\OpenLayoutInTextEditor.cs" />
+    <Compile Include="ViewModel\Commands\RedoCommand.cs" />
+    <Compile Include="ViewModel\Commands\ReloadLayoutCommand.cs" />
+    <Compile Include="ViewModel\Commands\RenameLayoutCommand.cs" />
+    <Compile Include="ViewModel\Commands\SaveLayoutAsCommand.cs" />
+    <Compile Include="ViewModel\Commands\SaveLayoutCommand.cs" />
+    <Compile Include="ViewModel\Commands\SelectAllSlotsCommand.cs" />
+    <Compile Include="ViewModel\Commands\SelectAllSlotsOnDeckCommand.cs" />
+    <Compile Include="ViewModel\Commands\ShowKeybindsWindowCommand.cs" />
+    <Compile Include="ViewModel\Commands\UndoCommand.cs" />
     <Compile Include="ViewModel\CreateAircraftDialogViewModel.cs" />
     <Compile Include="ViewModel\CreateCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\AddEditDialogViewModel.cs" />
@@ -266,6 +289,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\KeybindInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\LayoutProblemText.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -295,6 +322,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="KeybindsCheatSheet.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -5,14 +5,16 @@
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
            mc:Ignorable="d" 
-           Height="170" Width="300" LastChildFill="False">
+           Height="170" Width="300" LastChildFill="False"
+           Loaded="DockPanel_Loaded">
     <DockPanel.DataContext>
         <vm:CreateTemplateDialogViewModel/>
     </DockPanel.DataContext>
     <TextBlock DockPanel.Dock="Top" Text="Create a new template" Margin="4"
                Style="{StaticResource Title1TextStyle}"/>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Template name"/>
-    <TextBox DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"/>
+    <TextBox x:Name="input" DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"
+             KeyUp="input_KeyUp"/>
     <TextBlock DockPanel.Dock="Top" Style="{StaticResource DialogErrorTextStyle}" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"/>
 
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"

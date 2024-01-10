@@ -44,6 +44,15 @@ namespace SLC_LayoutEditor.Core
             });
         }
 
+        public static void OpenFile(string path)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer",
+                Arguments = string.Format("\"{0}\"", path)
+            });
+        }
+
         public static bool IsShiftDown()
         {
             return Keyboard.IsKeyDown(Key.LeftShift) ||

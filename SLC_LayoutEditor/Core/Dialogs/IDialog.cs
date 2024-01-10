@@ -10,5 +10,7 @@ namespace SLC_LayoutEditor.Core.Dialogs
     interface IDialog
     {
         event EventHandler<DialogClosingEventArgs> DialogClosing;
+
+        void CancelDialog();
     }
 }
