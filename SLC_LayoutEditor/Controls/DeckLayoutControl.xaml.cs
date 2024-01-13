@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Cabin.Renderer;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
@@ -22,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
@@ -63,6 +65,9 @@ namespace SLC_LayoutEditor.Controls
         private bool isMouseDown;
 
         private Adorner deckTitleAdorner;
+        private CabinDeckRenderer renderer;
+        private ToolTip tooltip;
+        private DispatcherTimer tooltipTimer;
 
         #region CabinDeck property
         public CabinDeck CabinDeck
@@ -81,6 +86,21 @@ namespace SLC_LayoutEditor.Controls
         // Using a DependencyProperty as the backing store for CabinDeck.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinDeckProperty =
             DependencyProperty.Register("CabinDeck", typeof(CabinDeck), typeof(DeckLayoutControl), cabinDeckMetadata);
+
+        private static void OnCabinDeckChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+            if (source is DeckLayoutControl control)
+            {
+                if (control.renderer != null)
+                {
+                    control.renderer.ChangeCabinDeck(control.CabinDeck);
+                }
+                else
+                {
+                    control.renderer = new CabinDeckRenderer(control.CabinDeck);
+                }
+            }
+        }
         #endregion
 
         public ContextMenu GuideMenu
@@ -119,6 +139,24 @@ namespace SLC_LayoutEditor.Controls
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+#if RENDERING_NEW
+            deck_view.Dispatcher.Invoke(() =>
+            {
+                if (renderer != null)
+                {
+                    renderer.RenderCabinDeck();
+                }
+                else
+                {
+                    renderer = new CabinDeckRenderer(CabinDeck);
+                    renderer.ChangeTooltip += Renderer_ChangeTooltip;
+                }
+
+                deck_view.Source = renderer.Output;
+            });
+#endif
+
+#if RENDERING_OLD
             layout_deck.Dispatcher.Invoke(() =>
             {
                 layout_deck.Children.Clear();
@@ -198,9 +236,29 @@ namespace SLC_LayoutEditor.Controls
 
                 RefreshControlSize();
             });
+#endif
 
             sw.Stop();
             Logger.Default.WriteLog("Cabin deck rendered in {0} seconds", Math.Round((double)sw.ElapsedMilliseconds / 1000, 3));
+        }
+
+        private void Renderer_ChangeTooltip(object sender, EventArgs e)
+        {
+            if (tooltip == null)
+            {
+                tooltip = new ToolTip()
+                {
+                    Content = renderer.Tooltip,
+                    Placement = System.Windows.Controls.Primitives.PlacementMode.Mouse,
+                    PlacementTarget = deck_view
+                };
+            }
+            else
+            {
+                tooltip.Content = renderer.Tooltip;
+            }
+
+            tooltip.IsOpen = renderer.Tooltip != null;
         }
 
         public bool GenerateThumbnailForDeck(string thumbnailPath, bool overwrite = false)
@@ -1164,6 +1222,32 @@ namespace SLC_LayoutEditor.Controls
         private void layout_deck_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             DeckRendered?.Invoke(this, e);
+        }
+
+        private void deck_view_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            renderer?.RefreshMouseOver(Mouse.GetPosition(deck_view));
+        }
+
+        private void deck_view_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            renderer?.RefreshMouseDown(Mouse.GetPosition(deck_view), true);
+        }
+
+        private void deck_view_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            renderer?.RefreshMouseDown(Mouse.GetPosition(deck_view), false);
+        }
+
+        private void deck_view_MouseLeave(object sender, MouseEventArgs e)
+        {
+            renderer?.RefreshMouseDown(Mouse.GetPosition(deck_view), false);
+            renderer?.RefreshMouseOver(Mouse.GetPosition(deck_view));
+        }
+
+        private void deck_view_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            deck_view.ToolTip = renderer.Tooltip;
         }
     }
 }

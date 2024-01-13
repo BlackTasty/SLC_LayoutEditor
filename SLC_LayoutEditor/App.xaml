@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SLC_LayoutEditor"
              xmlns:converter="clr-namespace:SLC_LayoutEditor.Converter"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -37,6 +38,8 @@
             <ImageBrush x:Key="KitchenIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/kitchen.png"/>
             <ImageBrush x:Key="IntercomIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/intercom.png"/>
             <ImageBrush x:Key="WallIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/wall.png"/>
+
+            <system:Int32 x:Key="IssueTooltipInitialShowDelay">200</system:Int32>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

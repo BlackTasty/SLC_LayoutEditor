@@ -103,6 +103,7 @@
                         ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                 <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
                         ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesList}"
+                        ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
                     <TextBlock>
                         <TextBlock.Style>
@@ -119,6 +120,7 @@
                 </Border>
                 <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
                         ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesList}"
+                        ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
                         Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
                     <TextBlock>
                         <TextBlock.Style>

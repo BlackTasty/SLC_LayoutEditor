@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,9 +36,32 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Rendering_Old|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Rendering_Old\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;RENDERING_OLD</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Rendering_New|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Rendering_New\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;RENDERING_NEW</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -133,8 +157,12 @@
     <Compile Include="Converter\UpdateProgressBarIndeterminateConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Cabin\AdjacentSlots.cs" />
+    <Compile Include="Core\Cabin\Renderer\ButtonActionType.cs" />
+    <Compile Include="Core\Cabin\Renderer\ButtonData.cs" />
+    <Compile Include="Core\Cabin\Renderer\CabinDeckRenderer.cs" />
     <Compile Include="Core\Cabin\CabinSlotIssue.cs" />
     <Compile Include="Core\Cabin\CabinSlotIssues.cs" />
+    <Compile Include="Core\Cabin\Renderer\SlotData.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Dialogs\DialogButtonConfig.cs" />
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />

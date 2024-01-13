@@ -118,14 +118,14 @@
     <SolidColorBrush x:Key="ValidForegroundColorBrush" Color="{StaticResource ButtonBorderColor}"/>
 
     <LinearGradientBrush x:Key="ErrorHighlightColorBrush" EndPoint="11,0" StartPoint="0,11" 
-                         MappingMode="Absolute" SpreadMethod="Repeat">
+                         MappingMode="Absolute" SpreadMethod="Repeat" Opacity=".55">
         <GradientStop Color="Transparent" Offset="0"/>
         <GradientStop Color="Transparent" Offset=".5"/>
         <GradientStop Color="{StaticResource ErrorDarkColor}" Offset=".5"/>
         <GradientStop Color="{StaticResource ErrorDarkColor}" Offset="1"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ErrorSelectedHighlightColorBrush" EndPoint="11,0" StartPoint="0,11" 
-                         MappingMode="Absolute" SpreadMethod="Repeat">
+                         MappingMode="Absolute" SpreadMethod="Repeat" Opacity=".55">
         <GradientStop Color="#45FFFFFF" Offset="0"/>
         <GradientStop Color="#45FFFFFF" Offset=".5"/>
         <GradientStop Color="{StaticResource ErrorColor}" Offset=".5"/>

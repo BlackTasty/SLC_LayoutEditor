@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -109,6 +110,93 @@ namespace SLC_LayoutEditor.Core
                     source.Add(item);
                 }
             }
+        }
+
+        public static Size GetSize(this FormattedText text)
+        {
+            return new Size(text.Width, text.Height);
+        }
+
+        public static Point VectorToPoint(this Vector vector)
+        {
+            return new Point(vector.X, vector.Y);
+        }
+
+        public static RenderTargetBitmap RenderVisual(this DrawingVisual visual, double width, double height)
+        {
+            RenderTargetBitmap renderBitmap = new RenderTargetBitmap((int)Math.Ceiling(width), (int)Math.Ceiling(height), 96, 96, PixelFormats.Pbgra32);
+
+            renderBitmap.Render(visual);
+            renderBitmap.Freeze();
+
+            return renderBitmap;
+        }
+
+        public static void RedrawArea(this WriteableBitmap writeableBitmap, BitmapSource source, Rect redrawRect)
+        {
+            try
+            {
+                writeableBitmap.Lock();
+
+                unsafe
+                {
+                    int sourceX = 0;
+                    int sourceY = 0;
+
+                    for (int x = (int)redrawRect.X; x < redrawRect.Right; x++)
+                    {
+                        for (int y = (int)redrawRect.Y; y < redrawRect.Bottom; y++)
+                        {
+                            IntPtr backBuffer = writeableBitmap.BackBuffer;
+                            backBuffer += y * writeableBitmap.BackBufferStride;
+                            backBuffer += x * 4;
+
+                            int colorData = GetColorData(source, sourceX, sourceY);
+
+                            *((int*)backBuffer) = colorData;
+
+                            sourceY++;
+                        }
+
+                        sourceX++;
+                        sourceY = 0;
+                    }
+
+                    writeableBitmap.AddDirtyRect(GetInt32Rect(redrawRect));
+                }
+            }
+            finally
+            {
+                writeableBitmap.Unlock();
+            }
+        }
+
+        private static Int32Rect GetInt32Rect(Rect rect)
+        {
+            return new Int32Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+        }
+
+        private static int GetColorData(BitmapSource bitmap, int x, int y)
+        {
+            Color color;
+            var bytesPerPixel = (bitmap.Format.BitsPerPixel + 7) / 8;
+            var bytes = new byte[bytesPerPixel];
+            var rect = new Int32Rect(x, y, 1, 1);
+
+            bitmap.CopyPixels(rect, bytes, bytesPerPixel, 0);
+
+            if (bitmap.Format == PixelFormats.Pbgra32)
+            {
+                color = Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
+            }
+            else
+            {
+                color = Colors.Black;
+            }
+
+            int colorData = color.A << 24 | color.R << 16 | color.G << 8 | color.B;
+
+            return colorData;
         }
     }
 }

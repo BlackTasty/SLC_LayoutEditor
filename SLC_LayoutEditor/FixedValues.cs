@@ -16,7 +16,9 @@ namespace SLC_LayoutEditor
 
         internal static readonly Brush DEFAULT_BRUSH = (Brush)App.Current.FindResource("ForegroundColorBrush");
         internal static readonly Brush DEFAULT_SECONDARY_BRUSH = (Brush)App.Current.FindResource("ForegroundSecondaryColorBrush");
+        internal static readonly Brush GREEN_BRUSH = (Brush)App.Current.FindResource("ButtonBorderColorBrush");
         internal static readonly Brush YELLOW_BRUSH = (Brush)App.Current.FindResource("WarnForegroundColorBrush");
+        internal static readonly Brush RED_BRUSH = (Brush)App.Current.FindResource("ErrorForegroundColorBrush");
 
         internal static readonly Brush PATCH_ADDED_BRUSH = (Brush)App.Current.FindResource("PatchAddedBrush");
         internal static readonly Brush PATCH_CHANGED_BRUSH = (Brush)App.Current.FindResource("PatchChangedBrush");
@@ -39,6 +41,7 @@ namespace SLC_LayoutEditor
         internal static readonly string GUIDE_SLOT_AUTOMATION_DESC = (string)App.Current.FindResource("GuideSlotAutomationDescription");
 
         internal static readonly StreamGeometry ICON_CHEVRON_LEFT = (StreamGeometry)App.Current.FindResource("ChevronLeft");
+        internal static readonly StreamGeometry ICON_CHEVRON_DOWN = (StreamGeometry)App.Current.FindResource("ChevronDown");
         internal static readonly StreamGeometry ICON_CHEVRON_RIGHT = (StreamGeometry)App.Current.FindResource("ChevronRight");
 
         internal static readonly Style STYLE_ICON_BUTTON = (Style)App.Current.FindResource("ForegroundIconButtonStyle");

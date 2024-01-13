@@ -751,7 +751,7 @@ namespace SLC_LayoutEditor.UI
 
         private void GuidedTour_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            if (e.DialogResult == DialogResultType.CustomMiddle)
+            if (e.DialogResult == DialogResultType.CustomLeft)
             {
                 App.GuidedTour.StartTour();
             }

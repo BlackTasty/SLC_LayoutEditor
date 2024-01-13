@@ -48,6 +48,7 @@
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=GuideMenu}">
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
                             ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.MinorIssuesList}"
+                            ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
                             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
@@ -64,6 +65,7 @@
                     </Border>
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
                             ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.SevereIssuesList}"
+                            ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
                             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
@@ -87,14 +89,22 @@
             </StackPanel>
         </Grid>
     </Border>
-    <Canvas x:Name="layout_deck" Margin="40,24,16,24" 
-            PreviewMouseLeftButtonDown="MultiSelect_PreviewMouseLeftButtonDown"
-            PreviewMouseLeftButtonUp="MultiSelect_PreviewMouseLeftButtonUp"
-            PreviewMouseMove="MultiSelect_PreviewMouseMove"
-            MouseLeave="MultiSelect_MouseLeave"
-            Loaded="layout_deck_Loaded"
-            SizeChanged="layout_deck_SizeChanged"
-            Background="Transparent">
-            
-    </Canvas>
+    <Grid Margin="40,24,16,24" >
+        <Canvas x:Name="layout_deck"
+                PreviewMouseLeftButtonDown="MultiSelect_PreviewMouseLeftButtonDown"
+                PreviewMouseLeftButtonUp="MultiSelect_PreviewMouseLeftButtonUp"
+                PreviewMouseMove="MultiSelect_PreviewMouseMove"
+                MouseLeave="MultiSelect_MouseLeave"
+                Loaded="layout_deck_Loaded"
+                SizeChanged="layout_deck_SizeChanged"
+                Background="Transparent"/>
+        <Image x:Name="deck_view"
+               RenderOptions.BitmapScalingMode="NearestNeighbor"
+               RenderOptions.EdgeMode="Aliased"
+               SnapsToDevicePixels="True"
+               PreviewMouseMove="deck_view_PreviewMouseMove"
+               PreviewMouseLeftButtonDown="deck_view_PreviewMouseLeftButtonDown"
+               PreviewMouseLeftButtonUp="deck_view_PreviewMouseLeftButtonUp"
+               MouseLeave="deck_view_MouseLeave"/>
+    </Grid>
 </StackPanel>

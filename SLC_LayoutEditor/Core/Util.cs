@@ -209,5 +209,15 @@ namespace SLC_LayoutEditor.Core
         {
             ((IUIManager)app).RefreshTheme();
         }
+
+        public static Point GetChildCenterPosition(Rect parent, Rect child, bool centerHorizontally,
+            bool centerVertically)
+        {
+            double centerX = parent.X + parent.Width / 2 - child.Width / 2;
+            double centerY = parent.Y + parent.Height / 2 - child.Height / 2;
+
+            return new Point(centerHorizontally ? centerX : child.X,
+                centerVertically ? centerY : child.Y);
+        }
     }
 }

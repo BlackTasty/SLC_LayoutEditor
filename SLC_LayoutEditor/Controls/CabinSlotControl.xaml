@@ -138,6 +138,6 @@
             BorderBrush="{StaticResource DisabledColorBrush}"
             Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinSlotControl}, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     <Border BorderThickness="2" CornerRadius="3"
-            Height="40" Width="40" Margin="1" IsHitTestVisible="False" Opacity=".55"
+            Height="40" Width="40" Margin="1" IsHitTestVisible="False"
             Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinSlotControl}, Path=ErrorHighlightBrush, UpdateSourceTrigger=PropertyChanged}"/>
 </Canvas>

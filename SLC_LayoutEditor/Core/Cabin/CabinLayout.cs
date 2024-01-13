@@ -238,6 +238,20 @@ namespace SLC_LayoutEditor.Core.Cabin
         }
 
         /// <summary>
+        /// Mock a layout
+        /// </summary>
+        public CabinLayout() : this(new FileInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, "Mocked aircraft", "Mocked layout.txt")))
+        {
+            LoadCabinLayout("  X  , LB-1,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,CAT-2,  X  ,  X  ,  X  ,  X  ,  X  ,\r\n" +
+                "  X  ,  X  ,  K  ,  -  ,  -  ,  -  ,  G  ,  G  ,  -  ,E-01A,E-02A,E-03A,E-04A,  X  ,\r\n" +
+                "  C  ,  -  ,  <  ,  -  ,  >  ,  -  ,  -  ,  -  ,  -  ,  <  ,  -  ,  -  ,  >  ,  X  ,\r\n" +
+                "  X  ,  -  ,B-01B,B-02B,B-03B,  -  ,  I  ,  -  ,  -  ,E-04B,E-05B,E-06B,E-07B,  X  ,\r\n" +
+                "  X  ,  -  ,B-01C,B-02C,B-03C,  -  ,  X  ,  T  ,  X  ,E-04C,E-05C,E-06C,E-07C,  X  ,\r\n" +
+                "  X  , D-0 ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,  X  ,\r\n" +
+                "@");
+        }
+
+        /// <summary>
         /// Create a template from an existing layout
         /// </summary>
         /// <param name="layout"></param>

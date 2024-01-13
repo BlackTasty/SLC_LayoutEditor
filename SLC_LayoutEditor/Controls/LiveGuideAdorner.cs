@@ -316,7 +316,7 @@ namespace SLC_LayoutEditor.Controls
 
             if (areOverridesSet)
             {
-                closeInfoPosition = GetChildCenterPosition(textAreaRect, new Rect(
+                closeInfoPosition = Util.GetChildCenterPosition(textAreaRect, new Rect(
                         closeInfoPosition, 
                         new Size(formattedCloseInfo.Width, formattedCloseInfo.Height)
                     ), true, false);
@@ -351,23 +351,6 @@ namespace SLC_LayoutEditor.Controls
             drawingContext.DrawText(formattedCloseInfo, closeInfoPosition);
 
             base.OnRender(drawingContext);
-        }
-
-        private void PrintMetadata(BitmapMetadata metadata)
-        {
-            foreach (var query in metadata)
-            {
-                dynamic data = metadata.GetQuery(query);
-
-                if (data is BitmapMetadata subMetadata)
-                {
-                    PrintMetadata(subMetadata);
-                }
-                else
-                {
-                    Console.WriteLine("  Query: {0}; Parent: {1}; Value: {2}", query, metadata.Location, data);
-                }
-            }
         }
 
         private Point GetFrameOffset(BitmapMetadata metadata)
@@ -562,16 +545,6 @@ namespace SLC_LayoutEditor.Controls
             }
 
             return textAreaRect;
-        }
-
-        private Point GetChildCenterPosition(Rect parent, Rect child, bool centerHorizontally,
-            bool centerVertically)
-        {
-            double centerX = parent.X + parent.Width / 2 - child.Width / 2;
-            double centerY = parent.Y + parent.Height / 2 - child.Height / 2;
-
-            return new Point(centerHorizontally ? centerX : child.X,
-                centerVertically ? centerY : child.Y);
         }
 
         protected virtual void OnClosed(LiveGuideClosedEventArgs e)

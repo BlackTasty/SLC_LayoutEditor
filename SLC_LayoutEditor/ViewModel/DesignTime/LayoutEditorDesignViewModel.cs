@@ -13,7 +13,7 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
 
         public new CabinSlot SelectedCabinSlot => new CabinSlot(0, 0, Core.Enum.CabinSlotType.PremiumClassSeat, 1);
 
-        public new CabinLayout ActiveLayout => new CabinLayout("Test", "Test", false);
+        public new CabinLayout ActiveLayout => new CabinLayout();
 
         public LayoutEditorDesignViewModel()
         {
