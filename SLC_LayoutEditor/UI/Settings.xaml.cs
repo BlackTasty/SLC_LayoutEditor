@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core;
+﻿using SLC_LayoutEditor.Controls.Notifications;
+using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
@@ -56,6 +57,8 @@ namespace SLC_LayoutEditor.UI
             App.Settings.Save(App.Settings.FilePath);
             Mediator.Instance.NotifyColleagues(ViewModelMessage.SettingsSaved);
 
+            Notification.MakeTimedNotification("Settings saved", "Your preferences have been saved!",
+                5000, FixedValues.ICON_CHECK_CIRCLE);
             /*if (areSeasonalThemesEnabled != App.Settings.EnableSeasonalThemes)
             {
                 Util.RefreshTheme(Application.Current);

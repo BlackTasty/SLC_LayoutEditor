@@ -2,9 +2,14 @@
 Added: You can now use keybinds to perform certain actions! For a complete list of keybinds, go to "Help" -> "Show keybinds" or press Ctrl+K
 Added: Added a menu entry "Layout" for performing basic layout actions
 Added: Added a new menu entry "Help" in the menu bar
+Added: In-app notifications are now displayed in specific circumstances (for example when saving a layout and you have the "Copy layout code to clipboard" option enabled)
+Added: Added settings to both copy the layout code to your clipboard as well as opening the SLC website in your default browser (on by default)
 Updated: The cabin deck rendering got a major overhaul, resulting in faster loading times!
 Updated: The "Return to editor" button is now hidden on the first startup
 Updated: Moved some entries from the "Editor" menu item to "Help"
 Updated: Reduced the show delay for issue card tooltips
+Updated: When trying to close the editor with unsaved changes, the window will jump into the foreground (useful when closing the editor through the taskbar)
+Updated: The setting for opening the layout folder after saving has been replaced with opening the layout file itself in your default editor
+Updated: All entries for duplicate seats (duplicate economy, duplicate first class, etc) have been merged into one entry, since SLC requires unique seat numbers and -letters across all seats
 Fixed: Fixed a small error in the select rows/columns animation
 Fixed: Reloading a layout from disk without making any changes to it would crash the editor

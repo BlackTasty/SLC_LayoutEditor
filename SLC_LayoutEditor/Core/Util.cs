@@ -219,5 +219,20 @@ namespace SLC_LayoutEditor.Core
             return new Point(centerHorizontally ? centerX : child.X,
                 centerVertically ? centerY : child.Y);
         }
+
+        public static Brush GetBackgroundFromResources(string name)
+        {
+            return (Brush)App.Current.FindResource(name);
+        }
+
+        public static Pen GetBorderColorFromResources(string name)
+        {
+            return GetBorderColorFromResources(name, FixedValues.DEFAULT_BORDER_THICKNESS);
+        }
+
+        public static Pen GetBorderColorFromResources(string name, double borderThickness)
+        {
+            return new Pen(GetBackgroundFromResources(name), borderThickness);
+        }
     }
 }

@@ -150,6 +150,7 @@
                                  IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                                  CabinLayout="{Binding ActiveLayout, UpdateSourceTrigger=PropertyChanged}"
                                  IsSidebarOpen="{Binding IsSidebarOpen}"
+                                 CabinSlotClicked="CabinLayout_CabinSlotClicked"
                                  SelectedSlotsChanged="CabinLayout_SelectedSlotsChanged"
                                  Changed="CabinLayoutChanged"
                                  TemplatingModeToggled="Layout_TemplatingModeToggled"

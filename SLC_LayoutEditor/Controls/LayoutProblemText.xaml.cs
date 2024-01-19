@@ -78,10 +78,17 @@ namespace SLC_LayoutEditor.Controls
 
         private static void OnInvalidSlotsChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is LayoutProblemText control)
+            if (e.OldValue != e.NewValue && sender is LayoutProblemText control)
             {
+                IEnumerable<CabinSlot> previousSlots = e.OldValue as IEnumerable<CabinSlot>;
+                IEnumerable<CabinSlot> newSlots = e.NewValue as IEnumerable<CabinSlot>;
+                if ((previousSlots?.Count() ?? 0) == (newSlots?.Count() ?? 0))
+                {
+                    return;
+                }
+
                 control.OnShowProblemsChanged(
-                    new ShowIssuesChangedEventArgs(control.ShowProblems, e.NewValue as IEnumerable<CabinSlot>, control.Floor));
+                    new ShowIssuesChangedEventArgs(control.ShowProblems, newSlots, control.Floor));
             }
         }
         #endregion
@@ -112,7 +119,7 @@ namespace SLC_LayoutEditor.Controls
 
         private static void OnShowProblemsPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is LayoutProblemText control)
+            if (e.OldValue != e.NewValue && sender is LayoutProblemText control)
             {
                 control.OnShowProblemsChanged(
                     new ShowIssuesChangedEventArgs(control.ShowProblems, control.InvalidSlots, control.Floor));

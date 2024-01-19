@@ -12,7 +12,9 @@ namespace SLC_LayoutEditor.Core
         #region Editor toggles
         private bool mShowWarningWhenIssuesPresent = true;
 
-        private bool mOpenFolderWithEditedLayout = true;
+        private bool mOpenLayoutAfterSaving;
+        private bool mCopyLayoutCodeToClipboard = true;
+        private bool mNavigateToSLCWebsite = true;
         #endregion
 
         #region Updater settings
@@ -87,12 +89,36 @@ namespace SLC_LayoutEditor.Core
         }
 
         #region Editor toggles
-        public bool OpenFolderWithEditedLayout
+        public bool OpenLayoutAfterSaving
         {
-            get => mOpenFolderWithEditedLayout;
+            get => mOpenLayoutAfterSaving;
             set
             {
-                mOpenFolderWithEditedLayout = value;
+                mOpenLayoutAfterSaving = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(true)]
+        public bool CopyLayoutCodeToClipboard
+        {
+            get => mCopyLayoutCodeToClipboard;
+            set
+            {
+                mCopyLayoutCodeToClipboard = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(true)]
+        public bool NavigateToSLCWebsite
+        {
+            get => mNavigateToSLCWebsite;
+            set
+            {
+                mNavigateToSLCWebsite = value;
                 InvokePropertyChanged();
             }
         }
@@ -192,7 +218,7 @@ namespace SLC_LayoutEditor.Core
 
         [JsonConstructor]
         public AppSettings(string cabinLayoutsEditPath, bool welcomeScreenShown, bool templatesCopied,
-            bool showWarningWhenIssuesPresent, bool openFolderWithEditedLayout,
+            bool showWarningWhenIssuesPresent, bool openLayoutAfterSaving, bool copyLayoutCodeToClipboard, bool navigateToSLCWebsite,
             bool autoSearchForUpdates, bool showChangesAfterUpdate, int lastVersionChangelogShown, 
             bool hideSidebarAfterLoadingLayout, bool rememberLastLayout, string lastLayoutSet, string lastLayout, bool lastLayoutWasTemplate, 
             bool enableSeasonalThemes, bool gettingStartedGuideShown) : this()
@@ -202,7 +228,9 @@ namespace SLC_LayoutEditor.Core
             TemplatesCopied = templatesCopied;
             mShowWarningWhenIssuesPresent = showWarningWhenIssuesPresent;
 
-            mOpenFolderWithEditedLayout = openFolderWithEditedLayout;
+            mOpenLayoutAfterSaving = openLayoutAfterSaving;
+            mCopyLayoutCodeToClipboard = copyLayoutCodeToClipboard;
+            mNavigateToSLCWebsite = navigateToSLCWebsite;
 
             mAutoSearchForUpdates = autoSearchForUpdates;
             mShowChangesAfterUpdate = showChangesAfterUpdate;
@@ -211,7 +239,7 @@ namespace SLC_LayoutEditor.Core
             if (lastVersionChangelogShown <= 0)
             {
                 mShowWarningWhenIssuesPresent = true;
-                mOpenFolderWithEditedLayout = true;
+                mOpenLayoutAfterSaving = true;
 
                 mAutoSearchForUpdates = true;
                 mShowChangesAfterUpdate = true;

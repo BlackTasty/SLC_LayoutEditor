@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Converter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,18 +8,15 @@ using System.Windows;
 
 namespace SLC_LayoutEditor.Core.Cabin.Renderer
 {
-    internal class SlotData
+    internal class SlotHitResult : HitResult
     {
-        private readonly Rect rect;
         private readonly CabinSlot cabinSlot;
-
-        public Rect Rect => rect;
 
         public CabinSlot CabinSlot => cabinSlot;
 
-        public SlotData(Rect rect, CabinSlot cabinSlot)
+        public SlotHitResult(Rect rect, CabinSlot cabinSlot) : 
+            base(rect, true, EnumDescriptionConverter.GetDescription(cabinSlot.Type))
         {
-            this.rect = rect;
             this.cabinSlot = cabinSlot;
         }
     }

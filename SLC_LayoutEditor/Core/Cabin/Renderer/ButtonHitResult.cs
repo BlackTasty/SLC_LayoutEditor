@@ -8,12 +8,10 @@ using System.Windows.Media;
 
 namespace SLC_LayoutEditor.Core.Cabin.Renderer
 {
-    internal class ButtonData
+    internal class ButtonHitResult : HitResult
     {
-        private readonly Rect rect;
         private readonly ButtonActionType action;
         private readonly string tag;
-        private readonly string tooltip;
 
         private readonly bool isTriangle;
         private readonly bool isRemoveButton;
@@ -22,13 +20,9 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         private readonly Point point2;
         private readonly Point point3;
 
-        public Rect Rect => rect;
-
         public ButtonActionType Action => action;
 
         public string Tag => tag;
-
-        public string Tooltip => tooltip;
 
         public bool IsTriangle => isTriangle;
 
@@ -36,15 +30,14 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         public bool IsTopRightAligned => isTopRightAligned;
 
-        public ButtonData(Rect rect, ButtonActionType action, string tag, string tooltip)
+        public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip) :
+            base(rect, false, tooltip)
         {
-            this.rect = rect;
             this.action = action;
             this.tag = tag;
-            this.tooltip = tooltip;
         }
 
-        public ButtonData(Rect rect, ButtonActionType action, string tag, string tooltip, 
+        public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, 
             bool isTriangle, bool isRemoveButton, bool isTopRightAligned,
             PointCollection trianglePoints) : this(rect, action, tag, tooltip)
         {

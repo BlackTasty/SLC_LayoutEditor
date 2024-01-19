@@ -12,7 +12,7 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
     {
         public MainDesignViewModel() : base()
         {
-            //Content = new WelcomeScreen();
+            //Message = new WelcomeScreen();
             Content = new LayoutEditor();
             //Dialog = new ChangelogDialog();
         }

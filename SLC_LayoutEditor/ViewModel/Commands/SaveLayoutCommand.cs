@@ -1,10 +1,12 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tasty.ViewModel.Commands;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.ViewModel.Commands
 {
@@ -12,11 +14,7 @@ namespace SLC_LayoutEditor.ViewModel.Commands
     {
         public override void Execute(object parameter)
         {
-            if (parameter is LayoutEditorViewModel vm &&
-                vm.ActiveLayout is CabinLayout target)
-            {
-                target.SaveLayout();
-            }
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.Keybind_SaveLayout);
         }
     }
 }

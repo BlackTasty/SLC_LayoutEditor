@@ -13,12 +13,22 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private Dictionary<string, CabinSlotIssue> listedIssues = new Dictionary<string, CabinSlotIssue>();
 
+        private bool wasProblematic;
+        private readonly CabinSlot parent;
+
         public bool IsProblematic => listedIssues.Any(x => x.Value.IsProblematic);
 
         public bool IsEvaluationActive { get; set; } = true;
 
+        public CabinSlotIssues(CabinSlot parent)
+        {
+            this.parent = parent;
+        }
+
         public void ToggleIssue(string key, bool isProblematic)
         {
+            bool wasProblematic = IsProblematic;
+
             if (isProblematic && !listedIssues.ContainsKey(key))
             {
                 listedIssues.Add(key, new CabinSlotIssue());
@@ -28,7 +38,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 listedIssues.Remove(key);
             }
 
-            RefreshProblematicFlag();
+            RefreshProblematicFlag(wasProblematic != IsProblematic);
         }
 
         public void ToggleIssueHighlighting(string key, bool showHighlighting)
@@ -37,19 +47,24 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 listedIssues[key].HideHighlighting = !showHighlighting;
             }
-            RefreshProblematicFlag();
+            RefreshProblematicFlag(true);
         }
 
         public void ClearIssues()
         {
+            bool wasProblematic = IsProblematic;
             listedIssues.Clear();
-            RefreshProblematicFlag();
+            RefreshProblematicFlag(wasProblematic != IsProblematic);
         }
 
-        public void RefreshProblematicFlag()
+        public void RefreshProblematicFlag(bool hasStateChanged)
         {
-            OnProblematicChanged(EventArgs.Empty);
-            InvokePropertyChanged(nameof(IsProblematic));
+            if (hasStateChanged)
+            {
+                parent.IsDirty = true;
+                OnProblematicChanged(EventArgs.Empty);
+                InvokePropertyChanged(nameof(IsProblematic));
+            }
         }
 
         public bool HasAnyOtherIssues(string currentIssueKey)

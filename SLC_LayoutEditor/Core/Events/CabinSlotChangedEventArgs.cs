@@ -1,17 +1,20 @@
-﻿using SLC_LayoutEditor.Core.Enum;
+﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Enum;
 using System;
 
 namespace SLC_LayoutEditor.Core.Events
 {
     public class CabinSlotChangedEventArgs : EventArgs
     {
-        private CabinSlotType slotType;
+        private readonly CabinSlot cabinSlot;
 
-        public CabinSlotType SlotType => slotType;
+        public CabinSlot CabinSlot => cabinSlot;
 
-        public CabinSlotChangedEventArgs(CabinSlotType slotType)
+        public CabinSlotType SlotType => cabinSlot.Type;
+
+        public CabinSlotChangedEventArgs(CabinSlot cabinSlot)
         {
-            this.slotType = slotType;
+            this.cabinSlot = cabinSlot;
         }
     }
 }

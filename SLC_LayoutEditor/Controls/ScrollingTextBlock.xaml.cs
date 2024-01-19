@@ -35,7 +35,7 @@ namespace SLC_LayoutEditor.Controls
 
         protected static void OnTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is ScrollingTextBlock control)
+            if (e.OldValue != e.NewValue && sender is ScrollingTextBlock control)
             {
                 control.StartScrolling();
             }

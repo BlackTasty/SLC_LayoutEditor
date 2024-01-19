@@ -112,6 +112,37 @@ namespace SLC_LayoutEditor.Core
             }
         }
 
+        public static Dictionary<CabinSlot, bool> GetDiff(this IEnumerable<CabinSlot> newItems, IEnumerable<CabinSlot> oldItems)
+        {
+            Dictionary<CabinSlot, bool> diff = new Dictionary<CabinSlot, bool>();
+            if (oldItems != null)
+            {
+                foreach (CabinSlot added in newItems.Where(x => !oldItems.Any(y => y.Guid == x.Guid)))
+                {
+                    diff.Add(added, true);
+                }
+
+                foreach (CabinSlot removed in oldItems.Where(x => !newItems.Any(y => y.Guid == x.Guid)))
+                {
+                    diff.Add(removed, false);
+                }
+            }
+            else
+            {
+                foreach (CabinSlot added in newItems)
+                {
+                    diff.Add(added, true);
+                }
+            }
+
+            return diff;
+        }
+
+        public static Size Modify(this Size size, double width, double height)
+        {
+            return new Size(size.Width + width, size.Height + height);
+        }
+
         public static Size GetSize(this FormattedText text)
         {
             return new Size(text.Width, text.Height);
@@ -120,6 +151,11 @@ namespace SLC_LayoutEditor.Core
         public static Point VectorToPoint(this Vector vector)
         {
             return new Point(vector.X, vector.Y);
+        }
+
+        public static RenderTargetBitmap RenderVisual(this DrawingVisual visual, Size size)
+        {
+            return visual.RenderVisual(size.Width, size.Height);
         }
 
         public static RenderTargetBitmap RenderVisual(this DrawingVisual visual, double width, double height)

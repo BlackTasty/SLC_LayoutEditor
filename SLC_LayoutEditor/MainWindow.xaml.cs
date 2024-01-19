@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Controls;
+using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Guide;
@@ -158,6 +159,8 @@ namespace SLC_LayoutEditor
         {
             if (!forceClose && vm.CheckUnsavedChanges(true))
             {
+                Topmost = true;
+                Topmost = false;
                 isClosing = true;
                 e.Cancel = true;
                 return;

@@ -105,7 +105,6 @@ namespace SLC_LayoutEditor.Core.PathFinding
         private void PrintPathMap()
         {
             #region Print path map to console
-#if DEBUG
             StringBuilder sb = new StringBuilder();
             for (int y = 0; y < height; y++)
             {
@@ -124,7 +123,6 @@ namespace SLC_LayoutEditor.Core.PathFinding
             }
 
             Console.WriteLine(sb.ToString());
-#endif
             #endregion
         }
     }

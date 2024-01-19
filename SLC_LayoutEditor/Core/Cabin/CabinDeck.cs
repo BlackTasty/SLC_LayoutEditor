@@ -32,9 +32,9 @@ namespace SLC_LayoutEditor.Core.Cabin
         private CabinPathGrid pathGrid;
 
         private IEnumerable<CabinSlot> doorSlots;
-        private IEnumerable<CabinSlot> invalidCateringDoorsAndLoadingBays;
-        private IEnumerable<CabinSlot> unreachableSlots;
-        private IEnumerable<CabinSlot> invalidPositionedSlots;
+        private List<CabinSlot> invalidCateringDoorsAndLoadingBays;
+        private List<CabinSlot> unreachableSlots;
+        private List<CabinSlot> invalidPositionedSlots;
         private string currentHash;
 
         public double Width { get; set; }
@@ -639,55 +639,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             return coveredRows.Distinct();
         } 
 
-        private IEnumerable<CabinSlot> GetUnreachableSlots()
-        {
-            int interactableCount = mCabinSlots.Count(x => x.IsInteractable);
-            Logger.Default.WriteLog("Checking {0} slots for reachability on cabin deck {1}...", interactableCount, FloorName);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            IEnumerable<CabinSlot> unreachableSlots = mCabinSlots.Where(x => x.IsInteractable && !x.IsReachable(this));
-            sw.Stop();
-            Logger.Default.WriteLog("Check complete, found {0}/{1} unreachable slots in {2} seconds", 
-                unreachableSlots.Count(), interactableCount, Math.Round((decimal)sw.ElapsedMilliseconds, 3));
-
-            return unreachableSlots;
-        }
-
-        private IEnumerable<CabinSlot> GetInvalidPositionedSlots()
-        {
-            if (this.invalidPositionedSlots?.Any() ?? false)
-            {
-                foreach (CabinSlot invalidSlot in this.invalidPositionedSlots)
-                {
-                    invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_INVALID_INTERIOR_POSITIONS, false);
-                }
-            }
-
-            IEnumerable<CabinSlot> invalidPositionedSlots = mCabinSlots.Where(x => x.IsInterior && !IsSlotValidInteriorPosition(x));
-
-            foreach (CabinSlot invalidSlot in invalidPositionedSlots)
-            {
-                invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_INVALID_INTERIOR_POSITIONS, true);
-            }
-
-            return invalidPositionedSlots;
-        }
-
-        private IEnumerable<CabinSlot> GetInvalidSlots()
-        {
-            List<CabinSlot> invalidSlots = new List<CabinSlot>();
-            if (InvalidCateringDoorsAndLoadingBays == null || UnreachableSlots == null || doorSlots == null)
-            {
-                RefreshCalculated();
-            }
-
-            invalidSlots.AddRangeDistinct(InvalidCateringDoorsAndLoadingBays);
-            invalidSlots.AddRangeDistinct(UnreachableSlots);
-            invalidSlots.AddRangeDistinct(InvalidPositionedSlots);
-
-            return invalidSlots;
-        }
-
         private void CabinSlot_CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
         {
             OnCabinSlotsChanged(e);
@@ -755,24 +706,105 @@ namespace SLC_LayoutEditor.Core.Cabin
         private void RefreshCalculated()
         {
             doorSlots = mCabinSlots.Where(x => x.IsDoor);
-            if (invalidCateringDoorsAndLoadingBays?.Any() ?? false)
+            /*if (invalidCateringDoorsAndLoadingBays?.Any() ?? false)
             {
                 foreach(CabinSlot invalidSlot in invalidCateringDoorsAndLoadingBays)
                 {
                     invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, false);
                 }
-            }
+            }*/
 
-            invalidCateringDoorsAndLoadingBays = mCabinSlots.Where(x => (x.Type == CabinSlotType.CateringDoor || x.Type == CabinSlotType.LoadingBay)
-                                                        && x.Column != 0);
 
-            foreach (CabinSlot invalidSlot in invalidCateringDoorsAndLoadingBays)
+            /*foreach (CabinSlot invalidSlot in invalidCateringDoorsAndLoadingBays)
             {
                 invalidSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, true);
+            }*/
+
+            invalidCateringDoorsAndLoadingBays = GetInvalidCateringDoorsAndLoadingBays().ToList();
+            unreachableSlots = GetUnreachableSlots().ToList();
+            invalidPositionedSlots = GetInvalidPositionedSlots().ToList();
+
+            IEnumerable<CabinSlot> currentSet = GetInvalidSlots();
+        }
+
+        private IEnumerable<CabinSlot> GetInvalidCateringDoorsAndLoadingBays()
+        {
+            IEnumerable<CabinSlot> invalidCateringDoorsAndLoadingBays = mCabinSlots.Where(x => (x.Type == CabinSlotType.CateringDoor || x.Type == CabinSlotType.LoadingBay)
+                                                        && x.Column != 0);
+
+            foreach (var diff in invalidCateringDoorsAndLoadingBays.GetDiff(this.invalidCateringDoorsAndLoadingBays))
+            {
+                diff.Key.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, diff.Value);
             }
 
-            unreachableSlots = GetUnreachableSlots();
-            invalidPositionedSlots = GetInvalidPositionedSlots();
+            foreach (CabinSlot forceChecked in invalidCateringDoorsAndLoadingBays.Where(x => x.HasTypeChanged))
+            {
+                forceChecked.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, true);
+            }
+
+            return invalidCateringDoorsAndLoadingBays;
+        }
+
+        private IEnumerable<CabinSlot> GetUnreachableSlots()
+        {
+            int interactableCount = mCabinSlots.Count(x => x.IsInteractable);
+            Logger.Default.WriteLog("Checking {0} slots for reachability on cabin deck {1}...", interactableCount, FloorName);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            IEnumerable<CabinSlot> unreachableSlots = mCabinSlots.Where(x => x.IsInteractable && !x.IsReachable(this));
+            sw.Stop();
+            Logger.Default.WriteLog("Check complete, found {0}/{1} unreachable slots in {2} seconds",
+                unreachableSlots.Count(), interactableCount, Math.Round((decimal)sw.ElapsedMilliseconds, 3));
+
+            foreach (var diff in unreachableSlots.GetDiff(this.unreachableSlots))
+            {
+                diff.Key.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_UNREACHABLE_SLOTS, diff.Value);
+            }
+
+            foreach (CabinSlot forceChecked in unreachableSlots.Where(x => x.HasTypeChanged))
+            {
+                forceChecked.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_UNREACHABLE_SLOTS, true);
+            }
+
+            return unreachableSlots;
+        }
+
+        private IEnumerable<CabinSlot> GetInvalidPositionedSlots()
+        {
+            IEnumerable<CabinSlot> invalidPositionedSlots = mCabinSlots.Where(x => x.IsInterior && !IsSlotValidInteriorPosition(x));
+
+            foreach (var diff in invalidPositionedSlots.GetDiff(this.invalidPositionedSlots))
+            {
+                diff.Key.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_INVALID_INTERIOR_POSITIONS, diff.Value);
+            }
+
+            return invalidPositionedSlots;
+        }
+
+        private IEnumerable<CabinSlot> GetInvalidSlots(bool refreshIfNull = true)
+        {
+            List<CabinSlot> invalidSlots = new List<CabinSlot>();
+            if (refreshIfNull && (invalidCateringDoorsAndLoadingBays == null || unreachableSlots == null || doorSlots == null))
+            {
+                RefreshCalculated();
+            }
+
+            if (invalidCateringDoorsAndLoadingBays != null)
+            {
+                invalidSlots.AddRangeDistinct(invalidCateringDoorsAndLoadingBays);
+            }
+
+            if (unreachableSlots != null)
+            {
+                invalidSlots.AddRangeDistinct(unreachableSlots);
+            }
+
+            if (invalidPositionedSlots != null)
+            {
+                invalidSlots.AddRangeDistinct(invalidPositionedSlots);
+            }
+
+            return invalidSlots;
         }
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)

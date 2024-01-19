@@ -62,7 +62,8 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<EventArgs> LayoutRegenerated;
         public event EventHandler<EventArgs> LayoutReloaded;
         public event EventHandler<EventArgs> LayoutLoading;
-        public event EventHandler<CabinSlotClickedEventArgs> SelectedSlotsChanged;
+        public event EventHandler<CabinSlotClickedEventArgs> CabinSlotClicked;
+        public event EventHandler<SelectedSlotsChangedEventArgs> SelectedSlotsChanged;
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<EventArgs> TemplatingModeToggled;
         public event EventHandler<TemplateCreatedEventArgs> TemplateCreated;
@@ -86,7 +87,7 @@ namespace SLC_LayoutEditor.Controls
 
         private static void OnCabinLayoutChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is CabinLayoutControl control)
+            if (e.OldValue != e.NewValue && sender is CabinLayoutControl control)
             {
                 CabinLayout oldLayout = e.OldValue as CabinLayout;
                 CabinLayout newLayout = e.NewValue as CabinLayout;
@@ -182,7 +183,7 @@ namespace SLC_LayoutEditor.Controls
 
         private static void OnIsTemplatingModeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is CabinLayoutControl control)
+            if (e.OldValue != e.NewValue && sender is CabinLayoutControl control)
             {
                 control.OnTemplatingModeToggled(EventArgs.Empty);
             }
@@ -308,6 +309,8 @@ namespace SLC_LayoutEditor.Controls
                 GuideMenu = GuideMenu
             };
 
+            cabinDeckControl.SelectedSlotsChanged += CabinDeckControl_SelectedSlotsChanged;
+
             cabinDeckControl.CabinSlotClicked += CabinDeckControl_CabinSlotClicked;
             cabinDeckControl.LayoutRegenerated += CabinDeckControl_LayoutRegenerated;
             cabinDeckControl.RemoveDeckClicked += CabinDeckControl_RemoveDeckClicked;
@@ -317,6 +320,16 @@ namespace SLC_LayoutEditor.Controls
             cabinDeckControl.ColumnsChanged += CabinDeckControl_RowOrColumnsChanged;
             cabinDeckControl.DeckRendered += CabinDeckControl_DeckRendered;
             container_decks.Children.Add(cabinDeckControl);
+        }
+
+        private void CabinDeckControl_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
+        {
+            SelectedCabinSlots = e.NewSelection.ToList();
+            SelectedCabinSlotFloor = e.Floor;
+            selectedDeck = e.DeckControl;
+
+            OnSelectedSlotsChanged(e);
+            OnSelectedDeckChanged(new SelectedDeckChangedEventArgs(selectedDeck));
         }
 
         private void CabinDeckControl_DeckRendered(object sender, EventArgs e)
@@ -356,7 +369,7 @@ namespace SLC_LayoutEditor.Controls
             SelectedCabinSlotFloor = e.Floor;
             selectedDeck = e.DeckControl;
 
-            OnSelectedSlotsChanged(e);
+            OnCabinSlotClicked(e);
             OnSelectedDeckChanged(new SelectedDeckChangedEventArgs(selectedDeck));
         }
 
@@ -579,9 +592,9 @@ namespace SLC_LayoutEditor.Controls
             LayoutLoading?.Invoke(this, e);
         }
 
-        protected virtual void OnSelectedSlotsChanged(CabinSlotClickedEventArgs e)
+        protected virtual void OnCabinSlotClicked(CabinSlotClickedEventArgs e)
         {
-            SelectedSlotsChanged?.Invoke(this, e);
+            CabinSlotClicked?.Invoke(this, e);
         }
 
         protected virtual void OnChanged(ChangedEventArgs e)
@@ -625,6 +638,11 @@ namespace SLC_LayoutEditor.Controls
         protected virtual void OnSelectedDeckChanged(SelectedDeckChangedEventArgs e)
         {
             SelectedDeckChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedSlotsChanged(SelectedSlotsChangedEventArgs e)
+        {
+            SelectedSlotsChanged?.Invoke(this, e);
         }
     }
 }

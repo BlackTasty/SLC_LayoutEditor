@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Controls;
+using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Cabin;
@@ -74,6 +75,11 @@ namespace SLC_LayoutEditor.UI
                     SaveLayoutAs(existingLayouts);
                 }
             }, ViewModelMessage.Keybind_SaveLayoutAs);
+
+            Mediator.Instance.Register(o =>
+            {
+                StartSavingLayout();
+            }, ViewModelMessage.Keybind_SaveLayout);
         }
 
         public bool CheckUnsavedChanges(bool isClosing)
@@ -180,10 +186,23 @@ namespace SLC_LayoutEditor.UI
 
         private void SaveLayout_Click(object sender, RoutedEventArgs e)
         {
+            StartSavingLayout();
+        }
+
+        private void LayoutIssues_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.Yes)
+            {
+                SaveLayout();
+            }
+        }
+
+        private void StartSavingLayout()
+        {
             Logger.Default.WriteLog("User requested saving the current {0}...", vm.IsLayoutTemplate ? "template" : "layout");
             if (App.Settings.ShowWarningWhenIssuesPresent && vm.ActiveLayout.SevereIssuesCountSum > 0)
             {
-                ConfirmationDialog dialog = new ConfirmationDialog("Layout issues detected", 
+                ConfirmationDialog dialog = new ConfirmationDialog("Layout issues detected",
                     "Seems like your layout has some problems, which can cause unexpected behaviour with SLC!\n\nDo you want to save anyway?",
                     DialogType.YesNo);
 
@@ -196,29 +215,37 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void LayoutIssues_DialogClosing(object sender, DialogClosingEventArgs e)
-        {
-            if (e.DialogResult == DialogResultType.Yes)
-            {
-                SaveLayout();
-            }
-        }
-
         private void SaveLayout()
         {
             vm.ActiveLayout.SaveLayout();
             control_layout.GenerateThumbnailForLayout(true);
 
-            if (!vm.IsTemplatingMode && App.Settings.OpenFolderWithEditedLayout)
+            if (!vm.IsTemplatingMode)
             {
-                Util.OpenFolder(vm.ActiveLayout.FilePath);
-                Logger.Default.WriteLog("Opened directory containing saved layout");
+                if (App.Settings.CopyLayoutCodeToClipboard)
+                {
+                    Clipboard.SetText(vm.ActiveLayout.ToLayoutFile());
+                    Logger.Default.WriteLog("Layout code copied to clipboard");
+                    Notification.MakeTimedNotification("Layout code copied", "Your layout code has been copied to your clipboard!", 
+                        8000, FixedValues.ICON_CLIPBOARD);
+                }
 
-                ConfirmationDialog dialog = new ConfirmationDialog("Folder opened",
-                    string.Format("The folder containing your layout has been opened!"),
-                    DialogType.OK);
+                if (App.Settings.NavigateToSLCWebsite)
+                {
+                    Process.Start("https://www.selfloadingcargo.com/cabinlayouts");
+                    Logger.Default.WriteLog("SLC website has been opened in browser");
+                    Notification.MakeTimedNotification("SLC website opened", "The SLC website has been opened in your browser!",
+                        8000, FixedValues.ICON_BROWSER_OPENED);
+                }
 
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                if (App.Settings.OpenLayoutAfterSaving)
+                {
+                    Util.OpenFile(vm.ActiveLayout.FilePath);
+                    Logger.Default.WriteLog("Opened saved layout in default text editor");
+
+                    Notification.MakeTimedNotification("Layout file opened", "Your layout has been opened in your default text editor!", 
+                        8000, FixedValues.ICON_FILE_OPENED);
+                }
             }
         }
 
@@ -352,7 +379,11 @@ namespace SLC_LayoutEditor.UI
 
                 RefreshLayoutFlags();
 
-                control_layout.SelectedCabinSlots.ForEach(x => x.SlotIssues.RefreshProblematicFlag());
+                control_layout.SelectedCabinSlots.ForEach(x =>
+                {
+                    //x.SlotIssues.RefreshProblematicFlag(true);
+                    x.FireChangedEvent();
+                });
                 SlotTypeChangedForTour();
             }
         }
@@ -608,7 +639,7 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void CabinLayout_SelectedSlotsChanged(object sender, CabinSlotClickedEventArgs e)
+        private void CabinLayout_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
         {
             vm.SelectedCabinSlots = e.Selected;
             vm.SelectedCabinSlotFloor = e.Floor;
@@ -675,8 +706,15 @@ namespace SLC_LayoutEditor.UI
                     string layoutPath = Path.Combine(App.Settings.CabinLayoutsEditPath, vm.SelectedLayoutSet.AircraftName, result.Name + ".txt");
                     File.Copy(vm.SelectedCabinLayout.FilePath, layoutPath, true);
                     CabinLayout layout = new CabinLayout(new FileInfo(layoutPath));
+
+                    Logger.Default.WriteLog("Copy of layout \"{0}\" created successfully with name \"{1}\"", vm.SelectedCabinLayout.LayoutName,
+                        layout.LayoutName);
+
                     vm.SelectedLayoutSet.RegisterLayout(layout);
                     vm.SelectedCabinLayout = layout;
+
+                    Notification.MakeTimedNotification("Layout copy created", "Your layout copy has been successfully saved under a new name!",
+                        8000, FixedValues.ICON_CHECK_CIRCLE);
                 }
             }
             else
@@ -866,6 +904,18 @@ namespace SLC_LayoutEditor.UI
         protected virtual void OnSelectedDeckChanged(SelectedDeckChangedEventArgs e)
         {
             SelectedDeckChanged?.Invoke(this, e);
+        }
+
+        private void CabinLayout_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
+        {
+            vm.SelectedCabinSlots = e.NewSelection.ToList();
+            vm.SelectedCabinSlotFloor = e.Floor;
+
+            if (App.GuidedTour.IsAwaitingBorderSlotSelection && e.NewSelection.All(x => e.DeckControl.CabinDeck.IsSlotValidDoorPosition(x)))
+            {
+                todoList.ForceCompleteEntry(0, true);
+                App.GuidedTour.ContinueTour(true);
+            }
         }
     }
 }

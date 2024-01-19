@@ -49,47 +49,12 @@
         <ScrollViewer VerticalScrollBarVisibility="Visible" Padding="0,4" x:Name="list_scroll">
             <StackPanel Margin="12,4,4,4">
                 <TextBlock Text="Issues across all decks" FontSize="18"/>
-                <local:LayoutProblemText ValidText="No duplicate Economy Class seats"
-                                         InvalidText="{Binding ActiveLayout.DuplicateEconomySeats.Count, StringFormat={}{0} duplicate Economy Class seats found!}"
-                                         IsValid="{Binding ActiveLayout.HasNoDuplicateEconomySeats}"
-                                         InvalidSlots="{Binding ActiveLayout.DuplicateEconomySeats}"
-                                         ShowEye="True" ShowProblemsChanged="EconomyClass_ShowIssuesChanged"
-                                         ShowProblems="{Binding ShowEconomyClassIssues}"/>
-
-                <local:LayoutProblemText ValidText="No duplicate Business Class seats"
-                                         InvalidText="{Binding ActiveLayout.DuplicateBusinessSeats.Count, StringFormat={}{0} duplicate Business Class seats found!}"
-                                         IsValid="{Binding ActiveLayout.HasNoDuplicateBusinessSeats}"
-                                         InvalidSlots="{Binding ActiveLayout.DuplicateBusinessSeats}"
-                                         ShowEye="True" ShowProblemsChanged="BusinessClass_ShowIssuesChanged"
-                                         ShowProblems="{Binding ShowBusinessClassIssues, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <local:LayoutProblemText ValidText="No duplicate Premium Class seats"
-                                         InvalidText="{Binding ActiveLayout.DuplicatePremiumSeats.Count, StringFormat={}{0} duplicate Premium Class seats found!}"
-                                         IsValid="{Binding ActiveLayout.HasNoDuplicatePremiumSeats}"
-                                         InvalidSlots="{Binding ActiveLayout.DuplicatePremiumSeats}"
-                                         ShowEye="True" ShowProblemsChanged="Premium_ShowIssuesChanged"
-                                         ShowProblems="{Binding ShowPremiumClassIssues}"/>
-
-                <local:LayoutProblemText ValidText="No duplicate First Class seats"
-                                         InvalidText="{Binding ActiveLayout.DuplicateFirstClassSeats.Count, StringFormat={}{0} duplicate First Class seats found!}"
-                                         IsValid="{Binding ActiveLayout.HasNoDuplicateFirstClassSeats}"
-                                         InvalidSlots="{Binding ActiveLayout.DuplicateFirstClassSeats}"
-                                         ShowEye="True" ShowProblemsChanged="FirstClass_ShowIssuesChanged"
-                                         ShowProblems="{Binding ShowFirstClassIssues}"/>
-
-                <local:LayoutProblemText ValidText="No duplicate Supersonic Class seats"
-                                         InvalidText="{Binding ActiveLayout.DuplicateSupersonicSeats.Count, StringFormat={}{0} duplicate Supersonic Class seats found!}"
-                                         IsValid="{Binding ActiveLayout.HasNoDuplicateSupersonicSeats}"
-                                         InvalidSlots="{Binding ActiveLayout.DuplicateSupersonicSeats}"
-                                         ShowEye="True" ShowProblemsChanged="SupersonicClass_ShowIssuesChanged"
-                                         ShowProblems="{Binding ShowSupersonicClassIssues}"/>
-
-                <local:LayoutProblemText ValidText="No duplicate Unavailable seats"
-                                         InvalidText="{Binding ActiveLayout.DuplicateUnavailableSeats.Count, StringFormat={}{0} duplicate Unavailable Class seats found!}"
-                                         IsValid="{Binding ActiveLayout.HasNoDuplicateUnavailableSeats}"
-                                         InvalidSlots="{Binding ActiveLayout.DuplicateUnavailableSeats}"
-                                         ShowEye="True" ShowProblemsChanged="UnavailableSeats_ShowIssuesChanged"
-                                         ShowProblems="{Binding ShowUnavailableSeatsIssues}"/>
+                <local:LayoutProblemText ValidText="No duplicate seats"
+                                         InvalidText="{Binding ActiveLayout.DuplicateSeats.Count, StringFormat={}{0} duplicate seats found!}"
+                                         IsValid="{Binding ActiveLayout.HasNoDuplicateSeats}"
+                                         InvalidSlots="{Binding ActiveLayout.DuplicateSeats}"
+                                         ShowEye="True" ShowProblemsChanged="DuplicateSeats_ShowIssuesChanged"
+                                         ShowProblems="{Binding ShowDuplicateSeatIssues}"/>
 
                 <Separator Margin="0,4"/>
                 <local:LayoutProblemText DockPanel.Dock="Top" ValidText="No duplicate doors"

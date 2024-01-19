@@ -75,7 +75,7 @@ namespace SLC_LayoutEditor.Controls
 
         private static void OnCabinSlotChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is CabinSlotControl control)
+            if (e.OldValue != e.NewValue && sender is CabinSlotControl control)
             {
                 control.RegisterCabinSlotProblemEvent();
             }

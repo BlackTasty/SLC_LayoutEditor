@@ -156,6 +156,8 @@
     <SolidColorBrush x:Key="AccentHoverColorBrush" Color="{StaticResource AccentHoverColor}"/>
     <SolidColorBrush x:Key="AccentPressedColorBrush" Color="{StaticResource AccentPressedColor}"/>
 
+    <SolidColorBrush x:Key="NotificationProgressForeground" Color="{StaticResource AccentPressedColor}" Opacity=".17"/>
+
     <SolidColorBrush x:Key="AccentBackColorBrush" Color="{StaticResource AccentColor}" Opacity=".6"/>
     <SolidColorBrush x:Key="AccentBackHoverColorBrush" Color="{StaticResource AccentHoverColor}" Opacity=".6"/>
     <SolidColorBrush x:Key="AccentBackPressedColorBrush" Color="{StaticResource AccentPressedColor}" Opacity=".6"/>

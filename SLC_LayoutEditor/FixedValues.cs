@@ -46,16 +46,18 @@ namespace SLC_LayoutEditor
 
         internal static readonly Style STYLE_ICON_BUTTON = (Style)App.Current.FindResource("ForegroundIconButtonStyle");
 
+        internal static readonly string ICON_CLIPBOARD = (string)App.Current.FindResource("Clipboard");
+        internal static readonly string ICON_FILE_OPENED = (string)App.Current.FindResource("OpenInNew");
+        internal static readonly string ICON_BROWSER_OPENED = (string)App.Current.FindResource("OpenInBrowser");
+        internal static readonly string ICON_CHECK_CIRCLE = (string)App.Current.FindResource("CheckCircle");
+
         internal const string KEY_ISSUE_STAIRWAY = "stairway";
-        internal const string KEY_ISSUE_ECO_CLASS = "eco_class";
-        internal const string KEY_ISSUE_BUSINESS_CLASS = "business_class";
-        internal const string KEY_ISSUE_PREMIUM_CLASS = "premium_class";
-        internal const string KEY_ISSUE_FIRST_CLASS = "first_class";
-        internal const string KEY_ISSUE_SUPERSONIC_CLASS = "supersonic_class";
-        internal const string KEY_ISSUE_UNAVAILABLE_SEAT = "unavailable_seat";
+        internal const string KEY_ISSUE_DUPLICATE_SEAT = "seats_duplicate";
         internal const string KEY_ISSUE_DOORS_DUPLICATE = "doors_duplicate";
         internal const string KEY_ISSUE_DOORS_SERVICE_WRONG_SIDE = "cat/lb";
         internal const string KEY_ISSUE_INVALID_INTERIOR_POSITIONS = "interior";
         internal const string KEY_ISSUE_UNREACHABLE_SLOTS = "unreachable";
+
+        internal const double DEFAULT_BORDER_THICKNESS = 1.5;
     }
 }

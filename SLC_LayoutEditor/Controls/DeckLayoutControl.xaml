@@ -106,5 +106,9 @@
                PreviewMouseLeftButtonDown="deck_view_PreviewMouseLeftButtonDown"
                PreviewMouseLeftButtonUp="deck_view_PreviewMouseLeftButtonUp"
                MouseLeave="deck_view_MouseLeave"/>
+        <Image x:Name="deck_dragselect"
+               RenderOptions.BitmapScalingMode="NearestNeighbor"
+               RenderOptions.EdgeMode="Aliased"
+               IsHitTestVisible="False"/>
     </Grid>
 </StackPanel>

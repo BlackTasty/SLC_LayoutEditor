@@ -109,6 +109,13 @@
     <Compile Include="Controls\LayoutSelectorInnerCardAdorner.cs" />
     <Compile Include="Controls\LiveGuideAdorner.cs" />
     <Compile Include="Controls\Material\ShadowAssist.cs" />
+    <Compile Include="Controls\Notifications\INotification.cs" />
+    <Compile Include="Controls\Notifications\Notification.xaml.cs">
+      <DependentUpon>Notification.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Notifications\NotificationBar.xaml.cs">
+      <DependentUpon>NotificationBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Patchnote.xaml.cs">
       <DependentUpon>Patchnote.xaml</DependentUpon>
     </Compile>
@@ -158,11 +165,14 @@
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Cabin\AdjacentSlots.cs" />
     <Compile Include="Core\Cabin\Renderer\ButtonActionType.cs" />
-    <Compile Include="Core\Cabin\Renderer\ButtonData.cs" />
+    <Compile Include="Core\Cabin\Renderer\ButtonHitResult.cs" />
     <Compile Include="Core\Cabin\Renderer\CabinDeckRenderer.cs" />
     <Compile Include="Core\Cabin\CabinSlotIssue.cs" />
     <Compile Include="Core\Cabin\CabinSlotIssues.cs" />
-    <Compile Include="Core\Cabin\Renderer\SlotData.cs" />
+    <Compile Include="Core\Cabin\Renderer\DragSelectRenderer.cs" />
+    <Compile Include="Core\Cabin\Renderer\IHitResult.cs" />
+    <Compile Include="Core\Cabin\Renderer\HitResult.cs" />
+    <Compile Include="Core\Cabin\Renderer\SlotHitResult.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Dialogs\DialogButtonConfig.cs" />
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />
@@ -175,6 +185,7 @@
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
     <Compile Include="Core\Events\LiveGuideClosedEventArgs.cs" />
+    <Compile Include="Controls\Notifications\NotificationClosedEventArgs.cs" />
     <Compile Include="Core\Events\SelectedDeckChangedEventArgs.cs" />
     <Compile Include="Core\Events\TemplateCreatedEventArgs.cs" />
     <Compile Include="Core\Events\ChangedEventArgs.cs" />
@@ -279,6 +290,7 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MakeTemplateDialogViewModel.cs" />
     <Compile Include="ViewModel\MementoViewModel.cs" />
+    <Compile Include="ViewModel\NotificationViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="ViewModel\TodoListViewModel.cs" />
     <Compile Include="ViewModel\UpdaterViewModel.cs" />
@@ -322,6 +334,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LayoutProblemText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Notifications\Notification.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Notifications\NotificationBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

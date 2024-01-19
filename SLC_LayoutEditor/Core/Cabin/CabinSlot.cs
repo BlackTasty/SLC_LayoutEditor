@@ -15,8 +15,8 @@ namespace SLC_LayoutEditor.Core.Cabin
     public class CabinSlot : ViewModelBase, IHistorical
     {
         public event EventHandler<CabinSlotChangedEventArgs> CabinSlotChanged;
-        public event EventHandler<EventArgs> SlotTypeChanged;
-        public event EventHandler<EventArgs> ProblematicChanged;
+        public event EventHandler<CabinSlotChangedEventArgs> SlotTypeChanged;
+        public event EventHandler<CabinSlotChangedEventArgs> ProblematicChanged;
 
         private int mRow;
         private int mColumn;
@@ -24,13 +24,27 @@ namespace SLC_LayoutEditor.Core.Cabin
         private int mSlotNumber; // Only in use when SlotType is one of the seats or a door
         private char mSeatLetter; // Only in use when SlotType is one of the seats
 
-        private CabinSlotIssues slotIssues = new CabinSlotIssues();
+        private CabinSlotIssues slotIssues;
         private bool mIsProblematic;
+        private bool mIsSelected;
         private bool mIsHitTestVisible = true;
+        private bool isDirty = true;
+        private bool hasTypeChanged;
 
         private string guid;
 
+        private string previousState;
+
         public string Guid => guid;
+
+        public bool IsDirty
+        {
+            get => isDirty;
+            set
+            {
+                isDirty = value;
+            }
+        }
 
         public int Row
         {
@@ -64,6 +78,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
                 bool wasSeat = IsSeat;
                 bool wasDoor = IsDoor;
+                hasTypeChanged = true;
 
                 mType = value;
                 slotIssues.ClearIssues();
@@ -85,8 +100,10 @@ namespace SLC_LayoutEditor.Core.Cabin
                     SlotNumber = 0;
                 }
 
-                OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
-                OnSlotTypeChanged(EventArgs.Empty);
+                OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
+                OnSlotTypeChanged(new CabinSlotChangedEventArgs(this));
+
+                hasTypeChanged = false;
             }
         }
 
@@ -96,6 +113,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             set => Type = (CabinSlotType)value;
         }
 
+        public bool HasTypeChanged => hasTypeChanged;
+
         public int SlotNumber
         {
             get => mSlotNumber;
@@ -104,7 +123,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 mSlotNumber = Math.Min(Math.Max(value, 0), MaxSlotNumber);
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(DisplayText));
-                OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
+                OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
             }
         }
 
@@ -125,7 +144,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 }
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(DisplayText));
-                OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
+                OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
             }
         }
 
@@ -148,20 +167,15 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public string DisplayText => ToString().Trim();
 
-        /*public bool IsProblematic
+        public bool IsSelected
         {
-            get => slotIssues.IsProblematic;
+            get => mIsSelected;
             set
             {
-                bool oldValue = mIsProblematic;
-                mIsProblematic = value;
-                if (oldValue != value)
-                {
-                    OnProblematicChanged(EventArgs.Empty);
-                    InvokePropertyChanged();
-                }
+                mIsSelected = value;
+                InvokePropertyChanged();
             }
-        }*/
+        }
 
         public CabinSlotIssues SlotIssues => slotIssues;
 
@@ -271,6 +285,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 mType = CabinSlotType.Aisle;
             }
+
+            previousState = ToString();
         }
 
         public CabinSlot(int row, int column, CabinSlotType type, int slotNumber) : this()
@@ -279,17 +295,26 @@ namespace SLC_LayoutEditor.Core.Cabin
             mColumn = column;
             mType = type;
             mSlotNumber = slotNumber;
+
+            previousState = ToString();
         }
 
         private CabinSlot()
         {
+            slotIssues = new CabinSlotIssues(this);
             guid = System.Guid.NewGuid().ToString();
             slotIssues.ProblematicChanged += SlotIssues_ProblematicChanged;
         }
 
         private void SlotIssues_ProblematicChanged(object sender, EventArgs e)
         {
-            OnProblematicChanged(e);
+            OnProblematicChanged(new CabinSlotChangedEventArgs(this));
+        }
+
+        public void FireChangedEvent()
+        {
+            previousState = "";
+            OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
         }
 
         public bool IsReachable(CabinDeck deck)
@@ -321,7 +346,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void Validate()
         {
-            OnProblematicChanged(EventArgs.Empty);
+            OnProblematicChanged(new CabinSlotChangedEventArgs(this));
             //OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
         }
 
@@ -329,6 +354,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             //TODO: Implement undo/redo system
             throw new NotImplementedException();
+        }
+
+        public string GetNumberAndLetter()
+        {
+            return string.Format("{0:00}{1}", mSlotNumber, mSeatLetter);
         }
 
         public override string ToString()
@@ -358,17 +388,17 @@ namespace SLC_LayoutEditor.Core.Cabin
                 case CabinSlotType.Intercom:
                     return "  I  ";
                 case CabinSlotType.BusinessClassSeat:
-                    return string.Format("B-{0:00}{1}", mSlotNumber, mSeatLetter);
+                    return string.Format("B-{0}", GetNumberAndLetter());
                 case CabinSlotType.EconomyClassSeat:
-                    return string.Format("E-{0:00}{1}", mSlotNumber, mSeatLetter);
+                    return string.Format("E-{0}", GetNumberAndLetter());
                 case CabinSlotType.FirstClassSeat:
-                    return string.Format("F-{0:00}{1}", mSlotNumber, mSeatLetter);
+                    return string.Format("F-{0}", GetNumberAndLetter());
                 case CabinSlotType.PremiumClassSeat:
-                    return string.Format("P-{0:00}{1}", mSlotNumber, mSeatLetter);
+                    return string.Format("P-{0}", GetNumberAndLetter());
                 case CabinSlotType.SupersonicClassSeat:
-                    return string.Format("R-{0:00}{1}", mSlotNumber, mSeatLetter);
+                    return string.Format("R-{0}", GetNumberAndLetter());
                 case CabinSlotType.UnavailableSeat:
-                    return string.Format("U-{0:00}{1}", mSlotNumber, mSeatLetter);
+                    return string.Format("U-{0}", GetNumberAndLetter());
                 case CabinSlotType.ServiceStartPoint:
                     return "  <  ";
                 case CabinSlotType.ServiceEndPoint:
@@ -380,22 +410,29 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         protected virtual void OnCabinSlotChanged(CabinSlotChangedEventArgs e)
         {
-            if (IsEvaluationActive)
+            if (previousState != ToString())
             {
-                CabinSlotChanged?.Invoke(this, e);
+                IsDirty = true;
+                if (IsEvaluationActive)
+                {
+                    CabinSlotChanged?.Invoke(this, e);
+                }
+                previousState = ToString();
             }
         }
 
-        protected virtual void OnProblematicChanged(EventArgs e)
+        protected virtual void OnProblematicChanged(CabinSlotChangedEventArgs e)
         {
+            //IsDirty = true;
             if (IsEvaluationActive)
             {
                 ProblematicChanged?.Invoke(this, e);
             }
         }
 
-        protected virtual void OnSlotTypeChanged(EventArgs e)
+        protected virtual void OnSlotTypeChanged(CabinSlotChangedEventArgs e)
         {
+            IsDirty = true;
             SlotTypeChanged?.Invoke(this, e);
         }
     }

@@ -52,34 +52,10 @@ namespace SLC_LayoutEditor.Controls
             InitializeComponent();
         }
 
-        private void EconomyClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
+        private void DuplicateSeats_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_ECO_CLASS, CabinSlotType.EconomyClassSeat);
-        }
-
-        private void BusinessClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_BUSINESS_CLASS, CabinSlotType.BusinessClassSeat);
-        }
-
-        private void Premium_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_PREMIUM_CLASS, CabinSlotType.PremiumClassSeat);
-        }
-
-        private void FirstClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_FIRST_CLASS, CabinSlotType.FirstClassSeat);
-        }
-
-        private void SupersonicClass_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_SUPERSONIC_CLASS, CabinSlotType.SupersonicClassSeat);
-        }
-
-        private void UnavailableSeats_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
-        {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_UNAVAILABLE_SEAT, CabinSlotType.UnavailableSeat);
+            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_DUPLICATE_SEAT, CabinSlotType.BusinessClassSeat, CabinSlotType.EconomyClassSeat,
+                CabinSlotType.FirstClassSeat, CabinSlotType.PremiumClassSeat, CabinSlotType.SupersonicClassSeat, CabinSlotType.UnavailableSeat);
         }
 
         private void StairwayPositions_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)

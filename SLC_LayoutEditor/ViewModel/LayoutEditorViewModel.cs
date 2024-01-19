@@ -73,12 +73,7 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mIsLoadingLayout;
         private bool mIsTemplatingMode;
 
-        private bool mShowEconomyClassIssues = true;
-        private bool mShowPremiumClassIssues = true;
-        private bool mShowBusinessClassIssues = true;
-        private bool mShowFirstClassIssues = true;
-        private bool mShowSupersonicClassIssues = true;
-        private bool mShowUnavailableSeatsIssues = true;
+        private bool mShowDuplicateSeatIssues = true;
         private bool mShowStairwayIssues = true;
         private bool mShowDuplicateDoorsIssues = true;
 
@@ -96,62 +91,12 @@ namespace SLC_LayoutEditor.ViewModel
         #endregion
 
         #region Problem visibility properties
-        public bool ShowEconomyClassIssues
+        public bool ShowDuplicateSeatIssues
         {
-            get => mShowEconomyClassIssues;
+            get => mShowDuplicateSeatIssues;
             set
             {
-                mShowEconomyClassIssues = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool ShowPremiumClassIssues
-        {
-            get => mShowPremiumClassIssues;
-            set
-            {
-                mShowPremiumClassIssues = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool ShowBusinessClassIssues
-        {
-            get => mShowBusinessClassIssues;
-            set
-            {
-                mShowBusinessClassIssues = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool ShowFirstClassIssues
-        {
-            get => mShowFirstClassIssues;
-            set
-            {
-                mShowFirstClassIssues = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool ShowSupersonicClassIssues
-        {
-            get => mShowSupersonicClassIssues;
-            set
-            {
-                mShowSupersonicClassIssues = value;
-                InvokePropertyChanged();
-            }
-        }
-
-        public bool ShowUnavailableSeatsIssues
-        {
-            get => mShowUnavailableSeatsIssues;
-            set
-            {
-                mShowUnavailableSeatsIssues = value;
+                mShowDuplicateSeatIssues = value;
                 InvokePropertyChanged();
             }
         }
@@ -474,6 +419,7 @@ namespace SLC_LayoutEditor.ViewModel
         {
             InvokePropertyChanged(nameof(StairwayErrorMessage));
             RefreshUnsavedChanges();
+            //SelectedCabinLayout.DeepRefreshProblemChecks();
         }
 
         private void CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)

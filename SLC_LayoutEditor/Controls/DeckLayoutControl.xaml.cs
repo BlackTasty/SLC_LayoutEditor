@@ -43,6 +43,8 @@ namespace SLC_LayoutEditor.Controls
         private const double SLOT_WIDTH = 44;
         private const double SLOT_HEIGHT = 44;
 
+        public event EventHandler<SelectedSlotsChangedEventArgs> SelectedSlotsChanged;
+
         public event EventHandler<CabinSlotClickedEventArgs> CabinSlotClicked;
         public event EventHandler<RemoveCabinDeckEventArgs> RemoveDeckClicked;
         public event EventHandler<EventArgs> LayoutRegenerated;
@@ -60,12 +62,14 @@ namespace SLC_LayoutEditor.Controls
         private Button addRowButton;
         private Button addColumnButton;
 
-        private Point dragStartPoint;
+        private Point dragStartPosition;
         private Rectangle selectionBox;
         private bool isMouseDown;
 
         private Adorner deckTitleAdorner;
+
         private CabinDeckRenderer renderer;
+        private DragSelectRenderer selectRenderer;
         private ToolTip tooltip;
         private DispatcherTimer tooltipTimer;
 
@@ -93,11 +97,7 @@ namespace SLC_LayoutEditor.Controls
             {
                 if (control.renderer != null)
                 {
-                    control.renderer.ChangeCabinDeck(control.CabinDeck);
-                }
-                else
-                {
-                    control.renderer = new CabinDeckRenderer(control.CabinDeck);
+                    control.renderer.SetCabinDeck(control.CabinDeck);
                 }
             }
         }
@@ -127,8 +127,12 @@ namespace SLC_LayoutEditor.Controls
             {
                 if (o is CabinDeck cabinDeck && cabinDeck == CabinDeck)
                 {
+#if RENDERING_NEW
+                    renderer?.SelectAllSlots();
+#elif RENDERING_OLD
                     SetMultipleSlotsSelected(layout_deck?.Children.OfType<CabinSlotControl>().Where(x => !x.IsSelected), false);
                     OnCabinSlotClicked(new CabinSlotClickedEventArgs(selectedSlots, CabinDeck.Floor, this));
+#endif
                 }
             }, ViewModelMessage.Keybind_SelectAllSlotsOnDeck);
         }
@@ -150,13 +154,14 @@ namespace SLC_LayoutEditor.Controls
                 {
                     renderer = new CabinDeckRenderer(CabinDeck);
                     renderer.ChangeTooltip += Renderer_ChangeTooltip;
+                    renderer.SelectedSlotsChanged += Renderer_SelectedSlotsChanged;
+
+                    selectRenderer = new DragSelectRenderer(renderer);
                 }
 
                 deck_view.Source = renderer.Output;
             });
-#endif
-
-#if RENDERING_OLD
+#elif RENDERING_OLD
             layout_deck.Dispatcher.Invoke(() =>
             {
                 layout_deck.Children.Clear();
@@ -240,6 +245,11 @@ namespace SLC_LayoutEditor.Controls
 
             sw.Stop();
             Logger.Default.WriteLog("Cabin deck rendered in {0} seconds", Math.Round((double)sw.ElapsedMilliseconds / 1000, 3));
+        }
+
+        private void Renderer_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
+        {
+            OnSelectedSlotsChanged(e);
         }
 
         private void Renderer_ChangeTooltip(object sender, EventArgs e)
@@ -1053,16 +1063,143 @@ namespace SLC_LayoutEditor.Controls
             OnRemoveDeckClicked(new RemoveCabinDeckEventArgs(CabinDeck));
         }
 
+        private void layout_deck_Loaded(object sender, RoutedEventArgs e)
+        {
+            OnDeckRendered(EventArgs.Empty);
+        }
+
+        protected virtual void OnCabinSlotClicked(CabinSlotClickedEventArgs e)
+        {
+            CabinSlotClicked?.Invoke(this, e);
+        }
+
+        protected virtual void OnLayoutRegenerated(EventArgs e)
+        {
+            LayoutRegenerated?.Invoke(this, e);
+        }
+
+        protected virtual void OnLayoutLoading(EventArgs e)
+        {
+            LayoutLoading?.Invoke(this, e);
+        }
+
+        protected virtual void OnRemoveDeckClicked(RemoveCabinDeckEventArgs e)
+        {
+            RemoveDeckClicked?.Invoke(this, e);
+        }
+
+        protected virtual void OnRowsChanged(EventArgs e)
+        {
+            RowsChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnColumnsChanged(EventArgs e)
+        {
+            ColumnsChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnDeckRendered(EventArgs e)
+        {
+            DeckRendered?.Invoke(this, e);
+        }
+
+        private void layout_deck_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            DeckRendered?.Invoke(this, e);
+        }
+
+        private void deck_view_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            deck_dragselect.Source = selectRenderer.RefreshDragSelect(e.GetPosition(deck_view));
+            renderer?.CheckMouseOver(Mouse.GetPosition(deck_view));
+        }
+
+        private void deck_view_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            deck_dragselect.Source = selectRenderer.StartDragSelect(e.GetPosition(deck_view));
+            renderer?.CheckMouseDown(Mouse.GetPosition(deck_view), true);
+        }
+
+        private void deck_view_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            deck_dragselect.Source = selectRenderer.StopDragSelect();
+            renderer?.CheckMouseDown(Mouse.GetPosition(deck_view), false);
+        }
+
+        private void deck_view_MouseLeave(object sender, MouseEventArgs e)
+        {
+            deck_dragselect.Source = selectRenderer.StopDragSelect();
+            renderer?.CheckMouseDown(Mouse.GetPosition(deck_view), false);
+            renderer?.CheckMouseOver(Mouse.GetPosition(deck_view));
+        }
+
+        private void deck_view_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            deck_view.ToolTip = renderer.Tooltip;
+        }
+
+        protected virtual void OnSelectedSlotsChanged(SelectedSlotsChangedEventArgs e)
+        {
+            SelectedSlotsChanged?.Invoke(this, e);
+        }
+
+        private void RefreshDragSelect(Point currentPosition)
+        {
+            if (isMouseDown)
+            {
+                if (currentPosition.X >= 65 && currentPosition.Y >= 65)
+                {
+                    Rect selectionRect = new Rect(dragStartPosition, currentPosition);
+                    if (selectionBox == null)
+                    {
+                        selectionBox = new Rectangle()
+                        {
+                            Fill = (Brush)App.Current.FindResource("DisabledColorBrush"),
+                            Stroke = (Brush)App.Current.FindResource("BackdropColorBrush"),
+                            StrokeThickness = 1.5,
+                            RadiusX = 2,
+                            RadiusY = 2,
+                            Width = selectionRect.Width,
+                            Height = selectionRect.Height,
+                            IsHitTestVisible = false
+                        };
+
+                        Canvas.SetZIndex(selectionBox, 1000);
+                        layout_deck.Children.Add(selectionBox);
+                    }
+                    else
+                    {
+                        selectionBox.Width = selectionRect.Width;
+                        selectionBox.Height = selectionRect.Height;
+                    }
+
+                    if (selectionBox.Visibility == Visibility.Collapsed)
+                    {
+                        selectionBox.Visibility = Visibility.Visible;
+                    }
+
+                    Canvas.SetLeft(selectionBox, selectionRect.Left);
+                    Canvas.SetTop(selectionBox, selectionRect.Top);
+
+                    DragHighlightSlots(selectionRect);
+                }
+                else if (selectionBox?.Visibility == Visibility.Visible)
+                {
+                    selectionBox.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
         private void MultiSelect_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isMouseDown = true;
             //CabinDeck.ToggleIsHitTestVisible(false);
-            dragStartPoint = e.GetPosition(layout_deck);
+            dragStartPosition = e.GetPosition(layout_deck);
         }
 
         private void MultiSelect_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            RemoveSelectionBox();
+            StopDragSelect();
         }
 
         private void MultiSelect_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -1072,7 +1209,7 @@ namespace SLC_LayoutEditor.Controls
                 Point currentPosition = e.GetPosition(layout_deck);
                 if (currentPosition.X >= 65 && currentPosition.Y >= 65)
                 {
-                    Rect selectionRect = new Rect(dragStartPoint, currentPosition);
+                    Rect selectionRect = new Rect(dragStartPosition, currentPosition);
                     if (selectionBox == null)
                     {
                         selectionBox = new Rectangle()
@@ -1168,86 +1305,15 @@ namespace SLC_LayoutEditor.Controls
 
         private void MultiSelect_MouseLeave(object sender, MouseEventArgs e)
         {
-            RemoveSelectionBox();
+            StopDragSelect();
         }
 
-        private void RemoveSelectionBox()
+        private void StopDragSelect()
         {
             isMouseDown = false;
             //CabinDeck.ToggleIsHitTestVisible(true);
             layout_deck.Children.Remove(selectionBox);
             selectionBox = null;
-        }
-
-        private void layout_deck_Loaded(object sender, RoutedEventArgs e)
-        {
-            OnDeckRendered(EventArgs.Empty);
-        }
-
-        protected virtual void OnCabinSlotClicked(CabinSlotClickedEventArgs e)
-        {
-            CabinSlotClicked?.Invoke(this, e);
-        }
-
-        protected virtual void OnLayoutRegenerated(EventArgs e)
-        {
-            LayoutRegenerated?.Invoke(this, e);
-        }
-
-        protected virtual void OnLayoutLoading(EventArgs e)
-        {
-            LayoutLoading?.Invoke(this, e);
-        }
-
-        protected virtual void OnRemoveDeckClicked(RemoveCabinDeckEventArgs e)
-        {
-            RemoveDeckClicked?.Invoke(this, e);
-        }
-
-        protected virtual void OnRowsChanged(EventArgs e)
-        {
-            RowsChanged?.Invoke(this, e);
-        }
-
-        protected virtual void OnColumnsChanged(EventArgs e)
-        {
-            ColumnsChanged?.Invoke(this, e);
-        }
-
-        protected virtual void OnDeckRendered(EventArgs e)
-        {
-            DeckRendered?.Invoke(this, e);
-        }
-
-        private void layout_deck_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            DeckRendered?.Invoke(this, e);
-        }
-
-        private void deck_view_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            renderer?.RefreshMouseOver(Mouse.GetPosition(deck_view));
-        }
-
-        private void deck_view_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            renderer?.RefreshMouseDown(Mouse.GetPosition(deck_view), true);
-        }
-
-        private void deck_view_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            renderer?.RefreshMouseDown(Mouse.GetPosition(deck_view), false);
-        }
-
-        private void deck_view_MouseLeave(object sender, MouseEventArgs e)
-        {
-            renderer?.RefreshMouseDown(Mouse.GetPosition(deck_view), false);
-            renderer?.RefreshMouseOver(Mouse.GetPosition(deck_view));
-        }
-
-        private void deck_view_ToolTipOpening(object sender, ToolTipEventArgs e)
-        {
-            deck_view.ToolTip = renderer.Tooltip;
         }
     }
 }
