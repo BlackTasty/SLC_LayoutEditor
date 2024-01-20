@@ -71,5 +71,10 @@ namespace SLC_LayoutEditor.UI.Dialogs
                 ConfirmDialog();
             }
         }
+
+        private void GenerateThumbnail_Click(object sender, RoutedEventArgs e)
+        {
+            vm.GenerateThumbnails();
+        }
     }
 }

@@ -224,6 +224,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        public string ThumbnailDirectory { get; set; }
+
         public string ThumbnailFileName => string.Format("{0}.png", Floor);
 
         internal CabinPathGrid PathGrid => pathGrid;

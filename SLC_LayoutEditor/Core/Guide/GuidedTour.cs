@@ -30,7 +30,7 @@ namespace SLC_LayoutEditor.Core.Guide
         private UIElement layoutsArea;
         private UIElement createLayoutButton;
 
-        private CabinLayoutControl editorArea;
+        private CabinDeckControl editorArea;
         private UIElement layoutTitleCard;
         private UIElement makeTemplateButton;
         private UIElement reloadLayoutButton;

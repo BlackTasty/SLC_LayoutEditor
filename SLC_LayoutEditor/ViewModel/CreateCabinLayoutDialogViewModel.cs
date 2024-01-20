@@ -35,11 +35,8 @@ namespace SLC_LayoutEditor.ViewModel
                 SelectedDeckThumbnailIndex = value.HasThumbnails ? 0 : -1;
 
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(SelectedTemplateText));
                 InvokePropertyChanged(nameof(IsTemplateSelected));
-                InvokePropertyChanged(nameof(HasTemplateThumbnails));
-                InvokePropertyChanged(nameof(SelectedDeckThumbnail));
-                InvokePropertyChanged(nameof(HasTemplateMultipleDecks));
+                RefreshThumbnailProperties();
             }
         }
 
@@ -81,6 +78,25 @@ namespace SLC_LayoutEditor.ViewModel
             base("A cabin layout with this name exists already!", null)
         {
 
+        }
+
+        public void GenerateThumbnails()
+        {
+            mSelectedTemplate?.GenerateThumbnails();
+            
+            if (mSelectedTemplate?.HasThumbnails ?? false)
+            {
+                SelectedDeckThumbnailIndex = 0;
+                RefreshThumbnailProperties();
+            }
+        }
+
+        private void RefreshThumbnailProperties()
+        {
+            InvokePropertyChanged(nameof(SelectedTemplateText));
+            InvokePropertyChanged(nameof(HasTemplateThumbnails));
+            InvokePropertyChanged(nameof(SelectedDeckThumbnail));
+            InvokePropertyChanged(nameof(HasTemplateMultipleDecks));
         }
     }
 }

@@ -30,9 +30,9 @@ using Tasty.ViewModel.Communication;
 namespace SLC_LayoutEditor.Controls
 {
     /// <summary>
-    /// Interaction logic for CabinLayoutControl.xaml
+    /// Interaction logic for CabinDeckControl.xaml
     /// </summary>
-    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged, IDisposable
+    public partial class CabinDeckControl : DockPanel, INotifyPropertyChanged, IDisposable
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -62,7 +62,6 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<EventArgs> LayoutRegenerated;
         public event EventHandler<EventArgs> LayoutReloaded;
         public event EventHandler<EventArgs> LayoutLoading;
-        public event EventHandler<CabinSlotClickedEventArgs> CabinSlotClicked;
         public event EventHandler<SelectedSlotsChangedEventArgs> SelectedSlotsChanged;
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<EventArgs> TemplatingModeToggled;
@@ -82,12 +81,12 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for CabinLayout.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinLayoutProperty =
-            DependencyProperty.Register("CabinLayout", typeof(CabinLayout), typeof(CabinLayoutControl), new PropertyMetadata(null,
+            DependencyProperty.Register("CabinLayout", typeof(CabinLayout), typeof(CabinDeckControl), new PropertyMetadata(null,
                 OnCabinLayoutChanged));
 
         private static void OnCabinLayoutChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue != e.NewValue && sender is CabinLayoutControl control)
+            if (e.OldValue != e.NewValue && sender is CabinDeckControl control)
             {
                 CabinLayout oldLayout = e.OldValue as CabinLayout;
                 CabinLayout newLayout = e.NewValue as CabinLayout;
@@ -114,7 +113,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for SelectedCabinSlots.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedCabinSlotsProperty =
-            DependencyProperty.Register("SelectedCabinSlots", typeof(List<CabinSlot>), typeof(CabinLayoutControl), new PropertyMetadata(new List<CabinSlot>()));
+            DependencyProperty.Register("SelectedCabinSlots", typeof(List<CabinSlot>), typeof(CabinDeckControl), new PropertyMetadata(new List<CabinSlot>()));
         #endregion
 
         public ContextMenu GuideMenu
@@ -125,7 +124,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for GuideMenu.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GuideMenuProperty =
-            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(CabinLayoutControl), new PropertyMetadata(null));
+            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(CabinDeckControl), new PropertyMetadata(null));
 
         public string LayoutOverviewTitle => CabinLayout != null ?
             string.Format("{0} {1}", CabinLayout.LayoutName, HasUnsavedChanges ? "*" : "") :
@@ -146,7 +145,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for SelectedCabinSlotFloor.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedCabinSlotFloorProperty =
-            DependencyProperty.Register("SelectedCabinSlotFloor", typeof(int), typeof(CabinLayoutControl), new PropertyMetadata(0));
+            DependencyProperty.Register("SelectedCabinSlotFloor", typeof(int), typeof(CabinDeckControl), new PropertyMetadata(0));
         #endregion
 
         #region SelectedMultiSlotTypeIndex properties
@@ -158,7 +157,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for SelectedMultiSlotTypeIndex.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedMultiSlotTypeIndexProperty =
-            DependencyProperty.Register("SelectedMultiSlotTypeIndex", typeof(int), typeof(CabinLayoutControl), new PropertyMetadata(-1));
+            DependencyProperty.Register("SelectedMultiSlotTypeIndex", typeof(int), typeof(CabinDeckControl), new PropertyMetadata(-1));
         #endregion
 
         public bool IsTemplatingMode
@@ -169,7 +168,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for IsTemplatingMode.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsTemplatingModeProperty =
-            DependencyProperty.Register("IsTemplatingMode", typeof(bool), typeof(CabinLayoutControl), new PropertyMetadata(false, OnIsTemplatingModeChanged));
+            DependencyProperty.Register("IsTemplatingMode", typeof(bool), typeof(CabinDeckControl), new PropertyMetadata(false, OnIsTemplatingModeChanged));
 
         public bool IsSidebarOpen
         {
@@ -179,17 +178,17 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for IsSidebarOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsSidebarOpenProperty =
-            DependencyProperty.Register("IsSidebarOpen", typeof(bool), typeof(CabinLayoutControl), new PropertyMetadata(true));
+            DependencyProperty.Register("IsSidebarOpen", typeof(bool), typeof(CabinDeckControl), new PropertyMetadata(true));
 
         private static void OnIsTemplatingModeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue != e.NewValue && sender is CabinLayoutControl control)
+            if (e.OldValue != e.NewValue && sender is CabinDeckControl control)
             {
                 control.OnTemplatingModeToggled(EventArgs.Empty);
             }
         }
 
-        public CabinLayoutControl()
+        public CabinDeckControl()
         {
             InitializeComponent();
 
@@ -254,7 +253,6 @@ namespace SLC_LayoutEditor.Controls
 
                 foreach (DeckLayoutControl deckLayoutControl in container_decks?.Children.OfType<DeckLayoutControl>())
                 {
-                    deckLayoutControl.CabinSlotClicked -= CabinDeckControl_CabinSlotClicked;
                     deckLayoutControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                     deckLayoutControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
 
@@ -271,7 +269,6 @@ namespace SLC_LayoutEditor.Controls
             //Unhook events before clearing container for deck layout controls
             foreach (DeckLayoutControl cabinDeckControl in container_decks.Children.OfType<DeckLayoutControl>())
             {
-                cabinDeckControl.CabinSlotClicked -= CabinDeckControl_CabinSlotClicked;
                 cabinDeckControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                 cabinDeckControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
                 //cabinDeckControl.LayoutLoading -= CabinDeckControl_LayoutLoading;
@@ -311,7 +308,6 @@ namespace SLC_LayoutEditor.Controls
 
             cabinDeckControl.SelectedSlotsChanged += CabinDeckControl_SelectedSlotsChanged;
 
-            cabinDeckControl.CabinSlotClicked += CabinDeckControl_CabinSlotClicked;
             cabinDeckControl.LayoutRegenerated += CabinDeckControl_LayoutRegenerated;
             cabinDeckControl.RemoveDeckClicked += CabinDeckControl_RemoveDeckClicked;
             //cabinDeckControl.LayoutLoading += CabinDeckControl_LayoutLoading;
@@ -324,6 +320,12 @@ namespace SLC_LayoutEditor.Controls
 
         private void CabinDeckControl_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
         {
+            if (selectedDeck != null &&
+                selectedDeck.CabinDeck.Floor != e.DeckControl.CabinDeck.Floor)
+            {
+                selectedDeck.DeselectSlots();
+            }
+
             SelectedCabinSlots = e.NewSelection.ToList();
             SelectedCabinSlotFloor = e.Floor;
             selectedDeck = e.DeckControl;
@@ -337,7 +339,7 @@ namespace SLC_LayoutEditor.Controls
             Directory.CreateDirectory(CabinLayout.ThumbnailDirectory);
             if (sender is DeckLayoutControl deckLayoutControl)
             {
-                deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory);
+                deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory, true);
             }
         }
 
@@ -355,22 +357,6 @@ namespace SLC_LayoutEditor.Controls
         private void CabinLayout_CabinSlotsChanged(object sender, EventArgs e)
         {
             RefreshState();
-        }
-
-        private void CabinDeckControl_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
-        {
-            if (selectedDeck != null &&
-                (selectedDeck.CabinDeck.Floor != e.DeckControl.CabinDeck.Floor || e.Selected.Count == 0))
-            {
-                selectedDeck.SetSlotSelected(null);
-            }
-
-            SelectedCabinSlots = e.Selected;
-            SelectedCabinSlotFloor = e.Floor;
-            selectedDeck = e.DeckControl;
-
-            OnCabinSlotClicked(e);
-            OnSelectedDeckChanged(new SelectedDeckChangedEventArgs(selectedDeck));
         }
 
         private void CabinDeckControl_LayoutRegenerated(object sender, EventArgs e)
@@ -400,7 +386,6 @@ namespace SLC_LayoutEditor.Controls
                 if (container_decks.Children.OfType<DeckLayoutControl>()
                         .FirstOrDefault(x => x.CabinDeck.Floor == currentRemoveTarget.Floor) is DeckLayoutControl targetControl)
                 {
-                    targetControl.CabinSlotClicked -= CabinDeckControl_CabinSlotClicked;
                     targetControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                     targetControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
                     container_decks.Children.Remove(targetControl);
@@ -489,31 +474,10 @@ namespace SLC_LayoutEditor.Controls
         private void ReloadLayout()
         {
             SelectedCabinSlots.Clear();
-            selectedDeck?.SetMultipleSlotsSelected(SelectedCabinSlots, true);
+            selectedDeck?.SelectSlots(SelectedCabinSlots);
             CabinLayout.LoadCabinLayoutFromFile(true);
             RefreshCabinLayout();
             OnLayoutReloaded(EventArgs.Empty);
-        }
-
-        private void layout_decks_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (Util.IsShiftDown())
-            {
-                deck_scroll.ScrollToHorizontalOffset(deck_scroll.HorizontalOffset - e.Delta);
-            }
-            else
-            {
-                deck_scroll.ScrollToVerticalOffset(deck_scroll.VerticalOffset - e.Delta);
-            }
-            e.Handled = true;
-        }
-
-        private void layout_LayoutRegenerated(object sender, EventArgs e)
-        {
-            if (sender is DeckLayoutControl deckLayout && SelectedCabinSlots != null)
-            {
-                deckLayout.SetMultipleSlotsSelected(SelectedCabinSlots, false);
-            }
         }
 
         public void RefreshState(bool refreshProblemChecks = true)
@@ -590,11 +554,6 @@ namespace SLC_LayoutEditor.Controls
         protected virtual void OnLayoutLoading(EventArgs e)
         {
             LayoutLoading?.Invoke(this, e);
-        }
-
-        protected virtual void OnCabinSlotClicked(CabinSlotClickedEventArgs e)
-        {
-            CabinSlotClicked?.Invoke(this, e);
         }
 
         protected virtual void OnChanged(ChangedEventArgs e)

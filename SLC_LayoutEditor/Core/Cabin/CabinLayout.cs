@@ -185,6 +185,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             CabinDeck deck = new CabinDeck(0, 14, 6);
             deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(deck);
+            UpdateThumbnailDirectory();
             #endregion
         }
 
@@ -196,6 +197,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
 
             currentHash = Util.GetSHA256Hash(ToLayoutFile());
+        }
+
+        private void UpdateThumbnailDirectory()
+        {
+            foreach (CabinDeck cabinDeck in CabinDecks)
+            {
+                cabinDeck.ThumbnailDirectory = ThumbnailDirectory;
+            }
         }
 
         /// <summary>
@@ -294,14 +303,28 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void Rename(string newName)
         {
+            string oldThumbnailDirectory = ThumbnailDirectory;
+
             LayoutName = newName;
             layoutFile.MoveTo(Path.Combine(layoutFile.Directory.FullName, mLayoutName + ".txt"));
+
+            if (Directory.Exists(oldThumbnailDirectory))
+            {
+                Directory.Move(oldThumbnailDirectory, ThumbnailDirectory);
+            }
+            UpdateThumbnailDirectory();
         }
 
         public int CountSlots(CabinSlotType slotType)
         {
             return CabinDecks.SelectMany(x => x.CabinSlots)
                                                     .Where(x => x.Type == slotType).Count();
+        }
+
+        public void LoadLayoutData()
+        {
+            string layoutCode = File.ReadAllText(layoutFile.FullName);
+            LoadCabinLayout(layoutCode, true);
         }
 
         private string GetIssuesList(bool getSevereIssues)
@@ -328,25 +351,28 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
             }
 
-            int lastFloor = mCabinDecks.Max(x => x.Floor);
-            int firstFloor = mCabinDecks.Min(x => x.Floor);
-            foreach (CabinDeck cabinDeck in CabinDecks)
+            if (mCabinDecks.Count > 0)
             {
-                if (getSevereIssues && cabinDeck.HasSevereIssues ||
-                    !getSevereIssues && cabinDeck.HasMinorIssues)
+                int lastFloor = mCabinDecks.Max(x => x.Floor);
+                int firstFloor = mCabinDecks.Min(x => x.Floor);
+                foreach (CabinDeck cabinDeck in CabinDecks)
                 {
-                    if (sb.Length > 0)
+                    if (getSevereIssues && cabinDeck.HasSevereIssues ||
+                        !getSevereIssues && cabinDeck.HasMinorIssues)
                     {
-                        sb.Append("\n\n");
-                    }
-                    sb.AppendLine(cabinDeck.FloorName);
-                    if (cabinDeck.Floor != lastFloor)
-                    {
-                        sb.Append(cabinDeck.GetIssuesList(getSevereIssues, true));
-                    }
-                    else
-                    {
-                        sb.Append(cabinDeck.GetIssuesList(getSevereIssues, true));
+                        if (sb.Length > 0)
+                        {
+                            sb.Append("\n\n");
+                        }
+                        sb.AppendLine(cabinDeck.FloorName);
+                        if (cabinDeck.Floor != lastFloor)
+                        {
+                            sb.Append(cabinDeck.GetIssuesList(getSevereIssues, true));
+                        }
+                        else
+                        {
+                            sb.Append(cabinDeck.GetIssuesList(getSevereIssues, true));
+                        }
                     }
                 }
             }
@@ -365,9 +391,9 @@ namespace SLC_LayoutEditor.Core.Cabin
             sb.Append(text);
         }
 
-        private void LoadCabinLayout(string layout)
+        private void LoadCabinLayout(string layoutCode, bool skipRefresh = false)
         {
-            string[] decks = layout.ToUpper().Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] decks = layoutCode.ToUpper().Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int floor = 0; floor < decks.Length; floor++)
             {
@@ -381,8 +407,13 @@ namespace SLC_LayoutEditor.Core.Cabin
                 mCabinDecks.Add(deck);
             }
 
-            RefreshCapacities();
-            RefreshProblemChecks();
+            UpdateThumbnailDirectory();
+            if (!skipRefresh)
+            {
+                RefreshCapacities();
+                RefreshProblemChecks();
+            }
+
             isLoaded = true;
         }
 

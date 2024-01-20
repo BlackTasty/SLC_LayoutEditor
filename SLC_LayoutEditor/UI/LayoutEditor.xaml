@@ -146,11 +146,10 @@
             </Style.Triggers>
         </Style>
     </Grid.Style>
-    <controls:CabinLayoutControl x:Name="control_layout"
+    <controls:CabinDeckControl x:Name="control_layout"
                                  IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                                  CabinLayout="{Binding ActiveLayout, UpdateSourceTrigger=PropertyChanged}"
                                  IsSidebarOpen="{Binding IsSidebarOpen}"
-                                 CabinSlotClicked="CabinLayout_CabinSlotClicked"
                                  SelectedSlotsChanged="CabinLayout_SelectedSlotsChanged"
                                  Changed="CabinLayoutChanged"
                                  TemplatingModeToggled="Layout_TemplatingModeToggled"
@@ -164,8 +163,8 @@
                                  controls:GuideAssist.TextPosition="Over"
                                  controls:GuideAssist.IsCircularCutout="False"
                                  controls:GuideAssist.Margin="32">
-        <controls:CabinLayoutControl.Style>
-            <Style TargetType="controls:CabinLayoutControl">
+        <controls:CabinDeckControl.Style>
+            <Style TargetType="controls:CabinDeckControl">
                 <Setter Property="Grid.Column" Value="1"/>
                 <Setter Property="Grid.ColumnSpan" Value="2"/>
                 <Style.Triggers>
@@ -175,8 +174,8 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </controls:CabinLayoutControl.Style>
-    </controls:CabinLayoutControl>
+        </controls:CabinDeckControl.Style>
+    </controls:CabinDeckControl>
     <controls:TodoList x:Name="todoList" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Top">
         <controls:TodoList.Style>
             <Style TargetType="controls:TodoList">

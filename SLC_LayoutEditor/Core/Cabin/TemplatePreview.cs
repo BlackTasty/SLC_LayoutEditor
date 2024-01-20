@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SLC_LayoutEditor.Core.Cabin.Renderer;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
@@ -8,6 +9,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 {
     public class TemplatePreview : ViewModelBase
     {
+        private readonly CabinLayout template;
+
         private readonly string templateName;
         private readonly string templatePath;
         private readonly List<string> thumbnailPaths = new List<string>();
@@ -33,9 +36,53 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public TemplatePreview(CabinLayout template)
         {
+            this.template = template;
+
             templateName = template.LayoutName;
             templatePath = template.FilePath;
             //thumbnailPath = template.ThumbnailDirectory;
+            LoadThumbnails();
+        }
+
+        public TemplatePreview()
+        {
+            isDefault = true;
+            templateName = "Start from scratch";
+        }
+
+        public void GenerateThumbnails()
+        {
+            if (isDefault)
+            {
+                return;
+            }
+
+            if (!template.IsLoaded)
+            {
+                template.LoadLayoutData();
+            }
+            foreach (CabinDeck cabinDeck in template.CabinDecks)
+            {
+                CabinDeckRenderer renderer = new CabinDeckRenderer(cabinDeck);
+                renderer.GenerateThumbnail();
+            }
+
+            LoadThumbnails();
+            InvokePropertyChanged(nameof(HasThumbnails));
+            InvokePropertyChanged(nameof(Thumbnails));
+            InvokePropertyChanged(nameof(DeckNames));
+        }
+
+        public ImageSource GetThumbnailForDeck(int index)
+        {
+            return HasThumbnails && thumbnails.Count > index ? thumbnails[index] : null;
+        }
+
+        private void LoadThumbnails()
+        {
+            thumbnailPaths.Clear();
+            deckNames.Clear();
+            thumbnails.Clear();
             if (Directory.Exists(template.ThumbnailDirectory))
             {
                 foreach (FileInfo thumbnailFile in new DirectoryInfo(template.ThumbnailDirectory).EnumerateFiles("*.png"))
@@ -48,17 +95,6 @@ namespace SLC_LayoutEditor.Core.Cabin
                     }
                 }
             }
-        }
-
-        public TemplatePreview()
-        {
-            isDefault = true;
-            templateName = "Start from scratch";
-        }
-
-        public ImageSource GetThumbnailForDeck(int index)
-        {
-            return HasThumbnails && thumbnails.Count > index ? thumbnails[index] : null;
         }
 
         public override string ToString()

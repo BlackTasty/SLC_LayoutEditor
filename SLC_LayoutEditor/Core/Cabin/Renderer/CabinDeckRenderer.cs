@@ -13,7 +13,9 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
+using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ScrollBar;
 
@@ -33,6 +35,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         private const double BUTTONS_CORNER_RADIUS = 4;
         private const double SLOT_CORNER_RADIUS = 4;
         private const double DPI = 96;
+        private const double THUMBNAIL_SCALING = .5;
 
         private static readonly Brush DIVIDER_BRUSH = (Brush)App.Current.FindResource("DisabledColorBrush");
 
@@ -106,6 +109,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         private IHitResult lastMouseOverHitResult;
         private IHitResult lastMouseDownHitResult;
 
+        private bool isGeneratingThumbnail;
+
         public WriteableBitmap Output => output;
 
         public string Tooltip => lastMouseOverHitResult?.Tooltip;
@@ -121,6 +126,68 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         {
             this.cabinDeck = cabinDeck;
             RenderCabinDeck();
+        }
+
+        public bool GenerateThumbnail(bool overwrite = false)
+        {
+            string thumbnailPath = System.IO.Path.Combine(cabinDeck.ThumbnailDirectory, cabinDeck.ThumbnailFileName);
+            Directory.CreateDirectory(cabinDeck.ThumbnailDirectory);
+            bool success = true;
+
+            if (overwrite || !File.Exists(thumbnailPath))
+            {
+                Logger.Default.WriteLog("Creating thumbnail for cabin deck floor {0}...", cabinDeck.Floor);
+                isGeneratingThumbnail = true;
+                IEnumerable<CabinSlot> highlightedSlots = slotHitResults.Where(x => x.CabinSlot.IsSelected || x.CabinSlot.SlotIssues.IsProblematic).Select(x => x.CabinSlot);
+
+                foreach (var slot in highlightedSlots)
+                {
+                    RedrawCabinSlot(slot, false);
+                    slot.IsDirty = true;
+                }
+
+                try
+                {
+                    Int32Rect cropRect = new Int32Rect((int)slotAreaRect.X - 1, (int)slotAreaRect.Y - 1, (int)slotAreaRect.Width + 1, (int)slotAreaRect.Height + 1);
+
+                    Logger.Default.WriteLog("Rendering cabin deck onto bitmap... (source width: {0}px; source height: {1}px)", cropRect.Width, cropRect.Height);
+
+                    Logger.Default.WriteLog("Cropping bitmap... (cropped width: {0}px; cropped height: {1}px)", cropRect.Width, cropRect.Height);
+                    CroppedBitmap croppedBitmap = new CroppedBitmap(output, cropRect);
+
+                    double scalingFactor = .5;
+                    Logger.Default.WriteLog("Scaling down bitmap... (final width: {0}px; final height: {1}px)", cropRect.Width * scalingFactor, cropRect.Height * scalingFactor);
+                    TransformedBitmap transformedBitmap = new TransformedBitmap(croppedBitmap, new ScaleTransform(scalingFactor, scalingFactor));
+
+                    Logger.Default.WriteLog("Finalizing thumbnail...");
+                    PngBitmapEncoder pngImage = new PngBitmapEncoder();
+                    pngImage.Frames.Add(BitmapFrame.Create(transformedBitmap));
+
+                    Util.SafeDeleteFile(thumbnailPath);
+                    using (Stream fileStream = File.Create(thumbnailPath))
+                    {
+                        pngImage.Save(fileStream);
+                    }
+                    Logger.Default.WriteLog("Thumbnail saved successfully for cabin deck floor {0}!", cabinDeck.Floor);
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Default.WriteLog("Unable to create a thumbnail for cabin deck floor {0}!", ex, LogType.WARNING, cabinDeck.Floor);
+                    success = false;
+                }
+                finally
+                {
+                    isGeneratingThumbnail = false;
+
+                    foreach (var slot in highlightedSlots)
+                    {
+                        RedrawCabinSlot(slot, false);
+                    }
+                }
+            }
+
+            return success;
         }
 
         public void RenderCabinDeck()
@@ -207,19 +274,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             RedrawCabinSlot(e.CabinSlot, isMouseOver);
         }
 
-        public void SelectAllSlots()
-        {
-            SelectSlots(slotHitResults.Select(x => x.CabinSlot));
-        }
-
-        public void SelectSlotsInArea(Rect selectionRect)
-        {
-            IEnumerable<CabinSlot> targetSlots = slotHitResults.Where(x => x.Rect.IntersectsWith(selectionRect)).Select(x => x.CabinSlot);
-
-            DeselectSlots(targetSlots);
-            SelectSlots(targetSlots);
-        }
-
         public void CheckMouseOver(Point relativeMousePosition)
         {
             if (CheckElementMouseOver(relativeMousePosition))
@@ -228,7 +282,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
         }
 
-        public void CheckMouseDown(Point relativeMousePosition, bool isMouseDown)
+        public void CheckMouseClick(Point relativeMousePosition, bool isMouseDown)
         {
             if (isMouseDown && lastMouseOverHitResult != null)
             {
@@ -243,6 +297,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             {
                 bool isStillOnElement = lastMouseDownHitResult.Rect.Contains(relativeMousePosition);
 
+                // The element the cursor is over is a slot
                 if (lastMouseDownHitResult.IsSlot && lastMouseDownHitResult is SlotHitResult slotHitResult)
                 {
                     if (isStillOnElement) // If cursor is still on the same element, set it selected
@@ -256,6 +311,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                         OnSelectedSlotsChanged(new SelectedSlotsChangedEventArgs(slotHitResults.Select(x => x.CabinSlot).Where(x => x.IsSelected)));
                     }
                 }
+                // The element is a button
                 else if (lastMouseDownHitResult is ButtonHitResult buttonHitResult)
                 {
                     RedrawButton(lastMouseDownHitResult, lastMouseOverHitResult != null && lastMouseOverHitResult == lastMouseDownHitResult, false,
@@ -277,6 +333,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                     SelectSlots(targetSlots);
                                 }
                                 break;
+                            case ButtonActionType.ADD:
+                                bool isInsert = buttonHitResult.Tag.EndsWith("add");
+                                break;
+                            case ButtonActionType.REMOVE:
+                                break;
                         }
                     }
                 }
@@ -284,20 +345,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
         }
 
-        private void DeselectSlots(IEnumerable<CabinSlot> selectedSlots)
-        {
-            if (!Util.IsShiftDown() && !Util.IsControlDown()) // If no modifier keys are pressed, remove selection from all other selected slots
-            {
-                foreach (CabinSlot selectedSlot in slotHitResults.Select(x => x.CabinSlot).Where(x => x.IsSelected && !(selectedSlots?.Contains(x) ?? false)))
-                {
-                    selectedSlot.IsDirty = true;
-                    selectedSlot.IsSelected = false;
-                    RedrawCabinSlot(selectedSlot, false);
-                }
-            }
-        }
-
-        private void SelectSlots(IEnumerable<CabinSlot> targetSlots)
+        public void SelectSlots(IEnumerable<CabinSlot> targetSlots)
         {
             bool isSelected = !Util.IsControlDown();
 
@@ -309,6 +357,40 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
 
             OnSelectedSlotsChanged(new SelectedSlotsChangedEventArgs(slotHitResults.Select(x => x.CabinSlot).Where(x => x.IsSelected)));
+        }
+
+        public void SelectAllSlots()
+        {
+            SelectSlots(slotHitResults.Select(x => x.CabinSlot));
+        }
+
+        public void SelectSlotsInArea(Rect selectionRect)
+        {
+            IEnumerable<CabinSlot> targetSlots = slotHitResults.Where(x => x.Rect.IntersectsWith(selectionRect)).Select(x => x.CabinSlot);
+
+            DeselectSlots(targetSlots);
+            SelectSlots(targetSlots);
+        }
+
+        public void DeselectAllSlots()
+        {
+            DeselectSlots(slotHitResults.Where(x => x.CabinSlot.IsSelected).Select(x => x.CabinSlot), true);
+        }
+
+        private void DeselectSlots(IEnumerable<CabinSlot> selectedSlots, bool forceDeselect = false)
+        {
+            if (!Util.IsShiftDown() && !Util.IsControlDown()) // If no modifier keys are pressed, remove selection from all other selected slots
+            {
+                IEnumerable<CabinSlot> slotsToDeselect = (!forceDeselect ? slotHitResults.Where(x => x.CabinSlot.IsSelected &&
+                !(selectedSlots?.Contains(x.CabinSlot) ?? false)) : slotHitResults.Where(x => x.CabinSlot.IsSelected)).Select(x => x.CabinSlot);
+
+                foreach (CabinSlot selectedSlot in slotsToDeselect)
+                {
+                    selectedSlot.IsDirty = true;
+                    selectedSlot.IsSelected = false;
+                    RedrawCabinSlot(selectedSlot, false);
+                }
+            }
         }
 
         private bool CheckElementMouseOver(Point relativeMousePosition)
@@ -388,106 +470,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 {
                     RedrawButton(hitResult, true, false, additionalRerenderData);
                 }
-            }
-
-            bool hasChanged = lastMouseOverHitResult != hitResult;
-            lastMouseOverHitResult = hitResult;
-            lastAdditionalHitResult = additionalRerenderData;
-
-            return hasChanged;
-        }
-
-        private bool CheckSlotMouseOver(Point relativeMousePosition)
-        {
-            SlotHitResult hitResult = null;
-            if (slotAreaRect.Contains(relativeMousePosition))
-            {
-                hitResult = slotHitResults.FirstOrDefault(x => x.Rect.Contains(relativeMousePosition));
-            }
-
-            if (lastMouseOverHitResult != null)
-            {
-                if (hitResult != null &&
-                    lastMouseOverHitResult.Rect == hitResult.Rect)
-                {
-                    return false;
-                }
-
-                if (lastMouseOverHitResult.IsSlot && lastMouseOverHitResult is  SlotHitResult slotHitResult)
-                {
-                    slotHitResult.CabinSlot.IsDirty = true;
-                    RedrawCabinSlot(slotHitResult.CabinSlot, false);
-                }
-            }
-
-            if (hitResult != null)
-            {
-                hitResult.CabinSlot.IsDirty = true;
-                RedrawCabinSlot(hitResult.CabinSlot, true);
-            }
-
-            bool hasChanged = lastMouseOverHitResult != hitResult;
-            lastMouseOverHitResult = hitResult;
-
-            return hasChanged;
-        }
-
-        private bool CheckButtonMouseOver(Point relativeMousePosition)
-        {
-            ButtonHitResult hitResult = null;
-            ButtonHitResult additionalRerenderData = null;
-            bool skipRectCheck = false;
-
-            if (!slotAreaRect.Contains(relativeMousePosition))
-            {
-                IEnumerable<ButtonHitResult> hitResults = buttonHitResults.Where(x => x.Rect.Contains(relativeMousePosition));
-                int resultCount = hitResults.Count();
-
-                if (resultCount == 1)
-                {
-                    hitResult = hitResults.First();
-                }
-                else if (resultCount > 1)
-                {
-                    foreach (ButtonHitResult potentialResult in hitResults)
-                    {
-                        Point offsetPosition = (relativeMousePosition - potentialResult.Rect.Location).VectorToPoint();
-                        if (potentialResult.IsTriangle && potentialResult.IsCursorInsideTriangle(offsetPosition))
-                        {
-                            hitResult = potentialResult;
-                            additionalRerenderData = hitResults.First(x => x != hitResult);
-                            skipRectCheck = true;
-                            break;
-                        }
-                        else if (!potentialResult.IsTriangle)
-                        {
-                            hitResult = potentialResult;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (lastMouseOverHitResult != null &&
-                lastMouseOverHitResult == lastMouseDownHitResult)
-            {
-                return false;
-            }
-
-            if (lastMouseOverHitResult != null)
-            {
-                if (!skipRectCheck && hitResult != null &&
-                    lastMouseOverHitResult.Rect == hitResult.Rect)
-                {
-                    return false;
-                }
-
-                RedrawButton(lastMouseOverHitResult, false, false, lastAdditionalHitResult);
-            }
-
-            if (hitResult != null)
-            {
-                RedrawButton(hitResult, true, false, additionalRerenderData);
             }
 
             bool hasChanged = lastMouseOverHitResult != hitResult;
@@ -634,7 +616,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         private void RedrawCabinSlot(CabinSlot cabinSlot, bool isMouseOver)
         {
-            if (!cabinSlot.IsDirty)
+            if (!cabinSlot.IsDirty && !isGeneratingThumbnail)
             {
                 return;
             }
@@ -671,7 +653,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
             GetColorsForCabinSlot(cabinSlot, out Brush background, out Pen borderColor);
 
-            if (!RenderProblematicAfter(cabinSlot) && cabinSlot.SlotIssues.IsProblematic)
+            if (!isGeneratingThumbnail && !RenderProblematicAfter(cabinSlot) && 
+                cabinSlot.SlotIssues.IsProblematic)
             {
                 context.DrawRoundedRectangle(ERROR_HIGHLIGHT_BACKGROUND, null, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
             }
@@ -681,7 +664,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 context.DrawRoundedRectangle(background, borderColor, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
             }
 
-            if (RenderProblematicAfter(cabinSlot) && 
+            if (!isGeneratingThumbnail && RenderProblematicAfter(cabinSlot) && 
                 cabinSlot.SlotIssues.IsProblematic)
             {
                 context.DrawRoundedRectangle(ERROR_HIGHLIGHT_BACKGROUND, null, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
@@ -708,13 +691,13 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
 
             Size highlightSize = SLOT_DIMENSIONS.Modify(2, 2);
-            if (cabinSlot.IsSelected)
+            if (!isGeneratingThumbnail && cabinSlot.IsSelected)
             {
                 context.DrawRoundedRectangle(SLOT_SELECTED_BRUSH, null, new Rect(new Point(), highlightSize),
                     SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
             }
 
-            if (isMouseOver)
+            if (!isGeneratingThumbnail && isMouseOver)
             {
                 context.DrawRectangle(SLOT_MOUSE_OVER_BRUSH, null, new Rect(new Point(), highlightSize));
             }

@@ -298,15 +298,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Controls\CabinSlotControl.xaml.cs">
-      <DependentUpon>CabinSlotControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converter\EnumDescriptionTypeConverter.cs" />
     <Compile Include="Converter\NotNullToBooleanConverter.cs" />
     <Compile Include="Converter\NotNullToVisibilityConverter.cs" />
     <Compile Include="Core\Enum\EnumBindingSourceExtension.cs" />
     <Compile Include="Core\Events\CabinSlotChangedEventArgs.cs" />
-    <Compile Include="Core\Events\CabinSlotClickedEventArgs.cs" />
     <Compile Include="Core\JsonFile.cs" />
     <Compile Include="Core\Util.cs" />
     <Compile Include="UI\LayoutEditor.xaml.cs">
@@ -317,11 +313,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\DeckLayoutControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\CabinSlotControl.xaml">
+    <Page Include="Controls\CabinDeckControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -385,8 +377,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\DeckLayoutControl.xaml.cs">
-      <DependentUpon>DeckLayoutControl.xaml</DependentUpon>
+    <Compile Include="Controls\CabinDeckControl.xaml.cs">
+      <DependentUpon>CabinDeckControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\AppSettings.cs" />
     <Compile Include="Core\Cabin\CabinDeck.cs" />

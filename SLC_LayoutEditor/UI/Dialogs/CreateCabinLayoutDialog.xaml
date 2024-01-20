@@ -89,21 +89,26 @@
                     Visibility="{Binding SelectedTemplate.IsDefault, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <Grid>
                     <Image Source="{Binding SelectedDeckThumbnail}" Height="180" Stretch="Uniform"/>
-                    <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundSecondaryColorBrush}"
-                           VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HasTemplateThumbnails}" Value="False">
-                                        <Setter Property="Text" Value="Preview unavailable (no thumbnails)"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsTemplateSelected}" Value="False">
-                                        <Setter Property="Text" Value="Select a template"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasTemplateThumbnails}" Value="False">
+                                            <Setter Property="Text" Value="Preview unavailable (no thumbnails)"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsTemplateSelected}" Value="False">
+                                            <Setter Property="Text" Value="Select a template"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <Button Margin="8" HorizontalAlignment="Center" Style="{StaticResource WarnIconButtonStyle}"
+                                Content="{StaticResource Refresh}" ToolTip="Generate thumbnail"
+                                Click="GenerateThumbnail_Click"
+                                Visibility="{Binding SelectedTemplate.HasThumbnails, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                    </StackPanel>
                 </Grid>
             </Border>
         </StackPanel>

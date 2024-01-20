@@ -41,6 +41,16 @@ namespace SLC_LayoutEditor.Core.Cabin
             RefreshProblematicFlag(wasProblematic != IsProblematic);
         }
 
+        public void RefreshProblematicFlag(bool hasStateChanged)
+        {
+            if (hasStateChanged)
+            {
+                parent.IsDirty = true;
+                OnProblematicChanged(EventArgs.Empty);
+                InvokePropertyChanged(nameof(IsProblematic));
+            }
+        }
+
         public void ToggleIssueHighlighting(string key, bool showHighlighting)
         {
             if (listedIssues.ContainsKey(key))
@@ -55,16 +65,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             bool wasProblematic = IsProblematic;
             listedIssues.Clear();
             RefreshProblematicFlag(wasProblematic != IsProblematic);
-        }
-
-        public void RefreshProblematicFlag(bool hasStateChanged)
-        {
-            if (hasStateChanged)
-            {
-                parent.IsDirty = true;
-                OnProblematicChanged(EventArgs.Empty);
-                InvokePropertyChanged(nameof(IsProblematic));
-            }
         }
 
         public bool HasAnyOtherIssues(string currentIssueKey)

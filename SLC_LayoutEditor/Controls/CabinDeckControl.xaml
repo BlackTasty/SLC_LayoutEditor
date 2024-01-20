@@ -90,14 +90,6 @@
         </Grid>
     </Border>
     <Grid Margin="40,24,16,24" >
-        <Canvas x:Name="layout_deck"
-                PreviewMouseLeftButtonDown="MultiSelect_PreviewMouseLeftButtonDown"
-                PreviewMouseLeftButtonUp="MultiSelect_PreviewMouseLeftButtonUp"
-                PreviewMouseMove="MultiSelect_PreviewMouseMove"
-                MouseLeave="MultiSelect_MouseLeave"
-                Loaded="layout_deck_Loaded"
-                SizeChanged="layout_deck_SizeChanged"
-                Background="Transparent"/>
         <Image x:Name="deck_view"
                RenderOptions.BitmapScalingMode="NearestNeighbor"
                RenderOptions.EdgeMode="Aliased"

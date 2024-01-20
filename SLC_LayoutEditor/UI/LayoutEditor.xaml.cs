@@ -639,18 +639,6 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void CabinLayout_CabinSlotClicked(object sender, CabinSlotClickedEventArgs e)
-        {
-            vm.SelectedCabinSlots = e.Selected;
-            vm.SelectedCabinSlotFloor = e.Floor;
-
-            if (App.GuidedTour.IsAwaitingBorderSlotSelection && e.Selected.All(x => e.DeckControl.CabinDeck.IsSlotValidDoorPosition(x)))
-            {
-                todoList.ForceCompleteEntry(0, true);
-                App.GuidedTour.ContinueTour(true);
-            }
-        }
-
         private void Layout_TemplatingModeToggled(object sender, EventArgs e)
         {
             vm.IsTemplatingMode = control_layout.IsTemplatingMode;

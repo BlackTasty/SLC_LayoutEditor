@@ -400,6 +400,7 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged(nameof(SlotSettingsGuideDescription));
                 InvokePropertyChanged(nameof(RequiredLettersForAutomation));
                 InvokePropertyChanged(nameof(SeatLettersError));
+                InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
             }
         }
         
