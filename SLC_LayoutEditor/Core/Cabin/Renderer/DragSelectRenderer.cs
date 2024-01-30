@@ -67,8 +67,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     context.DrawRoundedRectangle(BACKGROUND, BORDER_BRUSH, selectionRect, CORNER_RADIUS, CORNER_RADIUS);
                 }
 
-                return drawingVisual.RenderVisual(renderer.SlotAreaRect.Width + renderer.SlotAreaRect.X, 
-                    renderer.SlotAreaRect.Height + renderer.SlotAreaRect.Y);
+                return drawingVisual.RenderVisual(renderer.SlotAreaRect.Right, 
+                    renderer.SlotAreaRect.Bottom);
             }
             else
             {

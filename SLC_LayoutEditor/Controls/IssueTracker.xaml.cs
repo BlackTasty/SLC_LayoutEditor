@@ -54,44 +54,54 @@ namespace SLC_LayoutEditor.Controls
 
         private void DuplicateSeats_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_DUPLICATE_SEAT, CabinSlotType.BusinessClassSeat, CabinSlotType.EconomyClassSeat,
+            ToggleProblemHighlight(e, CabinSlotIssueType.DUPLICATE_SEAT, CabinSlotType.BusinessClassSeat, CabinSlotType.EconomyClassSeat,
                 CabinSlotType.FirstClassSeat, CabinSlotType.PremiumClassSeat, CabinSlotType.SupersonicClassSeat, CabinSlotType.UnavailableSeat);
         }
 
         private void StairwayPositions_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_STAIRWAY, CabinSlotType.Stairway);
+            ToggleProblemHighlight(e, CabinSlotIssueType.STAIRWAY, CabinSlotType.Stairway);
         }
 
         private void DuplicateDoors_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_DOORS_DUPLICATE, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
+            ToggleProblemHighlight(e, CabinSlotIssueType.DOORS_DUPLICATE, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
         }
 
         private void CateringAndLoadingBays_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_DOORS_SERVICE_WRONG_SIDE, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
+            ToggleProblemHighlight(e, CabinSlotIssueType.DOORS_SERVICE_WRONG_SIDE, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
         }
 
         private void InvalidPositionedSlots_ShowProblemsChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_INVALID_INTERIOR_POSITIONS, CabinSlotType.BusinessClassSeat, CabinSlotType.EconomyClassSeat,
+            ToggleProblemHighlight(e, CabinSlotIssueType.INVALID_POSITION_INTERIOR, CabinSlotType.BusinessClassSeat, CabinSlotType.EconomyClassSeat,
                 CabinSlotType.FirstClassSeat, CabinSlotType.PremiumClassSeat, CabinSlotType.SupersonicClassSeat, CabinSlotType.UnavailableSeat,
-                CabinSlotType.Galley, CabinSlotType.Toilet, CabinSlotType.Kitchen, CabinSlotType.Intercom, CabinSlotType.Stairway, 
+                CabinSlotType.Galley, CabinSlotType.Toilet, CabinSlotType.Kitchen, CabinSlotType.Intercom, CabinSlotType.Stairway,
                 CabinSlotType.ServiceEndPoint, CabinSlotType.ServiceStartPoint);
+        }
+
+        private void InvalidPositionedCockpitSlots_ShowProblemsChanged(object sender, ShowIssuesChangedEventArgs e)
+        {
+            ToggleProblemHighlight(e, CabinSlotIssueType.INVALID_POSITION_COCKPIT, CabinSlotType.Cockpit);
+        }
+
+        private void InvalidPositionedDoorSlots_ShowProblemsChanged(object sender, ShowIssuesChangedEventArgs e)
+        {
+            ToggleProblemHighlight(e, CabinSlotIssueType.INVALID_POSITION_DOOR, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
         }
 
         private void UnreachableSlots_ShowProblemsChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, FixedValues.KEY_ISSUE_UNREACHABLE_SLOTS, CabinSlotType.BusinessClassSeat, CabinSlotType.EconomyClassSeat,
+            ToggleProblemHighlight(e, CabinSlotIssueType.SLOT_UNREACHABLE, CabinSlotType.BusinessClassSeat, CabinSlotType.EconomyClassSeat,
                 CabinSlotType.FirstClassSeat, CabinSlotType.PremiumClassSeat, CabinSlotType.SupersonicClassSeat, CabinSlotType.UnavailableSeat,
                 CabinSlotType.Door, CabinSlotType.CateringDoor, CabinSlotType.LoadingBay, CabinSlotType.Cockpit, CabinSlotType.Galley, CabinSlotType.Toilet, 
                 CabinSlotType.Kitchen, CabinSlotType.Intercom, CabinSlotType.Stairway);
         }
 
-        private void ToggleProblemHighlight(ShowIssuesChangedEventArgs e, string issueKey, params CabinSlotType[] targetTypes)
+        private void ToggleProblemHighlight(ShowIssuesChangedEventArgs e, CabinSlotIssueType issue, params CabinSlotType[] targetTypes)
         {
-            OnShowIssuesChanged(new ShowIssuesChangedEventArgs(e, issueKey, targetTypes.ToList()));
+            OnShowIssuesChanged(new ShowIssuesChangedEventArgs(e, issue, targetTypes.ToList()));
         }
 
         private void DeckProblemsList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

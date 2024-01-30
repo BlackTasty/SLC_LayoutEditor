@@ -167,6 +167,29 @@ namespace SLC_LayoutEditor.Core
 
             return renderBitmap;
         }
+        public static WriteableBitmap Resize(this WriteableBitmap source, int newWidth, int newHeight)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (newWidth <= 0 || newHeight <= 0)
+                throw new ArgumentException("New width and height must be greater than zero.");
+
+            // Create a new WriteableBitmap with the specified dimensions
+            WriteableBitmap resizedBitmap = new WriteableBitmap(newWidth, newHeight, source.DpiX, source.DpiY, source.Format, null);
+
+            // Create a DrawingVisual to draw the original image onto
+            DrawingVisual drawingVisual = new DrawingVisual();
+
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                // Draw the original image onto the DrawingVisual
+                drawingContext.DrawImage(source, new Rect(0, 0, source.Width, source.Height));
+            }
+
+            // Render the DrawingVisual to the new WriteableBitmap
+            return new WriteableBitmap(drawingVisual.RenderVisual(newWidth, newHeight));
+        }
 
         public static void RedrawArea(this WriteableBitmap writeableBitmap, BitmapSource source, Rect redrawRect)
         {

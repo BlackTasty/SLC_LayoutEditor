@@ -792,13 +792,14 @@ namespace SLC_LayoutEditor.UI
         {
             if (vm.ActiveLayout?.CabinDecks != null)
             {
-                foreach (CabinSlot cabinSlot in vm.ActiveLayout.CabinDecks
-                                                    .SelectMany(x => x.CabinSlots)
-                                                    .Where(x => e.TargetTypes.Contains(x.Type)))
+                IEnumerable<CabinSlot> targetSlots = (e.Floor != -1 ? vm.ActiveLayout.CabinDecks.Where(x => x.Floor == e.Floor) : vm.ActiveLayout.CabinDecks)
+                    .SelectMany(x => x.CabinSlots).Where(x => e.TargetTypes.Contains(x.Type));
+
+                foreach (CabinSlot cabinSlot in targetSlots)
                 {
-                    cabinSlot.SlotIssues.ToggleIssueHighlighting(e.IssueKey, e.ShowProblems);
+                    cabinSlot.SlotIssues.ToggleIssueHighlighting(e.Issue, e.ShowProblems);
                     var test = e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid);
-                    cabinSlot.SlotIssues.ToggleIssue(e.IssueKey, e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid));
+                    cabinSlot.SlotIssues.ToggleIssue(e.Issue, e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid));
                 }
             }
         }

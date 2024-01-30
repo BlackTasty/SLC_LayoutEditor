@@ -237,7 +237,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
         }
 
         public ConfirmationDialog(string title, string message,
-            DialogButtonConfig leftButtonConfig, DialogButtonConfig middleButtonConfig, DialogButtonConfig rightButtonConfig) : this(title, message, DialogType.Custom)
+            DialogButtonConfig leftButtonConfig, DialogButtonConfig middleButtonConfig, DialogButtonConfig rightButtonConfig, object senderOverride = null) : this(title, message, DialogType.Custom, senderOverride)
         {
             LeftButtonText = leftButtonConfig.Text;
             MiddleButtonText = middleButtonConfig.Text;

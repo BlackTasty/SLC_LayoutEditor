@@ -89,7 +89,7 @@
             </StackPanel>
         </Grid>
     </Border>
-    <Grid Margin="40,24,16,24" >
+    <Grid Margin="24,8,0,0" >
         <Image x:Name="deck_view"
                RenderOptions.BitmapScalingMode="NearestNeighbor"
                RenderOptions.EdgeMode="Aliased"
@@ -101,6 +101,7 @@
         <Image x:Name="deck_dragselect"
                RenderOptions.BitmapScalingMode="NearestNeighbor"
                RenderOptions.EdgeMode="Aliased"
-               IsHitTestVisible="False"/>
+               IsHitTestVisible="False"
+               Margin="0,0,16,16"/>
     </Grid>
 </StackPanel>

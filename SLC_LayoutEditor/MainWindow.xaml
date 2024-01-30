@@ -17,6 +17,7 @@
         <vm:MainViewModel/>
     </Window.DataContext>
     <Window.InputBindings>
+        <!-- Basic commands -->
         <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding OpenLayoutFolderCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenLayoutInTextEditor}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
@@ -28,7 +29,29 @@
         <KeyBinding Key="A" Modifiers="Ctrl" Command="{Binding SelectAllSlotsOnDeckCommand}" CommandParameter="{Binding SelectedDeck}"/>
         <KeyBinding Key="K" Modifiers="Ctrl" Command="{Binding ShowKeybindsWindowCommand}"/>
 
+        <!-- Dialog commands -->
         <KeyBinding Key="Esc" Command="{Binding CancelDialogCommand}" CommandParameter="{Binding Dialog}"/>
+        
+        <!-- Slot type commands -->
+        <KeyBinding Key="A" Modifiers="Alt" Command="{Binding SlotTypeAisleCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="W" Modifiers="Alt" Command="{Binding SlotTypeWallCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D" Modifiers="Ctrl+Alt" Command="{Binding SlotTypeDoorCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="L" Modifiers="Ctrl+Alt" Command="{Binding SlotTypeLoadingBayCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="C" Modifiers="Ctrl+Alt" Command="{Binding SlotTypeCateringDoorCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="C" Modifiers="Alt" Command="{Binding SlotTypeCockpitCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="G" Modifiers="Alt" Command="{Binding SlotTypeGalleyCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="T" Modifiers="Alt" Command="{Binding SlotTypeToiletCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="K" Modifiers="Alt" Command="{Binding SlotTypeKitchenCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="I" Modifiers="Alt" Command="{Binding SlotTypeIntercomCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="S" Modifiers="Alt" Command="{Binding SlotTypeStairwayCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D1" Modifiers="Alt" Command="{Binding SlotTypeEconomyClassCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D2" Modifiers="Alt" Command="{Binding SlotTypeBusinessClassCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D3" Modifiers="Alt" Command="{Binding SlotTypePremiumClassCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D4" Modifiers="Alt" Command="{Binding SlotTypeFirstClassCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D5" Modifiers="Alt" Command="{Binding SlotTypeSupersonicClassCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D0" Modifiers="Alt" Command="{Binding SlotTypeUnavailableSeatCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="OemComma" Modifiers="Alt" Command="{Binding SlotTypeServiceStartCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="OemPeriod" Modifiers="Alt" Command="{Binding SlotTypeServiceEndCommand}" CommandParameter="{Binding EditorViewModel}"/>
     </Window.InputBindings>
     <Grid>
         <DockPanel>

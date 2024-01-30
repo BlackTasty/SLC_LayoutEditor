@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Core.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace SLC_LayoutEditor.Core.Cabin
     {
         public event EventHandler<EventArgs> ProblematicChanged;
 
-        private Dictionary<string, CabinSlotIssue> listedIssues = new Dictionary<string, CabinSlotIssue>();
+        private Dictionary<CabinSlotIssueType, CabinSlotIssue> listedIssues = new Dictionary<CabinSlotIssueType, CabinSlotIssue>();
 
         private bool wasProblematic;
         private readonly CabinSlot parent;
@@ -25,17 +26,17 @@ namespace SLC_LayoutEditor.Core.Cabin
             this.parent = parent;
         }
 
-        public void ToggleIssue(string key, bool isProblematic)
+        public void ToggleIssue(CabinSlotIssueType issue, bool isProblematic, bool hideHighlighting = false)
         {
             bool wasProblematic = IsProblematic;
 
-            if (isProblematic && !listedIssues.ContainsKey(key))
+            if (isProblematic && !listedIssues.ContainsKey(issue))
             {
-                listedIssues.Add(key, new CabinSlotIssue());
+                listedIssues.Add(issue, new CabinSlotIssue(hideHighlighting));
             }
-            else if (!isProblematic && listedIssues.ContainsKey(key))
+            else if (!isProblematic && listedIssues.ContainsKey(issue))
             {
-                listedIssues.Remove(key);
+                listedIssues.Remove(issue);
             }
 
             RefreshProblematicFlag(wasProblematic != IsProblematic);
@@ -51,11 +52,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public void ToggleIssueHighlighting(string key, bool showHighlighting)
+        public void ToggleIssueHighlighting(CabinSlotIssueType issue, bool showHighlighting)
         {
-            if (listedIssues.ContainsKey(key))
+            if (listedIssues.ContainsKey(issue))
             {
-                listedIssues[key].HideHighlighting = !showHighlighting;
+                listedIssues[issue].HideHighlighting = !showHighlighting;
             }
             RefreshProblematicFlag(true);
         }
@@ -65,11 +66,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             bool wasProblematic = IsProblematic;
             listedIssues.Clear();
             RefreshProblematicFlag(wasProblematic != IsProblematic);
-        }
-
-        public bool HasAnyOtherIssues(string currentIssueKey)
-        {
-            return listedIssues.Any(x => x.Key != currentIssueKey);
         }
 
         protected virtual void OnProblematicChanged(EventArgs e)

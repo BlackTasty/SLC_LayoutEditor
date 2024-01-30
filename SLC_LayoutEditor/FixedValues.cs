@@ -51,13 +51,10 @@ namespace SLC_LayoutEditor
         internal static readonly string ICON_BROWSER_OPENED = (string)App.Current.FindResource("OpenInBrowser");
         internal static readonly string ICON_CHECK_CIRCLE = (string)App.Current.FindResource("CheckCircle");
 
-        internal const string KEY_ISSUE_STAIRWAY = "stairway";
-        internal const string KEY_ISSUE_DUPLICATE_SEAT = "seats_duplicate";
-        internal const string KEY_ISSUE_DOORS_DUPLICATE = "doors_duplicate";
-        internal const string KEY_ISSUE_DOORS_SERVICE_WRONG_SIDE = "cat/lb";
-        internal const string KEY_ISSUE_INVALID_INTERIOR_POSITIONS = "interior";
-        internal const string KEY_ISSUE_UNREACHABLE_SLOTS = "unreachable";
-
         internal const double DEFAULT_BORDER_THICKNESS = 1.5;
+
+        internal const double LAYOUT_OFFSET_X = 64;
+        internal const double LAYOUT_OFFSET_Y = 64;
+        internal static Size SLOT_DIMENSIONS = new Size(40, 40);
     }
 }

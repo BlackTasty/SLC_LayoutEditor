@@ -5,6 +5,7 @@ Added: Added a new menu entry "Help" in the menu bar
 Added: In-app notifications are now displayed in specific circumstances (for example when saving a layout and you have the "Copy layout code to clipboard" option enabled)
 Added: Added settings to both copy the layout code to your clipboard as well as opening the SLC website in your default browser (on by default)
 Added: When selecting a template while creating a new layout, you can now let the editor generate thumbnails on the fly from the selected template
+Added: Two new issue checks have been added for both cockpit and passenger door placement
 Updated: The cabin deck rendering got a major overhaul, resulting in faster loading times! This is especially noticeable with larger layouts
 Updated: The "Return to editor" button is now hidden on the first startup
 Updated: Moved some entries from the "Editor" menu item to "Help"

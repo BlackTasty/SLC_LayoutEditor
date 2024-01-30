@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.ViewModel.Commands.SlotType;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,28 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         private static readonly UndoCommand _undoCommand = new UndoCommand();
 
         private static readonly CancelDialogCommand _cancelDialogCommand = new CancelDialogCommand();
+
+        #region Cabin slot type commands
+        private static readonly SlotTypeAisleCommand _slotTypeAisleCommand = new SlotTypeAisleCommand();
+        private static readonly SlotTypeBusinessClassCommand _slotTypeBusinessClassCommand = new SlotTypeBusinessClassCommand();
+        private static readonly SlotTypeCateringDoorCommand _slotTypeCateringDoorCommand = new SlotTypeCateringDoorCommand();
+        private static readonly SlotTypeDoorCommand _slotTypeDoorCommand = new SlotTypeDoorCommand();
+        private static readonly SlotTypeCockpitCommand _slotTypeCockpitCommand = new SlotTypeCockpitCommand();
+        private static readonly SlotTypeEconomyClassCommand _slotTypeEconomyClassCommand = new SlotTypeEconomyClassCommand();
+        private static readonly SlotTypeFirstClassCommand _slotTypeFirstClassCommand = new SlotTypeFirstClassCommand();
+        private static readonly SlotTypeGalleyCommand _slotTypeGalleyCommand = new SlotTypeGalleyCommand();
+        private static readonly SlotTypeIntercomCommand _slotTypeIntercomCommand = new SlotTypeIntercomCommand();
+        private static readonly SlotTypeKitchenCommand _slotTypeKitchenCommand = new SlotTypeKitchenCommand();
+        private static readonly SlotTypeLoadingBayCommand _slotTypeLoadingBayCommand = new SlotTypeLoadingBayCommand();
+        private static readonly SlotTypePremiumClassCommand _slotTypePremiumClassCommand = new SlotTypePremiumClassCommand();
+        private static readonly SlotTypeServiceEndCommand _slotTypeServiceEndCommand = new SlotTypeServiceEndCommand();
+        private static readonly SlotTypeServiceStartCommand _slotTypeServiceStartCommand = new SlotTypeServiceStartCommand();
+        private static readonly SlotTypeStairwayCommand _slotTypeStairwayCommand = new SlotTypeStairwayCommand();
+        private static readonly SlotTypeSupersonicClassCommand _slotTypeSupersonicClassCommand = new SlotTypeSupersonicClassCommand();
+        private static readonly SlotTypeToiletCommand _slotTypeToiletCommand = new SlotTypeToiletCommand();
+        private static readonly SlotTypeUnavailableSeatCommand _slotTypeUnavailableSeatCommand = new SlotTypeUnavailableSeatCommand();
+        private static readonly SlotTypeWallCommand _slotTypeWallCommand = new SlotTypeWallCommand();
+        #endregion
 
         public static MakeTemplateCommand MakeTemplateCommand => _makeTemplateCommand;
 
@@ -48,5 +71,45 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         public static UndoCommand UndoCommand => _undoCommand;
 
         public static CancelDialogCommand CancelDialogCommand => _cancelDialogCommand;
+
+        #region Cabin slot type commands
+        public static SlotTypeAisleCommand SlotTypeAisleCommand => _slotTypeAisleCommand;
+
+        public static SlotTypeBusinessClassCommand SlotTypeBusinessClassCommand => _slotTypeBusinessClassCommand;
+
+        public static SlotTypeCateringDoorCommand SlotTypeCateringDoorCommand => _slotTypeCateringDoorCommand;
+
+        public static SlotTypeDoorCommand SlotTypeDoorCommand => _slotTypeDoorCommand;
+
+        public static SlotTypeCockpitCommand SlotTypeCockpitCommand => _slotTypeCockpitCommand;
+
+        public static SlotTypeEconomyClassCommand SlotTypeEconomyClassCommand => _slotTypeEconomyClassCommand;
+
+        public static SlotTypeFirstClassCommand SlotTypeFirstClassCommand => _slotTypeFirstClassCommand;
+
+        public static SlotTypeGalleyCommand SlotTypeGalleyCommand => _slotTypeGalleyCommand;
+
+        public static SlotTypeIntercomCommand SlotTypeIntercomCommand => _slotTypeIntercomCommand;
+
+        public static SlotTypeKitchenCommand SlotTypeKitchenCommand => _slotTypeKitchenCommand;
+
+        public static SlotTypeLoadingBayCommand SlotTypeLoadingBayCommand => _slotTypeLoadingBayCommand;
+
+        public static SlotTypePremiumClassCommand SlotTypePremiumClassCommand => _slotTypePremiumClassCommand;
+
+        public static SlotTypeServiceEndCommand SlotTypeServiceEndCommand => _slotTypeServiceEndCommand;
+
+        public static SlotTypeServiceStartCommand SlotTypeServiceStartCommand => _slotTypeServiceStartCommand;
+
+        public static SlotTypeStairwayCommand SlotTypeStairwayCommand => _slotTypeStairwayCommand;
+
+        public static SlotTypeSupersonicClassCommand SlotTypeSupersonicClassCommand => _slotTypeSupersonicClassCommand;
+
+        public static SlotTypeToiletCommand SlotTypeToiletCommand => _slotTypeToiletCommand;
+
+        public static SlotTypeUnavailableSeatCommand SlotTypeUnavailableSeatCommand => _slotTypeUnavailableSeatCommand;
+
+        public static SlotTypeWallCommand SlotTypeWallCommand => _slotTypeWallCommand;
+        #endregion
     }
 }

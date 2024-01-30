@@ -760,6 +760,11 @@ namespace SLC_LayoutEditor.ViewModel
                 current.CabinSlotsChanged -= SelectedLayout_LayoutChanged;
                 current.Deleted -= deletedCallback;
                 current.Deleting -= SelectedLayout_Deleting;
+
+                foreach (CabinSlot selected in current.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => x.IsSelected))
+                {
+                    selected.IsSelected = false;
+                }
             }
 
             updated?.LoadCabinLayoutFromFile();

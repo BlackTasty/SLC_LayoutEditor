@@ -116,28 +116,8 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Deck slots valid"
-                                                                 InvalidText="Invalid amount of deck slots!"
-                                                                 IsValid="{Binding AreSlotsValid}"
-                                                                 ShowAutoFix="True"
-                                                                 AutoFixTarget="{Binding}"
-                                                                 AutoFixApplying="Slots_AutoFixApplying"
-                                                                 Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
-                                        
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
-                                                                 InvalidText="No doors for this deck!"
-                                                                 IsValid="{Binding AreDoorsValid}"
-                                                                 Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
-                                        
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="CAT/LB on correct side"
-                                                                 InvalidText="CAT/LB detected on the left side"
-                                                                 InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
-                                                                 ShowEye="True" 
-                                                                 ShowProblemsChanged="CateringAndLoadingBays_ShowIssuesChanged"
-                                                                 ShowProblems="{Binding ShowCateringAndLoadingBayIssues}"
-                                                                 IsValid="{Binding AreCateringAndLoadingBaysValid}" IsSevereProblem="False"
-                                                                 Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All slots are reachable"
+                                                                 Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllSlotsReachable}"
                                                                  InvalidSlots="{Binding UnreachableSlots}"
                                                                  ShowEye="True" 
@@ -155,8 +135,34 @@
                                                 </Style>
                                             </local:LayoutProblemText.Style>
                                         </local:LayoutProblemText>
+                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Deck slots valid"
+                                                                 Floor="{Binding Floor}"
+                                                                 InvalidText="Invalid amount of deck slots!"
+                                                                 IsValid="{Binding AreSlotsValid}"
+                                                                 ShowAutoFix="True"
+                                                                 AutoFixTarget="{Binding}"
+                                                                 AutoFixApplying="Slots_AutoFixApplying"
+                                                                 Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
+
+                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
+                                                                 Floor="{Binding Floor}"
+                                                                 InvalidText="No doors for this deck!"
+                                                                 IsValid="{Binding AreDoorsValid}"
+                                                                 Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
+
+                                        <Separator Margin="0,4"/>
+                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="CAT/LB on correct side"
+                                                                 Floor="{Binding Floor}"
+                                                                 InvalidText="CAT/LB detected on the left side"
+                                                                 InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
+                                                                 ShowEye="True" 
+                                                                 ShowProblemsChanged="CateringAndLoadingBays_ShowIssuesChanged"
+                                                                 ShowProblems="{Binding ShowCateringAndLoadingBayIssues}"
+                                                                 IsValid="{Binding AreCateringAndLoadingBaysValid}" IsSevereProblem="False"
+                                                                 Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
 
                                         <local:LayoutProblemText ValidText="All interior slots on valid positions"
+                                                                 Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllInteriorSlotPositionsValid}"
                                                                  InvalidSlots="{Binding InvalidPositionedSlots}"
                                                                  ShowEye="True" 
@@ -174,31 +180,76 @@
                                                 </Style>
                                             </local:LayoutProblemText.Style>
                                         </local:LayoutProblemText>
+
+                                        <local:LayoutProblemText ValidText="All passenger doors on valid positions"
+                                                                 Floor="{Binding Floor}"
+                                                                 IsValid="{Binding AllDoorSlotPositionsValid}"
+                                                                 InvalidSlots="{Binding InvalidPositionedDoorSlots}"
+                                                                 ShowEye="True" 
+                                                                 ShowProblemsChanged="InvalidPositionedDoorSlots_ShowProblemsChanged"
+                                                                 ShowProblems="{Binding ShowDoorPositionIssues}"
+                                                                 Description="Passenger doors can only be placed at the top or bottom of your layout">
+                                            <local:LayoutProblemText.Style>
+                                                <Style TargetType="local:LayoutProblemText">
+                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedDoorSlots.Count, StringFormat={}{0} invalid positioned doors!}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding InvalidPositionedDoorSlots.Count}" Value="1">
+                                                            <Setter Property="InvalidText" Value="1 invalid positioned door!"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </local:LayoutProblemText.Style>
+                                        </local:LayoutProblemText>
+                                        <local:LayoutProblemText ValidText="All cockpit slots on valid positions"
+                                                                 Floor="{Binding Floor}"
+                                                                 IsValid="{Binding AllCockpitSlotPositionsValid}"
+                                                                 InvalidSlots="{Binding InvalidPositionedCockpitSlots}"
+                                                                 ShowEye="True"
+                                                                 IsSevereProblem="False"
+                                                                 ShowProblemsChanged="InvalidPositionedCockpitSlots_ShowProblemsChanged"
+                                                                 ShowProblems="{Binding ShowCockpitPositionIssues}"
+                                                                 Description="Cockpit slots should only be placed at the left or right side of your layout">
+                                            <local:LayoutProblemText.Style>
+                                                <Style TargetType="local:LayoutProblemText">
+                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedCockpitSlots.Count, StringFormat={}{0} invalid positioned cockpit slots!}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding InvalidPositionedCockpitSlots.Count}" Value="1">
+                                                            <Setter Property="InvalidText" Value="1 invalid positioned cockpit slot!"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </local:LayoutProblemText.Style>
+                                        </local:LayoutProblemText>
                                         <Separator Margin="0,4"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
+                                                                 Floor="{Binding Floor}"
                                                                  InvalidText="Invalid service points!"
                                                                  IsValid="{Binding AreServicePointsValid}"
                                                                  Description="Each service start point (&lt;) also requires an end point (&gt;) in the same column"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All seat rows covered by service"
+                                                                 Floor="{Binding Floor}"
                                                                  InvalidText="Some rows aren't covered by service!"
                                                                  IsValid="{Binding AreSeatsReachableByService}"
                                                                  IsRequired="{Binding AreKitchensValid}"
                                                                  NotRequiredText="No service coverage required (no kitchen)"
                                                                  Description="In case you have a kitchen on this deck, make sure to cover all rows with the service start- and endpoints"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Valid galley count"
+                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Enough galley seats available for crew"
+                                                                 Floor="{Binding Floor}"
                                                                  InvalidText="Insufficient galley seats for servicing!"
                                                                  IsValid="{Binding AreGalleysValid}"
-                                                                 Description="Make sure to have at least as many galley seats on this deck as there are service areas (denoted by &lt; and &gt;)"/>
+                                                                 Description="Make sure to have at least as many galley seats on this deck as there are service areas"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Kitchen accessible (In-Flight services available)"
+                                                                 Floor="{Binding Floor}"
                                                                  InvalidText="No kitchen available! (No In-Flight services)"
                                                                  IsValid="{Binding AreKitchensValid}" IsSevereProblem="False"
                                                                  Description="If you wanna be able to offer in-flight services, make sure to place down a kitchen"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Intercom available"
+                                                                 Floor="{Binding Floor}"
                                                                  InvalidText="No intercom on this deck!"
                                                                  IsValid="{Binding AreIntercomsValid}"
                                                                  Description="Intercoms are used by your cabin crew to communicate to both the captain as well as the passengers"/>
-                                        <Separator Margin="0,4"/>
                                         <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
+                                                                 Floor="{Binding Floor}"
                                                                  InvalidText="No toilets on this deck!"
                                                                  IsValid="{Binding AreToiletsAvailable}" IsSevereProblem="False"
                                                                  Description="In order to satisfy the needs of your passengers, one or more toilets are required"/>

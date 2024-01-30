@@ -7,6 +7,7 @@ using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Commands;
+using SLC_LayoutEditor.ViewModel.Commands.SlotType;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,46 @@ namespace SLC_LayoutEditor.ViewModel
         public ShowKeybindsWindowCommand ShowKeybindsWindowCommand => CommandInterface.ShowKeybindsWindowCommand;
 
         public CancelDialogCommand CancelDialogCommand => CommandInterface.CancelDialogCommand;
+
+        #region Slot type commands
+        public SlotTypeAisleCommand SlotTypeAisleCommand => CommandInterface.SlotTypeAisleCommand;
+
+        public SlotTypeBusinessClassCommand SlotTypeBusinessClassCommand => CommandInterface.SlotTypeBusinessClassCommand;
+
+        public SlotTypeCateringDoorCommand SlotTypeCateringDoorCommand => CommandInterface.SlotTypeCateringDoorCommand;
+
+        public SlotTypeDoorCommand SlotTypeDoorCommand => CommandInterface.SlotTypeDoorCommand;
+
+        public SlotTypeCockpitCommand SlotTypeCockpitCommand => CommandInterface.SlotTypeCockpitCommand;
+
+        public SlotTypeEconomyClassCommand SlotTypeEconomyClassCommand => CommandInterface.SlotTypeEconomyClassCommand;
+
+        public SlotTypeFirstClassCommand SlotTypeFirstClassCommand => CommandInterface.SlotTypeFirstClassCommand;
+
+        public SlotTypeGalleyCommand SlotTypeGalleyCommand => CommandInterface.SlotTypeGalleyCommand;
+
+        public SlotTypeIntercomCommand SlotTypeIntercomCommand => CommandInterface.SlotTypeIntercomCommand;
+
+        public SlotTypeKitchenCommand SlotTypeKitchenCommand => CommandInterface.SlotTypeKitchenCommand;
+
+        public SlotTypeLoadingBayCommand SlotTypeLoadingBayCommand => CommandInterface.SlotTypeLoadingBayCommand;
+
+        public SlotTypePremiumClassCommand SlotTypePremiumClassCommand => CommandInterface.SlotTypePremiumClassCommand;
+
+        public SlotTypeServiceEndCommand SlotTypeServiceEndCommand => CommandInterface.SlotTypeServiceEndCommand;
+
+        public SlotTypeServiceStartCommand SlotTypeServiceStartCommand => CommandInterface.SlotTypeServiceStartCommand;
+
+        public SlotTypeStairwayCommand SlotTypeStairwayCommand => CommandInterface.SlotTypeStairwayCommand;
+
+        public SlotTypeSupersonicClassCommand SlotTypeSupersonicClassCommand => CommandInterface.SlotTypeSupersonicClassCommand;
+
+        public SlotTypeToiletCommand SlotTypeToiletCommand => CommandInterface.SlotTypeToiletCommand;
+
+        public SlotTypeUnavailableSeatCommand SlotTypeUnavailableSeatCommand => CommandInterface.SlotTypeUnavailableSeatCommand;
+
+        public SlotTypeWallCommand SlotTypeWallCommand => CommandInterface.SlotTypeWallCommand;
+        #endregion
         #endregion
 
         public string Title => string.Format("SLC Layout Editor ({0}) {1} {2}", App.GetVersionText(), 

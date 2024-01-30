@@ -92,7 +92,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
                 foreach (var diff in duplicateDoors.GetDiff(this.duplicateDoors))
                 {
-                    diff.Key.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_DOORS_DUPLICATE, diff.Value);
+                    diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.DOORS_DUPLICATE, diff.Value);
                 }
 
                 this.duplicateDoors = duplicateDoors.ToList();
@@ -419,7 +419,6 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public CabinDeck AddCabinDeck(CabinDeck cabinDeck)
         {
-            //cabinDeck.IsTemplate = isTemplate;
             cabinDeck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(cabinDeck);
             OnCabinDeckCountChanged(EventArgs.Empty);
@@ -561,7 +560,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                             if (targetSlot != null)
                             {
                                 targetSlot.Type = CabinSlotType.Stairway;
-                                targetSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, false);
+                                targetSlot.SlotIssues.ToggleIssue(CabinSlotIssueType.STAIRWAY, false);
                                 autoFixResult.CountSuccess();
                             }
                             else
@@ -577,7 +576,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 foreach (CabinSlot cabinSlot in deckWithStairs.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
                 {
                     cabinSlot.Type = CabinSlotType.Aisle;
-                    cabinSlot.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, false);
+                    cabinSlot.SlotIssues.ToggleIssue(CabinSlotIssueType.STAIRWAY, false);
                     autoFixResult.CountSuccess();
                 }
             }
@@ -595,12 +594,12 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             foreach (var diff in current.GetDiff(this.duplicateSeats))
             {
-                diff.Key.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_DUPLICATE_SEAT, diff.Value);
+                diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.DUPLICATE_SEAT, diff.Value);
             }
 
             foreach (CabinSlot forceChecked in current.Where(x => x.HasTypeChanged))
             {
-                forceChecked.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_DUPLICATE_SEAT, true);
+                forceChecked.SlotIssues.ToggleIssue(CabinSlotIssueType.DUPLICATE_SEAT, true);
             }
 
             this.duplicateSeats = current.ToList();
@@ -628,7 +627,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             foreach (var diff in invalidStairways.GetDiff(this.invalidStairways))
             {
-                diff.Key.SlotIssues.ToggleIssue(FixedValues.KEY_ISSUE_STAIRWAY, diff.Value);
+                diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.STAIRWAY, diff.Value);
             }
 
             this.invalidStairways = invalidStairways;

@@ -15,7 +15,7 @@ namespace SLC_LayoutEditor.Core.Events
         private readonly int floor;
 
         private readonly IEnumerable<CabinSlotType> targetTypes;
-        private readonly string issueKey;
+        private readonly CabinSlotIssueType issue;
 
         public bool ShowProblems => showProblems;
 
@@ -25,7 +25,7 @@ namespace SLC_LayoutEditor.Core.Events
 
         public IEnumerable<CabinSlotType> TargetTypes => targetTypes;
 
-        public string IssueKey => issueKey;
+        public CabinSlotIssueType Issue => issue;
 
         public ShowIssuesChangedEventArgs(bool showProblems, IEnumerable<CabinSlot> problematicSlots, int floor)
         {
@@ -34,10 +34,10 @@ namespace SLC_LayoutEditor.Core.Events
             this.floor = floor;
         }
 
-        public ShowIssuesChangedEventArgs(ShowIssuesChangedEventArgs source, string issueKey, IEnumerable<CabinSlotType> targetTypes)
+        public ShowIssuesChangedEventArgs(ShowIssuesChangedEventArgs source, CabinSlotIssueType issue, IEnumerable<CabinSlotType> targetTypes)
             : this(source.showProblems, source.problematicSlots, source.floor)
         {
-            this.issueKey = issueKey;
+            this.issue = issue;
             this.targetTypes = targetTypes;
         }
     }

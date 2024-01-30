@@ -256,8 +256,7 @@ namespace SLC_LayoutEditor.Controls
                     deckLayoutControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                     deckLayoutControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
 
-                    deckLayoutControl.RowsChanged -= CabinDeckControl_RowOrColumnsChanged;
-                    deckLayoutControl.ColumnsChanged -= CabinDeckControl_RowOrColumnsChanged;
+                    deckLayoutControl.SizeChanged -= CabinDeckControl_SizeChanged;
                 }
             }
         }
@@ -273,8 +272,7 @@ namespace SLC_LayoutEditor.Controls
                 cabinDeckControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
                 //cabinDeckControl.LayoutLoading -= CabinDeckControl_LayoutLoading;
 
-                cabinDeckControl.RowsChanged -= CabinDeckControl_RowOrColumnsChanged;
-                cabinDeckControl.ColumnsChanged -= CabinDeckControl_RowOrColumnsChanged;
+                cabinDeckControl.SizeChanged -= CabinDeckControl_SizeChanged;
                 cabinDeckControl.DeckRendered -= CabinDeckControl_DeckRendered;
             }
             container_decks.Children.Clear();
@@ -312,8 +310,7 @@ namespace SLC_LayoutEditor.Controls
             cabinDeckControl.RemoveDeckClicked += CabinDeckControl_RemoveDeckClicked;
             //cabinDeckControl.LayoutLoading += CabinDeckControl_LayoutLoading;
 
-            cabinDeckControl.RowsChanged += CabinDeckControl_RowOrColumnsChanged;
-            cabinDeckControl.ColumnsChanged += CabinDeckControl_RowOrColumnsChanged;
+            cabinDeckControl.SizeChanged += CabinDeckControl_SizeChanged;
             cabinDeckControl.DeckRendered += CabinDeckControl_DeckRendered;
             container_decks.Children.Add(cabinDeckControl);
         }
@@ -348,7 +345,7 @@ namespace SLC_LayoutEditor.Controls
             RefreshState();
         }
 
-        private void CabinDeckControl_RowOrColumnsChanged(object sender, EventArgs e)
+        private void CabinDeckControl_SizeChanged(object sender, EventArgs e)
         {
             OnChanged(new ChangedEventArgs(Util.HasLayoutChanged(CabinLayout)));
             RefreshState();
@@ -388,6 +385,8 @@ namespace SLC_LayoutEditor.Controls
                 {
                     targetControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                     targetControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
+                    targetControl.SizeChanged -= CabinDeckControl_SizeChanged;
+                    targetControl.DeckRendered += CabinDeckControl_DeckRendered;
                     container_decks.Children.Remove(targetControl);
                 }
             }
