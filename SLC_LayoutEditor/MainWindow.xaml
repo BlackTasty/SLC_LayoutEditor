@@ -9,10 +9,210 @@
         xmlns:notifications="clr-namespace:SLC_LayoutEditor.Controls.Notifications"
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundDarkBrush}"
-        mc:Ignorable="d" Closing="Window_Closing"
-        Title="{Binding Title}" MinHeight="600" MinWidth="1100"
+        BorderBrush="{DynamicResource BackgroundLightBrush}"
+        mc:Ignorable="d" Closing="Window_Closing" WindowStyle="SingleBorderWindow"
+        Title="{Binding Title}" MinHeight="780" MinWidth="1100"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
         Icon="Resources/icon.ico" StateChanged="Window_StateChanged">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0" CornerRadius="14" CaptionHeight="0" UseAeroCaptionButtons="False" ResizeBorderThickness="7"/>
+    </WindowChrome.WindowChrome>
+    <Window.Template>
+        <ControlTemplate TargetType="Window">
+            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" CornerRadius="8" Name="MainBorder" Background="{TemplateBinding Background}">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Direction="-90" RenderingBias="Quality" ShadowDepth="2" Opacity="1" Color="{DynamicResource DropShadowColor}"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMaximized}" Value="True">
+                                    <Setter Property="Margin" Value="4"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Loaded="header_Loaded" Background="Transparent">
+                        <Button DockPanel.Dock="Right" Click="Close_Click" Style="{StaticResource HeaderCloseButtonStyle}"
+                                    Content="{StaticResource Close}"/>
+                        <Button DockPanel.Dock="Right" Click="ToggleState_Click" Style="{StaticResource HeaderButtonStyle}"
+                                    Content="{Binding StateToggleButtonContent}">
+                        </Button>
+                        <Button DockPanel.Dock="Right" Click="Minimize_Click" Style="{StaticResource HeaderButtonStyle}"
+                                    Content="{StaticResource WindowMinimize}" Padding="17"/>
+                        <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
+                                    DockPanel.Dock="Right" Margin="24,0,24,0"
+                                    Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0" InstallUpdateClicked="Updater_InstallUpdateClicked"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource Title3TextStyle}"
+                                           Margin="8,0" VerticalAlignment="Center"/>
+                            <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14" VerticalAlignment="Center">
+                                <MenuItem Background="{DynamicResource BackgroundDarkBrush}"
+                                          IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                    <MenuItem.Style>
+                                        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                            <Setter Property="Header" Value="Layout"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
+                                                    <Setter Property="Header" Value="Template"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </MenuItem.Style>
+                                    <MenuItem Command="{Binding RenameLayoutCommand}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+R">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Setter Property="Header" Value="Rename layout"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
+                                                        <Setter Property="Header" Value="Rename template"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
+                                    <MenuItem Header="Save" Command="{Binding SaveLayoutCommand}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+S"/>
+                                    <MenuItem Header="Save as..." Command="{Binding SaveLayoutAsCommand}" 
+                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+Shift+S"/>
+                                    <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                                    <MenuItem Header="Make into template" Command="{Binding MakeTemplateCommand}"
+                                              CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+T"/>
+                                    <MenuItem Command="{Binding ReloadLayoutCommand}"
+                                              CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+Alt+R">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Setter Property="Header" Value="Reload layout"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
+                                                        <Setter Property="Header" Value="Reload template"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
+                                    <MenuItem Header="Open layout file" Command="{Binding OpenLayoutInTextEditor}" 
+                                              CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+O"
+                                              Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                    <MenuItem Header="Open in explorer" Command="{Binding OpenLayoutFolderCommand}" 
+                                              CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+E"
+                                              Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                </MenuItem>
+                                <MenuItem Header="Editor" Background="{DynamicResource BackgroundDarkBrush}"
+                                          IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                    <MenuItem Header="Settings" Click="Settings_Click"/>
+                                    <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
+                                    <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                                    <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
+                                              IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
+                                </MenuItem>
+                                <MenuItem Header="Help" Background="{DynamicResource BackgroundDarkBrush}">
+                                    <MenuItem Click="ToggleGuide_Click">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Setter Property="Header" Value="Start tour"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsTourRunning}" Value="True">
+                                                        <Setter Property="Header" Value="Cancel tour"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
+                                    <MenuItem Header="Show keybinds" Command="{Binding ShowKeybindsWindowCommand}"
+                                              InputGestureText="Ctrl+K"
+                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
+                                    <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                                    <MenuItem Header="What's new?" Click="Changelog_Click"
+                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
+                                    <MenuItem Header="Roadmap" Click="Roadmap_Click"
+                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
+                                </MenuItem>
+                            </Menu>
+                            <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
+                            <Border Margin="0,6,8,6" Padding="8,2" CornerRadius="4"
+                                        Visibility="{Binding CabinLayoutName, Converter={StaticResource NotNullToVisibilityConverter}}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTemplate, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource TemplatingModeBrush}"/>
+                                                <Setter Property="TextElement.Foreground" Value="Black"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsTemplate, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <Run Text="{Binding CabinLayoutName, Mode=OneWay}">
+                                        <Run.Style>
+                                            <Style TargetType="Run">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                                        <Setter Property="FontStyle" Value="Italic"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Run.Style>
+                                    </Run>
+                                    <Run>
+                                        <Run.Style>
+                                            <Style TargetType="Run">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                                                        <Setter Property="Text" Value="*"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Run.Style>
+                                    </Run>
+                                </TextBlock>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal"
+                                            Visibility="{Binding IsTourRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource ChevronLeftData}"
+                                        IsEnabled="{Binding IsNotFirstTourStep}" Click="StepBackInTour_Click"
+                                        ToolTip="Show previous step"/>
+                                <TextBlock VerticalAlignment="Center" Margin="8,0,8,1" FontSize="13"
+                                           Foreground="{StaticResource WarnForegroundColorBrush}"
+                                           FontWeight="SemiBold">
+                                    <Run Text="Guided tour -"/>
+                                    <Run Text="{Binding TourStepCategory, Mode=OneWay}"/>
+                                    <Run Text="{Binding CurrentTourStep, Mode=OneWay, StringFormat={}({0}/}"/><Run Text="{Binding MaxSteps, Mode=OneWay, StringFormat={}{0})}"/>
+                                </TextBlock>
+                                <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource EyeOutline}"
+                                        Click="ShowCurrentStep_Click"
+                                        IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"
+                                        ToolTip="Show current step again" Margin="0,0,8,0"/>
+                                <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource ChevronRightData}"
+                                        IsEnabled="{Binding IsNotLatestTourStep}" Click="StepForwardInTour_Click"
+                                        ToolTip="Show next step"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </DockPanel>
+                    <AdornerDecorator ClipToBounds="True" Grid.Row="1">
+                        <ContentPresenter Loaded="Root_Loaded" Margin="0,4,0,0"/>
+                    </AdornerDecorator>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+    </Window.Template>
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -66,90 +266,7 @@
                 </Style>
             </DockPanel.Style>
             <DockPanel DockPanel.Dock="Top">
-                <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
-                        DockPanel.Dock="Right" Margin="24,0,0,0"
-                        Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0" InstallUpdateClicked="Updater_InstallUpdateClicked"/>
                 <DockPanel LastChildFill="False">
-                    <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14">
-                        <MenuItem Height="40" Background="{DynamicResource BackgroundDarkBrush}">
-                            <MenuItem.Style>
-                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                    <Setter Property="Header" Value="Layout"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
-                                            <Setter Property="Header" Value="Template"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </MenuItem.Style>
-                            <MenuItem Command="{Binding RenameLayoutCommand}" 
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+R">
-                                <MenuItem.Style>
-                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                        <Setter Property="Header" Value="Rename layout"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
-                                                <Setter Property="Header" Value="Rename template"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </MenuItem.Style>
-                            </MenuItem>
-                            <MenuItem Header="Save" Command="{Binding SaveLayoutCommand}" 
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+S"/>
-                            <MenuItem Header="Save as..." Command="{Binding SaveLayoutAsCommand}" 
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+Shift+S"/>
-                            <Separator Style="{StaticResource MenuSeparatorStyle}"/>
-                            <MenuItem Header="Make into template" Command="{Binding MakeTemplateCommand}"
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+T"/>
-                            <MenuItem Command="{Binding ReloadLayoutCommand}"
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+Alt+R">
-                                <MenuItem.Style>
-                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                        <Setter Property="Header" Value="Reload layout"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding EditorViewModel.IsLayoutTemplate}" Value="True">
-                                                <Setter Property="Header" Value="Reload template"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </MenuItem.Style>
-                            </MenuItem>
-                            <MenuItem Header="Open layout file" Command="{Binding OpenLayoutInTextEditor}" 
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+O"
-                                      Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                            <MenuItem Header="Open in explorer" Command="{Binding OpenLayoutFolderCommand}" 
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+E"
-                                      Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                        </MenuItem>
-                        <MenuItem Header="Editor" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
-                            <MenuItem Header="Settings" Click="Settings_Click"/>
-                            <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
-                            <Separator Style="{StaticResource MenuSeparatorStyle}"/>
-                            <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
-                              IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
-                        </MenuItem>
-                        <MenuItem Header="Help" Height="40" Background="{DynamicResource BackgroundDarkBrush}">
-                            <MenuItem Click="ToggleGuide_Click">
-                                <MenuItem.Style>
-                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                        <Setter Property="Header" Value="Start tour"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsTourRunning}" Value="True">
-                                                <Setter Property="Header" Value="Cancel tour"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </MenuItem.Style>
-                            </MenuItem>
-                            <MenuItem Header="Show keybinds" Command="{Binding ShowKeybindsWindowCommand}"
-                                      InputGestureText="Ctrl+K"/>
-                            <Separator Style="{StaticResource MenuSeparatorStyle}"/>
-                            <MenuItem Header="What's new?" Click="Changelog_Click"/>
-                            <MenuItem Header="Roadmap" Click="Roadmap_Click"/>
-                        </MenuItem>
-                    </Menu>
                     <Border BorderThickness=".75,0" CornerRadius=".75" Margin="16,6"
                         BorderBrush="{DynamicResource SeparatorColorBrush}"
                         Visibility="Collapsed"/>

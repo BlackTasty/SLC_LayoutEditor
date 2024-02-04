@@ -1,4 +1,4 @@
-﻿<DockPanel x:Class="SLC_LayoutEditor.Controls.CabinDeckControl"
+﻿<DockPanel x:Class="SLC_LayoutEditor.Controls.CabinLayoutControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -11,27 +11,27 @@
             <Style TargetType="Border">
                 <Setter Property="BorderBrush" Value="{DynamicResource LayoutingModeBorderBrush}"/>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate}" Value="True">
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate}" Value="True">
                         <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
                     </DataTrigger>
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
                         </MultiDataTrigger.Conditions>
                         <Setter Property="Margin" Value="0,0,0,13"/>
                     </MultiDataTrigger>
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
-                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                         </MultiDataTrigger.Conditions>
                         <Setter Property="Margin" Value="0,0,13,0"/>
                     </MultiDataTrigger>
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                         </MultiDataTrigger.Conditions>
                         <Setter Property="Margin" Value="0,0,13,13"/>
                     </MultiDataTrigger>
@@ -44,29 +44,29 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Border Grid.RowSpan="2" Background="{DynamicResource TemplatingModeBackBrush}"
-                    Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <ScrollViewer x:Name="deck_scroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.RowSpan="2">
                     <ScrollViewer.Style>
                         <Style TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
                             <Style.Triggers>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
                                     </MultiDataTrigger.Conditions>
                                     <Setter Property="Margin" Value="0,0,0,-14"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                                     </MultiDataTrigger.Conditions>
                                     <Setter Property="Margin" Value="0,0,-14,0"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                                     </MultiDataTrigger.Conditions>
                                     <Setter Property="Margin" Value="0,0,-14,-14"/>
                                 </MultiDataTrigger>
@@ -84,7 +84,7 @@
                     <Style TargetType="Border">
                         <Setter Property="Margin" Value="-1.5,0,0,0"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=IsSidebarOpen}" Value="False">
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsSidebarOpen}" Value="False">
                                 <Setter Property="Margin" Value="0"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -92,7 +92,7 @@
                 </Border.Style>
             </Border>
             <StackPanel x:Name="cards_layoutIssues" Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="4"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout, Converter={StaticResource NotNullToVisibilityConverter}, FallbackValue=Collapsed}"
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout, Converter={StaticResource NotNullToVisibilityConverter}, FallbackValue=Collapsed}"
                         local:GuideAssist.Title="{StaticResource GuideIssueCardsTitle}"
                         local:GuideAssist.Description="{StaticResource GuideLayoutIssueCardsDescription}"
                         local:GuideAssist.HasGuide="True"
@@ -100,17 +100,17 @@
                         local:GuideAssist.TextPosition="Bottom"
                         local:GuideAssist.HighlightCornerRadius="20"
                         Cursor="Help"
-                        ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=GuideMenu}">
+                        ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                 <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
-                        ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.MinorIssuesList}"
+                        ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesList}"
                         ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
                     <TextBlock>
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
-                                <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.MinorIssuesCountSum, StringFormat={}{0} minor issues}"/>
+                                <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesCountSum, StringFormat={}{0} minor issues}"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.MinorIssuesCountSum}" Value="1">
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.MinorIssuesCountSum}" Value="1">
                                         <Setter Property="Text" Value="1 minor issue"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -119,15 +119,15 @@
                     </TextBlock>
                 </Border>
                 <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
-                        ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.SevereIssuesList}"
+                        ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesList}"
                         ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
                     <TextBlock>
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
-                                <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.SevereIssuesCountSum, StringFormat={}{0} severe issues}"/>
+                                <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesCountSum, StringFormat={}{0} severe issues}"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.SevereIssuesCountSum}" Value="1">
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.SevereIssuesCountSum}" Value="1">
                                         <Setter Property="Text" Value="1 severe issue"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -136,7 +136,7 @@
                     </TextBlock>
                 </Border>
                 <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonForegroundColorBrush}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinLayout.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=CabinLayout.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                     <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
                 </Border>
             </StackPanel>
@@ -148,7 +148,7 @@
                         <Setter Property="Margin" Value="0,-2,0,0"/>
                         <Setter Property="BorderBrush" Value="{DynamicResource LayoutingModeBorderBrush}"/>
                         <Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
                                 <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
                             </DataTrigger>
                     </Style.Triggers>
@@ -163,7 +163,7 @@
                             local:GuideAssist.RadiusOffset="-24"
                             local:GuideAssist.HighlightXOffset="-2"
                             Cursor="Help"
-                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=GuideMenu}"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"
                             Margin="-10.5,-10.5,15.5,-8.5"
                             Padding="14.5,16,16.5,14.5"
                             Width="53" Height="53">
@@ -171,7 +171,7 @@
                             <Style TargetType="Button" BasedOn="{StaticResource MakeTemplateButtonStyle}">
                                 <Setter Property="ToolTip" Value="Make a template out of this layout"/>
                             <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
                                         <Setter Property="ToolTip" Value="Make a template out of the current template"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -188,7 +188,7 @@
                             local:GuideAssist.RadiusOffset="-28"
                             local:GuideAssist.HighlightXOffset="2"
                             Cursor="Help"
-                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=GuideMenu}"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"
                             Margin="15.5,-9,-6.5,-7"
                             Padding="16.5,16,14.5,14.5"
                             Width="53" Height="53"/>
@@ -200,12 +200,12 @@
                             local:GuideAssist.TextPosition="Bottom"
                             local:GuideAssist.RadiusOffset="-20"
                             Cursor="Help"
-                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=GuideMenu}">
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource WarnIconButtonStyle}">
                             <Setter Property="ToolTip" Value="Force the editor to reload the layout from file. Unsaved changes are lost!"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
                                     <Setter Property="ToolTip" Value="Force the editor to reload the template from file. Unsaved changes are lost!"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -220,12 +220,12 @@
                             local:GuideAssist.TextPosition="Bottom"
                             local:GuideAssist.RadiusOffset="-24"
                             Cursor="Help"
-                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=GuideMenu}">
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ErrorIconButtonStyle}">
                             <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
                                     <Setter Property="ToolTip" Value="Delete this template. This cannot be undone!"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -238,7 +238,7 @@
                             <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutTitleStyle}">
                                 <Setter Property="Text" Value="Cabin layout"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
                                         <Setter Property="Text" Value="Template"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -246,15 +246,15 @@
                         </TextBlock.Style>
                     </TextBlock>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8,0">
-                            <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=LayoutOverviewTitle, FallbackValue=No layout selected}">
+                            <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=LayoutOverviewTitle, FallbackValue=No layout selected}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock" BasedOn="{StaticResource CabinLayoutNameStyle}">
                                         <Setter Property="Margin" Value="0,0,4,4"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=HasUnsavedChanges}" Value="True">
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=HasUnsavedChanges}" Value="True">
                                                 <Setter Property="FontStyle" Value="Italic"/>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinDeckControl, Mode=FindAncestor}, Path=CabinLayout}" Value="{x:Null}">
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout}" Value="{x:Null}">
                                                 <Setter Property="Margin" Value="0,0,8,4"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -270,7 +270,7 @@
                                     local:GuideAssist.RadiusOffset="-10"
                                     local:GuideAssist.HighlightYOffset="1"
                                     Cursor="Help"
-                                    ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=GuideMenu}"/>
+                                    ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"/>
                         </StackPanel>
                 </StackPanel>
             </DockPanel>

@@ -120,7 +120,7 @@ namespace SLC_LayoutEditor
 
             if (!versionNumberOnly)
             {
-                string versionText = string.Format(" v{0}", version);
+                string versionText = string.Format("v{0}", version);
 
 #if DEBUG
                 versionText += "dev";

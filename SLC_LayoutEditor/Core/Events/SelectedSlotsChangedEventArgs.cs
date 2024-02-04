@@ -9,12 +9,12 @@ namespace SLC_LayoutEditor.Core.Events
     public class SelectedSlotsChangedEventArgs : EventArgs
     {
         private readonly IEnumerable<CabinSlot> newSelection;
-        private readonly DeckLayoutControl deckControl;
+        private readonly CabinDeckControl deckControl;
         private readonly int floor;
 
         public IEnumerable<CabinSlot> NewSelection => newSelection;
 
-        public DeckLayoutControl DeckControl => deckControl;
+        public CabinDeckControl DeckControl => deckControl;
 
         public int Floor => floor;
 
@@ -23,7 +23,7 @@ namespace SLC_LayoutEditor.Core.Events
             this.newSelection = newSelection;
         }
 
-        public SelectedSlotsChangedEventArgs(SelectedSlotsChangedEventArgs e, DeckLayoutControl deckControl,
+        public SelectedSlotsChangedEventArgs(SelectedSlotsChangedEventArgs e, CabinDeckControl deckControl,
             int floor) : this(e.NewSelection)
         {
             this.deckControl = deckControl;

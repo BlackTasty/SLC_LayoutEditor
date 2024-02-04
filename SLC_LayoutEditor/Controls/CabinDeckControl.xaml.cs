@@ -33,7 +33,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for DeckLayoutControl.xaml
     /// </summary>
-    public partial class DeckLayoutControl : StackPanel, IDisposable
+    public partial class CabinDeckControl : StackPanel, IDisposable
     {
         public event EventHandler<SelectedSlotsChangedEventArgs> SelectedSlotsChanged;
 
@@ -43,7 +43,7 @@ namespace SLC_LayoutEditor.Controls
 
         public event EventHandler<EventArgs> DeckRendered;
 
-        public event EventHandler<EventArgs> SizeChanged;
+        public event EventHandler<EventArgs> RenderSizeChanged;
 
         private Point dragStartPosition;
         private Rectangle selectionBox;
@@ -72,11 +72,11 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for CabinDeck.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinDeckProperty =
-            DependencyProperty.Register("CabinDeck", typeof(CabinDeck), typeof(DeckLayoutControl), cabinDeckMetadata);
+            DependencyProperty.Register("CabinDeck", typeof(CabinDeck), typeof(CabinDeckControl), cabinDeckMetadata);
 
         private static void OnCabinDeckChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
-            if (source is DeckLayoutControl control)
+            if (source is CabinDeckControl control)
             {
                 if (control.renderer != null)
                 {
@@ -94,7 +94,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for GuideMenu.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GuideMenuProperty =
-            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(DeckLayoutControl), new PropertyMetadata(null));
+            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(CabinDeckControl), new PropertyMetadata(null));
 
         public bool HasAnyIssues => CabinDeck?.HasAnyIssues ?? false;
 
@@ -102,7 +102,7 @@ namespace SLC_LayoutEditor.Controls
 
         public bool HasSevereIssues => CabinDeck?.HasSevereIssues?? false;
 
-        public DeckLayoutControl()
+        public CabinDeckControl()
         {
             InitializeComponent();
 
@@ -148,7 +148,7 @@ namespace SLC_LayoutEditor.Controls
         private void Renderer_SizeChanged(object sender, EventArgs e)
         {
             deck_view.Source = renderer.Output;
-            OnSizeChanged(e);
+            OnRenderSizeChanged(e);
         }
 
         private void Renderer_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
@@ -197,6 +197,11 @@ namespace SLC_LayoutEditor.Controls
                 card_deckTitle.RemoveAdorner(deckTitleAdorner);
             }
             deckTitleAdorner = card_deckTitle.AttachAdorner(typeof(CabinDeckCardAdorner));
+        }
+
+        public void RedrawDirtySlots()
+        {
+            renderer?.RedrawDirtySlots();
         }
 
         public void Dispose()
@@ -263,9 +268,9 @@ namespace SLC_LayoutEditor.Controls
             RemoveDeckClicked?.Invoke(this, e);
         }
 
-        protected virtual void OnSizeChanged(EventArgs e)
+        protected virtual void OnRenderSizeChanged(EventArgs e)
         {
-            SizeChanged?.Invoke(this, e);
+            RenderSizeChanged?.Invoke(this, e);
         }
 
         protected virtual void OnDeckRendered(EventArgs e)

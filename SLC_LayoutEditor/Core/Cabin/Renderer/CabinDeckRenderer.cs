@@ -27,7 +27,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         private const double SIDE_BUTTON_DIMENSIONS = 32;
         private const double CORNER_BUTTON_OFFSET = 28;
         private const double PADDING = 14;
-        private const double BASE_MARGIN = 16;
 
         private const double BUTTONS_BASE_OFFSET = 73;
         private const double BUTTONS_CORNER_RADIUS = 4;
@@ -197,8 +196,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             DrawingVisual drawingVisual = new DrawingVisual();
 
             GetRenderSize(out double width, out double height);
-            width += BASE_MARGIN * 2;
-            height += BASE_MARGIN * 2;
 
             using (DrawingContext context = drawingVisual.RenderOpen())
             {
@@ -243,12 +240,12 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 buttonHitResults.Add(DrawTriangleButton(context, null, false, false, "column-add", "Add column", -1, int.MaxValue));
 
                 // Draw vertical divider
-                context.DrawLine(new Pen(DIVIDER_BRUSH, 1), new Point(BASE_MARGIN + FixedValues.LAYOUT_OFFSET_X, BASE_MARGIN), 
-                    new Point(BASE_MARGIN + FixedValues.LAYOUT_OFFSET_X, height - BASE_MARGIN));
+                context.DrawLine(new Pen(DIVIDER_BRUSH, 1), new Point(FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_X, FixedValues.DECK_BASE_MARGIN), 
+                    new Point(FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_X, height - FixedValues.DECK_BASE_MARGIN));
 
                 // Draw horizontal divider
-                context.DrawLine(new Pen(DIVIDER_BRUSH, 1), new Point(BASE_MARGIN, BASE_MARGIN + FixedValues.LAYOUT_OFFSET_Y), 
-                    new Point(width - BASE_MARGIN, BASE_MARGIN + FixedValues.LAYOUT_OFFSET_Y));
+                context.DrawLine(new Pen(DIVIDER_BRUSH, 1), new Point(FixedValues.DECK_BASE_MARGIN, FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_Y), 
+                    new Point(width - FixedValues.DECK_BASE_MARGIN, FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_Y));
             }
 
             UpdateSlotAreaRect(width, height);
@@ -270,7 +267,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             {
                 Rect firstSlotPosition = slotHitResults.First().Rect;
 
-                slotAreaRect = new Rect(firstSlotPosition.Location, new Size(width - firstSlotPosition.X - BASE_MARGIN * 2, height - firstSlotPosition.Y - BASE_MARGIN * 2));
+                slotAreaRect = new Rect(firstSlotPosition.Location, new Size(width - firstSlotPosition.X - FixedValues.DECK_BASE_MARGIN * 2, height - firstSlotPosition.Y - FixedValues.DECK_BASE_MARGIN * 2));
             }
             else
             {
@@ -280,8 +277,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         private void GetRenderSize(out double width, out double height)
         {
-            width = 67 + 44 * (cabinDeck.Rows + 1);
-            height = 67 + 44 * (cabinDeck.Columns + 1);
+            width = 67 + 44 * (cabinDeck.Rows + 1) + FixedValues.DECK_BASE_MARGIN * 2;
+            height = 67 + 44 * (cabinDeck.Columns + 1) + FixedValues.DECK_BASE_MARGIN * 2;
         }
 
         private void TargetSlot_CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
@@ -431,17 +428,19 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                             }
                         }
 
-                        // Update size of the WriteableBitmap
-                        UpdateBitmapSize();
-
                         // Generate new cabin slots at the target row/column
                         for (int rowColumn = 0; rowColumn <= (!isColumnInsert ? cabinDeck.Columns : cabinDeck.Rows); rowColumn++)
                         {
                             CabinSlot cabinSlot = new CabinSlot(!isColumnInsert ? targetRowColumn : rowColumn, isColumnInsert ? targetRowColumn : rowColumn);
+                            cabinSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
+                            cabinSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
                             cabinDeck.CabinSlots.Add(cabinSlot);
                             Rect hitbox = GetCabinSlotHitbox(cabinSlot);
                             slotHitResults.Add(new SlotHitResult(hitbox, cabinSlot));
                         }
+
+                        // Update size of the WriteableBitmap
+                        UpdateBitmapSize();
 
                         // Render all added and changed cabin slots
                         foreach (CabinSlot redrawSlot in  cabinDeck.CabinSlots.Where(x => x.IsDirty))
@@ -511,6 +510,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
                         foreach (SlotHitResult slotHitResult in slotHitResults.Where(removalCondition).ToList())
                         {
+                            slotHitResult.CabinSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
+                            slotHitResult.CabinSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
                             cabinDeck.CabinSlots.Remove(slotHitResult.CabinSlot);
                             slotHitResults.Remove(slotHitResult);
                         }
@@ -749,7 +750,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         private Rect GetSelectButtonHitbox(bool isRowButton, int row, int column, bool isPure = false)
         {
-            Point position = !isPure ? new Point(isRowButton ? BASE_MARGIN + (row * 44) : BASE_MARGIN, !isRowButton ? BASE_MARGIN + (column * 44): BASE_MARGIN) : new Point();
+            Point position = !isPure ? new Point(isRowButton ? FixedValues.DECK_BASE_MARGIN + (row * 44) : FixedValues.DECK_BASE_MARGIN, !isRowButton ? FixedValues.DECK_BASE_MARGIN + (column * 44): FixedValues.DECK_BASE_MARGIN) : new Point();
             Rect hitRect;
 
             if (isRowButton)
@@ -840,11 +841,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 hitRect = GetSelectButtonHitbox(isRowButton.Value, row, column, isPure);
                 if (isRowButton.Value)
                 {
-                    hitRect.Y = BASE_MARGIN + CORNER_BUTTON_OFFSET;
+                    hitRect.Y = FixedValues.DECK_BASE_MARGIN + CORNER_BUTTON_OFFSET;
                 }
                 else
                 {
-                    hitRect.X = BASE_MARGIN + CORNER_BUTTON_OFFSET;
+                    hitRect.X = FixedValues.DECK_BASE_MARGIN + CORNER_BUTTON_OFFSET;
                 }
 
                 hitRect.Width = SIDE_BUTTON_DIMENSIONS;
@@ -854,7 +855,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
             else
             {
-                return new Rect(BASE_MARGIN + CORNER_BUTTON_OFFSET, BASE_MARGIN + CORNER_BUTTON_OFFSET, SIDE_BUTTON_DIMENSIONS, SIDE_BUTTON_DIMENSIONS);
+                return new Rect(FixedValues.DECK_BASE_MARGIN + CORNER_BUTTON_OFFSET, FixedValues.DECK_BASE_MARGIN + CORNER_BUTTON_OFFSET, SIDE_BUTTON_DIMENSIONS, SIDE_BUTTON_DIMENSIONS);
             }
 
         }
@@ -879,16 +880,16 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         private Rect GetCabinSlotHitbox(CabinSlot cabinSlot, double calculatedX = -1, double calculatedY = -1)
         {
-            double x = calculatedX > -1 ? calculatedX : BASE_MARGIN + cabinSlot.Row * FixedValues.SLOT_DIMENSIONS.Width + FixedValues.LAYOUT_OFFSET_X + 4 * (cabinSlot.Row + 1);
-            double y = calculatedY > -1 ? calculatedY : BASE_MARGIN + cabinSlot.Column * FixedValues.SLOT_DIMENSIONS.Height + FixedValues.LAYOUT_OFFSET_Y + 4 * (cabinSlot.Column + 1);
+            double x = calculatedX > -1 ? calculatedX : FixedValues.DECK_BASE_MARGIN + cabinSlot.Row * FixedValues.SLOT_DIMENSIONS.Width + FixedValues.LAYOUT_OFFSET_X + 4 * (cabinSlot.Row + 1);
+            double y = calculatedY > -1 ? calculatedY : FixedValues.DECK_BASE_MARGIN + cabinSlot.Column * FixedValues.SLOT_DIMENSIONS.Height + FixedValues.LAYOUT_OFFSET_Y + 4 * (cabinSlot.Column + 1);
 
             return new Rect(new Point(x, y), FixedValues.SLOT_DIMENSIONS);
         }
 
         private Rect DrawCabinSlot(DrawingContext context, CabinSlot cabinSlot, bool isMouseOver = false, bool isPure = false)
         {
-            double x = BASE_MARGIN + cabinSlot.Row * FixedValues.SLOT_DIMENSIONS.Width + FixedValues.LAYOUT_OFFSET_X + 4 * (cabinSlot.Row + 1);
-            double y = BASE_MARGIN + cabinSlot.Column * FixedValues.SLOT_DIMENSIONS.Height + FixedValues.LAYOUT_OFFSET_Y + 4 * (cabinSlot.Column + 1);
+            double x = FixedValues.DECK_BASE_MARGIN + cabinSlot.Row * FixedValues.SLOT_DIMENSIONS.Width + FixedValues.LAYOUT_OFFSET_X + 4 * (cabinSlot.Row + 1);
+            double y = FixedValues.DECK_BASE_MARGIN + cabinSlot.Column * FixedValues.SLOT_DIMENSIONS.Height + FixedValues.LAYOUT_OFFSET_Y + 4 * (cabinSlot.Column + 1);
 
             Size size = GetSlotSize(cabinSlot);
             Point position = new Point(!isPure ? x : 0, !isPure ? y : 0);

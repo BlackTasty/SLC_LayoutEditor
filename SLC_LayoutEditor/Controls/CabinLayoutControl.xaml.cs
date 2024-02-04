@@ -32,7 +32,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for CabinDeckControl.xaml
     /// </summary>
-    public partial class CabinDeckControl : DockPanel, INotifyPropertyChanged, IDisposable
+    public partial class CabinLayoutControl : DockPanel, INotifyPropertyChanged, IDisposable
     {
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -70,7 +70,7 @@ namespace SLC_LayoutEditor.Controls
 
         private CabinDeck currentRemoveTarget;
 
-        private DeckLayoutControl selectedDeck;
+        private CabinDeckControl selectedDeck;
 
         #region CabinLayout property
         public CabinLayout CabinLayout
@@ -81,12 +81,12 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for CabinLayout.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinLayoutProperty =
-            DependencyProperty.Register("CabinLayout", typeof(CabinLayout), typeof(CabinDeckControl), new PropertyMetadata(null,
+            DependencyProperty.Register("CabinLayout", typeof(CabinLayout), typeof(CabinLayoutControl), new PropertyMetadata(null,
                 OnCabinLayoutChanged));
 
         private static void OnCabinLayoutChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue != e.NewValue && sender is CabinDeckControl control)
+            if (e.OldValue != e.NewValue && sender is CabinLayoutControl control)
             {
                 CabinLayout oldLayout = e.OldValue as CabinLayout;
                 CabinLayout newLayout = e.NewValue as CabinLayout;
@@ -113,7 +113,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for SelectedCabinSlots.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedCabinSlotsProperty =
-            DependencyProperty.Register("SelectedCabinSlots", typeof(List<CabinSlot>), typeof(CabinDeckControl), new PropertyMetadata(new List<CabinSlot>()));
+            DependencyProperty.Register("SelectedCabinSlots", typeof(List<CabinSlot>), typeof(CabinLayoutControl), new PropertyMetadata(new List<CabinSlot>()));
         #endregion
 
         public ContextMenu GuideMenu
@@ -124,7 +124,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for GuideMenu.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GuideMenuProperty =
-            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(CabinDeckControl), new PropertyMetadata(null));
+            DependencyProperty.Register("GuideMenu", typeof(ContextMenu), typeof(CabinLayoutControl), new PropertyMetadata(null));
 
         public string LayoutOverviewTitle => CabinLayout != null ?
             string.Format("{0} {1}", CabinLayout.LayoutName, HasUnsavedChanges ? "*" : "") :
@@ -145,7 +145,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for SelectedCabinSlotFloor.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedCabinSlotFloorProperty =
-            DependencyProperty.Register("SelectedCabinSlotFloor", typeof(int), typeof(CabinDeckControl), new PropertyMetadata(0));
+            DependencyProperty.Register("SelectedCabinSlotFloor", typeof(int), typeof(CabinLayoutControl), new PropertyMetadata(0));
         #endregion
 
         #region SelectedMultiSlotTypeIndex properties
@@ -157,7 +157,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for SelectedMultiSlotTypeIndex.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedMultiSlotTypeIndexProperty =
-            DependencyProperty.Register("SelectedMultiSlotTypeIndex", typeof(int), typeof(CabinDeckControl), new PropertyMetadata(-1));
+            DependencyProperty.Register("SelectedMultiSlotTypeIndex", typeof(int), typeof(CabinLayoutControl), new PropertyMetadata(-1));
         #endregion
 
         public bool IsTemplatingMode
@@ -168,7 +168,7 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for IsTemplatingMode.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsTemplatingModeProperty =
-            DependencyProperty.Register("IsTemplatingMode", typeof(bool), typeof(CabinDeckControl), new PropertyMetadata(false, OnIsTemplatingModeChanged));
+            DependencyProperty.Register("IsTemplatingMode", typeof(bool), typeof(CabinLayoutControl), new PropertyMetadata(false, OnIsTemplatingModeChanged));
 
         public bool IsSidebarOpen
         {
@@ -178,17 +178,17 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for IsSidebarOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsSidebarOpenProperty =
-            DependencyProperty.Register("IsSidebarOpen", typeof(bool), typeof(CabinDeckControl), new PropertyMetadata(true));
+            DependencyProperty.Register("IsSidebarOpen", typeof(bool), typeof(CabinLayoutControl), new PropertyMetadata(true));
 
         private static void OnIsTemplatingModeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue != e.NewValue && sender is CabinDeckControl control)
+            if (e.OldValue != e.NewValue && sender is CabinLayoutControl control)
             {
                 control.OnTemplatingModeToggled(EventArgs.Empty);
             }
         }
 
-        public CabinDeckControl()
+        public CabinLayoutControl()
         {
             InitializeComponent();
 
@@ -223,7 +223,7 @@ namespace SLC_LayoutEditor.Controls
                 Logger.Default.WriteLog("Generating thumbnail for {0} \"{1}\"...", CabinLayout.IsTemplate ? "template" : "layout", CabinLayout.LayoutName);
                 Directory.CreateDirectory(CabinLayout.ThumbnailDirectory);
 
-                foreach (DeckLayoutControl deckLayoutControl in container_decks.Children.OfType<DeckLayoutControl>())
+                foreach (CabinDeckControl deckLayoutControl in container_decks.Children.OfType<CabinDeckControl>())
                 {
                     deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory, overwrite);
                 }
@@ -233,7 +233,7 @@ namespace SLC_LayoutEditor.Controls
 
         public void RenderAdorners()
         {
-            foreach (DeckLayoutControl deckLayoutControl in container_decks.Children.OfType<DeckLayoutControl>())
+            foreach (CabinDeckControl deckLayoutControl in container_decks.Children.OfType<CabinDeckControl>())
             {
                 deckLayoutControl.RenderAdorners();
             }
@@ -241,7 +241,7 @@ namespace SLC_LayoutEditor.Controls
 
         public UIElement GetDeckIssueElement()
         {
-            return container_decks.Children.OfType<DeckLayoutControl>().FirstOrDefault().cards_deckIssues;
+            return container_decks.Children.OfType<CabinDeckControl>().FirstOrDefault().cards_deckIssues;
         }
 
         public void Dispose()
@@ -251,12 +251,12 @@ namespace SLC_LayoutEditor.Controls
                 CabinLayout.CabinSlotsChanged -= CabinLayout_CabinSlotsChanged;
                 CabinLayout.CabinDeckCountChanged -= CabinLayout_CabinDeckCountChanged;
 
-                foreach (DeckLayoutControl deckLayoutControl in container_decks?.Children.OfType<DeckLayoutControl>())
+                foreach (CabinDeckControl deckLayoutControl in container_decks?.Children.OfType<CabinDeckControl>())
                 {
                     deckLayoutControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                     deckLayoutControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
 
-                    deckLayoutControl.SizeChanged -= CabinDeckControl_SizeChanged;
+                    deckLayoutControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
                 }
             }
         }
@@ -266,13 +266,13 @@ namespace SLC_LayoutEditor.Controls
             OnLayoutLoading(EventArgs.Empty);
 
             //Unhook events before clearing container for deck layout controls
-            foreach (DeckLayoutControl cabinDeckControl in container_decks.Children.OfType<DeckLayoutControl>())
+            foreach (CabinDeckControl cabinDeckControl in container_decks.Children.OfType<CabinDeckControl>())
             {
                 cabinDeckControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                 cabinDeckControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
                 //cabinDeckControl.LayoutLoading -= CabinDeckControl_LayoutLoading;
 
-                cabinDeckControl.SizeChanged -= CabinDeckControl_SizeChanged;
+                cabinDeckControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
                 cabinDeckControl.DeckRendered -= CabinDeckControl_DeckRendered;
             }
             container_decks.Children.Clear();
@@ -298,7 +298,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void AddCabinDeckToUI(CabinDeck cabinDeck)
         {
-            DeckLayoutControl cabinDeckControl = new DeckLayoutControl()
+            CabinDeckControl cabinDeckControl = new CabinDeckControl()
             {
                 CabinDeck = cabinDeck,
                 GuideMenu = GuideMenu
@@ -310,7 +310,7 @@ namespace SLC_LayoutEditor.Controls
             cabinDeckControl.RemoveDeckClicked += CabinDeckControl_RemoveDeckClicked;
             //cabinDeckControl.LayoutLoading += CabinDeckControl_LayoutLoading;
 
-            cabinDeckControl.SizeChanged += CabinDeckControl_SizeChanged;
+            cabinDeckControl.RenderSizeChanged += CabinDeckControl_RenderSizeChanged;
             cabinDeckControl.DeckRendered += CabinDeckControl_DeckRendered;
             container_decks.Children.Add(cabinDeckControl);
         }
@@ -334,7 +334,7 @@ namespace SLC_LayoutEditor.Controls
         private void CabinDeckControl_DeckRendered(object sender, EventArgs e)
         {
             Directory.CreateDirectory(CabinLayout.ThumbnailDirectory);
-            if (sender is DeckLayoutControl deckLayoutControl)
+            if (sender is CabinDeckControl deckLayoutControl)
             {
                 deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory, true);
             }
@@ -345,7 +345,7 @@ namespace SLC_LayoutEditor.Controls
             RefreshState();
         }
 
-        private void CabinDeckControl_SizeChanged(object sender, EventArgs e)
+        private void CabinDeckControl_RenderSizeChanged(object sender, EventArgs e)
         {
             OnChanged(new ChangedEventArgs(Util.HasLayoutChanged(CabinLayout)));
             RefreshState();
@@ -378,14 +378,14 @@ namespace SLC_LayoutEditor.Controls
             if (e.DialogResult == DialogResultType.Yes)
             {
                 CabinLayout.RemoveCabinDeck(currentRemoveTarget);
-                CabinLayout.RefreshCalculated();
+                CabinLayout.RefreshData();
 
-                if (container_decks.Children.OfType<DeckLayoutControl>()
-                        .FirstOrDefault(x => x.CabinDeck.Floor == currentRemoveTarget.Floor) is DeckLayoutControl targetControl)
+                if (container_decks.Children.OfType<CabinDeckControl>()
+                        .FirstOrDefault(x => x.CabinDeck.Floor == currentRemoveTarget.Floor) is CabinDeckControl targetControl)
                 {
                     targetControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
                     targetControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
-                    targetControl.SizeChanged -= CabinDeckControl_SizeChanged;
+                    targetControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
                     targetControl.DeckRendered += CabinDeckControl_DeckRendered;
                     container_decks.Children.Remove(targetControl);
                 }
@@ -437,7 +437,7 @@ namespace SLC_LayoutEditor.Controls
             CabinDeck createdDeck = CabinLayout.AddCabinDeck(new CabinDeck(CabinLayout.CabinDecks.Count + 1, rows, columns));
             AddCabinDeckToUI(createdDeck);
 
-            CabinLayout.RefreshCalculated();
+            CabinLayout.RefreshData();
         }
 
         private void ReloadLayout_Click(object sender, RoutedEventArgs e)
@@ -486,6 +486,14 @@ namespace SLC_LayoutEditor.Controls
             if (refreshProblemChecks)
             {
                 CabinLayout?.DeepRefreshProblemChecks();
+            }
+        }
+
+        public void RedrawDirtySlots()
+        {
+            foreach (CabinDeckControl cabinDeckControl in container_decks.Children.OfType<CabinDeckControl>())
+            {
+                cabinDeckControl.RedrawDirtySlots();
             }
         }
 

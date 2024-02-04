@@ -30,7 +30,7 @@ namespace SLC_LayoutEditor.Core.Guide
         private UIElement layoutsArea;
         private UIElement createLayoutButton;
 
-        private CabinDeckControl editorArea;
+        private CabinLayoutControl editorArea;
         private UIElement layoutTitleCard;
         private UIElement makeTemplateButton;
         private UIElement reloadLayoutButton;
@@ -54,7 +54,7 @@ namespace SLC_LayoutEditor.Core.Guide
         private TodoList todoList;
 
         private int currentStep = 0;
-        private readonly static int TOTAL_STEPS = (int)System.Enum.GetValues(typeof(GuidedTourStep)).Cast<GuidedTourStep>().Max();
+        private int highestAchievedStep = 0;
         private bool isTourRunning;
 
         private bool _awaitUserInput => IsTourRunning && AwaitUserInput;
@@ -94,6 +94,12 @@ namespace SLC_LayoutEditor.Core.Guide
                 OnTourRunningStateChanged(EventArgs.Empty);
             }
         }
+
+        public string TourStepCategory => GetTourStepCategory(CurrentStep);
+
+        public int CurrentStepNumber => currentStep;
+
+        public int HighestAchievedStep => highestAchievedStep;
 
         private GuidedTourStep CurrentStep => IntToTourStep(currentStep);
 
@@ -139,6 +145,7 @@ namespace SLC_LayoutEditor.Core.Guide
 
         public void StartTour()
         {
+            highestAchievedStep = 0;
             currentStep = 0;
             IsTourRunning = true;
             ContinueTour();
@@ -149,10 +156,28 @@ namespace SLC_LayoutEditor.Core.Guide
             AwaitUserInput = false;
             IsTourRunning = false;
             currentStep = 0;
+            highestAchievedStep = 0;
             todoList.ClearTodoList();
         }
+
+        public void StepBack()
+        {
+            currentStep -= 2;
+            ContinueTour(true);
+        }
+
+        public void StepForward()
+        {
+            ContinueTour(true);
+        }
+
+        public void ShowCurrentStepAgain()
+        {
+            currentStep--;
+            ContinueTour(true);
+        }
         
-        public void ContinueTour(bool resetAwaitInputFlag = false, int tourStepOffset = 0)
+        public void ContinueTour(bool resetAwaitInputFlag = false)
         {
             if (!resetAwaitInputFlag && AwaitUserInput)
             {
@@ -164,14 +189,6 @@ namespace SLC_LayoutEditor.Core.Guide
             }
 
             this.currentStep++;
-            /*if (tourStepOffset == 0)
-            {
-                this.currentStep++;
-            }
-            else
-            {
-                this.currentStep += tourStepOffset;
-            }*/
 
             if (System.Enum.TryParse(this.currentStep.ToString(), out GuidedTourStep currentStep))
             {
@@ -179,9 +196,14 @@ namespace SLC_LayoutEditor.Core.Guide
                 GuideAssistOverrides overrides = new GuideAssistOverrides()
                 {
                     CurrentTourStep = this.currentStep,
-                    TotalTourSteps = TOTAL_STEPS,
-                    TourStepCategory = GetTourStepCategory(currentStep)
+                    TotalTourSteps = FixedValues.TOTAL_TOUR_STEPS,
+                    TourStepCategory = TourStepCategory
                 };
+
+                if (this.currentStep > highestAchievedStep)
+                {
+                    highestAchievedStep = this.currentStep;
+                }
 
                 switch (currentStep)
                 {
@@ -219,7 +241,9 @@ namespace SLC_LayoutEditor.Core.Guide
                     case GuidedTourStep.CreateLayout:
                         overrides.Description = "Now that you've selected an aircraft, it's time to create your new layout!\n\n" +
                             "To do this click on the highlighted button, which will bring up the layout creation dialog.\n" +
-                            "In this dialog you will be able to select a template (if any are available) to start your layout off of, or create a layout with one deck and a size of 14x6 slots.";
+                            "In this dialog you will be able to select a template (if any are available) to start your layout off of,\n" +
+                            "or create a layout with one deck and a size of 14x6 slots.";
+                        overrides.TextPosition = GuideTextPosition.Bottom;
                         guidedElement = createLayoutButton;
                         AwaitUserInput = true;
                         break;
@@ -257,7 +281,8 @@ namespace SLC_LayoutEditor.Core.Guide
                             " - Doors are used by passengers to board and de-board the aircraft. You need at least one door per deck in order for your layout to work!\n" +
                             " - Catering doors allow your crew to stock up on food and beverages when the aircraft is parked at a terminal.\n" +
                             " - Loading bays allow the ground crew to load and unload luggage into the aircraft.\n\n" +
-                            "Loading bays as well as catering doors have to be placed on the top side of your aircraft, but SLC doesn't require them to be present currently, as there isn't any functionality tied to it.\n\n" + 
+                            "Loading bays as well as catering doors have to be placed on the top side of your aircraft,\n" +
+                            "but SLC doesn't require them to be present currently, as there isn't any functionality tied to it.\n\n" + 
                             "Click on any slot at the top or bottom of the deck to proceed with the guide!";
                         overrides.ApplyOverlayToAll = true;
                         overrides.TextPosition = GuideTextPosition.Over;
@@ -288,6 +313,7 @@ namespace SLC_LayoutEditor.Core.Guide
                         overrides.Description = "You may have already noticed the issue tracker as well as issue cards in the editor area.\n" +
                             "These keep track of potential problems while you edit your layout, and tell you what the issue is.\n\n" +
                             "Some of these issues can also be resolved by the editor itself, but we will look into that later on.";
+                        overrides.TextPosition = GuideTextPosition.Top;
                         vm.PlayExpanderAnimations = false;
                         vm.IsIssueTrackerExpanded = true;
                         vm.PlayExpanderAnimations = true;

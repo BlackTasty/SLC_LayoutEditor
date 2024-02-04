@@ -15,12 +15,12 @@ namespace SLC_LayoutEditor.ViewModel.Commands
     {
         public override bool CanExecute(object parameter)
         {
-            return parameter is DeckLayoutControl;
+            return parameter is CabinDeckControl;
         }
 
         public override void Execute(object parameter)
         {
-            if (parameter is DeckLayoutControl targetControl)
+            if (parameter is CabinDeckControl targetControl)
             {
                 Mediator.Instance.NotifyColleagues(ViewModelMessage.Keybind_SelectAllSlotsOnDeck, targetControl.CabinDeck);
             }

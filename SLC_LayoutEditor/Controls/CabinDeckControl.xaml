@@ -1,4 +1,4 @@
-﻿<StackPanel x:Class="SLC_LayoutEditor.Controls.DeckLayoutControl"
+﻿<StackPanel x:Class="SLC_LayoutEditor.Controls.CabinDeckControl"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -21,15 +21,15 @@
                     Style="{StaticResource RemoveDeckButtonStyle}" Margin="32,0,0,0" Click="RemoveDeck_Click"/>
             <StackPanel Margin="0,8">
                 <TextBlock FontSize="20" FontWeight="Bold"
-                           Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.FloorName}">
+                           Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.FloorName}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor, StringFormat={}Floor {0}}"/>
+                            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.Floor, StringFormat={}Floor {0}}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor}" Value="1">
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.Floor}" Value="1">
                                     <Setter Property="Text" Value="Lower deck"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.Floor}" Value="2">
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.Floor}" Value="2">
                                     <Setter Property="Text" Value="Upper deck"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -41,21 +41,21 @@
                             local:GuideAssist.Description="{StaticResource GuideDeckIssueCardsDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.IsCircularCutout="False"
-                            local:GuideAssist.TextPosition="Right"
+                            local:GuideAssist.TextPosition="Bottom"
                             local:GuideAssist.TextAreaYOffset="40"
                             local:GuideAssist.HighlightCornerRadius="20"
                             Cursor="Help"
-                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=GuideMenu}">
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=GuideMenu}">
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource WarnForegroundColorBrush}"
-                            ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.MinorIssuesList}"
+                            ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.MinorIssuesList}"
                             ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
-                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.HasMinorIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
-                                    <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.MinorIssuesCount, StringFormat={}{0} minor issues}"/>
+                                    <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.MinorIssuesCount, StringFormat={}{0} minor issues}"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.MinorIssuesCount}" Value="1">
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.MinorIssuesCount}" Value="1">
                                             <Setter Property="Text" Value="1 minor issue"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -64,15 +64,15 @@
                         </TextBlock>
                     </Border>
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ErrorForegroundColorBrush}"
-                            ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.SevereIssuesList}"
+                            ToolTip="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.SevereIssuesList}"
                             ToolTipService.InitialShowDelay="{StaticResource IssueTooltipInitialShowDelay}"
-                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.HasSevereIssues, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock>
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource CardTextStyle}">
-                                    <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.SevereIssuesCount, StringFormat={}{0} severe issues}"/>
+                                    <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.SevereIssuesCount, StringFormat={}{0} severe issues}"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.SevereIssuesCount}" Value="1">
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.SevereIssuesCount}" Value="1">
                                             <Setter Property="Text" Value="1 severe issue"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -81,7 +81,7 @@
                         </TextBlock>
                     </Border>
                     <Border Style="{DynamicResource ChipStyle}" Background="{DynamicResource ButtonForegroundColorBrush}"
-                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DeckLayoutControl}, Path=CabinDeck.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.HasAnyIssues, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                         <TextBlock Text="No issues found!" Style="{StaticResource CardTextStyle}"/>
 
                     </Border>

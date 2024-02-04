@@ -112,6 +112,8 @@
     <SolidColorBrush x:Key="AddDeckButtonPressedBackgroundBrush" Color="{StaticResource BackgroundDark}" Opacity=".48"/>
 
     <SolidColorBrush x:Key="ForegroundSecondaryColorBrush" Color="{StaticResource ForegroundSecondaryColor}"/>
+    <SolidColorBrush x:Key="ToolbarButtonHoverColorBrush" Color="{StaticResource ForegroundSecondaryColor}" Opacity=".27"/>
+    <SolidColorBrush x:Key="ToolbarButtonPressedColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".35"/>
     
     <SolidColorBrush x:Key="ErrorForegroundColorBrush" Color="{StaticResource ErrorColor}"/>
     <SolidColorBrush x:Key="WarnForegroundColorBrush" Color="{StaticResource WarnColor}"/>
@@ -197,13 +199,21 @@
     <SolidColorBrush x:Key="TemplatingModeBrush" Color="{StaticResource TemplatingModeColor}"/>
     <SolidColorBrush x:Key="TemplatingModeHoverBrush" Color="{StaticResource TemplatingModeHoverColor}"/>
     <SolidColorBrush x:Key="TemplatingModePressedBrush" Color="{StaticResource TemplatingModePressedColor}"/>
-    
+
     <LinearGradientBrush x:Key="TemplatingModeBackBrush" EndPoint="16,0" StartPoint="0,16" Opacity=".025"
                          MappingMode="Absolute" SpreadMethod="Repeat">
         <GradientStop Color="#45FFFFFF" Offset="0"/>
         <GradientStop Color="#45FFFFFF" Offset=".5"/>
         <GradientStop Color="{StaticResource TemplatingModeColor}" Offset=".5"/>
         <GradientStop Color="{StaticResource TemplatingModeColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="TemplatingModeTitleBrush" EndPoint="16,0" StartPoint="0,16" Opacity="1"
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource BackgroundLight}" Offset="0"/>
+        <GradientStop Color="{StaticResource BackgroundLight}" Offset=".5"/>
+        <GradientStop Color="#714723" Offset=".5"/>
+        <GradientStop Color="#714723" Offset="1"/>
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="DisabledLayerButtonBrush">#666</SolidColorBrush>

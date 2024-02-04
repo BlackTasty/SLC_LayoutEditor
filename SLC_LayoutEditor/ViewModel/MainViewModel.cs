@@ -31,9 +31,13 @@ namespace SLC_LayoutEditor.ViewModel
         private FrameworkElement mContent;
         private LayoutEditor editor;
         private string mCabinLayoutName;
+        private bool mIsTemplate;
         private bool mHasUnsavedChanges;
+        private string mStateToggleButtonContent;
+        private bool mIsMaximized;
+        private bool mIsGuideOpen;
 
-        private DeckLayoutControl mSelectedDeck;
+        private CabinDeckControl mSelectedDeck;
 
         private bool mIsSearching;
 
@@ -101,8 +105,10 @@ namespace SLC_LayoutEditor.ViewModel
         #endregion
         #endregion
 
-        public string Title => string.Format("SLC Layout Editor ({0}) {1} {2}", App.GetVersionText(), 
-            mCabinLayoutName != null ? "- " + mCabinLayoutName : "", mHasUnsavedChanges ? "(UNSAVED CHANGES)" : "");
+        /*public string Title => string.Format("SLC Layout Editor ({0}) {1} {2}", App.GetVersionText(),
+            mCabinLayoutName != null ? "- " + mCabinLayoutName : "", mHasUnsavedChanges ? "(UNSAVED CHANGES)" : "");*/
+
+        public string Title => string.Format("SLC Layout Editor ({0})", App.GetVersionText());
 
         public string CabinLayoutName
         {
@@ -111,6 +117,36 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mCabinLayoutName = value;
                 HasUnsavedChanges = false;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool IsTemplate
+        {
+            get => mIsTemplate;
+            private set
+            {
+                mIsTemplate = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public string StateToggleButtonContent
+        {
+            get => mStateToggleButtonContent;
+            set
+            {
+                mStateToggleButtonContent = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool IsMaximized
+        {
+            get => mIsMaximized;
+            set
+            {
+                mIsMaximized = value;
                 InvokePropertyChanged();
             }
         }
@@ -196,7 +232,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public LayoutEditorViewModel EditorViewModel => editor != null ? editor.DataContext as LayoutEditorViewModel : null;
 
-        public DeckLayoutControl SelectedDeck
+        public CabinDeckControl SelectedDeck
         {
             get => mSelectedDeck;
             set
@@ -209,6 +245,26 @@ namespace SLC_LayoutEditor.ViewModel
         public bool IsViewNotEditor => !(mContent is LayoutEditor) && App.Settings.WelcomeScreenShown;
 
         public bool IsTourRunning => App.GuidedTour?.IsTourRunning ?? false;
+
+        public string TourStepCategory => CurrentTourStep > 1 ? App.GuidedTour?.TourStepCategory : "Welcome";
+
+        public int CurrentTourStep => App.GuidedTour?.CurrentStepNumber ?? 0;
+
+        public bool IsNotFirstTourStep => CurrentTourStep > 1;
+
+        public bool IsNotLatestTourStep => CurrentTourStep < App.GuidedTour?.HighestAchievedStep && CurrentTourStep < MaxSteps;
+
+        public int MaxSteps => FixedValues.TOTAL_TOUR_STEPS;
+
+        public bool IsGuideOpen
+        {
+            get => mIsGuideOpen;
+            set
+            {
+                mIsGuideOpen = value;
+                InvokePropertyChanged();
+            }
+        }
 
         public MainViewModel()
         {
@@ -305,6 +361,14 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public void UpdateTourStepper()
+        {
+            InvokePropertyChanged(nameof(TourStepCategory));
+            InvokePropertyChanged(nameof(CurrentTourStep));
+            InvokePropertyChanged(nameof(IsNotFirstTourStep));
+            InvokePropertyChanged(nameof(IsNotLatestTourStep));
+        }
+
         private LayoutEditor GetEditor()
         {
             if (this.editor != null)
@@ -368,10 +432,12 @@ namespace SLC_LayoutEditor.ViewModel
         private void Editor_CabinLayoutSelected(object sender, CabinLayoutSelectedEventArgs e)
         {
             CabinLayoutName = e.CabinLayoutName;
+            IsTemplate = e.IsTemplate;
         }
 
         private void Editor_TourRunningStateChanged(object sender, EventArgs e)
         {
+            UpdateTourStepper();
             InvokePropertyChanged(nameof(IsTourRunning));
         }
     }

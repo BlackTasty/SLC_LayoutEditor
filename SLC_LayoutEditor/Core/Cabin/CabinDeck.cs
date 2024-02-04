@@ -82,7 +82,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 if (doorSlots == null)
                 {
-                    RefreshCalculated();
+                    RefreshIssues();
                 }
 
                 return doorSlots;
@@ -95,7 +95,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 if (invalidCateringDoorsAndLoadingBays == null)
                 {
-                    RefreshCalculated();
+                    RefreshIssues();
                 }
 
                 return invalidCateringDoorsAndLoadingBays;
@@ -108,7 +108,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 if (unreachableSlots == null)
                 {
-                    RefreshCalculated();
+                    RefreshIssues();
                 }
 
                 return unreachableSlots;
@@ -121,7 +121,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 if (invalidPositionedCockpitSlots == null)
                 {
-                    RefreshCalculated();
+                    RefreshIssues();
                 }
 
                 return invalidPositionedCockpitSlots;
@@ -134,7 +134,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 if (invalidPositionedDoorSlots == null)
                 {
-                    RefreshCalculated();
+                    RefreshIssues();
                 }
 
                 return invalidPositionedDoorSlots;
@@ -536,8 +536,6 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public string GetIssuesList(bool getSevereIssues, bool indented = false)
         {
-
-
             StringBuilder sb = new StringBuilder();
             if (getSevereIssues && HasSevereIssues)
             {
@@ -728,7 +726,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             if (currentHash != newHash)
             {
                 RefreshPathGrid();
-                RefreshCalculated();
+                RefreshIssues();
 
                 InvokePropertyChanged(nameof(AreServicePointsValid));
                 InvokePropertyChanged(nameof(AreGalleysValid));
@@ -764,7 +762,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             currentHash = newHash;
         }
 
-        private void RefreshCalculated()
+        private void RefreshIssues()
         {
             doorSlots = mCabinSlots.Where(x => x.IsDoor);
             /*if (invalidCateringDoorsAndLoadingBays?.Any() ?? false)
@@ -903,7 +901,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             List<CabinSlot> invalidSlots = new List<CabinSlot>();
             if (refreshIfNull && (invalidCateringDoorsAndLoadingBays == null || unreachableSlots == null || doorSlots == null))
             {
-                RefreshCalculated();
+                RefreshIssues();
             }
 
             if (invalidCateringDoorsAndLoadingBays != null)

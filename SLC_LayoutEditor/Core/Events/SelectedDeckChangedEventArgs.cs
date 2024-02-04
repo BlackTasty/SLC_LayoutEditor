@@ -9,11 +9,11 @@ namespace SLC_LayoutEditor.Core.Events
 {
     public class SelectedDeckChangedEventArgs
     {
-        private readonly DeckLayoutControl newValue;
+        private readonly CabinDeckControl newValue;
 
-        public DeckLayoutControl NewValue => newValue;
+        public CabinDeckControl NewValue => newValue;
 
-        public SelectedDeckChangedEventArgs(DeckLayoutControl newValue)
+        public SelectedDeckChangedEventArgs(CabinDeckControl newValue)
         {
             this.newValue = newValue;
         }

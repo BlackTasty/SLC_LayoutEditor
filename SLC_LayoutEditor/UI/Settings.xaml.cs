@@ -33,6 +33,7 @@ namespace SLC_LayoutEditor.UI
         {
             InitializeComponent();
             vm = DataContext as SettingsViewModel;
+            ReloadSettings();
             areSeasonalThemesEnabled = App.Settings.EnableSeasonalThemes;
         }
 
@@ -68,7 +69,13 @@ namespace SLC_LayoutEditor.UI
         private void Rollback_Click(object sender, RoutedEventArgs e)
         {
             Logger.Default.WriteLog("Resetting app config...");
-            App.Settings = AppSettings.Load(new System.IO.FileInfo(System.IO.Path.Combine(App.Settings.FilePath, App.Settings.FileName)));
+            ReloadSettings();
+        }
+
+        private void ReloadSettings()
+        {
+            App.Settings = AppSettings.Load(new System.IO.FileInfo("settings.json"));
+            vm.Refresh();
         }
     }
 }

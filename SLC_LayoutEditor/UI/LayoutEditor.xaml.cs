@@ -390,13 +390,16 @@ namespace SLC_LayoutEditor.UI
 
         private void RefreshLayoutFlags()
         {
-            vm.ActiveLayout.RefreshCalculated();
+            vm.ActiveLayout.RefreshData();
             vm.RefreshUnsavedChanges();
             control_layout.RefreshState(false);
         }
 
         private void Automate_Click(object sender, RoutedEventArgs e)
         {
+            char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
+            int currentLetterIndex = 0;
+
             switch (vm.SelectedAutomationIndex)
             {
                 case 0: // Seat numeration
@@ -408,8 +411,6 @@ namespace SLC_LayoutEditor.UI
                                 cabinDeck.CabinSlots)
                             .GroupBy(x => x.Column).OrderBy(x => x.Key);
 
-                        char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
-                        int currentLetterIndex = 0;
                         foreach (var group in seatRowGroups)
                         {
                             if (!group.Any(x => x.IsSeat))
@@ -617,6 +618,7 @@ namespace SLC_LayoutEditor.UI
             vm.ActiveLayout.DeepRefreshProblemChecks();
             vm.RefreshUnsavedChanges();
             control_layout.RefreshState();
+            control_layout.RedrawDirtySlots();
 
             if (App.GuidedTour.IsAwaitingCompletedSeatAutomation)
             {

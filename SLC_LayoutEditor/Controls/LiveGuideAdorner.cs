@@ -90,6 +90,8 @@ namespace SLC_LayoutEditor.Controls
         Rect renderRect;
         DrawingBrush maskBrush;
 
+        private GuideTextPosition? checkedPosition;
+
         public UIElement GuidedElement => guidedElement;
 
         public static Adorner AttachAdorner(UIElement rootElement, UIElement guidedElement)
@@ -223,9 +225,12 @@ namespace SLC_LayoutEditor.Controls
             adornedElementRect.Width += widthOffset;
             adornedElementRect.Height += heightOffset;
 
+            double drawingRectX = adornedElementRect.X < 0 ? adornedElementRect.X * 2 - adornedElementRect.Width / 2 : 0;
+            double drawingRectY = adornedElementRect.Y < 12 ? adornedElementRect.Y - 12 - adornedElementRect.Height / 2 : 0;
+
             Point adornedElementCenter = new Point(adornedElementRect.Width / 2, adornedElementRect.Height / 2);
             //adornedElementCenter.Offset(highlightXOffset, highlightYOffset);
-            Rect drawingRect = new Rect(0, 0,
+            Rect drawingRect = new Rect(-BACKDROP_SAFEZONE_SIZE, -BACKDROP_SAFEZONE_SIZE,
                 AdornedElement.RenderSize.Width + BACKDROP_SAFEZONE_SIZE, AdornedElement.RenderSize.Height + BACKDROP_SAFEZONE_SIZE);
 
             // Generate texts
@@ -234,8 +239,8 @@ namespace SLC_LayoutEditor.Controls
 
             string closeInfoText = !areTourStepsVisible ? "Click anywhere to close this info" :
                 !string.IsNullOrWhiteSpace(tourStepCategory) ? 
-                string.Format("Guided tour - {0} - {1}/{2}", tourStepCategory, currentTourStep, totalTourSteps) :
-                string.Format("Guided tour - {0}/{1}", currentTourStep, totalTourSteps);
+                string.Format("Guided tour - {0} ({1}/{2})", tourStepCategory, currentTourStep, totalTourSteps) :
+                string.Format("Guided tour ({0}/{1})", currentTourStep, totalTourSteps);
             FormattedText formattedCloseInfo = GetFormattedText(closeInfoText, 
                 FontWeights.Thin, !areTourStepsVisible ? 10 : 12, FixedValues.YELLOW_BRUSH);
 
@@ -271,7 +276,6 @@ namespace SLC_LayoutEditor.Controls
 
                 using (DrawingContext renderContext = drawingImage.RenderOpen())
                 {
-
                     Rect newRenderRect = currentFrameIndex != 0 ? new Rect(0, 0, renderedFrame.Width, renderedFrame.Height) :
                          new Rect(0, 0, firstFrame.Width, firstFrame.Height);
 
@@ -386,6 +390,8 @@ namespace SLC_LayoutEditor.Controls
         private void ApplyOpacityMask(DrawingContext context, Rect drawingRect, Rect adornedElementRect, Point adornedElementCenter,
             Rect textAreaRect)
         {
+            RectangleGeometry backdropGeometry = new RectangleGeometry(drawingRect, 8, 8);
+
             CombinedGeometry geometry;
             if (isCircularCutout)
             {
@@ -395,7 +401,7 @@ namespace SLC_LayoutEditor.Controls
                     RadiusY = radius,
                 };
                 geometry = new CombinedGeometry(GeometryCombineMode.Xor,
-                   new RectangleGeometry(drawingRect),
+                   backdropGeometry,
                    highlightGeometry);
             }
             else
@@ -407,7 +413,7 @@ namespace SLC_LayoutEditor.Controls
                 if (textPosition != GuideTextPosition.Over)
                 {
                     geometry = new CombinedGeometry(GeometryCombineMode.Xor,
-                       new RectangleGeometry(drawingRect),
+                       backdropGeometry,
                        new RectangleGeometry(adjustedHighlightRect, highlightCornerRadius, highlightCornerRadius));
                 }
                 else
@@ -416,7 +422,7 @@ namespace SLC_LayoutEditor.Controls
                         textAreaRect.Width + margin, textAreaRect.Height + margin);
                     geometry = new CombinedGeometry(GeometryCombineMode.Union,
                         new CombinedGeometry(GeometryCombineMode.Xor,
-                           new RectangleGeometry(drawingRect),
+                           backdropGeometry,
                            new RectangleGeometry(adjustedHighlightRect, highlightCornerRadius, highlightCornerRadius)),
                         new RectangleGeometry(adjustedTextAreaRect, highlightCornerRadius, highlightCornerRadius));
                 }
@@ -441,8 +447,11 @@ namespace SLC_LayoutEditor.Controls
         }
 
         private Rect GetTextAreaRect(GuideTextPosition textPosition, Rect adornedElementRect, Point adornedElementCenter, 
-            FormattedText formattedTitle, FormattedText formattedDescription, FormattedText formattedCloseInfo)
+            FormattedText formattedTitle, FormattedText formattedDescription, FormattedText formattedCloseInfo, bool skipBoundsCheck = false)
         {
+            double windowWidth = AdornedElement.RenderSize.Width;
+            double windowHeight = AdornedElement.RenderSize.Height;
+
             double offset = (isCircularCutout ? radius + margin : margin) - padding;
             Point titlePosition = new Point(16, 16);
 
@@ -452,6 +461,8 @@ namespace SLC_LayoutEditor.Controls
 
             double textAreaCenterX = textAreaWidth / 2 + highlightXOffset;
             double textAreaCenterY = textAreaHeight / 2 + highlightYOffset;
+
+            Size textAreaSize = new Size(textAreaWidth, textAreaHeight);
 
             switch (textPosition)
             {
@@ -471,45 +482,21 @@ namespace SLC_LayoutEditor.Controls
                     titlePosition = new Point(adornedElementRect.X + adornedElementCenter.X - textAreaCenterX, adornedElementRect.Y + adornedElementCenter.Y - textAreaCenterY);
                     break;
                 default: // Calculate the optimal position automatically
-                    double windowWidth = AdornedElement.RenderSize.Width;
-                    double windowHeight = AdornedElement.RenderSize.Height;
 
                     foreach (GuideTextPosition possiblePosition in Enum.GetValues(typeof(GuideTextPosition)))
                     {
-                        if (possiblePosition == GuideTextPosition.Auto)
+                        if (possiblePosition == GuideTextPosition.Auto || possiblePosition == GuideTextPosition.Over || 
+                            (checkedPosition.HasValue && checkedPosition.Value == possiblePosition))
                         {
                             continue;
                         }
 
                         Rect possibleRect = GetTextAreaRect(possiblePosition, adornedElementRect, adornedElementCenter, 
-                            formattedTitle, formattedDescription, formattedCloseInfo);
+                            formattedTitle, formattedDescription, formattedCloseInfo, true);
 
-                        switch (possiblePosition)
+                        if (IsTextAreaInBounds(possiblePosition, possibleRect, windowWidth, windowHeight))
                         {
-                            case GuideTextPosition.Right:
-                                if (possibleRect.Right <= windowWidth && possibleRect.Top >= 0 && possibleRect.Bottom <= windowHeight)
-                                {
-                                    return possibleRect;
-                                }
-                                break;
-                            case GuideTextPosition.Bottom:
-                                if (possibleRect.Right <= windowWidth && possibleRect.Left >= 0 && possibleRect.Bottom <= windowHeight)
-                                {
-                                    return possibleRect;
-                                }
-                                break;
-                            case GuideTextPosition.Left:
-                                if (possibleRect.Left >= 0 && possibleRect.Top >= 0 && possibleRect.Bottom <= windowHeight)
-                                {
-                                    return possibleRect;
-                                }
-                                break;
-                            case GuideTextPosition.Top:
-                                if (possibleRect.Right <= windowWidth && possibleRect.Left >= 0 && possibleRect.Top >= 0)
-                                {
-                                    return possibleRect;
-                                }
-                                break;
+                            return possibleRect;
                         }
                     }
                     break;
@@ -517,8 +504,9 @@ namespace SLC_LayoutEditor.Controls
 
             //titlePosition.Offset(-padding, -padding);
 
-            Rect textAreaRect = new Rect(titlePosition.X, titlePosition.Y, textAreaWidth, textAreaHeight);
+            Rect textAreaRect = new Rect(titlePosition, textAreaSize);
             textAreaRect.Offset(textAreaXOffset, textAreaYOffset);
+
 
             double totalRightOffset = textAreaRect.Right;
             if (totalRightOffset > AdornedElement.RenderSize.Width)
@@ -544,7 +532,35 @@ namespace SLC_LayoutEditor.Controls
                 textAreaRect.Offset(0, AdornedElement.RenderSize.Height - totalBottomOffset - safeZoneSize);
             }
 
+            /*if (!skipBoundsCheck && !IsTextAreaInBounds(textPosition, textAreaRect, windowWidth, windowHeight))
+            {
+                checkedPosition = textPosition;
+                return GetTextAreaRect(GuideTextPosition.Auto, adornedElementRect, adornedElementCenter, formattedTitle, formattedDescription, formattedCloseInfo, true);
+            }*/
+
             return textAreaRect;
+        }
+
+        private bool IsTextAreaInBounds(GuideTextPosition textPosition, Rect textAreaRect, double windowWidth, double windowHeight, bool includeSafeZone = true)
+        {
+            double left = includeSafeZone ? textAreaRect.Left - safeZoneSize : textAreaRect.Left;
+            double top = includeSafeZone ? textAreaRect.Top - safeZoneSize : textAreaRect.Top;
+            double right = includeSafeZone ? textAreaRect.Right + safeZoneSize : textAreaRect.Right;
+            double bottom = includeSafeZone ? textAreaRect.Bottom + safeZoneSize : textAreaRect.Bottom;
+
+            switch (textPosition)
+            {
+                case GuideTextPosition.Right:
+                    return right <= windowWidth && top >= 0 && bottom <= windowHeight;
+                case GuideTextPosition.Bottom:
+                    return right <= windowWidth && left >= 0 && bottom <= windowHeight;
+                case GuideTextPosition.Left:
+                    return left >= 0 && top >= 0 && bottom <= windowHeight;
+                case GuideTextPosition.Top:
+                    return bottom <= windowWidth && left >= 0 && top >= 0;
+            }
+
+            return false;
         }
 
         protected virtual void OnClosed(LiveGuideClosedEventArgs e)

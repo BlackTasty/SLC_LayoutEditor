@@ -146,7 +146,7 @@
             </Style.Triggers>
         </Style>
     </Grid.Style>
-    <controls:CabinDeckControl x:Name="control_layout"
+    <controls:CabinLayoutControl x:Name="control_layout"
                                  IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                                  CabinLayout="{Binding ActiveLayout, UpdateSourceTrigger=PropertyChanged}"
                                  IsSidebarOpen="{Binding IsSidebarOpen}"
@@ -163,19 +163,20 @@
                                  controls:GuideAssist.TextPosition="Over"
                                  controls:GuideAssist.IsCircularCutout="False"
                                  controls:GuideAssist.Margin="32">
-        <controls:CabinDeckControl.Style>
-            <Style TargetType="controls:CabinDeckControl">
+        <controls:CabinLayoutControl.Style>
+            <Style TargetType="controls:CabinLayoutControl">
                 <Setter Property="Grid.Column" Value="1"/>
                 <Setter Property="Grid.ColumnSpan" Value="2"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
+                        <Setter Property="Margin" Value="-2,0,0,0"/>
                         <Setter Property="Grid.Column" Value="0"/>
                         <Setter Property="Grid.ColumnSpan" Value="3"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </controls:CabinDeckControl.Style>
-    </controls:CabinDeckControl>
+        </controls:CabinLayoutControl.Style>
+    </controls:CabinLayoutControl>
     <controls:TodoList x:Name="todoList" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Top">
         <controls:TodoList.Style>
             <Style TargetType="controls:TodoList">
@@ -194,7 +195,7 @@
                 controls:GuideAssist.Title="{StaticResource GuideSelectorCardTitle}"
                 controls:GuideAssist.Description="{StaticResource GuideSelectorCardDescription}"
                 controls:GuideAssist.HasGuide="True"
-                controls:GuideAssist.TextPosition="Right"
+                controls:GuideAssist.TextPosition="Bottom"
                 controls:GuideAssist.IsCircularCutout="False"
                 Cursor="Help"
                 ContextMenu="{StaticResource GuideMenu}">
@@ -206,7 +207,6 @@
                                   controls:GuideAssist.Description="{StaticResource GuideToggleEditorModeDescription}"
                                   controls:GuideAssist.HasGuide="True"
                                   controls:GuideAssist.RadiusOffset="-8"
-                                  controls:GuideAssist.HighlightXOffset="-2"
                                   controls:GuideAssist.TextPosition="Right"
                                   Cursor="Help"
                                   ContextMenu="{StaticResource GuideMenu}"/>
@@ -762,17 +762,19 @@
                           controls:GuideAssist.Title="{StaticResource GuideToggleSidebarTitle}"
                           controls:GuideAssist.Description="{StaticResource GuideToggleSidebarDescription}"
                           controls:GuideAssist.HasGuide="True"
-                          controls:GuideAssist.RadiusOffset="-16"
-                          controls:GuideAssist.HighlightXOffset="-8"
-                          controls:GuideAssist.TextAreaYOffset="24"
-                          controls:GuideAssist.TextAreaXOffset="-8"
+                          controls:GuideAssist.RadiusOffset="-20"
+                          controls:GuideAssist.HighlightXOffset="-4"
                           Cursor="Help"
                           ContextMenu="{StaticResource GuideMenu}">
                 <ToggleButton.Style>
                     <Style TargetType="ToggleButton" BasedOn="{StaticResource SidebarToggleButtonStyle}">
+                        <Setter Property="controls:GuideAssist.TextPosition" Value="Bottom"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsLayoutTemplate}" Value="True">
                                 <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
+                                <Setter Property="controls:GuideAssist.TextPosition" Value="Right"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

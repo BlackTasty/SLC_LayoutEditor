@@ -454,7 +454,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public int RequiredLettersForAutomation
         {
-            get => ActiveLayout.CabinDecks.Max(x => x.CountRowsWithSeats());
+            get => ActiveLayout.CabinDecks.Sum(x => x.CountRowsWithSeats());
             set
             {
                 mRequiredLettersForAutomation = value;
@@ -786,7 +786,7 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(!IsTemplatingMode ? nameof(SelectedLayoutText) : nameof(SelectedTemplateText));
             InvokePropertyChanged(nameof(ActiveLayout));
             InvokePropertyChanged(nameof(IsLayoutTemplate));
-            OnCabinLayoutSelected(new CabinLayoutSelectedEventArgs(updated?.LayoutName));
+            OnCabinLayoutSelected(new CabinLayoutSelectedEventArgs(updated?.LayoutName, updated?.IsTemplate ?? false));
 
 
             if (App.Settings.HideSidebarAfterLoadingLayout)

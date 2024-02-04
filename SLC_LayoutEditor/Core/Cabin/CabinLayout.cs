@@ -74,7 +74,18 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         #region Issue flags
         #region Seat checks
-        public IEnumerable<CabinSlot> DuplicateSeats => GetDuplicateSeats();
+        public IEnumerable<CabinSlot> DuplicateSeats
+        {
+            get
+            {
+                if (duplicateSeats == null)
+                {
+                    RefreshIssues();
+                }
+
+                return duplicateSeats;
+            }
+        }
 
         public bool HasNoDuplicateSeats => !duplicateSeats?.Any() ?? true;
         #endregion
@@ -84,18 +95,10 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             get
             {
-                IEnumerable<CabinSlot> duplicateDoors = CabinDecks.Where(x => x.HasDoors)
-                    .SelectMany(x => x.DoorSlots)
-                    .GroupBy(x => x.SlotNumber)
-                    .Where(x => x.Count() > 1)
-                    .SelectMany(x => x);
-
-                foreach (var diff in duplicateDoors.GetDiff(this.duplicateDoors))
+                if (duplicateDoors == null)
                 {
-                    diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.DOORS_DUPLICATE, diff.Value);
+                    RefreshIssues();
                 }
-
-                this.duplicateDoors = duplicateDoors.ToList();
 
                 return duplicateDoors;
             }
@@ -104,7 +107,18 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool HasNoDuplicateDoors => !duplicateDoors?.Any() ?? true;
         #endregion
 
-        public IEnumerable<CabinSlot> InvalidStairways => GetInvalidStairways();
+        public IEnumerable<CabinSlot> InvalidStairways
+        {
+            get
+            {
+                if (invalidStairways == null)
+                {
+                    RefreshIssues();
+                }
+
+                return invalidStairways;
+            }
+        }
 
         public bool StairwaysValid => InvalidStairways.Count() == 0;
 
@@ -249,7 +263,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             OnDeleted(EventArgs.Empty);
         }
 
-        public void RefreshCalculated()
+        public void RefreshData()
         {
             DeepRefreshProblemChecks();
             RefreshCapacities();
@@ -635,6 +649,31 @@ namespace SLC_LayoutEditor.Core.Cabin
             return invalidStairways;
         }
 
+        private void RefreshIssues()
+        {
+            duplicateDoors = GetDuplicateDoors().ToList();
+            invalidStairways = GetInvalidStairways().ToList();
+            duplicateSeats = GetDuplicateSeats().ToList();
+        }
+
+        private IEnumerable<CabinSlot> GetDuplicateDoors()
+        {
+            IEnumerable<CabinSlot> duplicateDoors = CabinDecks.Where(x => x.HasDoors)
+                .SelectMany(x => x.DoorSlots)
+                .GroupBy(x => x.SlotNumber)
+                .Where(x => x.Count() > 1)
+                .SelectMany(x => x);
+
+            foreach (var diff in duplicateDoors.GetDiff(this.duplicateDoors))
+            {
+                diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.DOORS_DUPLICATE, diff.Value);
+            }
+
+            this.duplicateDoors = duplicateDoors.ToList();
+
+            return duplicateDoors;
+        }
+
         private int GetLowerDeckOffset(int floor)
         {
             CabinDeck lowerDeck = CabinDecks.FirstOrDefault(x => x.Floor == floor);
@@ -683,6 +722,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 Logger.Default.WriteLog("Checking layout for issues...");
 
+                RefreshIssues();
                 IEnumerable<CabinSlot> invalidSlots = GetInvalidSlots();
 
                 if (invalidSlots.Any())

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SLC_LayoutEditor.Core.Enum;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -51,8 +53,11 @@ namespace SLC_LayoutEditor
         internal static readonly string ICON_BROWSER_OPENED = (string)App.Current.FindResource("OpenInBrowser");
         internal static readonly string ICON_CHECK_CIRCLE = (string)App.Current.FindResource("CheckCircle");
 
+        internal readonly static int TOTAL_TOUR_STEPS = (int)System.Enum.GetValues(typeof(GuidedTourStep)).Cast<GuidedTourStep>().Max();
+
         internal const double DEFAULT_BORDER_THICKNESS = 1.5;
 
+        internal const double DECK_BASE_MARGIN = 16;
         internal const double LAYOUT_OFFSET_X = 64;
         internal const double LAYOUT_OFFSET_Y = 64;
         internal static Size SLOT_DIMENSIONS = new Size(40, 40);

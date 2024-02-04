@@ -34,6 +34,10 @@ namespace SLC_LayoutEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly string MAXIMIZE_ICON = (string)App.Current.FindResource("WindowMaximize");
+        private static readonly string RESTORE_ICON = (string)App.Current.FindResource("WindowRestore");
+
+        private UIElement root;
         private MainViewModel vm;
         private bool isClosing;
         private bool forceClose;
@@ -46,6 +50,7 @@ namespace SLC_LayoutEditor
 
             InitializeComponent();
             vm = DataContext as MainViewModel;
+            vm.StateToggleButtonContent = MAXIMIZE_ICON;
 
             CheckCleanupFile();
             vm.ShowChangelogIfUpdated();
@@ -64,6 +69,7 @@ namespace SLC_LayoutEditor
                 if (o is LiveGuideData data)
                 {
                     SetGuideAdorner(data);
+                    vm.UpdateTourStepper();
                 }
             }, ViewModelMessage.GuideAdornerShowing);
 
@@ -182,18 +188,18 @@ namespace SLC_LayoutEditor
         private void Window_StateChanged(object sender, EventArgs e)
         {
             RefreshGuideAdorner();
+            vm.StateToggleButtonContent = WindowState == WindowState.Normal ? MAXIMIZE_ICON : RESTORE_ICON;
+            vm.IsMaximized = WindowState == WindowState.Maximized;
         }
 
         private void SetGuideAdorner(LiveGuideData data)
         {
             if (data?.GuidedElement != null)
             {
-                if (Content is UIElement rootElement)
-                {
-                    currentGuideAdorner = (LiveGuideAdorner)LiveGuideAdorner.AttachAdorner(rootElement, data.GuidedElement);
-                    currentGuideAdorner.Closed += CurrentGuideAdorner_Closed;
-                }
+                currentGuideAdorner = (LiveGuideAdorner)LiveGuideAdorner.AttachAdorner(root, data.GuidedElement);
+                currentGuideAdorner.Closed += CurrentGuideAdorner_Closed;
             }
+            vm.IsGuideOpen = data != null;
         }
 
         private void CurrentGuideAdorner_Closed(object sender, LiveGuideClosedEventArgs e)
@@ -208,8 +214,19 @@ namespace SLC_LayoutEditor
                 }
                 else
                 {
-                    App.GuidedTour.ContinueTour(true, e.TourStepOffset);
+                    App.GuidedTour.ContinueTour(true);
                 }
+            }
+        }
+
+        private void ForceCloseGuideAdorner()
+        {
+            if (currentGuideAdorner != null)
+            {
+                currentGuideAdorner.Closed -= CurrentGuideAdorner_Closed;
+                UIElement adornedElement = currentGuideAdorner.AdornedElement;
+                adornedElement.RemoveAdorner(currentGuideAdorner);
+                vm.IsGuideOpen = false;
             }
         }
 
@@ -237,8 +254,110 @@ namespace SLC_LayoutEditor
             }
             else
             {
+                ForceCloseGuideAdorner();
                 App.GuidedTour.StopTour();
             }
+        }
+        private void InitHeader(UIElement header)
+        {
+            var restoreIfMove = false;
+
+            header.MouseLeftButtonDown += (s, e) =>
+            {
+                if (e.ClickCount == 2)
+                {
+                    if ((ResizeMode == ResizeMode.CanResize) ||
+                        (ResizeMode == ResizeMode.CanResizeWithGrip))
+                    {
+                        SwitchState();
+                    }
+                }
+                else
+                {
+                    if (WindowState == WindowState.Maximized)
+                    {
+                        restoreIfMove = true;
+                    }
+
+                    DragMove();
+                }
+            };
+            header.MouseLeftButtonUp += (s, e) =>
+            {
+                restoreIfMove = false;
+            };
+            header.MouseMove += (s, e) =>
+            {
+                if (restoreIfMove)
+                {
+                    restoreIfMove = false;
+                    var mouseX = e.GetPosition(this).X;
+                    var width = RestoreBounds.Width;
+                    var x = mouseX - width / 2;
+
+                    if (x < 0)
+                    {
+                        x = 0;
+                    }
+                    else
+                    if (x + width > SystemParameters.PrimaryScreenWidth)
+                    {
+                        x = SystemParameters.PrimaryScreenWidth - width;
+                    }
+
+                    WindowState = WindowState.Normal;
+                    Left = x;
+                    Top = 0;
+                    DragMove();
+                }
+            };
+        }
+
+        private void SwitchState()
+        {
+            WindowState = !vm.IsMaximized ? WindowState.Maximized : WindowState.Normal;
+        }
+
+        private void header_Loaded(object sender, RoutedEventArgs e)
+        {
+            InitHeader(sender as UIElement);
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void ToggleState_Click(object sender, RoutedEventArgs e)
+        {
+            SwitchState();
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void Root_Loaded(object sender, RoutedEventArgs e)
+        {
+            root = sender as UIElement;
+        }
+
+        private void StepBackInTour_Click(object sender, RoutedEventArgs e)
+        {
+            ForceCloseGuideAdorner();
+            App.GuidedTour.StepBack();
+        }
+
+        private void StepForwardInTour_Click(object sender, RoutedEventArgs e)
+        {
+            ForceCloseGuideAdorner();
+            App.GuidedTour.StepForward();
+        }
+
+        private void ShowCurrentStep_Click(object sender, RoutedEventArgs e)
+        {
+            App.GuidedTour.ShowCurrentStepAgain();
         }
     }
 }
