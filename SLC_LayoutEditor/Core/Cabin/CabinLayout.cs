@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using Tasty.Logging;
 using Tasty.ViewModel;
 
@@ -30,9 +31,10 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private string currentHash;
 
-        private List<CabinSlot> invalidStairways;
-        private List<CabinSlot> duplicateDoors;
-        private List<CabinSlot> duplicateSeats;
+        private IEnumerable<CabinSlot> invalidSlots;
+        /*private IEnumerable<CabinSlot> invalidStairways;
+        private IEnumerable<CabinSlot> duplicateDoors;
+        private IEnumerable<CabinSlot> duplicateSeats;*/
 
         public string LayoutName
         {
@@ -73,54 +75,38 @@ namespace SLC_LayoutEditor.Core.Cabin
         #endregion
 
         #region Issue flags
-        #region Seat checks
-        public IEnumerable<CabinSlot> DuplicateSeats
+        public IEnumerable<CabinSlot> InvalidSlots
         {
             get
             {
-                if (duplicateSeats == null)
+                if (invalidSlots == null)
                 {
                     RefreshIssues();
                 }
 
-                return duplicateSeats;
+                return invalidSlots;
             }
         }
 
-        public bool HasNoDuplicateSeats => !duplicateSeats?.Any() ?? true;
+        #region Seat checks
+        private static readonly Func<CabinSlot, bool> duplicateSeatsCondition = (x => x.SlotIssues.HasIssue(CabinSlotIssueType.DUPLICATE_SEAT));
+        private static readonly Func<CabinSlot, bool> duplicateDoorssCondition = (x => x.SlotIssues.HasIssue(CabinSlotIssueType.DUPLICATE_DOORS));
+        private static readonly Func<CabinSlot, bool> invalidStairwaysCondition = (x => x.SlotIssues.HasIssue(CabinSlotIssueType.STAIRWAY));
+
+        public IEnumerable<CabinSlot> DuplicateSeats => InvalidSlots?.Where(duplicateSeatsCondition);
+
+        public bool HasNoDuplicateSeats => !DuplicateSeats?.Any() ?? true;
         #endregion
 
         #region Door checks
-        public IEnumerable<CabinSlot> DuplicateDoors
-        {
-            get
-            {
-                if (duplicateDoors == null)
-                {
-                    RefreshIssues();
-                }
+        public IEnumerable<CabinSlot> DuplicateDoors => InvalidSlots?.Where(duplicateDoorssCondition);
 
-                return duplicateDoors;
-            }
-        }
-
-        public bool HasNoDuplicateDoors => !duplicateDoors?.Any() ?? true;
+        public bool HasNoDuplicateDoors => !DuplicateDoors?.Any() ?? true;
         #endregion
 
-        public IEnumerable<CabinSlot> InvalidStairways
-        {
-            get
-            {
-                if (invalidStairways == null)
-                {
-                    RefreshIssues();
-                }
-
-                return invalidStairways;
-            }
-        }
-
-        public bool StairwaysValid => InvalidStairways.Count() == 0;
+        public IEnumerable<CabinSlot> InvalidStairways => InvalidSlots?.Where(invalidStairwaysCondition);
+            
+        public bool StairwaysValid => !InvalidStairways?.Any() ?? true;
 
         public bool HasMultipleDecks => mCabinDecks.Count > 1;
 
@@ -175,8 +161,6 @@ namespace SLC_LayoutEditor.Core.Cabin
                 }
             }
         }
-
-        public IEnumerable<CabinSlot> InvalidSlots => GetInvalidSlots();
         #endregion
 
         public string FilePath => layoutFile.FullName;
@@ -308,10 +292,10 @@ namespace SLC_LayoutEditor.Core.Cabin
                 mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
                 LoadCabinLayout(File.ReadAllText(layoutFile.FullName));
 
-                if (reload)
+                /*if (reload)
                 {
                     OnCabinSlotsChanged(EventArgs.Empty);
-                }
+                }*/
             }
         }
 
@@ -348,12 +332,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 if (!HasNoDuplicateSeats)
                 {
-                    int duplicateCount = duplicateSeats.Count();
+                    int duplicateCount = DuplicateSeats.Count();
                     AppendBulletPoint(sb, duplicateCount > 1 ? string.Format("{0} duplicate seats found!", duplicateCount) : "1 duplicate seat found!");
                 }
                 if (!HasNoDuplicateDoors)
                 {
-                    int duplicateCount = duplicateDoors.Count();
+                    int duplicateCount = DuplicateDoors.Count();
                     AppendBulletPoint(sb, duplicateCount > 1 ? string.Format("{0} duplicate doors found!", duplicateCount) : "1 duplicate door found!");
                 }
                 if (!StairwaysValid)
@@ -606,7 +590,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 .Where(x => x.Count() > 1)
                 .SelectMany(x => x);
 
-            foreach (var diff in current.GetDiff(this.duplicateSeats))
+            foreach (var diff in current.GetDiff(GetCurrentlyInvalidSlots(duplicateSeatsCondition)))
             {
                 diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.DUPLICATE_SEAT, diff.Value);
             }
@@ -615,8 +599,6 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 forceChecked.SlotIssues.ToggleIssue(CabinSlotIssueType.DUPLICATE_SEAT, true);
             }
-
-            this.duplicateSeats = current.ToList();
 
             return current;
         }
@@ -639,21 +621,23 @@ namespace SLC_LayoutEditor.Core.Cabin
                 }
             }
 
-            foreach (var diff in invalidStairways.GetDiff(this.invalidStairways))
+            foreach (var diff in invalidStairways.GetDiff(GetCurrentlyInvalidSlots(invalidStairwaysCondition)))
             {
                 diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.STAIRWAY, diff.Value);
             }
-
-            this.invalidStairways = invalidStairways;
 
             return invalidStairways;
         }
 
         private void RefreshIssues()
         {
-            duplicateDoors = GetDuplicateDoors().ToList();
-            invalidStairways = GetInvalidStairways().ToList();
-            duplicateSeats = GetDuplicateSeats().ToList();
+            List<CabinSlot> invalidSlots = new List<CabinSlot>();
+
+            invalidSlots.AddRangeDistinct(GetDuplicateDoors());
+            invalidSlots.AddRangeDistinct(GetInvalidStairways());
+            invalidSlots.AddRangeDistinct(GetDuplicateSeats());
+
+            this.invalidSlots = invalidSlots;
         }
 
         private IEnumerable<CabinSlot> GetDuplicateDoors()
@@ -664,14 +648,17 @@ namespace SLC_LayoutEditor.Core.Cabin
                 .Where(x => x.Count() > 1)
                 .SelectMany(x => x);
 
-            foreach (var diff in duplicateDoors.GetDiff(this.duplicateDoors))
+            foreach (var diff in duplicateDoors.GetDiff(GetCurrentlyInvalidSlots(duplicateDoorssCondition)))
             {
-                diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.DOORS_DUPLICATE, diff.Value);
+                diff.Key.SlotIssues.ToggleIssue(CabinSlotIssueType.DUPLICATE_DOORS, diff.Value);
             }
 
-            this.duplicateDoors = duplicateDoors.ToList();
-
             return duplicateDoors;
+        }
+
+        private IEnumerable<CabinSlot> GetCurrentlyInvalidSlots(Func<CabinSlot, bool> condition)
+        {
+            return invalidSlots?.Where(condition);
         }
 
         private int GetLowerDeckOffset(int floor)
@@ -706,6 +693,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void DeepRefreshProblemChecks()
         {
+            RefreshIssues();
             foreach (CabinDeck cabinDeck in mCabinDecks)
             {
                 cabinDeck.RefreshProblemChecks();
@@ -723,7 +711,6 @@ namespace SLC_LayoutEditor.Core.Cabin
                 Logger.Default.WriteLog("Checking layout for issues...");
 
                 RefreshIssues();
-                IEnumerable<CabinSlot> invalidSlots = GetInvalidSlots();
 
                 if (invalidSlots.Any())
                 {
@@ -756,15 +743,6 @@ namespace SLC_LayoutEditor.Core.Cabin
         public override string ToString()
         {
             return mLayoutName;
-        }
-
-        private IEnumerable<CabinSlot> GetInvalidSlots()
-        {
-            List<CabinSlot> problematic = mCabinDecks.SelectMany(x => x.InvalidSlots).ToList();
-            problematic.AddRange(InvalidStairways);
-            problematic.AddRange(DuplicateDoors);
-            problematic.AddRange(DuplicateSeats);
-            return problematic.Distinct();
         }
 
         protected virtual void OnCabinDeckCountChanged(EventArgs e)

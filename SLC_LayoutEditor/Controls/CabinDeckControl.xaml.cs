@@ -54,7 +54,6 @@ namespace SLC_LayoutEditor.Controls
         private CabinDeckRenderer renderer;
         private DragSelectRenderer selectRenderer;
         private ToolTip tooltip;
-        private DispatcherTimer tooltipTimer;
 
         #region CabinDeck property
         public CabinDeck CabinDeck
@@ -131,6 +130,7 @@ namespace SLC_LayoutEditor.Controls
                 {
                     renderer = new CabinDeckRenderer(CabinDeck);
                     renderer.ChangeTooltip += Renderer_ChangeTooltip;
+                    renderer.CloseTooltip += Renderer_CloseTooltip;
                     renderer.SelectedSlotsChanged += Renderer_SelectedSlotsChanged;
                     renderer.SizeChanged += Renderer_SizeChanged;
 
@@ -143,6 +143,14 @@ namespace SLC_LayoutEditor.Controls
 
             sw.Stop();
             Logger.Default.WriteLog("Cabin deck rendered in {0} seconds", Math.Round((double)sw.ElapsedMilliseconds / 1000, 3));
+        }
+
+        private void Renderer_CloseTooltip(object sender, EventArgs e)
+        {
+            if (tooltip != null)
+            {
+                tooltip.IsOpen = false;
+            }
         }
 
         private void Renderer_SizeChanged(object sender, EventArgs e)
@@ -172,7 +180,7 @@ namespace SLC_LayoutEditor.Controls
                 tooltip.Content = renderer.Tooltip;
             }
 
-            tooltip.IsOpen = renderer.Tooltip != null;
+            tooltip.IsOpen = deck_view.IsMouseDirectlyOver && renderer.Tooltip != null;
         }
 
         public void DeselectSlots()
@@ -209,6 +217,11 @@ namespace SLC_LayoutEditor.Controls
             if (CabinDeck != null)
             {
                 CabinDeck.DeckSlotLayoutChanged -= CabinDeck_DeckSlotLayoutChanged;
+                if (tooltip != null)
+                {
+                    tooltip.IsOpen = false;
+                    tooltip = null;
+                }
             }
         }
 
@@ -281,27 +294,27 @@ namespace SLC_LayoutEditor.Controls
         private void deck_view_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             deck_dragselect.Source = selectRenderer.RefreshDragSelect(Mouse.GetPosition(deck_view));
-            renderer?.CheckMouseOver(Mouse.GetPosition(deck_view));
+            renderer?.CheckMouseOver(deck_view);
 
         }
 
         private void deck_view_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             deck_dragselect.Source = selectRenderer.StartDragSelect(Mouse.GetPosition(deck_view));
-            renderer?.CheckMouseClick(Mouse.GetPosition(deck_view), true);
+            renderer?.CheckMouseClick(deck_view, true);
         }
 
         private void deck_view_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             deck_dragselect.Source = selectRenderer.StopDragSelect();
-            renderer?.CheckMouseClick(Mouse.GetPosition(deck_view), false);
+            renderer?.CheckMouseClick(deck_view, false);
         }
 
         private void deck_view_MouseLeave(object sender, MouseEventArgs e)
         {
             deck_dragselect.Source = selectRenderer.StopDragSelect();
-            renderer?.CheckMouseClick(Mouse.GetPosition(deck_view), false);
-            renderer?.CheckMouseOver(Mouse.GetPosition(deck_view));
+            renderer?.CheckMouseClick(deck_view, false);
+            renderer?.CheckMouseOver(deck_view);
         }
 
         protected virtual void OnSelectedSlotsChanged(SelectedSlotsChangedEventArgs e)

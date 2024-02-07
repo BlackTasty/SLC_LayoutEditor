@@ -6,15 +6,19 @@ using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ScrollBar;
@@ -93,6 +97,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         #endregion
 
         public event EventHandler<EventArgs> ChangeTooltip;
+        public event EventHandler<EventArgs> CloseTooltip;
         public event EventHandler<SelectedSlotsChangedEventArgs> SelectedSlotsChanged;
         public event EventHandler<EventArgs> SizeChanged;
 
@@ -109,6 +114,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         private bool isGeneratingThumbnail;
 
+        private DispatcherTimer tooltipTimer;
+
         public WriteableBitmap Output => output;
 
         public string Tooltip => lastMouseOverHitResult?.Tooltip;
@@ -118,6 +125,9 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         public CabinDeckRenderer(CabinDeck cabinDeck)
         {
             SetCabinDeck(cabinDeck);
+            tooltipTimer = new DispatcherTimer(DispatcherPriority.Render);
+            tooltipTimer.Tick += TooltipTimer_Tick;
+            tooltipTimer.Interval = SystemParameters.MouseHoverTime;
         }
 
         public void SetCabinDeck(CabinDeck cabinDeck)
@@ -221,8 +231,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                             buttonHitResults.Add(rowSelectData);
 
                             // Draw add/remove row buttons
-                            buttonHitResults.Add(DrawTriangleButton(context, true, true, true, rowTag, "Remove row", row, row)); // Add row remove hitResult
-                            buttonHitResults.Add(DrawTriangleButton(context, true, false, false, rowTag, "Insert row", row, row)); // Add row create hitResult
+                            buttonHitResults.Add(DrawTriangleButton(context, true, true, true, rowTag, "Remove row", row, column)); // Add row remove hitResult
+                            buttonHitResults.Add(DrawTriangleButton(context, true, false, false, rowTag, "Insert row", row, column)); // Add row create hitResult
                         }
 
                         CabinSlot targetSlot = cabinDeck.GetSlotAtPosition(row, column);
@@ -239,18 +249,24 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 buttonHitResults.Add(DrawTriangleButton(context, null, false, true, "row-add", "Add row", int.MaxValue, -1));
                 buttonHitResults.Add(DrawTriangleButton(context, null, false, false, "column-add", "Add column", -1, int.MaxValue));
 
+                /*
                 // Draw vertical divider
-                context.DrawLine(new Pen(DIVIDER_BRUSH, 1), new Point(FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_X, FixedValues.DECK_BASE_MARGIN), 
-                    new Point(FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_X, height - FixedValues.DECK_BASE_MARGIN));
+                DrawSplitterLine(context, height, false);
 
                 // Draw horizontal divider
-                context.DrawLine(new Pen(DIVIDER_BRUSH, 1), new Point(FixedValues.DECK_BASE_MARGIN, FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_Y), 
-                    new Point(width - FixedValues.DECK_BASE_MARGIN, FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_Y));
+                DrawSplitterLine(context, width, true);*/
             }
 
             UpdateSlotAreaRect(width, height);
 
             output = new WriteableBitmap(drawingVisual.RenderVisual(width, height));
+
+            // Draw vertical divider
+            RedrawSplitterLine(height, false);
+            // Draw horizontal divider
+            RedrawSplitterLine(width, true);
+
+            cabinDeck.IsRendered = true;
         }
 
         public void RedrawDirtySlots()
@@ -267,7 +283,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             {
                 Rect firstSlotPosition = slotHitResults.First().Rect;
 
-                slotAreaRect = new Rect(firstSlotPosition.Location, new Size(width - firstSlotPosition.X - FixedValues.DECK_BASE_MARGIN * 2, height - firstSlotPosition.Y - FixedValues.DECK_BASE_MARGIN * 2));
+                slotAreaRect = new Rect(firstSlotPosition.Location.MakeOffset(-1, -1), new Size(width - firstSlotPosition.X - FixedValues.DECK_BASE_MARGIN, height - firstSlotPosition.Y - FixedValues.DECK_BASE_MARGIN));
             }
             else
             {
@@ -288,16 +304,142 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             RedrawCabinSlot(e.CabinSlot, isMouseOver);
         }
 
-        public void CheckMouseOver(Point relativeMousePosition)
+        public void CheckMouseOver(UIElement relativeControl)
         {
-            if (CheckElementMouseOver(relativeMousePosition))
+            IHitResult previousAdditionalHitResult = lastAdditionalHitResult;
+
+            if (CheckElementMouseOver(relativeControl))
             {
-                OnChangeTooltip(EventArgs.Empty);
+                tooltipTimer.Stop();
+
+                if (lastMouseOverHitResult != null)
+                {
+                    if (previousAdditionalHitResult != lastAdditionalHitResult)
+                    {
+                        OnCloseTooltip(EventArgs.Empty);
+                    }
+                    tooltipTimer.Start();
+                }
+                else
+                {
+                    OnChangeTooltip(EventArgs.Empty);
+                }
             }
         }
 
-        public void CheckMouseClick(Point relativeMousePosition, bool isMouseDown)
+        private void TooltipTimer_Tick(object sender, EventArgs e)
         {
+            tooltipTimer.Stop();
+            OnChangeTooltip(EventArgs.Empty);
+        }
+
+        private bool CheckElementMouseOver(UIElement relativeControl)
+        {
+            Point relativeMousePosition = Mouse.GetPosition(relativeControl);
+            IHitResult hitResult = null;
+            ButtonHitResult additionalRerenderData = null;
+            bool skipRectCheck = false;
+
+            if (relativeControl.IsMouseDirectlyOver)
+            {
+                if (slotAreaRect.Contains(relativeMousePosition)) // Hit result is inside slot area
+                {
+                    // Get the slot where the cursor currently is over
+                    hitResult = slotHitResults.FirstOrDefault(x => x.Rect.Contains(relativeMousePosition));
+                }
+                else // Hit result is outside slot area
+                {
+                    IEnumerable<ButtonHitResult> hitResults = buttonHitResults.Where(x => x.Rect.Contains(relativeMousePosition));
+                    int resultCount = hitResults.Count();
+
+                    if (resultCount == 1) // Usually triggered with select buttons
+                    {
+                        hitResult = hitResults.First();
+                    }
+                    else if (resultCount > 1) // Triggered when hovering over add/remove buttons
+                    {
+                        foreach (ButtonHitResult potentialResult in hitResults)
+                        {
+                            Point offsetPosition = (relativeMousePosition - potentialResult.Rect.Location).VectorToPoint();
+                            if (potentialResult.IsTriangle && potentialResult.IsCursorInsideTriangle(offsetPosition))
+                            {
+                                hitResult = potentialResult;
+                                additionalRerenderData = hitResults.First(x => x != hitResult);
+                                skipRectCheck = true;
+                                break;
+                            }
+                            else if (!potentialResult.IsTriangle)
+                            {
+                                hitResult = potentialResult;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (hitResult?.IsRemoved ?? false || (lastMouseOverHitResult != null &&
+                    lastMouseOverHitResult == lastMouseDownHitResult))
+                {
+                    return false;
+                }
+            }
+
+            // Check if the mouse hovered over any element before and redraw
+            if (lastMouseOverHitResult != null)
+            {
+                if (!skipRectCheck && hitResult != null &&
+                    lastMouseOverHitResult.Rect == hitResult.Rect)
+                {
+                    return false;
+                }
+
+                if (lastMouseOverHitResult.IsSlot && lastMouseOverHitResult is SlotHitResult lastSlotHitResult)
+                {
+                    lastSlotHitResult.CabinSlot.IsDirty = true;
+                    RedrawCabinSlot(lastSlotHitResult.CabinSlot, false);
+                }
+                else
+                {
+                    RedrawButton(lastMouseOverHitResult, false, false, lastAdditionalHitResult);
+                }
+            }
+
+            // Check if a hit result has been found and redraw
+            if (hitResult != null)
+            {
+                if (hitResult.IsSlot && hitResult is SlotHitResult slotHitResult)
+                {
+                    slotHitResult.CabinSlot.IsDirty = true;
+                    RedrawCabinSlot(slotHitResult.CabinSlot, true);
+                }
+                else
+                {
+                    RedrawButton(hitResult, true, false, additionalRerenderData);
+                }
+            }
+
+            bool hasChanged = lastMouseOverHitResult != hitResult;
+            lastMouseOverHitResult = hitResult;
+            lastAdditionalHitResult = additionalRerenderData;
+
+            return hasChanged;
+        }
+
+        public void CheckMouseClick(UIElement relativeControl, bool isMouseDown)
+        {
+            // If the cursor is not directly over the relative control, do nothing
+            if (!relativeControl.IsMouseDirectlyOver)
+            {
+                return;
+            }
+
+            Point relativeMousePosition = Mouse.GetPosition(relativeControl);
+            // If the element has been removed do nothing
+            if (lastMouseDownHitResult?.IsRemoved ?? false)
+            {
+                return;
+            }
+
             if (isMouseDown && lastMouseOverHitResult != null)
             {
                 lastMouseDownHitResult = lastMouseOverHitResult;
@@ -355,6 +497,10 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                 {
                                     Logger.Default.WriteLog("User requested adding a new {0} to cabin deck floor {1}...", isColumnTarget ? "column" : "row", cabinDeck.Floor);
 
+                                    int targetRowColumn = (isColumnTarget ? cabinDeck.Columns : cabinDeck.Rows) + 1;
+                                    CreateRowColumn(isColumnTarget, targetRowColumn);
+
+                                    Logger.Default.WriteLog("{0} added at index {1}!", isColumnTarget ? "Column" : "Row", targetRowColumn);
                                 }
                                 else // User is inserting a new row/column in between others
                                 {
@@ -418,69 +564,12 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 {
                     if (int.TryParse(hitResult.Tag.Split('-')[1], out int targetRowColumn))
                     {
-                        // Adjust row/column value for each affected cabin slot
-                        for (int currentRowColumn = isColumnInsert ? cabinDeck.Columns : cabinDeck.Rows; currentRowColumn >= targetRowColumn; currentRowColumn--)
+                        if (e.DialogResult == DialogResultType.CustomMiddle)
                         {
-                            Func<SlotHitResult, bool> insertCondition = (x => (isColumnInsert ? x.Column : x.Row) == currentRowColumn);
-                            foreach (SlotHitResult slotHitResult in slotHitResults.Where(insertCondition))
-                            {
-                                slotHitResult.UpdateRowColumn(isColumnInsert ? slotHitResult.Row : currentRowColumn + 1, !isColumnInsert ? slotHitResult.Column : currentRowColumn + 1);
-                            }
+                            targetRowColumn++;
                         }
 
-                        // Generate new cabin slots at the target row/column
-                        for (int rowColumn = 0; rowColumn <= (!isColumnInsert ? cabinDeck.Columns : cabinDeck.Rows); rowColumn++)
-                        {
-                            CabinSlot cabinSlot = new CabinSlot(!isColumnInsert ? targetRowColumn : rowColumn, isColumnInsert ? targetRowColumn : rowColumn);
-                            cabinSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
-                            cabinSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
-                            cabinDeck.CabinSlots.Add(cabinSlot);
-                            Rect hitbox = GetCabinSlotHitbox(cabinSlot);
-                            slotHitResults.Add(new SlotHitResult(hitbox, cabinSlot));
-                        }
-
-                        // Update size of the WriteableBitmap
-                        UpdateBitmapSize();
-
-                        // Render all added and changed cabin slots
-                        foreach (CabinSlot redrawSlot in  cabinDeck.CabinSlots.Where(x => x.IsDirty))
-                        {
-                            RedrawCabinSlot(redrawSlot, false);
-                        }
-
-                        // Generate buttons for row/column
-                        #region Generate hitbox for select button
-                        Rect selectButtonHitbox = GetSelectButtonHitbox(!isColumnInsert, cabinDeck.Rows, cabinDeck.Columns);
-                        //selectButtonHitbox.Location.Offset(-4, -4);
-
-                        string tooltip = string.Format("Select {0}", !isColumnInsert ? "row" : "column");
-                        string tag = string.Format("{0}-{1}", !isColumnInsert ? "row" : "column", targetRowColumn);
-                        ButtonHitResult selectHitResult = new ButtonHitResult(selectButtonHitbox, ButtonActionType.SELECT, tag, tooltip, targetRowColumn, 
-                            targetRowColumn, !isColumnInsert);
-                        buttonHitResults.Add(selectHitResult);
-
-                        RedrawSelectButton(selectHitResult, false, false);
-                        #endregion
-
-                        #region Generate hitboxes for add/remove buttons
-                        Rect addRemoveButtonHitbox = GetTriangleButtonHitbox(!isColumnInsert, cabinDeck.Rows, cabinDeck.Columns);
-                        PointCollection removeTrianglePoints = !isColumnInsert ? topRightTrianglePoints : bottomLeftTrianglePoints;
-                        PointCollection insertTrianglePoints = isColumnInsert ? topRightTrianglePoints : bottomLeftTrianglePoints;
-
-                        ButtonHitResult removeButtonHitResult = new ButtonHitResult(addRemoveButtonHitbox, ButtonActionType.REMOVE, tag,
-                            string.Format("Remove {0}", !isColumnInsert ? "row" : "column"), targetRowColumn, targetRowColumn, 
-                            true, true, !isColumnInsert, removeTrianglePoints);
-                        buttonHitResults.Add(removeButtonHitResult);
-
-                        ButtonHitResult insertButtonHitResult = new ButtonHitResult(addRemoveButtonHitbox, ButtonActionType.ADD, tag,
-                            string.Format("Insert {0}", !isColumnInsert ? "row" : "column"), targetRowColumn, targetRowColumn,
-                            true, false, isColumnInsert, insertTrianglePoints);
-                        buttonHitResults.Add(insertButtonHitResult);
-
-                        RedrawTriangleButton(removeButtonHitResult, false, false, insertButtonHitResult);
-                        #endregion
-
-                        OnSizeChanged(EventArgs.Empty);
+                        CreateRowColumn(isColumnInsert, targetRowColumn);
 
                         Logger.Default.WriteLog("{0} inserted at index {1}!", isColumnInsert ? "Column" : "Row", targetRowColumn);
                     }
@@ -490,6 +579,76 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     Logger.Default.WriteLog("{0} insertion aborted by user", isColumnInsert ? "Column" : "Row");
                 }
             }
+        }
+
+        private void CreateRowColumn(bool isAddingColumn, int targetRowColumn)
+        {
+            // Adjust row/column value for each affected cabin slot
+            for (int currentRowColumn = isAddingColumn ? cabinDeck.Columns : cabinDeck.Rows; currentRowColumn >= targetRowColumn; currentRowColumn--)
+            {
+                Func<SlotHitResult, bool> insertCondition = (x => (isAddingColumn ? x.Column : x.Row) == currentRowColumn);
+                foreach (SlotHitResult slotHitResult in slotHitResults.Where(insertCondition))
+                {
+                    slotHitResult.UpdateRowColumn(isAddingColumn ? slotHitResult.Row : currentRowColumn + 1, !isAddingColumn ? slotHitResult.Column : currentRowColumn + 1);
+                }
+            }
+
+            // Generate new cabin slots at the target row/column
+            for (int rowColumn = 0; rowColumn <= (!isAddingColumn ? cabinDeck.Columns : cabinDeck.Rows); rowColumn++)
+            {
+                CabinSlot cabinSlot = new CabinSlot(!isAddingColumn ? targetRowColumn : rowColumn, isAddingColumn ? targetRowColumn : rowColumn);
+                cabinSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
+                cabinSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
+                cabinDeck.AddCabinSlot(cabinSlot);
+                Rect hitbox = GetCabinSlotHitbox(cabinSlot);
+                slotHitResults.Add(new SlotHitResult(hitbox, cabinSlot));
+            }
+
+            // Update size of the WriteableBitmap
+            Size renderSize = UpdateBitmapSize();
+
+            // Render all added and changed cabin slots
+            foreach (CabinSlot redrawSlot in cabinDeck.CabinSlots.Where(x => x.IsDirty))
+            {
+                RedrawCabinSlot(redrawSlot, false);
+            }
+
+            RedrawSplitterLine(!isAddingColumn ? renderSize.Width : renderSize.Height, !isAddingColumn);
+
+            // Generate buttons for row/column
+            #region Generate hitbox for select button
+            Rect selectButtonHitbox = GetSelectButtonHitbox(!isAddingColumn, cabinDeck.Rows, cabinDeck.Columns);
+            //selectButtonHitbox.Location.Offset(-4, -4);
+
+            int buttonRowColumn = !isAddingColumn ? cabinDeck.Rows : cabinDeck.Columns;
+            string tooltip = string.Format("Select {0} {1}", !isAddingColumn ? "row" : "column", buttonRowColumn + 1);
+            string tag = string.Format("{0}-{1}", !isAddingColumn ? "row" : "column", buttonRowColumn);
+            ButtonHitResult selectHitResult = new ButtonHitResult(selectButtonHitbox, ButtonActionType.SELECT, tag, tooltip, buttonRowColumn,
+                buttonRowColumn, !isAddingColumn, true);
+            buttonHitResults.Add(selectHitResult);
+
+            RedrawSelectButton(selectHitResult, false, false);
+            #endregion
+
+            #region Generate hitboxes for add/remove buttons
+            Rect addRemoveButtonHitbox = GetTriangleButtonHitbox(!isAddingColumn, cabinDeck.Rows, cabinDeck.Columns);
+            PointCollection removeTrianglePoints = !isAddingColumn ? topRightTrianglePoints : bottomLeftTrianglePoints;
+            PointCollection insertTrianglePoints = isAddingColumn ? topRightTrianglePoints : bottomLeftTrianglePoints;
+
+            ButtonHitResult removeButtonHitResult = new ButtonHitResult(addRemoveButtonHitbox, ButtonActionType.REMOVE, tag,
+                string.Format("Remove {0}", !isAddingColumn ? "row" : "column"), buttonRowColumn, buttonRowColumn,
+                true, true, !isAddingColumn, removeTrianglePoints, true);
+            buttonHitResults.Add(removeButtonHitResult);
+
+            ButtonHitResult insertButtonHitResult = new ButtonHitResult(addRemoveButtonHitbox, ButtonActionType.ADD, tag,
+                string.Format("Insert {0}", !isAddingColumn ? "row" : "column"), buttonRowColumn, buttonRowColumn,
+                true, false, isAddingColumn, insertTrianglePoints, true);
+            buttonHitResults.Add(insertButtonHitResult);
+
+            RedrawTriangleButton(removeButtonHitResult, false, false, insertButtonHitResult);
+            #endregion
+
+            OnSizeChanged(EventArgs.Empty);
         }
 
         private void RemoveRowColumn_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -503,16 +662,27 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     if (int.TryParse(hitResult.Tag.Split('-')[1], out int targetRowColumn))
                     {
                         int currentRowColumnCount = isColumnRemoval ? cabinDeck.Columns : cabinDeck.Rows;
-                        Predicate<ButtonHitResult> lastRowColumnCondition = (x => (isColumnRemoval ? x.Column : x.Row) == currentRowColumnCount);
-                        Func<SlotHitResult, bool> removalCondition = (x => (isColumnRemoval ? x.Column : x.Row) == targetRowColumn);
+                        Func<IHitResult, bool> lastRowColumnCondition = (x => (isColumnRemoval ? x.Column : x.Row) == currentRowColumnCount);
+                        Func<IHitResult, bool> removalCondition = (x => (isColumnRemoval ? x.Column : x.Row) == targetRowColumn);
 
-                        buttonHitResults.RemoveWhere(lastRowColumnCondition);
+                        foreach (ButtonHitResult buttonHitResult in buttonHitResults.Where(lastRowColumnCondition).ToList())
+                        {
+                            buttonHitResult.IsRemoved = true;
+                            buttonHitResults.Remove(buttonHitResult);
+                        }
+                        //buttonHitResults.RemoveWhere(lastRowColumnCondition);
+                        if (targetRowColumn == currentRowColumnCount)
+                        {
+                            lastMouseDownHitResult = null;
+                            lastMouseOverHitResult = null;
+                        }
 
                         foreach (SlotHitResult slotHitResult in slotHitResults.Where(removalCondition).ToList())
                         {
-                            slotHitResult.CabinSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
-                            slotHitResult.CabinSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
-                            cabinDeck.CabinSlots.Remove(slotHitResult.CabinSlot);
+                            slotHitResult.IsRemoved = true;
+                            slotHitResult.CabinSlot.CabinSlotChanged -= TargetSlot_CabinSlotChanged;
+                            slotHitResult.CabinSlot.ProblematicChanged -= TargetSlot_CabinSlotChanged;
+                            cabinDeck.RemoveCabinSlot(slotHitResult.CabinSlot);
                             slotHitResults.Remove(slotHitResult);
                         }
 
@@ -528,7 +698,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                             }
                         }
 
-                        UpdateBitmapSize();
+                        UpdateBitmapSize(true, !isColumnRemoval);
                         OnSizeChanged(EventArgs.Empty);
 
                         Logger.Default.WriteLog("{0} {1} removed!", isColumnRemoval ? "Column" : "Row", targetRowColumn);
@@ -541,11 +711,25 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
         }
 
-        private void UpdateBitmapSize()
+        private Size UpdateBitmapSize(bool excludeBaseMargin = false, bool? refreshWidth = null)
         {
             GetRenderSize(out double width, out double height);
+            if (excludeBaseMargin)
+            {
+                if (!refreshWidth.HasValue || refreshWidth.Value)
+                {
+                    width -= FixedValues.DECK_BASE_MARGIN;
+                }
+                if (!refreshWidth.HasValue || !refreshWidth.Value)
+                {
+                    height -= FixedValues.DECK_BASE_MARGIN;
+                }
+            }
+
             output = output.Resize((int)width, (int)height);
             UpdateSlotAreaRect(width, height);
+
+            return new Size(width, height);
         }
 
         public void SelectSlots(IEnumerable<CabinSlot> targetSlots)
@@ -596,92 +780,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
         }
 
-        private bool CheckElementMouseOver(Point relativeMousePosition)
-        {
-            IHitResult hitResult = null;
-            ButtonHitResult additionalRerenderData = null;
-            bool skipRectCheck = false;
-
-            if (slotAreaRect.Contains(relativeMousePosition)) // Hit result is inside slot area
-            {
-                // Get the slot where the cursor currently is over
-                hitResult = slotHitResults.FirstOrDefault(x => x.Rect.Contains(relativeMousePosition));
-            }
-            else // Hit result is outside slot area
-            {
-                IEnumerable<ButtonHitResult> hitResults = buttonHitResults.Where(x => x.Rect.Contains(relativeMousePosition));
-                int resultCount = hitResults.Count();
-
-                if (resultCount == 1) // Usually triggered with select buttons
-                {
-                    hitResult = hitResults.First();
-                }
-                else if (resultCount > 1) // Triggered when hovering over add/remove buttons
-                {
-                    foreach (ButtonHitResult potentialResult in hitResults)
-                    {
-                        Point offsetPosition = (relativeMousePosition - potentialResult.Rect.Location).VectorToPoint();
-                        if (potentialResult.IsTriangle && potentialResult.IsCursorInsideTriangle(offsetPosition))
-                        {
-                            hitResult = potentialResult;
-                            additionalRerenderData = hitResults.First(x => x != hitResult);
-                            skipRectCheck = true;
-                            break;
-                        }
-                        else if (!potentialResult.IsTriangle)
-                        {
-                            hitResult = potentialResult;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (lastMouseOverHitResult != null &&
-                lastMouseOverHitResult == lastMouseDownHitResult)
-            {
-                return false;
-            }
-
-            if (lastMouseOverHitResult != null)
-            {
-                if (!skipRectCheck && hitResult != null &&
-                    lastMouseOverHitResult.Rect == hitResult.Rect)
-                {
-                    return false;
-                }
-
-                if (lastMouseOverHitResult.IsSlot && lastMouseOverHitResult is SlotHitResult lastSlotHitResult)
-                {
-                    lastSlotHitResult.CabinSlot.IsDirty = true;
-                    RedrawCabinSlot(lastSlotHitResult.CabinSlot, false);
-                }
-                else
-                {
-                    RedrawButton(lastMouseOverHitResult, false, false, lastAdditionalHitResult);
-                }
-            }
-
-            if (hitResult != null)
-            {
-                if (hitResult.IsSlot && hitResult is SlotHitResult slotHitResult)
-                {
-                    slotHitResult.CabinSlot.IsDirty = true;
-                    RedrawCabinSlot(slotHitResult.CabinSlot, true);
-                }
-                else
-                {
-                    RedrawButton(hitResult, true, false, additionalRerenderData);
-                }
-            }
-
-            bool hasChanged = lastMouseOverHitResult != hitResult;
-            lastMouseOverHitResult = hitResult;
-            lastAdditionalHitResult = additionalRerenderData;
-
-            return hasChanged;
-        }
-
         private bool IsCursorInTriangle(Point cursorPosition, PointCollection trianglePoints)
         {
             // Create a Geometry object for the triangle
@@ -707,20 +805,72 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
         }
 
+        private void RedrawSplitterLine(double offset, bool isHorizontal)
+        {
+            DrawingVisual drawingVisual = new DrawingVisual();
+            Rect separatorRect = new Rect();
+
+            using (DrawingContext context = drawingVisual.RenderOpen())
+            {
+                separatorRect = DrawSplitterLine(context, offset, isHorizontal, true);
+            }
+
+            if (isHorizontal)
+            {
+                separatorRect.Height = 2;
+                separatorRect.Y += FixedValues.LAYOUT_OFFSET_Y - 1;
+            }
+            else
+            {
+                separatorRect.Width = 2;
+                separatorRect.X += FixedValues.LAYOUT_OFFSET_X - 1;
+            }
+
+            separatorRect.X += FixedValues.DECK_BASE_MARGIN;
+            separatorRect.Y += FixedValues.DECK_BASE_MARGIN;
+
+            output.RedrawArea(drawingVisual.RenderVisual(separatorRect.Size), separatorRect);
+        }
+
+        private Rect DrawSplitterLine(DrawingContext context, double offset, bool isHorizontal, bool isPure = false)
+        {
+            double xStart = !isPure ?
+                (isHorizontal ? FixedValues.DECK_BASE_MARGIN : FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_X) : 0;
+            double yStart = !isPure ? 
+                (isHorizontal ? FixedValues.DECK_BASE_MARGIN + FixedValues.LAYOUT_OFFSET_Y : FixedValues.DECK_BASE_MARGIN) : 0;
+
+            double xEnd = !isPure ? (isHorizontal ? offset - FixedValues.DECK_BASE_MARGIN : xStart) : 
+                (isHorizontal ? offset - FixedValues.DECK_BASE_MARGIN * 2 : 0);
+            double yEnd = !isPure ? (isHorizontal ? yStart : offset - FixedValues.DECK_BASE_MARGIN) : 
+                (isHorizontal ? 0 : offset - FixedValues.DECK_BASE_MARGIN * 2);
+
+            Point start = new Point(xStart, yStart);
+            Point end = new Point(xEnd, yEnd);
+
+            context.DrawLine(new Pen(DIVIDER_BRUSH, !isPure ? 1 : 3),
+                start,
+                end);
+
+            return new Rect(start, end);
+        }
+
         private void RedrawSelectButton(ButtonHitResult hitResult, bool isMouseOver, bool isMouseDown)
         {
             DrawingVisual drawingVisual = new DrawingVisual();
             Rect buttonRect = hitResult.Rect;
+            Rect renderRect = !hitResult.WasAddedAfterRender ? buttonRect : new Rect(buttonRect.Location.MakeOffset(-1, -1), buttonRect.Size.Modify(2, 2));
 
             using (DrawingContext context = drawingVisual.RenderOpen())
             {
-                DrawSelectButton(context, hitResult.Tag.StartsWith("row"), hitResult.Tag, hitResult.Row, hitResult.Column, isMouseOver, isMouseDown, true);
+                DrawSelectButton(context, hitResult.Tag.StartsWith("row"), hitResult.Tag, hitResult.Row, hitResult.Column, 
+                    isMouseOver, isMouseDown, true, hitResult.WasAddedAfterRender);
             }
-            output.RedrawArea(drawingVisual.RenderVisual(buttonRect.Size), buttonRect);
+
+            output.RedrawArea(drawingVisual.RenderVisual(renderRect.Size), renderRect);
         }
 
         private ButtonHitResult DrawSelectButton(DrawingContext context, bool isRowButton, string tag, int row, int column,
-            bool isMouseOver = false, bool isMouseDown = false, bool isPure = false)
+            bool isMouseOver = false, bool isMouseDown = false, bool isPure = false, bool useSeparateRectForBorder = false)
         {
             Rect drawRect = GetSelectButtonHitbox(isRowButton, row, column, isPure);
             StreamGeometry icon;
@@ -736,21 +886,28 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 iconOffset = new Point(drawRect.X - 1, drawRect.Y + 4);
             }
 
+            if (useSeparateRectForBorder)
+            {
+                iconOffset.Offset(1, 1);
+            }
+
             context.DrawRoundedRectangle(GetButtonBackground(isMouseOver, isMouseDown, false), 
-                new Pen(FixedValues.GREEN_BRUSH, FixedValues.DEFAULT_BORDER_THICKNESS), drawRect, BUTTONS_CORNER_RADIUS, BUTTONS_CORNER_RADIUS);
+                new Pen(FixedValues.GREEN_BRUSH, FixedValues.DEFAULT_BORDER_THICKNESS), 
+                !useSeparateRectForBorder ? drawRect : new Rect(drawRect.Location.MakeOffset(1,1), drawRect.Size), BUTTONS_CORNER_RADIUS, BUTTONS_CORNER_RADIUS);
 
             TranslateTransform translateTransform = new TranslateTransform(iconOffset.X, iconOffset.Y);
             context.PushTransform(translateTransform);
             context.DrawGeometry(FixedValues.GREEN_BRUSH, null, icon);
             context.Pop();
 
-            string tooltip = string.Format("Select {0}", isRowButton ? "row" : "column");
-            return new ButtonHitResult(drawRect, ButtonActionType.SELECT, tag, tooltip, row, column, isRowButton);
+            string tooltip = string.Format("Select {0} {1}", isRowButton ? "row" : "column", isRowButton ? row + 1 : column + 1);
+            return new ButtonHitResult(drawRect, 
+                ButtonActionType.SELECT, tag, tooltip, row, column, isRowButton, false);
         }
 
         private Rect GetSelectButtonHitbox(bool isRowButton, int row, int column, bool isPure = false)
         {
-            Point position = !isPure ? new Point(isRowButton ? FixedValues.DECK_BASE_MARGIN + (row * 44) : FixedValues.DECK_BASE_MARGIN, !isRowButton ? FixedValues.DECK_BASE_MARGIN + (column * 44): FixedValues.DECK_BASE_MARGIN) : new Point();
+            Point position = !isPure ? new Point(isRowButton ? FixedValues.DECK_BASE_MARGIN + (row * 44) : FixedValues.DECK_BASE_MARGIN, !isRowButton ? FixedValues.DECK_BASE_MARGIN + (column * 44) : FixedValues.DECK_BASE_MARGIN) : new Point();
             Rect hitRect;
 
             if (isRowButton)
@@ -777,6 +934,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         {
             DrawingVisual drawingVisual = new DrawingVisual();
             Rect buttonRect = hitResult.Rect;
+            Rect renderRect = !hitResult.WasAddedAfterRender ? buttonRect : new Rect(buttonRect.Location.MakeOffset(-1, -1), buttonRect.Size.Modify(2, 2));
 
             List<ButtonHitResult> zIndexOrderedData = new List<ButtonHitResult>();
             if (hitResult.IsRemoveButton)
@@ -795,17 +953,17 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 foreach (ButtonHitResult buttonData in zIndexOrderedData)
                 {
                     DrawTriangleButton(context, hitResult.Tag.StartsWith("row"), buttonData.IsRemoveButton, buttonData.IsTopRightAligned, buttonData.Tag, buttonData.Tooltip,
-                        hitResult.Row, hitResult.Column, buttonData == hitResult ? isMouseOver : false, buttonData == hitResult ? isMouseDown : false, true);
+                        hitResult.Row, hitResult.Column, buttonData == hitResult ? isMouseOver : false, buttonData == hitResult ? isMouseDown : false, true, hitResult.WasAddedAfterRender);
                 }
             }
 
-            output.RedrawArea(drawingVisual.RenderVisual(buttonRect.Width, buttonRect.Height), buttonRect);
+            output.RedrawArea(drawingVisual.RenderVisual(renderRect.Size), renderRect);
         }
 
         private ButtonHitResult DrawTriangleButton(DrawingContext context, bool? isRowButton, bool isRemoveButton, bool isTopRightAligned, string tag, string tooltip, 
-            int row, int column, bool isMouseOver = false, bool isMouseDown = false, bool isPure = false)
+            int row, int column, bool isMouseOver = false, bool isMouseDown = false, bool isPure = false, bool useSeparateRectForBorder = false)
         {
-            Rect rect = GetTriangleButtonHitbox(isRowButton, row, column, isPure);
+            Rect rect = GetTriangleButtonHitbox(isRowButton, row, column, isPure, useSeparateRectForBorder);
 
             StreamGeometry geometry = GetTriangleGeometry(isTopRightAligned);
             Brush foreground = !isRemoveButton ? FixedValues.GREEN_BRUSH : FixedValues.RED_BRUSH;
@@ -813,6 +971,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             if (!isPure)
             {
                 context.PushTransform(new TranslateTransform(rect.X, rect.Y));
+            }
+
+            if (useSeparateRectForBorder)
+            {
+                context.PushTransform(new TranslateTransform(1, 1));
             }
 
             context.DrawGeometry(GetButtonBackground(isMouseOver, isMouseDown, isRemoveButton), new Pen(foreground, FixedValues.DEFAULT_BORDER_THICKNESS), geometry);
@@ -828,12 +991,17 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 context.Pop();
             }
 
+            if (useSeparateRectForBorder)
+            {
+                context.Pop();
+            }
+
             return new ButtonHitResult(rect, 
                 !isRemoveButton ? ButtonActionType.ADD : ButtonActionType.REMOVE, tag, tooltip, row, column, true, isRemoveButton, isTopRightAligned,
-                isTopRightAligned ? topRightTrianglePoints : bottomLeftTrianglePoints);
+                isTopRightAligned ? topRightTrianglePoints : bottomLeftTrianglePoints, false);
         }
 
-        private Rect GetTriangleButtonHitbox(bool? isRowButton, int row, int column, bool isPure = false)
+        private Rect GetTriangleButtonHitbox(bool? isRowButton, int row, int column, bool isPure = false, bool useSeparateRectForBorder = false)
         {
             if (isRowButton.HasValue)
             {
@@ -850,6 +1018,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
                 hitRect.Width = SIDE_BUTTON_DIMENSIONS;
                 hitRect.Height = SIDE_BUTTON_DIMENSIONS;
+
+                if (useSeparateRectForBorder)
+                {
+                    hitRect.Offset(1, 1);
+                }
 
                 return hitRect;
             }
@@ -875,7 +1048,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 cabinSlotRect = DrawCabinSlot(context, cabinSlot, isMouseOver, true);
             }
 
-            output.RedrawArea(drawingVisual.RenderVisual(cabinSlotRect.Width, cabinSlotRect.Height), cabinSlotRect);
+            output.RedrawArea(drawingVisual.RenderVisual(cabinSlotRect.Size), cabinSlotRect);
         }
 
         private Rect GetCabinSlotHitbox(CabinSlot cabinSlot, double calculatedX = -1, double calculatedY = -1)
@@ -1159,6 +1332,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         protected virtual void OnChangeTooltip(EventArgs e)
         {
             ChangeTooltip?.Invoke(this, e);
+        }
+
+        protected virtual void OnCloseTooltip(EventArgs e)
+        {
+            CloseTooltip?.Invoke(this, e);
         }
 
         protected virtual void OnSelectedSlotsChanged(SelectedSlotsChangedEventArgs e)

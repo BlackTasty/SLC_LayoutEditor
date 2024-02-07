@@ -25,6 +25,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         public int Column => column;
 
+        public bool IsRemoved { get; set; }
+
         public HitResult(Rect rect, bool isSlot, string tooltip, int row, int column)
         {
             this.rect = rect;

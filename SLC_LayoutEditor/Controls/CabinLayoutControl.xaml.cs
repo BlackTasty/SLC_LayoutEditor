@@ -274,6 +274,8 @@ namespace SLC_LayoutEditor.Controls
 
                 cabinDeckControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
                 cabinDeckControl.DeckRendered -= CabinDeckControl_DeckRendered;
+
+                cabinDeckControl.Dispose();
             }
             container_decks.Children.Clear();
 
@@ -435,6 +437,8 @@ namespace SLC_LayoutEditor.Controls
         private void CreateCabinDeck(int rows, int columns)
         {
             CabinDeck createdDeck = CabinLayout.AddCabinDeck(new CabinDeck(CabinLayout.CabinDecks.Count + 1, rows, columns));
+            createdDeck.ThumbnailDirectory = CabinLayout.ThumbnailDirectory;
+
             AddCabinDeckToUI(createdDeck);
 
             CabinLayout.RefreshData();

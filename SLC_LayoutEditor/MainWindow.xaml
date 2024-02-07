@@ -20,9 +20,6 @@
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" CornerRadius="8" Name="MainBorder" Background="{TemplateBinding Background}">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="10" Direction="-90" RenderingBias="Quality" ShadowDepth="2" Opacity="1" Color="{DynamicResource DropShadowColor}"/>
-                </Border.Effect>
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -52,7 +49,8 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource Title3TextStyle}"
                                            Margin="8,0" VerticalAlignment="Center"/>
-                            <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14" VerticalAlignment="Center">
+                            <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14" VerticalAlignment="Center"
+                                  IsEnabled="{Binding IsDialogOpen, Converter={StaticResource InverseBooleanConverter}}">
                                 <MenuItem Background="{DynamicResource BackgroundDarkBrush}"
                                           IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
                                     <MenuItem.Style>

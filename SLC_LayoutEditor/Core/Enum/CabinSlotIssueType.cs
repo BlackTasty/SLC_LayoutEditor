@@ -10,7 +10,7 @@ namespace SLC_LayoutEditor.Core.Enum
     {
         STAIRWAY,
         DUPLICATE_SEAT,
-        DOORS_DUPLICATE,
+        DUPLICATE_DOORS,
         DOORS_SERVICE_WRONG_SIDE,
         INVALID_POSITION_INTERIOR,
         INVALID_POSITION_COCKPIT,

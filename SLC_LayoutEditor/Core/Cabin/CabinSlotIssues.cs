@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
@@ -66,6 +67,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             bool wasProblematic = IsProblematic;
             listedIssues.Clear();
             RefreshProblematicFlag(wasProblematic != IsProblematic);
+        }
+
+        public bool HasIssue(CabinSlotIssueType issue)
+        {
+            return listedIssues.ContainsKey(issue);
         }
 
         protected virtual void OnProblematicChanged(EventArgs e)

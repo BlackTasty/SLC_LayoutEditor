@@ -65,7 +65,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void DuplicateDoors_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)
         {
-            ToggleProblemHighlight(e, CabinSlotIssueType.DOORS_DUPLICATE, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
+            ToggleProblemHighlight(e, CabinSlotIssueType.DUPLICATE_DOORS, CabinSlotType.Door, CabinSlotType.LoadingBay, CabinSlotType.CateringDoor);
         }
 
         private void CateringAndLoadingBays_ShowIssuesChanged(object sender, ShowIssuesChangedEventArgs e)

@@ -258,6 +258,7 @@ namespace SLC_LayoutEditor
                 App.GuidedTour.StopTour();
             }
         }
+
         private void InitHeader(UIElement header)
         {
             var restoreIfMove = false;
@@ -291,24 +292,27 @@ namespace SLC_LayoutEditor
                 if (restoreIfMove)
                 {
                     restoreIfMove = false;
-                    var mouseX = e.GetPosition(this).X;
-                    var width = RestoreBounds.Width;
-                    var x = mouseX - width / 2;
-
-                    if (x < 0)
-                    {
-                        x = 0;
-                    }
-                    else
-                    if (x + width > SystemParameters.PrimaryScreenWidth)
-                    {
-                        x = SystemParameters.PrimaryScreenWidth - width;
-                    }
+                    Point screenPosition = PointToScreen(Mouse.GetPosition(this));
+                    Point relativePosition = e.GetPosition(this);
+                    double widthOffset = ActualWidth - RestoreBounds.Width;
+                    bool isLeftSide = (relativePosition.X - widthOffset * 2.5) <= 0;
 
                     WindowState = WindowState.Normal;
+                    double x = screenPosition.X - relativePosition.X;
+                    double y = screenPosition.Y - relativePosition.Y;
+
+                    if (!isLeftSide)
+                    {
+                        x += widthOffset;
+                    }
+
                     Left = x;
-                    Top = 0;
-                    DragMove();
+                    Top = y;
+
+                    if (Mouse.LeftButton == MouseButtonState.Pressed)
+                    {
+                        DragMove();
+                    }
                 }
             };
         }

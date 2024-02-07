@@ -19,6 +19,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         private readonly Point point1;
         private readonly Point point2;
         private readonly Point point3;
+        private readonly bool wasAddedAfterRender;
 
         private readonly int targetRow = -1;
         private readonly int targetColumn = -1;
@@ -33,7 +34,9 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         public bool IsTopRightAligned => isTopRightAligned;
 
-        public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, int row, int column, bool? isRowButton) :
+        public bool WasAddedAfterRender => wasAddedAfterRender;
+
+        public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, int row, int column, bool? isRowButton, bool wasAddedAfterRender) :
             base(rect, false, tooltip, row, column)
         {
             if (isRowButton.HasValue)
@@ -50,11 +53,12 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
             this.action = action;
             this.tag = tag;
+            this.wasAddedAfterRender = wasAddedAfterRender;
         }
 
         public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, int row, int column, 
             bool isTriangle, bool isRemoveButton, bool isTopRightAligned,
-            PointCollection trianglePoints) : this(rect, action, tag, tooltip, row, column, null)
+            PointCollection trianglePoints, bool wasAddedAfterRender) : this(rect, action, tag, tooltip, row, column, null, wasAddedAfterRender)
         {
             this.isTriangle = isTriangle;
             this.isRemoveButton = isRemoveButton;

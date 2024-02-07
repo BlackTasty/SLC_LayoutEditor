@@ -404,14 +404,14 @@
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
                             <Setter Property="MaxHeight" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutEditor}, Path=ActualHeight, Converter={StaticResource ModifyNumberConverter}, ConverterParameter=-91}"/>
-                            <Setter Property="Margin" Value="24,0,-24,4"/>
+                            <Setter Property="Margin" Value="32,0,-32,4"/>
                         </DataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsSidebarOpen}" Value="False"/>
                                 <Condition Binding="{Binding ElementName=control_layout, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Margin" Value="24,0,-24,17"/>
+                            <Setter Property="Margin" Value="32,0,-32,17"/>
                         </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>

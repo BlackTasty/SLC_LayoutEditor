@@ -797,18 +797,17 @@ namespace SLC_LayoutEditor.UI
                 IEnumerable<CabinSlot> targetSlots = (e.Floor != -1 ? vm.ActiveLayout.CabinDecks.Where(x => x.Floor == e.Floor) : vm.ActiveLayout.CabinDecks)
                     .SelectMany(x => x.CabinSlots).Where(x => e.TargetTypes.Contains(x.Type));
 
-                foreach (CabinSlot cabinSlot in targetSlots)
+                foreach (CabinSlot cabinSlot in e.ProblematicSlots)
                 {
                     cabinSlot.SlotIssues.ToggleIssueHighlighting(e.Issue, e.ShowProblems);
-                    var test = e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid);
-                    cabinSlot.SlotIssues.ToggleIssue(e.Issue, e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid));
+                    //cabinSlot.SlotIssues.ToggleIssue(e.Issue, e.ProblematicSlots.Any(x => x.Guid == cabinSlot.Guid));
                 }
             }
         }
 
         private void Aircrafts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (App.GuidedTour.IsAwaitingAircraftSelection)
+            if (App.GuidedTour?.IsAwaitingAircraftSelection ?? false)
             {
                 App.GuidedTour.ContinueTour(true);
             }
@@ -816,7 +815,7 @@ namespace SLC_LayoutEditor.UI
 
         private void Layouts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (App.GuidedTour.IsAwaitingLayoutSelection)
+            if (App.GuidedTour?.IsAwaitingLayoutSelection ?? false)
             {
                 App.GuidedTour.ContinueTour(true);
             }
@@ -824,7 +823,7 @@ namespace SLC_LayoutEditor.UI
 
         private void SlotTypeChangedForTour()
         {
-            if (App.GuidedTour.IsAwaitingSlotChangeToDoor)
+            if (App.GuidedTour?.IsAwaitingSlotChangeToDoor ?? false)
             {
                 int doorCount = vm.ActiveLayout.CountSlots(CabinSlotType.Door);
                 int loadingBayCount = vm.ActiveLayout.CountSlots(CabinSlotType.LoadingBay);

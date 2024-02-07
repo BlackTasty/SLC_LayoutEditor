@@ -19,7 +19,8 @@
     <local:RefinedExpander IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                            Description="{Binding ActiveLayout.IssuesCountText}" ExpandDirection="Up"
                            IsExpanded="{Binding IsIssueTrackerExpanded}"
-                           PlayAnimations="{Binding PlayExpanderAnimations}">
+                           PlayAnimations="{Binding PlayExpanderAnimations}"
+                           Margin="0,8">
         <local:RefinedExpander.Style>
             <Style TargetType="local:RefinedExpander" BasedOn="{StaticResource {x:Type local:RefinedExpander}}">
                 <Setter Property="DescriptionForeground" Value="{DynamicResource ButtonForegroundColorBrush}"/>
@@ -101,7 +102,7 @@
                                     <StackPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
                                                 Margin="0,0,0,12" Width="297">
                                         <TextBlock FontSize="16" DockPanel.Dock="Top" Margin="0,0,0,0"
-                                                           Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
+                                                   Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                                     <Setter Property="Text" Value="{Binding Floor, StringFormat={}Floor {0}}"/>

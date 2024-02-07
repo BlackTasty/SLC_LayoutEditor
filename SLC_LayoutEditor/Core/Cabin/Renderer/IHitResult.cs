@@ -14,5 +14,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         bool IsSlot { get; }
 
         string Tooltip { get; }
+
+        bool IsRemoved { get; set; }
+
+        int Row { get; }
+
+        int Column { get; }
     }
 }
