@@ -163,6 +163,18 @@ namespace SLC_LayoutEditor.Controls
             DependencyProperty.Register("AutoFixTarget", typeof(object), typeof(LayoutProblemText), new PropertyMetadata(null));
         #endregion
 
+        #region IsAutoFixEnabled property
+        public bool IsAutoFixEnabled
+        {
+            get { return (bool)GetValue(IsAutoFixEnabledProperty); }
+            set { SetValue(IsAutoFixEnabledProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsAutoFixEnabled.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsAutoFixEnabledProperty =
+            DependencyProperty.Register("IsAutoFixEnabled", typeof(bool), typeof(LayoutProblemText), new PropertyMetadata(true));
+        #endregion
+
         #region Floor property
         public int Floor
         {

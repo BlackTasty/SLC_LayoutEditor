@@ -1,4 +1,5 @@
 ﻿20.01.2024 m
+Disabled: Temporarily disabled the stairway auto-fix button, since this part requires a rework
 Added: You can now use keybinds to perform certain actions! For a complete list of keybinds, go to "Help" -> "Show keybinds" or press Ctrl+K
 Added: Added a menu entry "Layout" for performing basic layout actions
 Added: Added a new menu entry "Help" in the menu bar
@@ -8,13 +9,13 @@ Added: When selecting a template while creating a new layout, you can now let th
 Added: Two new issue checks have been added for both cockpit and passenger door placement
 Added: Unsaved changes to your settings can now be reverted
 Updated: The cabin deck rendering got a major overhaul, resulting in faster loading times! This is especially noticeable with larger layouts
+Updated: The default Windows title bar is gone, and has been replaced with a more fitting style
+Updated: The setting for opening the layout folder after saving has been replaced with opening the layout file itself in your default editor
 Updated: The "Return to editor" button is now hidden on the first startup
 Updated: Moved some entries from the "Editor" menu item to "Help"
 Updated: Reduced the show delay for issue card tooltips
 Updated: When trying to close the editor with unsaved changes, the window will jump into the foreground (useful when closing the editor through the taskbar)
-Updated: The setting for opening the layout folder after saving has been replaced with opening the layout file itself in your default editor
 Updated: All entries for duplicate seats (duplicate economy, duplicate first class, etc) have been merged into one entry, since SLC requires unique seat numbers and -letters across all seats
-Updated: The default Windows title bar is gone, and has been replaced with a more fitting replacement
 Fixed: Fixed a small error in the select rows/columns animation
 Fixed: When switching into slot automation mode while a single slot was selected, the slot details text was still shown
 Fixed: Reloading a layout from disk without making any changes to it would crash the editor

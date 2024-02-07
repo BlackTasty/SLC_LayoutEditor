@@ -76,6 +76,9 @@
                     <Trigger Property="IsEnabled" Value="False">
                         <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
                     </Trigger>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsAutoFixEnabled}" Value="False">
+                        <Setter Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
         </Button.Style>

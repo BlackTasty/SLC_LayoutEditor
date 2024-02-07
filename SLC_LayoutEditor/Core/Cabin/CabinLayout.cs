@@ -526,18 +526,36 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public AutoFixResult FixStairwayPositions()
         {
-            CabinDeck deckWithStairs = CabinDecks.FirstOrDefault(x => x.CabinSlots.Any(y => y.Type == CabinSlotType.Stairway));
+            CabinDeck firstDeckWithStairs = CabinDecks.FirstOrDefault(x => x.CabinSlots.Any(y => y.Type == CabinSlotType.Stairway));
 
             AutoFixResult autoFixResult = new AutoFixResult("Stairway fix applied.", "Amount of changed slots",
                 "Failed changes");
 
             if (HasMultipleDecks)
             {
-                Dictionary<CabinSlot, int> stairwayMapping = deckWithStairs.GetStairways();
+                // TODO: Rework stairway fix
+                int floors = CabinDecks.Count;
+                CabinDeck previousDeck = firstDeckWithStairs;
+
+
+                foreach (CabinDeck cabinDeck in CabinDecks.Where(x => x.Floor != firstDeckWithStairs.Floor))
+                {
+                    foreach (CabinSlot stairway in cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
+                    {
+                        CabinSlot connectedSlot = previousDeck.GetSlotAtPosition(stairway.Row, stairway.Column);
+                    }
+                }
+
+                var stairGroups = CabinDecks.SelectMany(x => x.CabinSlots.Where(y => y.Type == CabinSlotType.Stairway).GroupBy(y => new { y.Row, y.Column }));
+
+
+
+
+                Dictionary<CabinSlot, int> stairwayMapping = firstDeckWithStairs.GetStairways();
 
                 foreach (CabinDeck cabinDeck in CabinDecks)
                 {
-                    if (cabinDeck.Equals(deckWithStairs))
+                    if (cabinDeck.Equals(firstDeckWithStairs))
                     {
                         continue;
                     }
@@ -571,7 +589,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
             else
             {
-                foreach (CabinSlot cabinSlot in deckWithStairs.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
+                foreach (CabinSlot cabinSlot in firstDeckWithStairs.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
                 {
                     cabinSlot.Type = CabinSlotType.Aisle;
                     cabinSlot.SlotIssues.ToggleIssue(CabinSlotIssueType.STAIRWAY, false);

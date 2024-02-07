@@ -58,7 +58,7 @@
                                          ShowProblems="{Binding ShowDuplicateSeatIssues}"/>
 
                 <Separator Margin="0,4"/>
-                <local:LayoutProblemText DockPanel.Dock="Top" ValidText="No duplicate doors"
+                <local:LayoutProblemText ValidText="No duplicate doors"
                                          InvalidText="{Binding ActiveLayout.DuplicateDoors.Count, StringFormat={}{0} duplicate doors found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateDoors}"
                                          InvalidSlots="{Binding ActiveLayout.DuplicateDoors}"
@@ -78,6 +78,7 @@
                                          ShowProblemsChanged="StairwayPositions_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowStairwayIssues}"
                                          ShowAutoFix="True"
+                                         IsAutoFixEnabled="False"
                                          AutoFixApplying="StairwayPositions_AutoFixApplying"
                                          AutoFixTarget="{Binding ActiveLayout}"
                                          Description="When using multiple decks and adding stairways, make sure to align them on the same x/y coordinate"
@@ -87,7 +88,7 @@
                 <TextBlock Text="Issues per deck" FontSize="18" Margin="0,16,0,0"/>
                 <DataGrid ItemsSource="{Binding ActiveLayout.CabinDecks}"
                           PreviewMouseWheel="DeckProblemsList_PreviewMouseWheel"
-                          Margin="0,0,0,0">
+                          Margin="0,0,0,0" HorizontalScrollBarVisibility="Hidden">
                     <DataGrid.Resources>
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
@@ -100,8 +101,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
-                                                Margin="0,0,0,12" Width="297">
-                                        <TextBlock FontSize="16" DockPanel.Dock="Top" Margin="0,0,0,0"
+                                                Margin="0,0,0,12" HorizontalAlignment="Stretch" Width="318">
+                                        <TextBlock FontSize="16" Margin="0,0,0,0"
                                                    Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -117,7 +118,7 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All slots are reachable"
+                                        <local:LayoutProblemText ValidText="All slots are reachable"
                                                                  Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllSlotsReachable}"
                                                                  InvalidSlots="{Binding UnreachableSlots}"
@@ -136,7 +137,7 @@
                                                 </Style>
                                             </local:LayoutProblemText.Style>
                                         </local:LayoutProblemText>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Deck slots valid"
+                                        <local:LayoutProblemText ValidText="Deck slots valid"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Invalid amount of deck slots!"
                                                                  IsValid="{Binding AreSlotsValid}"
@@ -145,14 +146,14 @@
                                                                  AutoFixApplying="Slots_AutoFixApplying"
                                                                  Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
 
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Doors available"
+                                        <local:LayoutProblemText ValidText="Doors available"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No doors for this deck!"
                                                                  IsValid="{Binding AreDoorsValid}"
                                                                  Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
 
                                         <Separator Margin="0,4"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="CAT/LB on correct side"
+                                        <local:LayoutProblemText ValidText="CAT/LB on correct side"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="CAT/LB detected on the left side"
                                                                  InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
@@ -222,34 +223,34 @@
                                             </local:LayoutProblemText.Style>
                                         </local:LayoutProblemText>
                                         <Separator Margin="0,4"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Service start- and endpoints are valid"
+                                        <local:LayoutProblemText ValidText="Service start- and endpoints are valid"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Invalid service points!"
                                                                  IsValid="{Binding AreServicePointsValid}"
                                                                  Description="Each service start point (&lt;) also requires an end point (&gt;) in the same column"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="All seat rows covered by service"
+                                        <local:LayoutProblemText ValidText="All seat rows covered by service"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Some rows aren't covered by service!"
                                                                  IsValid="{Binding AreSeatsReachableByService}"
                                                                  IsRequired="{Binding AreKitchensValid}"
                                                                  NotRequiredText="No service coverage required (no kitchen)"
                                                                  Description="In case you have a kitchen on this deck, make sure to cover all rows with the service start- and endpoints"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Enough galley seats available for crew"
+                                        <local:LayoutProblemText ValidText="Enough galley seats available for crew"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Insufficient galley seats for servicing!"
                                                                  IsValid="{Binding AreGalleysValid}"
                                                                  Description="Make sure to have at least as many galley seats on this deck as there are service areas"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Kitchen accessible (In-Flight services available)"
+                                        <local:LayoutProblemText ValidText="Kitchen accessible (In-Flight services available)"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No kitchen available! (No In-Flight services)"
                                                                  IsValid="{Binding AreKitchensValid}" IsSevereProblem="False"
                                                                  Description="If you wanna be able to offer in-flight services, make sure to place down a kitchen"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Intercom available"
+                                        <local:LayoutProblemText ValidText="Intercom available"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No intercom on this deck!"
                                                                  IsValid="{Binding AreIntercomsValid}"
                                                                  Description="Intercoms are used by your cabin crew to communicate to both the captain as well as the passengers"/>
-                                        <local:LayoutProblemText DockPanel.Dock="Top" ValidText="Toilets available"
+                                        <local:LayoutProblemText ValidText="Toilets available"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No toilets on this deck!"
                                                                  IsValid="{Binding AreToiletsAvailable}" IsSevereProblem="False"
