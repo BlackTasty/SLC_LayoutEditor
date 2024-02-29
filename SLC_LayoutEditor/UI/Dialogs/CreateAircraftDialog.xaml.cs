@@ -12,10 +12,8 @@ namespace SLC_LayoutEditor.UI.Dialogs
     /// <summary>
     /// Interaction logic for CreateAircraftDialog.xaml
     /// </summary>
-    public partial class CreateAircraftDialog : DockPanel, IDialog
+    public partial class CreateAircraftDialog : CreateDialogBase
     {
-        public event EventHandler<DialogClosingEventArgs> DialogClosing;
-
         private AddEditDialogViewModel vm;
 
         public CreateAircraftDialog(IEnumerable<string> aircraftNames)
@@ -38,16 +36,6 @@ namespace SLC_LayoutEditor.UI.Dialogs
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             CancelDialog();
-        }
-
-        public void CancelDialog()
-        {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
-        }
-
-        protected virtual void OnDialogClosing(DialogClosingEventArgs e)
-        {
-            DialogClosing?.Invoke(this, e);
         }
 
         private void DockPanel_Loaded(object sender, RoutedEventArgs e)

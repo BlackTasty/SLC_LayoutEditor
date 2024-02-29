@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
-    public interface IHistorical<T>
+    public interface IChange<T>
     {
-        void RecordChange(T oldValue, T newValue);
+        T Data { get; }
+
+        T PreviousData { get; }
     }
 }

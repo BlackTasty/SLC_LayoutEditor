@@ -182,7 +182,7 @@
     <Compile Include="Core\Enum\GuidedTourStep.cs" />
     <Compile Include="Core\Enum\GuideTextPosition.cs" />
     <Compile Include="Core\Enum\RollbackType.cs" />
-    <Compile Include="Core\Enum\StateChangeType.cs" />
+    <Compile Include="Core\Enum\CabinChangeCategory.cs" />
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
     <Compile Include="Core\Events\LiveGuideClosedEventArgs.cs" />
@@ -203,10 +203,15 @@
     <Compile Include="Core\Guide\GuidedTour.cs" />
     <Compile Include="Core\Guide\LiveGuideData.cs" />
     <Compile Include="Core\IThemeManager.cs" />
+    <Compile Include="Core\Memento\CabinChange.cs" />
+    <Compile Include="Core\Memento\CabinHistory.cs" />
+    <Compile Include="Core\Memento\CabinHistoryEntry.cs" />
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
+    <Compile Include="Core\Memento\HistoryApplyingEventArgs.cs" />
     <Compile Include="Core\Memento\HistoryStack.cs" />
-    <Compile Include="Core\Memento\HistoryStep.cs" />
+    <Compile Include="Core\Memento\HistoryEntry.cs" />
+    <Compile Include="Core\Memento\IChange.cs" />
     <Compile Include="Core\Memento\IHistorical.cs" />
     <Compile Include="Core\Patcher\ChangelogEntry.cs" />
     <Compile Include="Core\Patcher\Server.cs" />
@@ -248,9 +253,11 @@
     <Compile Include="UI\Dialogs\ConfirmationDialog.xaml.cs">
       <DependentUpon>ConfirmationDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\CreateDialogBase.cs" />
     <Compile Include="UI\Dialogs\CreateTemplateDialog.xaml.cs">
       <DependentUpon>CreateTemplateDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\DialogBase.cs" />
     <Compile Include="UI\Dialogs\EditCabinLayoutNameDialog.xaml.cs">
       <DependentUpon>EditCabinLayoutNameDialog.xaml</DependentUpon>
     </Compile>

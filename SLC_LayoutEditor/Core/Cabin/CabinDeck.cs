@@ -1,6 +1,7 @@
 ﻿using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.Core.PathFinding;
 using System;
 using System.Collections.Generic;
@@ -646,6 +647,20 @@ namespace SLC_LayoutEditor.Core.Cabin
             sb.Append(text);
         }
 
+        internal void ApplyHistoryEntry(CabinHistoryEntry historyEntry, bool isUndo)
+        {
+            foreach (CabinChange change in historyEntry.Changes.Where(x => x.Floor == mFloor))
+            {
+                CabinSlot targetSlot = mCabinSlots.FirstOrDefault(x => x.Row == change.Row && x.Column == change.Column);
+                if (targetSlot != null)
+                {
+                    targetSlot.ApplyHistoryChange(change, isUndo);
+                }
+            }
+
+            RefreshProblemChecks();
+        }
+
         private IEnumerable<int> GetRowsCoveredByService()
         {
             List<int> coveredRows = new List<int>();
@@ -679,6 +694,20 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 var columnData = deckColumn.OrderBy(x => x.Row);
                 cabinDeckRaw += string.Join(",", columnData) + ",\r\n";
+            }
+            return cabinDeckRaw;
+        }
+
+        internal string ToHistoryString()
+        {
+            var ordered = mCabinSlots.GroupBy(x => x.Column).OrderBy(x => x.Key);
+
+            string cabinDeckRaw = string.Format("{0}|", mFloor);
+
+            foreach (var deckColumn in ordered)
+            {
+                var columnData = deckColumn.OrderBy(x => x.Row);
+                cabinDeckRaw += string.Join(";", columnData) + "|";
             }
             return cabinDeckRaw;
         }
@@ -760,12 +789,12 @@ namespace SLC_LayoutEditor.Core.Cabin
                     cabinSlot.SlotIssues.ToggleIssue(CabinSlotIssueType.INVALID_POSITION_INTERIOR, true);
                 }
 
-                if (cabinSlot.IsInterior && !IsSlotValidCockpitPosition(cabinSlot))
+                if (cabinSlot.Type == CabinSlotType.Cockpit && !IsSlotValidCockpitPosition(cabinSlot))
                 {
                     cabinSlot.SlotIssues.ToggleIssue(CabinSlotIssueType.INVALID_POSITION_COCKPIT, true);
                 }
 
-                if (cabinSlot.IsInterior && !IsSlotValidDoorPosition(cabinSlot))
+                if (cabinSlot.IsDoor && !IsSlotValidDoorPosition(cabinSlot))
                 {
                     cabinSlot.SlotIssues.ToggleIssue(CabinSlotIssueType.INVALID_POSITION_DOOR, true);
                 }

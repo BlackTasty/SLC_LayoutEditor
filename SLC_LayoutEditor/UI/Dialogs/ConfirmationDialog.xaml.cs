@@ -2,6 +2,7 @@
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.UI.Dialogs
 {
     /// <summary>
     /// Interaction logic for ConfirmationDialog.xaml
     /// </summary>
-    public partial class ConfirmationDialog : DockPanel, IDialog
+    public partial class ConfirmationDialog : DialogBase
     {
-        public event EventHandler<DialogClosingEventArgs> DialogClosing;
-
-        private object senderOverride;
         private DialogResultType? cancelResult;
 
         #region Title property
@@ -264,8 +263,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
                 cancelResult = MiddleResult;
             }
         }
-
-        public void CancelDialog()
+        public override void CancelDialog()
         {
             if (cancelResult.HasValue)
             {
@@ -304,11 +302,6 @@ namespace SLC_LayoutEditor.UI.Dialogs
         private void RightButton_Click(object sender, RoutedEventArgs e)
         {
             OnDialogClosing(new DialogClosingEventArgs(RightResult));
-        }
-
-        protected virtual void OnDialogClosing(DialogClosingEventArgs e)
-        {
-            DialogClosing?.Invoke(senderOverride == null ? this : senderOverride, e);
         }
     }
 }

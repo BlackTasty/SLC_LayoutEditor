@@ -23,6 +23,8 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         Keybind_MakeTemplate,
         Keybind_ReloadLayout,
         RefocusKeybindSheet,
-        Notification_AddNotification
+        Notification_AddNotification,
+        CreateSnapshot,
+        FinishLayoutChange,
     }
 }

@@ -5,6 +5,7 @@ using SLC_LayoutEditor.Core.PathFinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,7 +13,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
-    public class CabinSlot : ViewModelBase, IHistorical
+    public class CabinSlot : ViewModelBase
     {
         public event EventHandler<CabinSlotChangedEventArgs> CabinSlotChanged;
         public event EventHandler<CabinSlotChangedEventArgs> SlotTypeChanged;
@@ -30,6 +31,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private bool mIsHitTestVisible = true;
         private bool isDirty = true;
         private bool hasTypeChanged;
+        private bool collectForHistory;
 
         private string guid;
 
@@ -76,6 +78,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                     return;
                 }
 
+                CollectForHistory = true;
+
                 bool wasSeat = IsSeat;
                 bool wasDoor = IsDoor;
                 hasTypeChanged = true;
@@ -120,10 +124,20 @@ namespace SLC_LayoutEditor.Core.Cabin
             get => mSlotNumber;
             set
             {
+                if (mSlotNumber == value)
+                {
+                    return;
+                }
+
                 mSlotNumber = Math.Min(Math.Max(value, 0), MaxSlotNumber);
-                InvokePropertyChanged();
-                InvokePropertyChanged(nameof(DisplayText));
-                OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
+                if (!hasTypeChanged)
+                {
+                    CollectForHistory = true;
+                    InvokePropertyChanged();
+                    InvokePropertyChanged(nameof(DisplayText));
+                    OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
+                }
+
             }
         }
 
@@ -134,6 +148,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             get => mSeatLetter;
             set
             {
+                if (mSeatLetter == value)
+                {
+                    return;
+                }
+
                 if (char.IsLetter(value))
                 {
                     mSeatLetter = char.ToUpper(value);
@@ -142,9 +161,14 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     mSeatLetter = 'Z';
                 }
-                InvokePropertyChanged();
-                InvokePropertyChanged(nameof(DisplayText));
-                OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
+
+                if (!hasTypeChanged)
+                {
+                    CollectForHistory = true;
+                    InvokePropertyChanged();
+                    InvokePropertyChanged(nameof(DisplayText));
+                    OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
+                }
             }
         }
 
@@ -192,6 +216,20 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        internal string PreviousState => previousState;
+
+        internal bool CollectForHistory
+        {
+            get => collectForHistory;
+            set
+            {
+                collectForHistory = value;
+                if (!value)
+                {
+                    previousState = ToString();
+                }
+            }
+        }
 
         public CabinSlot(int row, int column) : this(row, column, CabinSlotType.Aisle, 0)
         {
@@ -202,7 +240,13 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             mRow = row;
             mColumn = column;
+            ApplySlotData(slotData);
 
+            previousState = ToString();
+        }
+
+        private void ApplySlotData(string slotData)
+        {
             string trimmedSlotData = slotData.Trim();
 
             if (trimmedSlotData != "-")
@@ -212,58 +256,58 @@ namespace SLC_LayoutEditor.Core.Cabin
                 switch (slotDeclaration[0])
                 {
                     case "X":
-                        mType = CabinSlotType.Wall;
+                        Type = CabinSlotType.Wall;
                         break;
                     case "D":
-                        mType = CabinSlotType.Door;
+                        Type = CabinSlotType.Door;
                         break;
                     case "CAT":
-                        mType = CabinSlotType.CateringDoor;
+                        Type = CabinSlotType.CateringDoor;
                         break;
                     case "LB":
-                        mType = CabinSlotType.LoadingBay;
+                        Type = CabinSlotType.LoadingBay;
                         break;
                     case "C":
-                        mType = CabinSlotType.Cockpit;
+                        Type = CabinSlotType.Cockpit;
                         break;
                     case "G":
-                        mType = CabinSlotType.Galley;
+                        Type = CabinSlotType.Galley;
                         break;
                     case "T":
-                        mType = CabinSlotType.Toilet;
+                        Type = CabinSlotType.Toilet;
                         break;
                     case "S":
-                        mType = CabinSlotType.Stairway;
+                        Type = CabinSlotType.Stairway;
                         break;
                     case "K":
-                        mType = CabinSlotType.Kitchen;
+                        Type = CabinSlotType.Kitchen;
                         break;
                     case "I":
-                        mType = CabinSlotType.Intercom;
+                        Type = CabinSlotType.Intercom;
                         break;
                     case "B":
-                        mType = CabinSlotType.BusinessClassSeat;
+                        Type = CabinSlotType.BusinessClassSeat;
                         break;
                     case "E":
-                        mType = CabinSlotType.EconomyClassSeat;
+                        Type = CabinSlotType.EconomyClassSeat;
                         break;
                     case "F":
-                        mType = CabinSlotType.FirstClassSeat;
+                        Type = CabinSlotType.FirstClassSeat;
                         break;
                     case "P":
-                        mType = CabinSlotType.PremiumClassSeat;
+                        Type = CabinSlotType.PremiumClassSeat;
                         break;
                     case "R":
-                        mType = CabinSlotType.SupersonicClassSeat;
+                        Type = CabinSlotType.SupersonicClassSeat;
                         break;
                     case "U":
-                        mType = CabinSlotType.UnavailableSeat;
+                        Type = CabinSlotType.UnavailableSeat;
                         break;
                     case "<":
-                        mType = CabinSlotType.ServiceStartPoint;
+                        Type = CabinSlotType.ServiceStartPoint;
                         break;
                     case ">":
-                        mType = CabinSlotType.ServiceEndPoint;
+                        Type = CabinSlotType.ServiceEndPoint;
                         break;
                 }
 
@@ -272,21 +316,19 @@ namespace SLC_LayoutEditor.Core.Cabin
                     string slotNumberRaw = new string(slotDeclaration[1].TakeWhile(x => char.IsDigit(x)).ToArray());
                     if (int.TryParse(slotNumberRaw, out int slotNumber))
                     {
-                        mSlotNumber = slotNumber;
+                        SlotNumber = slotNumber;
                     }
 
                     if (!IsDoor)
                     {
-                        mSeatLetter = slotDeclaration[1].Last();
+                        SeatLetter = slotDeclaration[1].Last();
                     }
                 }
             }
             else
             {
-                mType = CabinSlotType.Aisle;
+                Type = CabinSlotType.Aisle;
             }
-
-            previousState = ToString();
         }
 
         public CabinSlot(int row, int column, CabinSlotType type, int slotNumber) : this()
@@ -304,6 +346,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             slotIssues = new CabinSlotIssues(this);
             guid = System.Guid.NewGuid().ToString();
             slotIssues.ProblematicChanged += SlotIssues_ProblematicChanged;
+        }
+
+        internal void ApplyHistoryChange(CabinChange change, bool isUndo)
+        {
+            ApplySlotData(isUndo ? change.PreviousData : change.Data);
+            previousState = ToString();
+            CabinSlotChangedEventArgs e = new CabinSlotChangedEventArgs(this);
+            OnCabinSlotChanged(e);
         }
 
         private void SlotIssues_ProblematicChanged(object sender, EventArgs e)
@@ -350,17 +400,15 @@ namespace SLC_LayoutEditor.Core.Cabin
             //OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
         }
 
-        public void ApplyChanges(HistoryStep historyStep)
-        {
-            //TODO: Implement undo/redo system
-            throw new NotImplementedException();
-        }
-
         public string GetNumberAndLetter()
         {
             return string.Format("{0:00}{1}", mSlotNumber, mSeatLetter);
         }
 
+        /// <summary>
+        /// Returns the slot representation inside the layout code
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             switch (mType)
@@ -417,7 +465,6 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     CabinSlotChanged?.Invoke(this, e);
                 }
-                previousState = ToString();
             }
         }
 

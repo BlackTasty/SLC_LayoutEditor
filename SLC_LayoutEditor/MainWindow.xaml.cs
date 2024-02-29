@@ -154,11 +154,12 @@ namespace SLC_LayoutEditor
 
         private void Undo_Click(object sender, RoutedEventArgs e)
         {
+            vm.Undo();
         }
 
         private void Redo_Click(object sender, RoutedEventArgs e)
         {
-
+            vm.Redo();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -261,12 +262,19 @@ namespace SLC_LayoutEditor
 
         private void InitHeader(UIElement header)
         {
+            
             var restoreIfMove = false;
 
             header.MouseLeftButtonDown += (s, e) =>
             {
                 if (e.ClickCount == 2)
                 {
+                    if (e.OriginalSource is FrameworkElement originalSource &&
+                    originalSource.Name == "panel_guideStepper" && App.GuidedTour.IsTourRunning)
+                    {
+                        return;
+                    }
+
                     if ((ResizeMode == ResizeMode.CanResize) ||
                         (ResizeMode == ResizeMode.CanResizeWithGrip))
                     {
@@ -362,6 +370,15 @@ namespace SLC_LayoutEditor
         private void ShowCurrentStep_Click(object sender, RoutedEventArgs e)
         {
             App.GuidedTour.ShowCurrentStepAgain();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+#if DEBUG
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.CreateSnapshot);
+#else
+            throw new Exception("Whoop whoop, I'm a crash!");
+#endif
         }
     }
 }

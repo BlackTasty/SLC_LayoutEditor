@@ -22,6 +22,7 @@ using System.Windows.Threading;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ScrollBar;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace SLC_LayoutEditor.Core.Cabin.Renderer
 {
@@ -523,7 +524,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                     }
 
                                     insertDialog.DialogClosing += InsertRowColumn_DialogClosing;
-                                    Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, insertDialog);
+                                    insertDialog.ShowDialog();
                                 }
                                 break;
                             case ButtonActionType.REMOVE:
@@ -545,7 +546,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                 }
 
                                 removeDialog.DialogClosing += RemoveRowColumn_DialogClosing;
-                                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, removeDialog);
+                                removeDialog.ShowDialog();
                                 break;
                         }
                     }
@@ -583,7 +584,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         private void CreateRowColumn(bool isAddingColumn, int targetRowColumn)
         {
-            // Adjust row/column value for each affected cabin slot
+            // Adjust row/column data for each affected cabin slot
             for (int currentRowColumn = isAddingColumn ? cabinDeck.Columns : cabinDeck.Rows; currentRowColumn >= targetRowColumn; currentRowColumn--)
             {
                 Func<SlotHitResult, bool> insertCondition = (x => (isAddingColumn ? x.Column : x.Row) == currentRowColumn);

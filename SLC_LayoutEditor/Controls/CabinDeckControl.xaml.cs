@@ -64,10 +64,10 @@ namespace SLC_LayoutEditor.Controls
 
         private static FrameworkPropertyMetadata cabinDeckMetadata =
                 new FrameworkPropertyMetadata(
-                    null,     // Default value
+                    null,     // Default data
                     FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender | FrameworkPropertyMetadataOptions.Journal,
                     null,    // Property changed callback
-                    null);   // Coerce value callback
+                    null);   // Coerce data callback
 
         // Using a DependencyProperty as the backing store for CabinDeck.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinDeckProperty =

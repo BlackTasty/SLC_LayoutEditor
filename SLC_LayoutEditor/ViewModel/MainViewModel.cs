@@ -3,6 +3,7 @@ using SLC_LayoutEditor.Controls;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.UI.Dialogs;
@@ -63,6 +64,10 @@ namespace SLC_LayoutEditor.ViewModel
         public ShowKeybindsWindowCommand ShowKeybindsWindowCommand => CommandInterface.ShowKeybindsWindowCommand;
 
         public CancelDialogCommand CancelDialogCommand => CommandInterface.CancelDialogCommand;
+
+        public UndoCommand UndoCommand => CommandInterface.UndoCommand;
+
+        public RedoCommand RedoCommand => CommandInterface.RedoCommand;
 
         #region Slot type commands
         public SlotTypeAisleCommand SlotTypeAisleCommand => CommandInterface.SlotTypeAisleCommand;
@@ -232,6 +237,8 @@ namespace SLC_LayoutEditor.ViewModel
 
         public LayoutEditorViewModel EditorViewModel => editor != null ? editor.DataContext as LayoutEditorViewModel : null;
 
+        public bool IsLayoutOpened => EditorViewModel?.ActiveLayout != null;
+
         public CabinDeckControl SelectedDeck
         {
             get => mSelectedDeck;
@@ -277,6 +284,7 @@ namespace SLC_LayoutEditor.ViewModel
                 mContent = GetEditor();
             }
 
+            History.HistoryApplying += History_HistoryApplying;
 
             Mediator.Instance.Register(o =>
             {
@@ -299,6 +307,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 IsSearching = (bool)o;
             }, ViewModelMessage.Patcher_IsSearchingChanged);
+        }
+
+        private void History_HistoryApplying(object sender, HistoryApplyingEventArgs<CabinHistoryEntry> e)
+        {
+            EditorViewModel.ActiveLayout.ApplyHistoryEntry(e.HistoryEntry, e.IsUndo);
         }
 
         public void ShowWelcomeScreen()
@@ -369,6 +382,13 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(nameof(IsNotLatestTourStep));
         }
 
+        private void CheckForSnapshots()
+        {
+            List<CabinLayout> snapshots = new List<CabinLayout>();
+
+            
+        }
+
         private LayoutEditor GetEditor()
         {
             if (this.editor != null)
@@ -433,6 +453,8 @@ namespace SLC_LayoutEditor.ViewModel
         {
             CabinLayoutName = e.CabinLayoutName;
             IsTemplate = e.IsTemplate;
+            InvokePropertyChanged(nameof(IsLayoutOpened));
+            History.Clear();
         }
 
         private void Editor_TourRunningStateChanged(object sender, EventArgs e)

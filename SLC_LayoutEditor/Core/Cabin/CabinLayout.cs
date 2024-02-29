@@ -1,6 +1,9 @@
 ﻿using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Memento;
+using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using Tasty.Logging;
 using Tasty.ViewModel;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
@@ -172,6 +176,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         public string ThumbnailDirectory => !IsTemplate ? Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Name, mLayoutName) :
             Path.Combine(App.ThumbnailsPath, layoutFile.Directory.Parent.Name, "templates", mLayoutName);
 
+        private string SnapshotSubDirectory => !IsTemplate ? Path.Combine(App.SnapshotsPath, layoutFile.Directory.Name) :
+            Path.Combine(App.SnapshotsPath, layoutFile.Directory.Parent.Name, "templates");
+
+        private string SnapshotFilePath => Path.Combine(SnapshotSubDirectory, layoutFile.Name);
+
         public CabinLayout(string layoutName, string aircraftName, bool isTemplate) :
             this(new FileInfo(
                 Path.Combine(!isTemplate ? App.Settings.CabinLayoutsEditPath + "\\" + aircraftName : App.GetTemplatePath(aircraftName),
@@ -229,6 +238,15 @@ namespace SLC_LayoutEditor.Core.Cabin
             LoadCabinLayout(layout.ToLayoutFile());
         }
 
+        public void CreateSnapshot()
+        {
+            if (Util.HasLayoutChanged(this))
+            {
+                Directory.CreateDirectory(SnapshotSubDirectory);
+                File.WriteAllText(SnapshotFilePath, ToLayoutFile());
+            }
+        }
+
         public void Delete()
         {
             OnDeleting(EventArgs.Empty);
@@ -283,20 +301,47 @@ namespace SLC_LayoutEditor.Core.Cabin
             return autoFixResult;
         }
 
-        public void LoadCabinLayoutFromFile(bool reload = false)
+        public bool LoadCabinLayoutFromFile(bool reload = false)
         {
             if (!isLoaded || reload)
             {
-                mCabinDecks.Clear();
+                if (File.Exists(SnapshotFilePath) && !isLoaded)
+                {
+                    ConfirmationDialog loadSnapshotDialog = new ConfirmationDialog("Backup found", "It seems like the editor crashed during the last session.\n\nDo you want to restore your unsaved changes from before?",
+                        DialogType.YesNo);
 
-                mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
-                LoadCabinLayout(File.ReadAllText(layoutFile.FullName));
+                    loadSnapshotDialog.DialogClosing += LoadSnapshotDialog_DialogClosing;
+                    loadSnapshotDialog.ShowDialog();
+
+                    return true;
+                }
+                else
+                {
+                    LoadCabinLayout();
+                }
 
                 /*if (reload)
                 {
                     OnCabinSlotsChanged(EventArgs.Empty);
                 }*/
             }
+
+            return false;
+        }
+
+        private void LoadCabinLayout(string layoutCodeOverride = null)
+        {
+            mCabinDecks.Clear();
+
+            mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
+            LoadCabinLayout(layoutCodeOverride == null ? File.ReadAllText(layoutFile.FullName) : layoutCodeOverride, false);
+        }
+
+        private void LoadSnapshotDialog_DialogClosing(object sender, Events.DialogClosingEventArgs e)
+        {
+            LoadCabinLayout(e.DialogResult == DialogResultType.Yes ? File.ReadAllText(SnapshotFilePath) : null);
+
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.FinishLayoutChange, this);
         }
 
         public void Rename(string newName)
@@ -470,6 +515,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             OnCabinSlotsChanged(EventArgs.Empty);
 
             return template;
+        }
+
+        internal void ApplyHistoryEntry(CabinHistoryEntry historyEntry, bool isUndo)
+        {
+            foreach (CabinDeck cabinDeck in CabinDecks)
+            {
+                cabinDeck.ApplyHistoryEntry(historyEntry, isUndo);
+            }
         }
 
         private bool IsBasicSlotType(CabinSlot cabinSlot)
@@ -740,6 +793,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 }
 
                 InvokePropertyChanged(nameof(DuplicateSeats));
+                InvokePropertyChanged(nameof(HasNoDuplicateSeats));
                 InvokePropertyChanged(nameof(InvalidStairways));
                 InvokePropertyChanged(nameof(StairwaysValid));
                 InvokePropertyChanged(nameof(DuplicateDoors));

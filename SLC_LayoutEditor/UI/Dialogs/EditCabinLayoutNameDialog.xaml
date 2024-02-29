@@ -1,4 +1,4 @@
-﻿<DockPanel x:Class="SLC_LayoutEditor.UI.Dialogs.EditCabinLayoutNameDialog"
+﻿<local:CreateDialogBase x:Class="SLC_LayoutEditor.UI.Dialogs.EditCabinLayoutNameDialog"
            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,9 +9,9 @@
            mc:Ignorable="d" 
            MinHeight="170" MinWidth="300" LastChildFill="False"
            Loaded="DockPanel_Loaded">
-    <DockPanel.DataContext>
+    <local:CreateDialogBase.DataContext>
         <vm:AddEditCabinLayoutDialogViewModel/>
-    </DockPanel.DataContext>
+    </local:CreateDialogBase.DataContext>
     <TextBlock DockPanel.Dock="Top" Margin="4">
         <TextBlock.Style>
             <Style TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
@@ -47,4 +47,4 @@
         <Button Content="Cancel" Width="80" Margin="8" Click="Cancel_Click"
                 Style="{StaticResource YellowButtonStyle}"/>
     </StackPanel>
-    </DockPanel>
+    </local:CreateDialogBase>

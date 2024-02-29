@@ -587,12 +587,14 @@
                                 </TextBlock>
                             </DockPanel>
                             <TextBox Text="{Binding SelectedCabinSlot.SlotNumber, UpdateSourceTrigger=PropertyChanged}"
-                                     IsEnabled="{Binding SelectedCabinSlot.HasSlotNumber, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
+                                     IsEnabled="{Binding SelectedCabinSlot.HasSlotNumber, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"
+                                     TextChanged="SlotData_TextChanged"/>
                         </StackPanel>
                         <StackPanel Margin="4">
                             <TextBlock Margin="0,0,0,4" Text="Seat letter"/>
                             <TextBox Text="{Binding SelectedCabinSlot.SeatLetter, UpdateSourceTrigger=PropertyChanged}" 
-                                             IsEnabled="{Binding SelectedCabinSlot.IsSeat, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"/>
+                                     IsEnabled="{Binding SelectedCabinSlot.IsSeat, UpdateSourceTrigger=PropertyChanged, FallbackValue=False, TargetNullValue=False}"
+                                     TextChanged="SlotData_TextChanged"/>
                             <TextBlock Text="{Binding SeatLetterError}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock" BasedOn="{StaticResource ErrorTextStyle}">
@@ -755,9 +757,29 @@
                 </Style.Triggers>
             </Style>
         </Grid.Style>
-        <Rectangle Fill="{DynamicResource BackgroundDarkBrush}" HorizontalAlignment="Left" Width="2" Height="92"
-                   Margin="-1,0,0,0"/>
-        <AdornerDecorator Margin="1,0,0,0">
+        <Rectangle Fill="{DynamicResource BackgroundDarkBrush}" HorizontalAlignment="Left" Width="2" Height="92">
+            <Rectangle.Style>
+                <Style TargetType="Rectangle">
+                    <Setter Property="Margin" Value="-1,0,0,0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
+                            <Setter Property="Margin" Value="-2,0,0,0"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+        <AdornerDecorator>
+            <AdornerDecorator.Style>
+                <Style TargetType="AdornerDecorator">
+                    <Setter Property="Margin" Value="1,0,0,0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
+                            <Setter Property="Margin" Value="-1,0,0,0"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </AdornerDecorator.Style>
             <ToggleButton x:Name="toggle_sidebar" IsChecked="{Binding IsSidebarOpen}" UseLayoutRounding="True" Loaded="ToggleSidebarButton_Loaded"
                           controls:GuideAssist.Title="{StaticResource GuideToggleSidebarTitle}"
                           controls:GuideAssist.Description="{StaticResource GuideToggleSidebarDescription}"

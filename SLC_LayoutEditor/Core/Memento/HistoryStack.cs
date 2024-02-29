@@ -9,7 +9,7 @@ namespace SLC_LayoutEditor.Core.Memento
     class HistoryStack<T>
     {
         private readonly List<T> stack;
-        private int capacity = 30;
+        private int capacity = 300;
 
         public int Capacity { get => capacity; set => capacity = value; }
 
@@ -74,6 +74,18 @@ namespace SLC_LayoutEditor.Core.Memento
             {
                 stack.RemoveRange(capacity, Count - capacity);
             }
+        }
+
+        public IEnumerable<string> GetMessages()
+        {
+            List<string> messages = new List<string>();
+
+            foreach (T item in stack)
+            {
+                messages.Add(item.ToString());
+            }
+
+            return messages;
         }
     }
 }

@@ -22,10 +22,8 @@ namespace SLC_LayoutEditor.UI.Dialogs
     /// <summary>
     /// Interaction logic for EditCabinLayoutNameDialog.xaml
     /// </summary>
-    public partial class EditCabinLayoutNameDialog : DockPanel, IDialog
+    public partial class EditCabinLayoutNameDialog : CreateDialogBase
     {
-        public event EventHandler<DialogClosingEventArgs> DialogClosing;
-
         private readonly AddEditCabinLayoutDialogViewModel vm;
 
         public EditCabinLayoutNameDialog(IEnumerable<string> existingCabinLayouts, string currentLayoutName, bool isTemplate)
@@ -50,16 +48,6 @@ namespace SLC_LayoutEditor.UI.Dialogs
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             CancelDialog();
-        }
-
-        protected virtual void OnDialogClosing(DialogClosingEventArgs e)
-        {
-            DialogClosing?.Invoke(this, e);
-        }
-
-        public void CancelDialog()
-        {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
         }
 
         private void DockPanel_Loaded(object sender, RoutedEventArgs e)

@@ -274,7 +274,7 @@ namespace SLC_LayoutEditor.Core
         {
             if (string.IsNullOrWhiteSpace(parentPath))
             {
-                throw new Exception("ParentPath needs to have a value if AppSettings file is being created!");
+                throw new Exception("ParentPath needs to have a data if AppSettings file is being created!");
             }
 
             fileName = "settings.json";

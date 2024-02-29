@@ -7,53 +7,59 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
-    class History : ViewModelBase
+    class History<T> : ViewModelBase
     {
         #region Singleton
-        private static History _instance;
+        private static History<T> _instance;
 
-        public static History Instance
+        public static History<T> Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new History();
+                    _instance = new History<T>();
                 }
 
                 return _instance;
             }
         }
 
-        private History() { }
+        protected History() { }
         #endregion
 
-        private readonly HistoryStack<HistoryStep> undoHistory = new HistoryStack<HistoryStep>();
-        private readonly HistoryStack<HistoryStep> redoHistory = new HistoryStack<HistoryStep>();
+        public event EventHandler<EventArgs> HistoryChanged;
+        public event EventHandler<HistoryApplyingEventArgs<T>> HistoryApplying;
+
+        protected readonly HistoryStack<T> undoHistory = new HistoryStack<T>();
+        protected readonly HistoryStack<T> redoHistory = new HistoryStack<T>();
 
         public bool CanUndo => undoHistory.Count > 0;
 
+        public IEnumerable<string> UndoSteps => undoHistory.GetMessages();
+
+        public IEnumerable<string> RedoSteps => redoHistory.GetMessages();
+
         public bool CanRedo => redoHistory.Count > 0;
 
-        public void RecordStep(HistoryStep historyStep)
+        protected void RecordChanges()
         {
-            undoHistory.Push(historyStep);
-
             if (redoHistory.Count > 0)
             {
                 redoHistory.Clear();
                 InvokePropertyChanged(nameof(CanRedo));
             }
+            OnHistoryChanged(EventArgs.Empty);
         }
 
-        public HistoryStep Undo()
+        public T Undo()
         {
-            return ShiftStep(undoHistory, redoHistory, nameof(CanUndo));
+            return ShiftStep(undoHistory, redoHistory, true);
         }
 
-        public HistoryStep Redo()
+        public T Redo()
         {
-            return ShiftStep(redoHistory, undoHistory, nameof(CanRedo));
+            return ShiftStep(redoHistory, undoHistory, false);
         }
 
         public void Clear()
@@ -62,19 +68,36 @@ namespace SLC_LayoutEditor.Core.Memento
             redoHistory.Clear();
             InvokePropertyChanged(nameof(CanRedo));
             InvokePropertyChanged(nameof(CanUndo));
+            OnHistoryChanged(EventArgs.Empty);
         }
 
-        private HistoryStep ShiftStep(HistoryStack<HistoryStep> from, HistoryStack<HistoryStep> to, string propertyName)
+        private T ShiftStep(HistoryStack<T> from, HistoryStack<T> to, bool isUndo)
         {
             if (from.Count == 0)
             {
-                return null;
+                return default;
             }
 
-            HistoryStep historyStep = from.Pop();
+            T historyStep = from.Pop();
             to.Push(historyStep);
-            InvokePropertyChanged(propertyName);
+            InvokePropertyChanged(isUndo ? nameof(CanUndo) : nameof(CanRedo));
+
+            InvokePropertyChanged(nameof(UndoSteps));
+            InvokePropertyChanged(nameof(RedoSteps));
+
+            OnHistoryChanged(EventArgs.Empty);
+            OnHistoryApplying(new HistoryApplyingEventArgs<T>(historyStep, isUndo));
             return historyStep;
+        }
+
+        protected virtual void OnHistoryChanged(EventArgs e)
+        {
+            HistoryChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnHistoryApplying(HistoryApplyingEventArgs<T> e)
+        {
+            HistoryApplying?.Invoke(this, e);
         }
     }
 }

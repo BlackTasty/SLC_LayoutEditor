@@ -90,7 +90,7 @@ namespace SLC_LayoutEditor.Controls
             {
                 CabinLayout oldLayout = e.OldValue as CabinLayout;
                 CabinLayout newLayout = e.NewValue as CabinLayout;
-                Logger.Default.WriteLog("Layout has changed for UI. Old value: {0}; New value: {1}", 
+                Logger.Default.WriteLog("Layout has changed for UI. Old data: {0}; New data: {1}", 
                     GetCabinLayoutValueForLog(oldLayout), GetCabinLayoutValueForLog(newLayout));
                 control.RefreshCabinLayout();
             }
@@ -372,7 +372,7 @@ namespace SLC_LayoutEditor.Controls
 
             dialog.DialogClosing += ConfirmRemoveDeck_DialogClosing;
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void ConfirmRemoveDeck_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -426,7 +426,7 @@ namespace SLC_LayoutEditor.Controls
                     }
                 };
 
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                dialog.ShowDialog();
             }
             else
             {
@@ -458,7 +458,7 @@ namespace SLC_LayoutEditor.Controls
 
                 dialog.DialogClosing += ReloadDeck_DialogClosing;
 
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                dialog.ShowDialog();
             }
             else
             {
@@ -517,7 +517,7 @@ namespace SLC_LayoutEditor.Controls
             MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, cabinLayout.LayoutName + " - Template", cabinLayout);
             dialog.DialogClosing += MakeTemplate_DialogClosing;
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void MakeTemplate_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -589,7 +589,7 @@ namespace SLC_LayoutEditor.Controls
                 DialogType.YesNo);
 
             dialog.DialogClosing += DeleteLayout_DialogClosing;
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void DeleteLayout_DialogClosing(object sender, DialogClosingEventArgs e)
