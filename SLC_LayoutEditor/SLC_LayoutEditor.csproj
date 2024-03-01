@@ -175,6 +175,7 @@
     <Compile Include="Core\Cabin\Renderer\SlotHitResult.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Dialogs\DialogButtonConfig.cs" />
+    <Compile Include="Core\Enum\AutomationMode.cs" />
     <Compile Include="Core\Enum\CabinSlotIssueType.cs" />
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
@@ -185,8 +186,11 @@
     <Compile Include="Core\Enum\CabinChangeCategory.cs" />
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
+    <Compile Include="Core\Events\CabinDeckChangedEventArgs.cs" />
+    <Compile Include="Core\Events\CabinDeckSizeChangedEventArgs.cs" />
     <Compile Include="Core\Events\LiveGuideClosedEventArgs.cs" />
     <Compile Include="Controls\Notifications\NotificationClosedEventArgs.cs" />
+    <Compile Include="Core\Events\RowColumnChangeApplyingEventArgs.cs" />
     <Compile Include="Core\Events\SelectedDeckChangedEventArgs.cs" />
     <Compile Include="Core\Events\TemplateCreatedEventArgs.cs" />
     <Compile Include="Core\Events\ChangedEventArgs.cs" />
@@ -278,6 +282,7 @@
     <Compile Include="ViewModel\Commands\OpenLayoutFolderCommand.cs" />
     <Compile Include="ViewModel\Commands\OpenLayoutInTextEditor.cs" />
     <Compile Include="ViewModel\Commands\RedoCommand.cs" />
+    <Compile Include="ViewModel\Commands\RedoUntilCommand.cs" />
     <Compile Include="ViewModel\Commands\ReloadLayoutCommand.cs" />
     <Compile Include="ViewModel\Commands\RenameLayoutCommand.cs" />
     <Compile Include="ViewModel\Commands\SaveLayoutAsCommand.cs" />
@@ -306,6 +311,7 @@
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeUnavailableSeatCommand.cs" />
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeWallCommand.cs" />
     <Compile Include="ViewModel\Commands\UndoCommand.cs" />
+    <Compile Include="ViewModel\Commands\UndoUntilCommand.cs" />
     <Compile Include="ViewModel\CreateAircraftDialogViewModel.cs" />
     <Compile Include="ViewModel\CreateCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\AddEditDialogViewModel.cs" />

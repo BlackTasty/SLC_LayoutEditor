@@ -14,6 +14,14 @@
         Title="{Binding Title}" MinHeight="780" MinWidth="1100"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
         Icon="Resources/icon.ico" StateChanged="Window_StateChanged">
+    <Window.Resources>
+        <DataTemplate x:Key="UndoStepMenuItemTemplate">
+            <MenuItem Header="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="RedoStepMenuItemTemplate">
+            <MenuItem Header="{Binding}"/>
+        </DataTemplate>
+    </Window.Resources>
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" CornerRadius="14" CaptionHeight="0" UseAeroCaptionButtons="False" ResizeBorderThickness="7"/>
     </WindowChrome.WindowChrome>
@@ -138,9 +146,20 @@
 
                             <DockPanel Margin="0,0,12,0" IsEnabled="{Binding IsLayoutOpened}">
                                 <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Undo}" Margin="4,0" ToolTip="Undo"
-                                        Click="Undo_Click" IsEnabled="{Binding CanUndo}"/>
+                                        Click="Undo_Click" IsEnabled="{Binding CanUndo}">
+                                    <Button.ContextMenu>
+                                        <ContextMenu ItemsSource="{Binding UndoSteps}"
+                                                     ItemTemplate="{StaticResource UndoStepMenuItemTemplate}">
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                </Button>
                                 <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Redo}" Margin="4,0" ToolTip="Redo"
-                                        Click="Redo_Click" IsEnabled="{Binding CanRedo}"/>
+                                        Click="Redo_Click" IsEnabled="{Binding CanRedo}">
+                                    <Button.ContextMenu>
+                                        <ContextMenu ItemsSource="{Binding RedoSteps}"
+                                                     ItemTemplate="{StaticResource RedoStepMenuItemTemplate}"/>
+                                    </Button.ContextMenu>
+                                </Button>
                             </DockPanel>
                             <Border Margin="0,6,8,6" Padding="8,2" CornerRadius="4"
                                         Visibility="{Binding CabinLayoutName, Converter={StaticResource NotNullToVisibilityConverter}}">

@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.Cabin;
+﻿using SLC_LayoutEditor.Converter;
+using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Enum;
 using System;
 using System.Collections.Generic;
@@ -12,24 +13,14 @@ namespace SLC_LayoutEditor.Core.Memento
     {
         private readonly int row;
         private readonly int column;
-        private readonly int floor;
-        private readonly bool isDeckRemoved;
-        private readonly CabinChangeCategory category;
 
         public int Row => row;
 
         public int Column => column;
 
-        public int Floor => floor;
-
-        public bool IsDeckRemoved => isDeckRemoved;
-
-        public CabinChangeCategory Category => category;
-
-        private CabinChange(string data, string previousData, CabinChangeCategory category) : 
+        private CabinChange(string data, string previousData) : 
             base (data, previousData)
         {
-            this.category = category;
         }
 
         /// <summary>
@@ -37,12 +28,18 @@ namespace SLC_LayoutEditor.Core.Memento
         /// </summary>
         /// <param name="cabinSlot">The <see cref="CabinSlot"/> that has been changed</param>
         /// <param name="floor">The floor this <see cref="CabinSlot"/> is on</param>
-        public CabinChange(CabinSlot cabinSlot, int floor) : 
-            this(cabinSlot.ToString(), cabinSlot.PreviousState, CabinChangeCategory.SlotData)
+        /// <param name="usedAutomationMode">The <see cref="AutomationMode"/> used to modify this <see cref="CabinSlot"/></param>
+        public CabinChange(CabinSlot cabinSlot) : 
+            this(cabinSlot.ToString(), cabinSlot.PreviousState, 
+                cabinSlot.Row, cabinSlot.Column)
         {
-            row = cabinSlot.Row;
-            column = cabinSlot.Column;
-            this.floor = floor;
+        }
+
+        private CabinChange(string cabinSlotData, string previousCabinSlotData, int row, int column) :
+            this(cabinSlotData, previousCabinSlotData)
+        {
+            this.row = row;
+            this.column = column;
         }
 
         /// <summary>
@@ -51,31 +48,125 @@ namespace SLC_LayoutEditor.Core.Memento
         /// <param name="cabinDeck">The <see cref="CabinDeck"/> that has been added or removed</param>
         /// <param name="isRemoved">False when added, true when removed</param>
         public CabinChange(CabinDeck cabinDeck, bool isRemoved) :
-            this(!isRemoved ? cabinDeck.ToHistoryString() : null, 
-                !isRemoved ? null : cabinDeck.ToHistoryString(), 
-                CabinChangeCategory.Deck)
+            this(!isRemoved ? cabinDeck.ToFileString() : null, 
+                !isRemoved ? null : cabinDeck.ToFileString())
         {
             row = -1;
             column = -1;
-            isDeckRemoved = isRemoved;
-            this.floor = cabinDeck?.Floor ?? -1;
         }
 
-        public bool IsMatchingSlot(CabinChange change)
+        public bool HasTypeChanged()
         {
-            if (IsOnGrid() && change.IsOnGrid() && change.floor == floor)
-            {
-                return change.row == row && change.column == column;
-            }
-            else
+            return CountSpaceDifference() != 0 ||
+                HasDifferentType() ||
+                IsDashModified();
+        }
+
+        public bool HasSlotNumberChanged()
+        {
+            if (HasDifferentType())
             {
                 return false;
             }
+
+            CabinSlotType currentType = ParseDataToType(Data);
+            if (currentType != CabinSlotType.Door && currentType != CabinSlotType.LoadingBay && currentType != CabinSlotType.CateringDoor &&
+                currentType != CabinSlotType.BusinessClassSeat && currentType != CabinSlotType.EconomyClassSeat && currentType != CabinSlotType.FirstClassSeat &&
+                currentType != CabinSlotType.PremiumClassSeat && currentType != CabinSlotType.SupersonicClassSeat && currentType != CabinSlotType.UnavailableSeat)
+            {
+                return false;
+            }
+
+            return HasDifferentSlotNumber();
+        }
+
+        public bool HasSlotLetterChanged()
+        {
+            if (HasDifferentType())
+            {
+                return false;
+            }
+            CabinSlotType currentType = ParseDataToType(Data);
+            if (currentType != CabinSlotType.BusinessClassSeat && currentType != CabinSlotType.EconomyClassSeat && currentType != CabinSlotType.FirstClassSeat &&
+                currentType != CabinSlotType.PremiumClassSeat && currentType != CabinSlotType.SupersonicClassSeat && currentType != CabinSlotType.UnavailableSeat)
+            {
+                return false;
+            }
+
+            return GetSeatLetter(Data) != GetSeatLetter(PreviousData);
+        }
+
+        public string GetSlotTypeDescription(bool forCurrentData)
+        {
+            return EnumDescriptionConverter.GetDescription(ParseDataToType(forCurrentData ? Data : PreviousData));
+        }
+
+        public int GetSlotNumber(bool forCurrentData)
+        {
+            return GetSlotNumber(forCurrentData ? Data : PreviousData);
+        }
+
+        public char GetSeatLetter(bool forCurrentData)
+        {
+            return GetSeatLetter(forCurrentData ? Data : PreviousData);
         }
 
         private bool IsOnGrid()
         {
             return row >= 0 && column >= 0;
+        }
+
+        private int CountSpaceDifference()
+        {
+            return Data.TakeWhile(x => x == ' ').Count() - PreviousData.TakeWhile(x => x == ' ').Count();
+        }
+
+        private bool HasDifferentType()
+        {
+            return GetTypeLetters(Data) != GetTypeLetters(PreviousData);
+        }
+
+        private bool IsDashModified()
+        {
+            return Data.FirstOrDefault(x => x == '-') != PreviousData.FirstOrDefault(x => x == '-');
+        }
+
+        private bool HasDifferentSlotNumber()
+        {
+            return GetSlotNumber(Data) != GetSlotNumber(PreviousData);
+        }
+
+        private CabinSlotType ParseDataToType(string slotData)
+        {
+            return CabinSlot.ParseSlotType(GetTypeLetters(slotData));
+        }
+
+        private string GetTypeLetters(string slotData)
+        {
+            string trimmedData = slotData.Trim();
+            if (string.IsNullOrWhiteSpace(trimmedData) ||
+                trimmedData == "-")
+            {
+                return "-";
+            }
+
+            return string.Concat(trimmedData.TakeWhile(x => char.IsLetter(x) || x == '>' || x == '<'));
+        }
+
+        private int GetSlotNumber(string slotData)
+        {
+            string rawSlotNumber = string.Concat(slotData.SkipWhile(x => !char.IsNumber(x)).TakeWhile(x => char.IsNumber(x)));
+            if (int.TryParse(rawSlotNumber, out int slotNumber))
+            {
+                return slotNumber;
+            }
+
+            return -1;
+        }
+
+        private char GetSeatLetter(string slotData)
+        {
+            return slotData.Trim().LastOrDefault();
         }
     }
 }

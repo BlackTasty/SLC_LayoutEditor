@@ -69,6 +69,10 @@ namespace SLC_LayoutEditor.ViewModel
 
         public RedoCommand RedoCommand => CommandInterface.RedoCommand;
 
+        public UndoUntilCommand UndoUntilCommand => CommandInterface.UndoUntilCommand;
+
+        public RedoUntilCommand RedoUntilCommand => CommandInterface.RedoUntilCommand;
+
         #region Slot type commands
         public SlotTypeAisleCommand SlotTypeAisleCommand => CommandInterface.SlotTypeAisleCommand;
 

@@ -156,6 +156,7 @@
                                  TemplateCreated="Layout_TemplateCreated"
                                  LayoutReloaded="Layout_LayoutReloaded"
                                  SelectedDeckChanged="Layout_SelectedDeckChanged"
+                                 CabinDeckChanged="control_layout_CabinDeckChanged"
                                  GuideMenu="{StaticResource GuideMenu}"
                                  controls:GuideAssist.Title="{StaticResource GuideEditorAreaTitle}"
                                  controls:GuideAssist.Description="{StaticResource GuideEditorAreaDescription}"

@@ -47,6 +47,7 @@ namespace SLC_LayoutEditor.UI
         private Adorner sidebarToggleAdorner;
         private Adorner currentGuideAdorner;
         private bool isAutomationRunning;
+        private AutomationMode usedAutomationMode = AutomationMode.None;
 
         public LayoutEditor()
         {
@@ -401,9 +402,10 @@ namespace SLC_LayoutEditor.UI
             char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
             int currentLetterIndex = 0;
 
-            switch (vm.SelectedAutomationIndex)
+            usedAutomationMode = (AutomationMode)vm.SelectedAutomationIndex;
+            switch (usedAutomationMode)
             {
-                case 0: // Seat numeration
+                case AutomationMode.SeatNumeration: // Seat numeration
                     foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
                     {
                         var seatRowGroups =
@@ -449,7 +451,7 @@ namespace SLC_LayoutEditor.UI
                         }
                     }
                     break;
-                case 1: // Wall generator
+                case AutomationMode.WallGenerator: // Wall generator
                     IEnumerable<CabinSlot> wallSlots = vm.AutomationSelectedDeck.CabinSlots
                         .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.AutomationSelectedDeck.Rows || x.Column == vm.AutomationSelectedDeck.Columns) && 
                             !x.IsDoor && x.Type != CabinSlotType.Wall && x.Type != CabinSlotType.Cockpit);
@@ -461,7 +463,7 @@ namespace SLC_LayoutEditor.UI
                         wallSlot.IsEvaluationActive = true;
                     }
                     break;
-                case 2: //Service points (BETA)
+                case AutomationMode.ServicePoints: //Service points (BETA)
                     foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
                     {
                         // Reset all service start- and endpoints to type Aisle
@@ -642,6 +644,7 @@ namespace SLC_LayoutEditor.UI
                 }
             }
             RecordHistoryEntry();
+            usedAutomationMode = AutomationMode.None;
         }
 
         private void Layout_TemplatingModeToggled(object sender, EventArgs e)
@@ -853,7 +856,12 @@ namespace SLC_LayoutEditor.UI
         {
             if (!isAutomationRunning)
             {
-                CabinHistory.Instance.RecordChanges(vm.SelectedCabinLayout.CabinDecks.SelectMany(x => x.CabinSlots).Where(x => x.CollectForHistory), vm.SelectedCabinSlotFloor);
+                CabinHistory.Instance.RecordChanges(
+                    vm.SelectedCabinLayout.CabinDecks
+                        .SelectMany(x => x.CabinSlots)
+                        .Where(x => x.CollectForHistory), 
+                    vm.SelectedCabinSlotFloor,
+                    usedAutomationMode);
             }
         }
 
@@ -928,6 +936,11 @@ namespace SLC_LayoutEditor.UI
         private void SlotData_TextChanged(object sender, TextChangedEventArgs e)
         {
             RecordHistoryEntry();
+        }
+
+        private void control_layout_CabinDeckChanged(object sender, CabinDeckChangedEventArgs e)
+        {
+            CabinHistory.Instance.RecordChanges(e);
         }
     }
 }

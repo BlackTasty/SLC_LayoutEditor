@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
-    public interface IHistorical<T>
+    public interface IHistorical
     {
-        void RecordChange(T oldValue, T newValue);
+        string Message { get; }
+
+        string Guid { get; }
     }
 }

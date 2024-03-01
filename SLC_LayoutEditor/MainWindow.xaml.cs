@@ -3,6 +3,7 @@ using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Guide;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
@@ -379,6 +380,16 @@ namespace SLC_LayoutEditor
 #else
             throw new Exception("Whoop whoop, I'm a crash!");
 #endif
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -434,6 +434,8 @@ namespace SLC_LayoutEditor.ViewModel
             //SelectedCabinLayout.DeepRefreshProblemChecks();
         }
 
+
+
         public int SelectedAutomationIndex
         {
             get => mSelectedAutomationIndex;
@@ -781,7 +783,7 @@ namespace SLC_LayoutEditor.ViewModel
             IsAutomationChecked = false;
             if (current != null)
             {
-                current.CabinDeckCountChanged -= SelectedLayout_LayoutChanged;
+                current.CabinDeckCountChanged -= SelectedLayout_CabinDeckCountChanged;
                 current.CabinSlotsChanged -= SelectedLayout_LayoutChanged;
                 current.Deleted -= deletedCallback;
                 current.Deleting -= SelectedLayout_Deleting;
@@ -801,7 +803,7 @@ namespace SLC_LayoutEditor.ViewModel
             ClearSelection();
             if (updated != null)
             {
-                updated.CabinDeckCountChanged += SelectedLayout_LayoutChanged;
+                updated.CabinDeckCountChanged += SelectedLayout_CabinDeckCountChanged;
                 updated.CabinSlotsChanged += SelectedLayout_LayoutChanged;
                 updated.Deleted += deletedCallback;
                 updated.Deleting += SelectedLayout_Deleting;
@@ -818,6 +820,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 IsSidebarOpen = false;
             }
+        }
+
+        private void SelectedLayout_CabinDeckCountChanged(object sender, CabinDeckChangedEventArgs e)
+        {
+            SelectedLayout_LayoutChanged(sender, EventArgs.Empty);
         }
 
         private void SelectedLayout_Deleting(object sender, EventArgs e)

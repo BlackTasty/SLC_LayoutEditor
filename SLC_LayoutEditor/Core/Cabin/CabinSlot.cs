@@ -245,6 +245,51 @@ namespace SLC_LayoutEditor.Core.Cabin
             previousState = ToString();
         }
 
+        public static CabinSlotType ParseSlotType(string typeString)
+        {
+            switch (typeString)
+            {
+                case "X":
+                    return CabinSlotType.Wall;
+                case "D":
+                    return CabinSlotType.Door;
+                case "CAT":
+                    return CabinSlotType.CateringDoor;
+                case "LB":
+                    return CabinSlotType.LoadingBay;
+                case "C":
+                    return CabinSlotType.Cockpit;
+                case "G":
+                    return CabinSlotType.Galley;
+                case "T":
+                    return CabinSlotType.Toilet;
+                case "S":
+                    return CabinSlotType.Stairway;
+                case "K":
+                    return CabinSlotType.Kitchen;
+                case "I":
+                    return CabinSlotType.Intercom;
+                case "B":
+                    return CabinSlotType.BusinessClassSeat;
+                case "E":
+                    return CabinSlotType.EconomyClassSeat;
+                case "F":
+                    return CabinSlotType.FirstClassSeat;
+                case "P":
+                    return CabinSlotType.PremiumClassSeat;
+                case "R":
+                    return CabinSlotType.SupersonicClassSeat;
+                case "U":
+                    return CabinSlotType.UnavailableSeat;
+                case "<":
+                    return CabinSlotType.ServiceStartPoint;
+                case ">":
+                    return CabinSlotType.ServiceEndPoint;
+                default:
+                    return CabinSlotType.Aisle;
+            }
+        }
+
         private void ApplySlotData(string slotData)
         {
             string trimmedSlotData = slotData.Trim();
@@ -252,64 +297,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             if (trimmedSlotData != "-")
             {
                 string[] slotDeclaration = trimmedSlotData.Split('-');
-
-                switch (slotDeclaration[0])
-                {
-                    case "X":
-                        Type = CabinSlotType.Wall;
-                        break;
-                    case "D":
-                        Type = CabinSlotType.Door;
-                        break;
-                    case "CAT":
-                        Type = CabinSlotType.CateringDoor;
-                        break;
-                    case "LB":
-                        Type = CabinSlotType.LoadingBay;
-                        break;
-                    case "C":
-                        Type = CabinSlotType.Cockpit;
-                        break;
-                    case "G":
-                        Type = CabinSlotType.Galley;
-                        break;
-                    case "T":
-                        Type = CabinSlotType.Toilet;
-                        break;
-                    case "S":
-                        Type = CabinSlotType.Stairway;
-                        break;
-                    case "K":
-                        Type = CabinSlotType.Kitchen;
-                        break;
-                    case "I":
-                        Type = CabinSlotType.Intercom;
-                        break;
-                    case "B":
-                        Type = CabinSlotType.BusinessClassSeat;
-                        break;
-                    case "E":
-                        Type = CabinSlotType.EconomyClassSeat;
-                        break;
-                    case "F":
-                        Type = CabinSlotType.FirstClassSeat;
-                        break;
-                    case "P":
-                        Type = CabinSlotType.PremiumClassSeat;
-                        break;
-                    case "R":
-                        Type = CabinSlotType.SupersonicClassSeat;
-                        break;
-                    case "U":
-                        Type = CabinSlotType.UnavailableSeat;
-                        break;
-                    case "<":
-                        Type = CabinSlotType.ServiceStartPoint;
-                        break;
-                    case ">":
-                        Type = CabinSlotType.ServiceEndPoint;
-                        break;
-                }
+                Type = ParseSlotType(slotDeclaration[0]);
 
                 if (HasSlotNumber)
                 {

@@ -6,23 +6,34 @@ using System.Threading.Tasks;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
-    public class HistoryEntry<T>
+    public class HistoryEntry<T> : IHistorical
     {
         private readonly HashSet<T> changes = new HashSet<T>();
         private readonly string message;
+        private readonly string guid;
 
         public HashSet<T> Changes => changes;
 
-        public string Message => message;
+        public string Message => GetMessage();
+        
+        public string Guid => guid;
 
-        public HistoryEntry(IEnumerable<T> changes, string message)
+        public HistoryEntry(IEnumerable<T> changes)
         {
+            guid = System.Guid.NewGuid().ToString();
             foreach (var change in changes)
             {
                 this.changes.Add(change);
             }
 
-            this.message = message;
+            this.message = GetMessage();
+        }
+
+        public HistoryEntry(T change) : this(new List<T>() { change }) { }
+
+        protected virtual string GetMessage()
+        {
+            return message;
         }
 
         public override string ToString()

@@ -7,7 +7,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
-    class History<T> : ViewModelBase
+    class History<T> : ViewModelBase where T : IHistorical
     {
         #region Singleton
         private static History<T> _instance;
@@ -36,14 +36,21 @@ namespace SLC_LayoutEditor.Core.Memento
 
         public bool CanUndo => undoHistory.Count > 0;
 
-        public IEnumerable<string> UndoSteps => undoHistory.GetMessages();
+        public HistoryStack<T> UndoHistory => undoHistory;
 
-        public IEnumerable<string> RedoSteps => redoHistory.GetMessages();
+        public HistoryStack<T> RedoHistory => redoHistory;
 
         public bool CanRedo => redoHistory.Count > 0;
 
+        public bool IsRecording { get; set; } = true;
+
         protected void RecordChanges()
         {
+            if (!IsRecording)
+            {
+                return;
+            }
+
             if (redoHistory.Count > 0)
             {
                 redoHistory.Clear();
@@ -60,6 +67,38 @@ namespace SLC_LayoutEditor.Core.Memento
         public T Redo()
         {
             return ShiftStep(redoHistory, undoHistory, false);
+        }
+
+        public T UndoUntil(T target)
+        {
+            if (undoHistory.Contains(target))
+            {
+                T shiftedStep = Undo();
+                while (shiftedStep.Guid != target.Guid)
+                {
+                    shiftedStep = Undo();
+                }
+
+                return shiftedStep;
+            }
+
+            return default;
+        }
+
+        public T RedoUntil(T target)
+        {
+            if (redoHistory.Contains(target))
+            {
+                T shiftedStep = Redo();
+                while (shiftedStep.Guid != target.Guid)
+                {
+                    shiftedStep = Redo();
+                }
+
+                return shiftedStep;
+            }
+
+            return default;
         }
 
         public void Clear()
@@ -82,8 +121,8 @@ namespace SLC_LayoutEditor.Core.Memento
             to.Push(historyStep);
             InvokePropertyChanged(isUndo ? nameof(CanUndo) : nameof(CanRedo));
 
-            InvokePropertyChanged(nameof(UndoSteps));
-            InvokePropertyChanged(nameof(RedoSteps));
+            InvokePropertyChanged(nameof(UndoHistory));
+            InvokePropertyChanged(nameof(RedoHistory));
 
             OnHistoryChanged(EventArgs.Empty);
             OnHistoryApplying(new HistoryApplyingEventArgs<T>(historyStep, isUndo));

@@ -19,6 +19,7 @@ namespace SLC_LayoutEditor.Core.Cabin
     {
         public event EventHandler<EventArgs> CabinSlotsChanged;
         public event EventHandler<ProblematicSlotsCollectedEventArgs> ProblematicSlotsCollected;
+        public event EventHandler<RowColumnChangeApplyingEventArgs> RowColumnChangeApplying;
 
         public event EventHandler<EventArgs> DeckSlotLayoutChanged;
 
@@ -33,14 +34,6 @@ namespace SLC_LayoutEditor.Core.Cabin
         private bool mShowUnreachableSlots = true;
 
         private CabinPathGrid pathGrid;
-
-        //private IEnumerable<CabinSlot> invalidSlots;
-        /*private IEnumerable<CabinSlot> doorSlots;
-        private IEnumerable<CabinSlot> invalidCateringDoorsAndLoadingBays;
-        private IEnumerable<CabinSlot> unreachableSlots;
-        private IEnumerable<CabinSlot> invalidPositionedSlots;
-        private IEnumerable<CabinSlot> invalidPositionedCockpitSlots;
-        private IEnumerable<CabinSlot> invalidPositionedDoorSlots;*/
         private string currentHash;
 
         public double Width { get; set; }
@@ -649,16 +642,29 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         internal void ApplyHistoryEntry(CabinHistoryEntry historyEntry, bool isUndo)
         {
-            foreach (CabinChange change in historyEntry.Changes.Where(x => x.Floor == mFloor))
+            switch (historyEntry.Category)
             {
-                CabinSlot targetSlot = mCabinSlots.FirstOrDefault(x => x.Row == change.Row && x.Column == change.Column);
-                if (targetSlot != null)
-                {
-                    targetSlot.ApplyHistoryChange(change, isUndo);
-                }
+                case CabinChangeCategory.SlotData:
+                    foreach (CabinChange change in historyEntry.Changes)
+                    {
+                        CabinSlot targetSlot = mCabinSlots.FirstOrDefault(x => x.Row == change.Row && x.Column == change.Column);
+                        if (targetSlot != null)
+                        {
+                            targetSlot.ApplyHistoryChange(change, isUndo);
+                        }
+                    }
+                    break;
+                case CabinChangeCategory.SlotAmount:
+                    OnRowColumnChangeApplying(new RowColumnChangeApplyingEventArgs(historyEntry, isUndo));
+                    break;
             }
 
             RefreshProblemChecks();
+        }
+
+        protected virtual void OnRowColumnChangeApplying(RowColumnChangeApplyingEventArgs e)
+        {
+            RowColumnChangeApplying?.Invoke(this, e);
         }
 
         private IEnumerable<int> GetRowsCoveredByService()

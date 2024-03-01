@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
@@ -21,7 +22,7 @@ namespace SLC_LayoutEditor.Core.Cabin
     public class CabinLayout : ViewModelBase
     {
         public event EventHandler<EventArgs> CabinSlotsChanged;
-        public event EventHandler<EventArgs> CabinDeckCountChanged;
+        public event EventHandler<CabinDeckChangedEventArgs> CabinDeckCountChanged;
         public event EventHandler<EventArgs> Deleted;
         public event EventHandler<EventArgs> Deleting;
 
@@ -320,10 +321,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     LoadCabinLayout();
                 }
 
-                /*if (reload)
-                {
-                    OnCabinSlotsChanged(EventArgs.Empty);
-                }*/
+                CabinHistory.Instance.Clear();
             }
 
             return false;
@@ -331,6 +329,10 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void LoadCabinLayout(string layoutCodeOverride = null)
         {
+            foreach (CabinDeck cabinDeck in mCabinDecks)
+            {
+                cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
+            }
             mCabinDecks.Clear();
 
             mLayoutName = layoutFile.Name.Replace(layoutFile.Extension, "");
@@ -464,7 +466,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             cabinDeck.CabinSlotsChanged += Deck_CabinSlotsChanged;
             mCabinDecks.Add(cabinDeck);
-            OnCabinDeckCountChanged(EventArgs.Empty);
+            OnCabinDeckCountChanged(new CabinDeckChangedEventArgs(cabinDeck, false));
 
             return cabinDeck;
         }
@@ -487,7 +489,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     mCabinDecks[floor].Floor = floor + 1;
                 }
             }
-            OnCabinDeckCountChanged(EventArgs.Empty);
+            OnCabinDeckCountChanged(new CabinDeckChangedEventArgs(cabinDeck, true));
         }
 
         public CabinLayout MakeTemplate(MakeTemplateDialogViewModel data, string layoutsPath)
@@ -519,10 +521,37 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         internal void ApplyHistoryEntry(CabinHistoryEntry historyEntry, bool isUndo)
         {
-            foreach (CabinDeck cabinDeck in CabinDecks)
+            CabinHistory.Instance.IsRecording = false;
+            switch (historyEntry.Category)
             {
-                cabinDeck.ApplyHistoryEntry(historyEntry, isUndo);
+                case CabinChangeCategory.SlotData:
+                case CabinChangeCategory.SlotAmount:
+                    if (mCabinDecks.FirstOrDefault(x => x.Floor == historyEntry.Floor) is CabinDeck targetDeck)
+                    {
+                        targetDeck.ApplyHistoryEntry(historyEntry, isUndo);
+                    }
+                    break;
+                case CabinChangeCategory.Deck:
+                    bool isRemoval = isUndo ? !historyEntry.IsRemoved : historyEntry.IsRemoved;
+                    foreach (CabinChange change in historyEntry.Changes)
+                    {
+                        if (isRemoval)
+                        {
+                            CabinDeck targetRemovalDeck = mCabinDecks.FirstOrDefault(x => x.Floor == historyEntry.Floor);
+                            if (targetRemovalDeck != null)
+                            {
+                                RemoveCabinDeck(targetRemovalDeck);
+                            }
+                        }
+                        else
+                        {
+                            CabinDeck restored = new CabinDeck(isUndo ? change.PreviousData : change.Data, historyEntry.Floor - 1);
+                            AddCabinDeck(restored);
+                        }
+                    }
+                    break;
             }
+            CabinHistory.Instance.IsRecording = true;
         }
 
         private bool IsBasicSlotType(CabinSlot cabinSlot)
@@ -817,10 +846,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             return mLayoutName;
         }
 
-        protected virtual void OnCabinDeckCountChanged(EventArgs e)
+        protected virtual void OnCabinDeckCountChanged(CabinDeckChangedEventArgs e)
         {
             CabinDeckCountChanged?.Invoke(this, e);
             InvokePropertyChanged(nameof(HasMultipleDecks));
+            RefreshCapacities();
         }
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)

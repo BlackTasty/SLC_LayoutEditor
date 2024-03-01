@@ -17,9 +17,13 @@ namespace SLC_LayoutEditor.ViewModel
 
         public CabinHistory History => history;
 
-        public IEnumerable<string> UndoHistory => History.UndoSteps;
+        public List<CabinHistoryEntry> UndoHistory => History.UndoHistory.Stack;
 
-        public IEnumerable<string> RedoHistory => History.RedoSteps;
+        public IEnumerable<string> UndoSteps => History.UndoHistory.GetMessages();
+
+        public List<CabinHistoryEntry> RedoHistory => History.RedoHistory.Stack;
+
+        public IEnumerable<string> RedoSteps => History.RedoHistory.GetMessages();
 
         public bool CanUndo => History.CanUndo;
 
@@ -33,29 +37,21 @@ namespace SLC_LayoutEditor.ViewModel
         protected virtual void History_Changed(object sender, EventArgs e)
         {
             InvokePropertyChanged(nameof(CanUndo));
-            InvokePropertyChanged(nameof(UndoHistory));
             InvokePropertyChanged(nameof(CanRedo));
             InvokePropertyChanged(nameof(UndoHistory));
+            InvokePropertyChanged(nameof(RedoHistory));
+            InvokePropertyChanged(nameof(UndoSteps));
+            InvokePropertyChanged(nameof(RedoSteps));
         }
 
         public void Undo()
         {
             CabinHistoryEntry step = history.Undo();
-
-            if (step != null)
-            {
-                //Mediator.Instance.NotifyColleagues(ViewModelMessage.History_Undo, step);
-            }
         }
 
         public void Redo()
         {
             CabinHistoryEntry step = history.Redo();
-
-            if (step != null)
-            {
-                //Mediator.Instance.NotifyColleagues(ViewModelMessage.History_Redo, step);
-            }
         }
     }
 }
