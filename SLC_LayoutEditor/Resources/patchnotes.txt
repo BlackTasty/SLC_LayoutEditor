@@ -1,4 +1,5 @@
 ﻿20.01.2024 m
+Added: You can now undo and redo actions while editing!
 Added: In case the editor crashes while a layout/template with unsaved changes was open, a snapshot is created which can be restored at next startup
 Fixed: The "getting started" dialog now remembers when you click "No"
 Fixed: Fixed a minor alignment problem with the editor view, when the window was maximized

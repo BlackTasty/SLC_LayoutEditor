@@ -251,13 +251,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 // Draw add row/column buttons to top left
                 buttonHitResults.Add(DrawTriangleButton(context, null, false, true, "row-add", "Add row", int.MaxValue, -1));
                 buttonHitResults.Add(DrawTriangleButton(context, null, false, false, "column-add", "Add column", -1, int.MaxValue));
-
-                /*
-                // Draw vertical divider
-                DrawSplitterLine(context, height, false);
-
-                // Draw horizontal divider
-                DrawSplitterLine(context, width, true);*/
             }
 
             UpdateSlotAreaRect(width, height);

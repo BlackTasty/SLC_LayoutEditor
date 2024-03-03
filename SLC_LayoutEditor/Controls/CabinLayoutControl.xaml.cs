@@ -391,7 +391,7 @@ namespace SLC_LayoutEditor.Controls
         private void CabinDeckControl_RemoveDeckClicked(object sender, RemoveCabinDeckEventArgs e)
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Confirm deletion",
-                "Are you sure you want to delete this deck? This action cannot be undone!", DialogType.YesNo);
+                "Are you sure you want to delete this deck? This action can be undone by pressing Ctrl+Z or using the \"Undo\" button in the title bar.", DialogType.YesNo);
             currentRemoveTarget = e.Target;
 
             dialog.DialogClosing += ConfirmRemoveDeck_DialogClosing;

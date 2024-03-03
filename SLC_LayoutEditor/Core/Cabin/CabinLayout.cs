@@ -35,6 +35,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private bool isLoaded;
 
         private string currentHash;
+        private bool isIssueCheckingEnabled = true;
 
         private IEnumerable<CabinSlot> invalidSlots;
         /*private IEnumerable<CabinSlot> invalidStairways;
@@ -521,6 +522,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         internal void ApplyHistoryEntry(CabinHistoryEntry historyEntry, bool isUndo)
         {
+            ToggleIssueChecking(false);
             CabinHistory.Instance.IsRecording = false;
             switch (historyEntry.Category)
             {
@@ -793,7 +795,6 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void DeepRefreshProblemChecks()
         {
-            RefreshIssues();
             foreach (CabinDeck cabinDeck in mCabinDecks)
             {
                 cabinDeck.RefreshProblemChecks();
@@ -802,11 +803,26 @@ namespace SLC_LayoutEditor.Core.Cabin
             RefreshProblemChecks();
         }
 
+        public void ToggleIssueChecking(bool isIssueCheckingEnabled)
+        {
+            this.isIssueCheckingEnabled = isIssueCheckingEnabled;
+
+            if (isIssueCheckingEnabled)
+            {
+                foreach (CabinDeck cabinDeck in mCabinDecks)
+                {
+                    cabinDeck.ToggleIssueChecking(isIssueCheckingEnabled);
+                }
+
+                RefreshProblemChecks();
+            }
+        }
+
         public void RefreshProblemChecks()
         {
             string newHash = Util.GetSHA256Hash(ToLayoutFile());
 
-            if (currentHash != newHash)
+            if (isIssueCheckingEnabled && currentHash != newHash)
             {
                 Logger.Default.WriteLog("Checking layout for issues...");
 

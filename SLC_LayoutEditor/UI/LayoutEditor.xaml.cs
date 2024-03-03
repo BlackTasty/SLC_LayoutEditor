@@ -452,6 +452,8 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
                 case AutomationMode.WallGenerator: // Wall generator
+                    vm.SelectedCabinSlotFloor = vm.AutomationSelectedDeck.Floor;
+
                     IEnumerable<CabinSlot> wallSlots = vm.AutomationSelectedDeck.CabinSlots
                         .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.AutomationSelectedDeck.Rows || x.Column == vm.AutomationSelectedDeck.Columns) && 
                             !x.IsDoor && x.Type != CabinSlotType.Wall && x.Type != CabinSlotType.Cockpit);

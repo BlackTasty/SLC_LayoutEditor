@@ -31,16 +31,21 @@ namespace SLC_LayoutEditor.ViewModel
 
         public MementoViewModel()
         {
+            history.HistoryChanging += History_HistoryChanging;
             history.HistoryChanged += History_Changed;
         }
 
-        protected virtual void History_Changed(object sender, EventArgs e)
+        protected virtual void History_HistoryChanging(object sender, EventArgs e)
+        {
+        }
+
+        protected virtual void History_Changed(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
         {
             InvokePropertyChanged(nameof(CanUndo));
-            InvokePropertyChanged(nameof(CanRedo));
             InvokePropertyChanged(nameof(UndoHistory));
-            InvokePropertyChanged(nameof(RedoHistory));
             InvokePropertyChanged(nameof(UndoSteps));
+            InvokePropertyChanged(nameof(CanRedo));
+            InvokePropertyChanged(nameof(RedoHistory));
             InvokePropertyChanged(nameof(RedoSteps));
         }
 

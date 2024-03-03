@@ -35,6 +35,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private CabinPathGrid pathGrid;
         private string currentHash;
+        private bool isIssueCheckingEnabled = true;
 
         public double Width { get; set; }
 
@@ -723,11 +724,21 @@ namespace SLC_LayoutEditor.Core.Cabin
             return FloorName;
         }
 
+        public void ToggleIssueChecking(bool isIssueCheckingEnabled)
+        {
+            this.isIssueCheckingEnabled = isIssueCheckingEnabled;
+
+            if (isIssueCheckingEnabled )
+            {
+                RefreshProblemChecks();
+            }
+        }
+
         public void RefreshProblemChecks()
         {
             string newHash = Util.GetSHA256Hash(ToFileString());
 
-            if (!IsRendered || currentHash != newHash)
+            if (isIssueCheckingEnabled && (!IsRendered || currentHash != newHash))
             {
                 RefreshPathGrid();
                 RefreshIssues();

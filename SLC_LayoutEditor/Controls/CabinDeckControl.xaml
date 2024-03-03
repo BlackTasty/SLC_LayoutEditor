@@ -89,7 +89,7 @@
             </StackPanel>
         </Grid>
     </Border>
-    <Grid Margin="24,8,0,0" >
+    <Grid Margin="24,8,0,0">
         <Image x:Name="deck_view"
                RenderOptions.BitmapScalingMode="NearestNeighbor"
                RenderOptions.EdgeMode="Aliased"

@@ -39,6 +39,12 @@ namespace SLC_LayoutEditor
         private static readonly string RESTORE_ICON = (string)App.Current.FindResource("WindowRestore");
 
         private UIElement root;
+
+        private Button undoButton;
+        private ContextMenu undoHistoryMenu;
+        private Button redoButton;
+        private ContextMenu redoHistoryMenu;
+
         private MainViewModel vm;
         private bool isClosing;
         private bool forceClose;
@@ -55,6 +61,7 @@ namespace SLC_LayoutEditor
 
             CheckCleanupFile();
             vm.ShowChangelogIfUpdated();
+            vm.HistoryChanged += HistoryChanged;
 
             Mediator.Instance.Register(o =>
             {
@@ -78,6 +85,40 @@ namespace SLC_LayoutEditor
             {
                 SetGuideAdorner(null);
             }, ViewModelMessage.GuideAdornerClosed);
+        }
+
+        private void HistoryChanged(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
+        {
+            if (e.IsClear)
+            {
+                redoHistoryMenu.Items.Clear();
+                undoHistoryMenu.Items.Clear();
+                return;
+            }
+
+            bool isUndo = !e.IsRecorded ? e.IsUndo : !e.IsUndo;
+            MoveEntries(e.PoppedHistory, e.IsRecorded ? e.IsUndo : !e.IsUndo,
+                isUndo ? undoHistoryMenu : redoHistoryMenu,
+                isUndo ? redoHistoryMenu : undoHistoryMenu);
+        }
+
+        private void MoveEntries(IEnumerable<CabinHistoryEntry> poppedHistory, bool isUndo, ContextMenu sourceHistory, ContextMenu targetHistory)
+        {
+            foreach (CabinHistoryEntry poppedEntry in poppedHistory)
+            {
+                if (GetMenuHistoryEntry(sourceHistory.Items, poppedEntry) is MenuItem targetItem)
+                {
+                    sourceHistory.Items.Remove(targetItem);
+                }
+
+                targetHistory.Items.Insert(0, GenerateHistoryItem(poppedEntry, isUndo));
+            }
+        }
+
+        private MenuItem GetMenuHistoryEntry(ItemCollection items, CabinHistoryEntry entry)
+        {
+            return items.OfType<MenuItem>().FirstOrDefault(x => x.DataContext is CabinHistoryEntry checkedEntry &&
+                checkedEntry.Guid == entry.Guid);
         }
 
         private void CheckCleanupFile()
@@ -382,14 +423,51 @@ namespace SLC_LayoutEditor
 #endif
         }
 
-        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        private void UndoButton_Loaded(object sender, RoutedEventArgs e)
         {
-
+            undoButton = sender as Button;
+            undoHistoryMenu = GenerateMenu(vm.History.UndoHistory.Stack, true);
+            undoButton.ContextMenu = undoHistoryMenu;
         }
 
-        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        private void RedoButton_Loaded(object sender, RoutedEventArgs e)
         {
+            redoButton = sender as Button;
+            redoHistoryMenu = GenerateMenu(vm.History.RedoHistory.Stack, false);
+            redoButton.ContextMenu = redoHistoryMenu;
+        }
 
+        private ContextMenu GenerateMenu(IEnumerable<CabinHistoryEntry> history, bool isUndo)
+        {
+            ContextMenu contextMenu = new ContextMenu();
+
+            foreach (CabinHistoryEntry historyEntry in history)
+            {
+                contextMenu.Items.Add(GenerateHistoryItem(historyEntry, isUndo));
+            }
+
+            return contextMenu;
+        }
+
+        private MenuItem GenerateHistoryItem(CabinHistoryEntry historyEntry, bool isUndo)
+        {
+            ICommand command;
+            if (isUndo)
+            {
+                command = vm.UndoUntilCommand;
+            }
+            else
+            {
+                command = vm.RedoUntilCommand;
+            }
+
+            return new MenuItem()
+            {
+                Header = historyEntry.Message,
+                DataContext = historyEntry,
+                Command = command,
+                CommandParameter = historyEntry
+            };
         }
     }
 }

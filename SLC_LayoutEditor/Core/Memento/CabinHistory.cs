@@ -37,9 +37,8 @@ namespace SLC_LayoutEditor.Core.Memento
 
             if (changedData.Count() > 0)
             {
-                undoHistory.Push(new CabinHistoryEntry(changedData, floor, CabinChangeCategory.SlotData, usedAutomationMode));
-
-                base.RecordChanges();
+                base.RecordChanges(new CabinHistoryEntry(changedData, floor, 
+                    CabinChangeCategory.SlotData, usedAutomationMode));
             }
         }
 
@@ -47,8 +46,8 @@ namespace SLC_LayoutEditor.Core.Memento
         {
             CabinChange change = new CabinChange(cabinDeckChangedEvent.TrueValue, cabinDeckChangedEvent.IsRemoving);
 
-            undoHistory.Push(new CabinHistoryEntry(change, cabinDeckChangedEvent.IsRemoving, cabinDeckChangedEvent.TrueValue.Floor));
-            base.RecordChanges();
+            base.RecordChanges(new CabinHistoryEntry(change, cabinDeckChangedEvent.IsRemoving, 
+                cabinDeckChangedEvent.TrueValue.Floor));
         }
 
         public void RecordChanges(CabinDeckSizeChangedEventArgs cabinDeckSizeChangedEvent)
@@ -57,9 +56,7 @@ namespace SLC_LayoutEditor.Core.Memento
 
             if (changedData.Count() > 0)
             {
-                undoHistory.Push(new CabinHistoryEntry(changedData, cabinDeckSizeChangedEvent));
-
-                base.RecordChanges();
+                base.RecordChanges(new CabinHistoryEntry(changedData, cabinDeckSizeChangedEvent));
             }
         }
 

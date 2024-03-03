@@ -26,6 +26,8 @@ namespace SLC_LayoutEditor.ViewModel
 {
     class MainViewModel : MementoViewModel
     {
+        public event EventHandler<HistoryChangedEventArgs<CabinHistoryEntry>> HistoryChanged;
+
         private Queue<IDialog> queuedDialogs = new Queue<IDialog>();
         private IDialog mDialog;
 
@@ -318,6 +320,21 @@ namespace SLC_LayoutEditor.ViewModel
             EditorViewModel.ActiveLayout.ApplyHistoryEntry(e.HistoryEntry, e.IsUndo);
         }
 
+        protected override void History_Changed(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
+        {
+            base.History_Changed(sender, e);
+            if (!e.IsClear)
+            {
+                EditorViewModel.ActiveLayout.ToggleIssueChecking(true);
+            }
+            OnHistoryChanged(e);
+        }
+
+        protected override void History_HistoryChanging(object sender, EventArgs e)
+        {
+            EditorViewModel.ActiveLayout.ToggleIssueChecking(false);
+        }
+
         public void ShowWelcomeScreen()
         {
             WelcomeScreen welcome = new WelcomeScreen();
@@ -465,6 +482,11 @@ namespace SLC_LayoutEditor.ViewModel
         {
             UpdateTourStepper();
             InvokePropertyChanged(nameof(IsTourRunning));
+        }
+
+        protected virtual void OnHistoryChanged(HistoryChangedEventArgs<CabinHistoryEntry> e)
+        {
+            HistoryChanged?.Invoke(this, e);
         }
     }
 }

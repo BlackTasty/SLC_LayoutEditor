@@ -28,7 +28,8 @@ namespace SLC_LayoutEditor.Core.Memento
         protected History() { }
         #endregion
 
-        public event EventHandler<EventArgs> HistoryChanged;
+        public event EventHandler<HistoryChangedEventArgs<T>> HistoryChanged;
+        public event EventHandler<EventArgs> HistoryChanging;
         public event EventHandler<HistoryApplyingEventArgs<T>> HistoryApplying;
 
         protected readonly HistoryStack<T> undoHistory = new HistoryStack<T>();
@@ -44,8 +45,10 @@ namespace SLC_LayoutEditor.Core.Memento
 
         public bool IsRecording { get; set; } = true;
 
-        protected void RecordChanges()
+        protected void RecordChanges(T recordedUndoStep)
         {
+            undoHistory.Push(recordedUndoStep);
+
             if (!IsRecording)
             {
                 return;
@@ -56,29 +59,56 @@ namespace SLC_LayoutEditor.Core.Memento
                 redoHistory.Clear();
                 InvokePropertyChanged(nameof(CanRedo));
             }
-            OnHistoryChanged(EventArgs.Empty);
+            OnHistoryChanged(new HistoryChangedEventArgs<T>(recordedUndoStep, true, true));
         }
 
         public T Undo()
         {
-            return ShiftStep(undoHistory, redoHistory, true);
+            return Undo(true);
+        }
+
+        private T Undo(bool fireEvent)
+        {
+            T historyStep = ShiftStep(undoHistory, redoHistory, true);
+            if (fireEvent)
+            {
+                OnHistoryChanged(new HistoryChangedEventArgs<T>(historyStep, true));
+            }
+            return historyStep;
         }
 
         public T Redo()
         {
-            return ShiftStep(redoHistory, undoHistory, false);
+            return Redo(true);
+        }
+
+        private T Redo(bool fireEvent)
+        {
+            T historyStep = ShiftStep(redoHistory, undoHistory, false);
+            if (fireEvent)
+            {
+                OnHistoryChanged(new HistoryChangedEventArgs<T>(historyStep, false));
+            }
+            return historyStep;
         }
 
         public T UndoUntil(T target)
         {
             if (undoHistory.Contains(target))
             {
-                T shiftedStep = Undo();
+                OnHistoryChanging(EventArgs.Empty);
+                T shiftedStep = Undo(false);
+                List<T> poppedSteps = new List<T>()
+                {
+                    shiftedStep
+                };
                 while (shiftedStep.Guid != target.Guid)
                 {
-                    shiftedStep = Undo();
+                    shiftedStep = Undo(false);
+                    poppedSteps.Add(shiftedStep);
                 }
 
+                OnHistoryChanged(new HistoryChangedEventArgs<T>(poppedSteps, true));
                 return shiftedStep;
             }
 
@@ -89,12 +119,19 @@ namespace SLC_LayoutEditor.Core.Memento
         {
             if (redoHistory.Contains(target))
             {
-                T shiftedStep = Redo();
+                OnHistoryChanging(EventArgs.Empty);
+                T shiftedStep = Redo(false);
+                List<T> poppedSteps = new List<T>()
+                {
+                    shiftedStep
+                };
                 while (shiftedStep.Guid != target.Guid)
                 {
-                    shiftedStep = Redo();
+                    shiftedStep = Redo(false);
+                    poppedSteps.Add(shiftedStep);
                 }
 
+                OnHistoryChanged(new HistoryChangedEventArgs<T>(poppedSteps, false));
                 return shiftedStep;
             }
 
@@ -107,7 +144,7 @@ namespace SLC_LayoutEditor.Core.Memento
             redoHistory.Clear();
             InvokePropertyChanged(nameof(CanRedo));
             InvokePropertyChanged(nameof(CanUndo));
-            OnHistoryChanged(EventArgs.Empty);
+            OnHistoryChanged(new HistoryChangedEventArgs<T>());
         }
 
         private T ShiftStep(HistoryStack<T> from, HistoryStack<T> to, bool isUndo)
@@ -124,14 +161,18 @@ namespace SLC_LayoutEditor.Core.Memento
             InvokePropertyChanged(nameof(UndoHistory));
             InvokePropertyChanged(nameof(RedoHistory));
 
-            OnHistoryChanged(EventArgs.Empty);
             OnHistoryApplying(new HistoryApplyingEventArgs<T>(historyStep, isUndo));
             return historyStep;
         }
 
-        protected virtual void OnHistoryChanged(EventArgs e)
+        protected virtual void OnHistoryChanged(HistoryChangedEventArgs<T> e)
         {
             HistoryChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnHistoryChanging(EventArgs e)
+        {
+            HistoryChanging?.Invoke(this, e);
         }
 
         protected virtual void OnHistoryApplying(HistoryApplyingEventArgs<T> e)

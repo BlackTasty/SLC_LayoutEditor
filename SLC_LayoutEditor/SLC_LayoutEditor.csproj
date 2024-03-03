@@ -148,6 +148,7 @@
     <Compile Include="Converter\EnumInRangeConverter.cs" />
     <Compile Include="Converter\EqualsToVisibilityConverter.cs" />
     <Compile Include="Converter\GreaterThanConverter.cs" />
+    <Compile Include="Converter\HistoryStepDataConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\ModifyNumberConverter.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
     <Compile Include="Core\Memento\HistoryApplyingEventArgs.cs" />
+    <Compile Include="Core\Memento\HistoryChangedEventArgs.cs" />
     <Compile Include="Core\Memento\HistoryStack.cs" />
     <Compile Include="Core\Memento\HistoryEntry.cs" />
     <Compile Include="Core\Memento\IChange.cs" />
