@@ -2,6 +2,7 @@
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
@@ -22,6 +23,7 @@ using System.Windows.Threading;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ScrollBar;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace SLC_LayoutEditor.Core.Cabin.Renderer
 {
@@ -99,7 +101,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         public event EventHandler<EventArgs> ChangeTooltip;
         public event EventHandler<EventArgs> CloseTooltip;
         public event EventHandler<SelectedSlotsChangedEventArgs> SelectedSlotsChanged;
-        public event EventHandler<EventArgs> SizeChanged;
+        public event EventHandler<CabinDeckSizeChangedEventArgs> SizeChanged;
 
         private CabinDeck cabinDeck;
         private WriteableBitmap output;
@@ -133,6 +135,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         public void SetCabinDeck(CabinDeck cabinDeck)
         {
             this.cabinDeck = cabinDeck;
+            cabinDeck.RowColumnChangeApplying += CabinDeck_RowColumnChangeApplying;
             RenderCabinDeck();
         }
 
@@ -248,13 +251,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 // Draw add row/column buttons to top left
                 buttonHitResults.Add(DrawTriangleButton(context, null, false, true, "row-add", "Add row", int.MaxValue, -1));
                 buttonHitResults.Add(DrawTriangleButton(context, null, false, false, "column-add", "Add column", -1, int.MaxValue));
-
-                /*
-                // Draw vertical divider
-                DrawSplitterLine(context, height, false);
-
-                // Draw horizontal divider
-                DrawSplitterLine(context, width, true);*/
             }
 
             UpdateSlotAreaRect(width, height);
@@ -523,7 +519,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                     }
 
                                     insertDialog.DialogClosing += InsertRowColumn_DialogClosing;
-                                    Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, insertDialog);
+                                    insertDialog.ShowDialog();
                                 }
                                 break;
                             case ButtonActionType.REMOVE:
@@ -545,7 +541,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                 }
 
                                 removeDialog.DialogClosing += RemoveRowColumn_DialogClosing;
-                                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, removeDialog);
+                                removeDialog.ShowDialog();
                                 break;
                         }
                     }
@@ -581,9 +577,10 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
         }
 
-        private void CreateRowColumn(bool isAddingColumn, int targetRowColumn)
+        public void CreateRowColumn(bool isAddingColumn, int targetRowColumn, 
+            IEnumerable<CabinChange> changes = null, bool isUndo = false, bool createHistoryStep = true)
         {
-            // Adjust row/column value for each affected cabin slot
+            // Adjust row/column data for each affected cabin slot
             for (int currentRowColumn = isAddingColumn ? cabinDeck.Columns : cabinDeck.Rows; currentRowColumn >= targetRowColumn; currentRowColumn--)
             {
                 Func<SlotHitResult, bool> insertCondition = (x => (isAddingColumn ? x.Column : x.Row) == currentRowColumn);
@@ -593,10 +590,21 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 }
             }
 
+            List<CabinSlot> affectedSlots = new List<CabinSlot>();
             // Generate new cabin slots at the target row/column
             for (int rowColumn = 0; rowColumn <= (!isAddingColumn ? cabinDeck.Columns : cabinDeck.Rows); rowColumn++)
             {
                 CabinSlot cabinSlot = new CabinSlot(!isAddingColumn ? targetRowColumn : rowColumn, isAddingColumn ? targetRowColumn : rowColumn);
+                if (changes?.FirstOrDefault(x => x.Row == cabinSlot.Row && x.Column == cabinSlot.Column) is CabinChange change)
+                {
+                    cabinSlot.ApplyHistoryChange(change, isUndo);
+                }
+
+                if (changes == null)
+                {
+                    cabinSlot.CollectForHistory = true;
+                }
+                affectedSlots.Add(cabinSlot);
                 cabinSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
                 cabinSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
                 cabinDeck.AddCabinSlot(cabinSlot);
@@ -648,7 +656,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             RedrawTriangleButton(removeButtonHitResult, false, false, insertButtonHitResult);
             #endregion
 
-            OnSizeChanged(EventArgs.Empty);
+            OnSizeChanged(new CabinDeckSizeChangedEventArgs(affectedSlots, cabinDeck.Floor, true, targetRowColumn, !isAddingColumn, createHistoryStep));
         }
 
         private void RemoveRowColumn_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -661,47 +669,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 {
                     if (int.TryParse(hitResult.Tag.Split('-')[1], out int targetRowColumn))
                     {
-                        int currentRowColumnCount = isColumnRemoval ? cabinDeck.Columns : cabinDeck.Rows;
-                        Func<IHitResult, bool> lastRowColumnCondition = (x => (isColumnRemoval ? x.Column : x.Row) == currentRowColumnCount);
-                        Func<IHitResult, bool> removalCondition = (x => (isColumnRemoval ? x.Column : x.Row) == targetRowColumn);
-
-                        foreach (ButtonHitResult buttonHitResult in buttonHitResults.Where(lastRowColumnCondition).ToList())
-                        {
-                            buttonHitResult.IsRemoved = true;
-                            buttonHitResults.Remove(buttonHitResult);
-                        }
-                        //buttonHitResults.RemoveWhere(lastRowColumnCondition);
-                        if (targetRowColumn == currentRowColumnCount)
-                        {
-                            lastMouseDownHitResult = null;
-                            lastMouseOverHitResult = null;
-                        }
-
-                        foreach (SlotHitResult slotHitResult in slotHitResults.Where(removalCondition).ToList())
-                        {
-                            slotHitResult.IsRemoved = true;
-                            slotHitResult.CabinSlot.CabinSlotChanged -= TargetSlot_CabinSlotChanged;
-                            slotHitResult.CabinSlot.ProblematicChanged -= TargetSlot_CabinSlotChanged;
-                            cabinDeck.RemoveCabinSlot(slotHitResult.CabinSlot);
-                            slotHitResults.Remove(slotHitResult);
-                        }
-
-                        for (int rowColumn = targetRowColumn + 1; rowColumn <= currentRowColumnCount; rowColumn++)
-                        {
-                            Func<SlotHitResult, bool> updateCondition = (x => (isColumnRemoval ? x.Column : x.Row) == rowColumn);
-
-                            foreach (SlotHitResult slotHitResult in slotHitResults.Where(updateCondition))
-                            {
-                                slotHitResult.UpdateRowColumn(isColumnRemoval ? slotHitResult.Row : rowColumn - 1, !isColumnRemoval ? slotHitResult.Column : rowColumn - 1);
-
-                                RedrawCabinSlot(slotHitResult.CabinSlot, false);
-                            }
-                        }
-
-                        UpdateBitmapSize(true, !isColumnRemoval);
-                        OnSizeChanged(EventArgs.Empty);
-
-                        Logger.Default.WriteLog("{0} {1} removed!", isColumnRemoval ? "Column" : "Row", targetRowColumn);
+                        RemoveRowColumn(targetRowColumn, isColumnRemoval);
                     }
                 }
                 else
@@ -709,6 +677,54 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     Logger.Default.WriteLog("{0} removal aborted by user", isColumnRemoval ? "Column" : "Row");
                 }
             }
+        }
+
+        public void RemoveRowColumn(int targetRowColumn, bool isColumnRemoval, bool createHistoryStep = true)
+        {
+            int currentRowColumnCount = isColumnRemoval ? cabinDeck.Columns : cabinDeck.Rows;
+            Func<IHitResult, bool> lastRowColumnCondition = (x => (isColumnRemoval ? x.Column : x.Row) == currentRowColumnCount);
+            Func<IHitResult, bool> removalCondition = (x => (isColumnRemoval ? x.Column : x.Row) == targetRowColumn);
+
+            foreach (ButtonHitResult buttonHitResult in buttonHitResults.Where(lastRowColumnCondition).ToList())
+            {
+                buttonHitResult.IsRemoved = true;
+                buttonHitResults.Remove(buttonHitResult);
+            }
+            //buttonHitResults.RemoveWhere(lastRowColumnCondition);
+            if (targetRowColumn == currentRowColumnCount)
+            {
+                lastMouseDownHitResult = null;
+                lastMouseOverHitResult = null;
+            }
+
+            List<CabinSlot> affectedSlots = new List<CabinSlot>();
+            foreach (SlotHitResult slotHitResult in slotHitResults.Where(removalCondition).ToList())
+            {
+                slotHitResult.IsRemoved = true;
+                slotHitResult.CabinSlot.CabinSlotChanged -= TargetSlot_CabinSlotChanged;
+                slotHitResult.CabinSlot.ProblematicChanged -= TargetSlot_CabinSlotChanged;
+                cabinDeck.RemoveCabinSlot(slotHitResult.CabinSlot);
+                slotHitResults.Remove(slotHitResult);
+                slotHitResult.CabinSlot.CollectForHistory = true;
+                affectedSlots.Add(slotHitResult.CabinSlot);
+            }
+
+            for (int rowColumn = targetRowColumn + 1; rowColumn <= currentRowColumnCount; rowColumn++)
+            {
+                Func<SlotHitResult, bool> updateCondition = (x => (isColumnRemoval ? x.Column : x.Row) == rowColumn);
+
+                foreach (SlotHitResult slotHitResult in slotHitResults.Where(updateCondition))
+                {
+                    slotHitResult.UpdateRowColumn(isColumnRemoval ? slotHitResult.Row : rowColumn - 1, !isColumnRemoval ? slotHitResult.Column : rowColumn - 1);
+
+                    RedrawCabinSlot(slotHitResult.CabinSlot, false);
+                }
+            }
+
+            UpdateBitmapSize(true, !isColumnRemoval);
+            OnSizeChanged(new CabinDeckSizeChangedEventArgs(affectedSlots, cabinDeck.Floor, false, targetRowColumn, !isColumnRemoval, createHistoryStep));
+
+            Logger.Default.WriteLog("{0} {1} removed!", isColumnRemoval ? "Column" : "Row", targetRowColumn);
         }
 
         private Size UpdateBitmapSize(bool excludeBaseMargin = false, bool? refreshWidth = null)
@@ -1329,6 +1345,20 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
         }
 
+        private void CabinDeck_RowColumnChangeApplying(object sender, RowColumnChangeApplyingEventArgs e)
+        {
+            bool isRemoval = e.IsUndo ? !e.HistoryEntry.IsRemoved : e.HistoryEntry.IsRemoved;
+
+            if (isRemoval)
+            {
+                RemoveRowColumn(e.HistoryEntry.TargetRowColumn, !e.HistoryEntry.IsRowAffected, false);
+            }
+            else
+            {
+                CreateRowColumn(!e.HistoryEntry.IsRowAffected, e.HistoryEntry.TargetRowColumn, e.HistoryEntry.Changes, e.IsUndo, false);
+            }
+        }
+
         protected virtual void OnChangeTooltip(EventArgs e)
         {
             ChangeTooltip?.Invoke(this, e);
@@ -1344,7 +1374,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             SelectedSlotsChanged?.Invoke(this, e);
         }
 
-        protected virtual void OnSizeChanged(EventArgs e)
+        protected virtual void OnSizeChanged(CabinDeckSizeChangedEventArgs e)
         {
             SizeChanged?.Invoke(this, e);
         }

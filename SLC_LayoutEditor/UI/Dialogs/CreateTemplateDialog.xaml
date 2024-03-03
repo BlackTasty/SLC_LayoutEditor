@@ -1,15 +1,16 @@
-﻿<DockPanel x:Class="SLC_LayoutEditor.UI.Dialogs.CreateTemplateDialog"
+﻿<local:DialogBase x:Class="SLC_LayoutEditor.UI.Dialogs.CreateTemplateDialog"
            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
            mc:Ignorable="d" 
            Height="170" Width="300" LastChildFill="False"
            Loaded="DockPanel_Loaded">
-    <DockPanel.DataContext>
+    <local:DialogBase.DataContext>
         <vm:CreateTemplateDialogViewModel/>
-    </DockPanel.DataContext>
+    </local:DialogBase.DataContext>
     <TextBlock DockPanel.Dock="Top" Text="Create a new template" Margin="4"
                Style="{StaticResource Title1TextStyle}"/>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Template name"/>
@@ -24,4 +25,4 @@
         <Button Content="Cancel" Width="80" Margin="8" Click="Cancel_Click"
                 Style="{StaticResource YellowButtonStyle}"/>
     </StackPanel>
-</DockPanel>
+</local:DialogBase>

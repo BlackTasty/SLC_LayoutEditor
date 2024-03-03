@@ -68,6 +68,8 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<TemplateCreatedEventArgs> TemplateCreated;
         public event EventHandler<SelectedDeckChangedEventArgs> SelectedDeckChanged;
 
+        public event EventHandler<CabinDeckChangedEventArgs> CabinDeckChanged;
+
         private CabinDeck currentRemoveTarget;
 
         private CabinDeckControl selectedDeck;
@@ -90,9 +92,9 @@ namespace SLC_LayoutEditor.Controls
             {
                 CabinLayout oldLayout = e.OldValue as CabinLayout;
                 CabinLayout newLayout = e.NewValue as CabinLayout;
-                Logger.Default.WriteLog("Layout has changed for UI. Old value: {0}; New value: {1}", 
+                Logger.Default.WriteLog("Layout has changed for UI. Old data: {0}; New data: {1}", 
                     GetCabinLayoutValueForLog(oldLayout), GetCabinLayoutValueForLog(newLayout));
-                control.RefreshCabinLayout();
+                control.RefreshCabinLayout(true);
             }
         }
 
@@ -261,7 +263,7 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
-        private void RefreshCabinLayout()
+        private void RefreshCabinLayout(bool hookCabinLayoutEvents)
         {
             OnLayoutLoading(EventArgs.Empty);
 
@@ -282,8 +284,11 @@ namespace SLC_LayoutEditor.Controls
             if (CabinLayout != null)
             {
                 Logger.Default.WriteLog("Refreshing view for {0} \"{1}\"...", CabinLayout.IsTemplate ? "template" : "layout", CabinLayout.LayoutName);
-                CabinLayout.CabinSlotsChanged += CabinLayout_CabinSlotsChanged;
-                CabinLayout.CabinDeckCountChanged += CabinLayout_CabinDeckCountChanged;
+                if (hookCabinLayoutEvents)
+                {
+                    CabinLayout.CabinSlotsChanged += CabinLayout_CabinSlotsChanged;
+                    CabinLayout.CabinDeckCountChanged += CabinLayout_CabinDeckCountChanged;
+                }
 
                 foreach (CabinDeck cabinDeck in CabinLayout.CabinDecks)
                 {
@@ -342,8 +347,27 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
-        private void CabinLayout_CabinDeckCountChanged(object sender, EventArgs e)
+        private void CabinLayout_CabinDeckCountChanged(object sender, CabinDeckChangedEventArgs e)
         {
+            if (e.IsRemoving)
+            {
+                if (container_decks.Children.OfType<CabinDeckControl>()
+                        .FirstOrDefault(x => x.CabinDeck.Floor == e.TrueValue.Floor) is CabinDeckControl targetControl)
+                {
+                    targetControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
+                    targetControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
+                    targetControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
+                    targetControl.DeckRendered -= CabinDeckControl_DeckRendered;
+                    container_decks.Children.Remove(targetControl);
+                }
+            }
+            else
+            {
+                e.TrueValue.ThumbnailDirectory = CabinLayout.ThumbnailDirectory;
+
+                AddCabinDeckToUI(e.TrueValue);
+            }
+
             RefreshState();
         }
 
@@ -367,33 +391,29 @@ namespace SLC_LayoutEditor.Controls
         private void CabinDeckControl_RemoveDeckClicked(object sender, RemoveCabinDeckEventArgs e)
         {
             ConfirmationDialog dialog = new ConfirmationDialog("Confirm deletion",
-                "Are you sure you want to delete this deck? This action cannot be undone!", DialogType.YesNo);
+                "Are you sure you want to delete this deck? This action can be undone by pressing Ctrl+Z or using the \"Undo\" button in the title bar.", DialogType.YesNo);
             currentRemoveTarget = e.Target;
 
             dialog.DialogClosing += ConfirmRemoveDeck_DialogClosing;
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void ConfirmRemoveDeck_DialogClosing(object sender, DialogClosingEventArgs e)
         {
             if (e.DialogResult == DialogResultType.Yes)
             {
+                OnCabinDeckChanged(new CabinDeckChangedEventArgs(currentRemoveTarget, true));
                 CabinLayout.RemoveCabinDeck(currentRemoveTarget);
                 CabinLayout.RefreshData();
-
-                if (container_decks.Children.OfType<CabinDeckControl>()
-                        .FirstOrDefault(x => x.CabinDeck.Floor == currentRemoveTarget.Floor) is CabinDeckControl targetControl)
-                {
-                    targetControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
-                    targetControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
-                    targetControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
-                    targetControl.DeckRendered += CabinDeckControl_DeckRendered;
-                    container_decks.Children.Remove(targetControl);
-                }
             }
 
             currentRemoveTarget = null;
+        }
+
+        protected virtual void OnCabinDeckChanged(CabinDeckChangedEventArgs e)
+        {
+            CabinDeckChanged?.Invoke(this, e);
         }
 
         /*private void CabinDeckControl_LayoutLoading(object sender, EventArgs e)
@@ -411,22 +431,8 @@ namespace SLC_LayoutEditor.Controls
                 ConfirmationDialog dialog = new ConfirmationDialog("Match existing layout?",
                     "Should the new deck have matching rows and columns?", DialogType.YesNoCancel);
 
-                dialog.DialogClosing += delegate (object _sender, DialogClosingEventArgs _e) {
-                    if (_e.DialogResult == DialogResultType.No)
-                    {
-                        CreateCabinDeck(rows, columns);
-                    }
-                    else if (_e.DialogResult == DialogResultType.Yes)
-                    {
-                        CabinDeck lastDeck = CabinLayout.CabinDecks.LastOrDefault();
-                        rows = lastDeck.Rows + 1;
-                        columns = lastDeck.Columns + 1;
-
-                        CreateCabinDeck(rows, columns);
-                    }
-                };
-
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                dialog.DialogClosing += CreateDeck_DialogClosing;
+                dialog.ShowDialog();
             }
             else
             {
@@ -434,14 +440,31 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
+        private void CreateDeck_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            int rows = 1;
+            int columns = 1;
+
+            if (e.DialogResult == DialogResultType.No)
+            {
+                CreateCabinDeck(rows, columns);
+            }
+            else if (e.DialogResult == DialogResultType.Yes)
+            {
+                CabinDeck lastDeck = CabinLayout.CabinDecks.LastOrDefault();
+                rows = lastDeck.Rows + 1;
+                columns = lastDeck.Columns + 1;
+
+                CreateCabinDeck(rows, columns);
+            }
+        }
+
         private void CreateCabinDeck(int rows, int columns)
         {
             CabinDeck createdDeck = CabinLayout.AddCabinDeck(new CabinDeck(CabinLayout.CabinDecks.Count + 1, rows, columns));
-            createdDeck.ThumbnailDirectory = CabinLayout.ThumbnailDirectory;
-
-            AddCabinDeckToUI(createdDeck);
 
             CabinLayout.RefreshData();
+            OnCabinDeckChanged(new CabinDeckChangedEventArgs(createdDeck, false));
         }
 
         private void ReloadLayout_Click(object sender, RoutedEventArgs e)
@@ -458,7 +481,7 @@ namespace SLC_LayoutEditor.Controls
 
                 dialog.DialogClosing += ReloadDeck_DialogClosing;
 
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                dialog.ShowDialog();
             }
             else
             {
@@ -479,7 +502,7 @@ namespace SLC_LayoutEditor.Controls
             SelectedCabinSlots.Clear();
             selectedDeck?.SelectSlots(SelectedCabinSlots);
             CabinLayout.LoadCabinLayoutFromFile(true);
-            RefreshCabinLayout();
+            RefreshCabinLayout(false);
             OnLayoutReloaded(EventArgs.Empty);
         }
 
@@ -517,7 +540,7 @@ namespace SLC_LayoutEditor.Controls
             MakeTemplateDialog dialog = new MakeTemplateDialog(existingTemplates, cabinLayout.LayoutName + " - Template", cabinLayout);
             dialog.DialogClosing += MakeTemplate_DialogClosing;
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void MakeTemplate_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -589,7 +612,7 @@ namespace SLC_LayoutEditor.Controls
                 DialogType.YesNo);
 
             dialog.DialogClosing += DeleteLayout_DialogClosing;
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void DeleteLayout_DialogClosing(object sender, DialogClosingEventArgs e)

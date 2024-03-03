@@ -11,10 +11,8 @@ namespace SLC_LayoutEditor.UI.Dialogs
     /// <summary>
     /// Interaction logic for ChangelogDialog.xaml
     /// </summary>
-    public partial class ChangelogDialog : DockPanel, IDialog
+    public partial class ChangelogDialog : DialogBase
     {
-        public event EventHandler<DialogClosingEventArgs> DialogClosing;
-
         private bool oldShowState;
 
         public ChangelogDialog()
@@ -33,16 +31,17 @@ namespace SLC_LayoutEditor.UI.Dialogs
             CancelDialog();
         }
 
-        protected virtual void OnDialogClosing(DialogClosingEventArgs e)
+        protected override void OnDialogClosing(DialogClosingEventArgs e)
         {
             if (App.Settings.ShowChangesAfterUpdate != oldShowState)
             {
                 App.SaveAppSettings();
             }
-            DialogClosing?.Invoke(this, e);
+
+            CloseDialog(DialogResultType.OK);
         }
 
-        public void CancelDialog()
+        public override void CancelDialog()
         {
             OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK));
         }

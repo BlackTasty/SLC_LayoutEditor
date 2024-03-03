@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
-    class HistoryStack<T>
+    class HistoryStack<T> where T : IHistorical
     {
         private readonly List<T> stack;
-        private int capacity = 30;
+        private int capacity = 300;
+
+        public List<T> Stack => stack;
 
         public int Capacity { get => capacity; set => capacity = value; }
 
@@ -74,6 +76,18 @@ namespace SLC_LayoutEditor.Core.Memento
             {
                 stack.RemoveRange(capacity, Count - capacity);
             }
+        }
+
+        public IEnumerable<string> GetMessages()
+        {
+            List<string> messages = new List<string>();
+
+            foreach (T item in stack)
+            {
+                messages.Add(item.Message);
+            }
+
+            return messages;
         }
     }
 }

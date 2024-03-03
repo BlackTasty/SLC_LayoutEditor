@@ -13,10 +13,8 @@ namespace SLC_LayoutEditor.UI.Dialogs
     /// <summary>
     /// Interaction logic for CreateCabinLayoutDialog.xaml
     /// </summary>
-    public partial class CreateCabinLayoutDialog : DockPanel, IDialog
+    public partial class CreateCabinLayoutDialog : CreateDialogBase
     {
-        public event EventHandler<DialogClosingEventArgs> DialogClosing;
-
         private readonly CreateCabinLayoutDialogViewModel vm;
 
         public CreateCabinLayoutDialog(IEnumerable<string> existingCabinLayouts, IEnumerable<TemplatePreview> templates, bool isTemplate, bool isSaveAs = false)
@@ -47,16 +45,6 @@ namespace SLC_LayoutEditor.UI.Dialogs
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             CancelDialog();
-        }
-
-        protected virtual void OnDialogClosing(DialogClosingEventArgs e)
-        {
-            DialogClosing?.Invoke(this, e);
-        }
-
-        public void CancelDialog()
-        {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, new AddDialogResult(false)));
         }
 
         private void DockPanel_Loaded(object sender, RoutedEventArgs e)

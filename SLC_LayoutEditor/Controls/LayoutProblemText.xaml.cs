@@ -254,7 +254,7 @@ namespace SLC_LayoutEditor.Controls
                 }
             };
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         protected virtual void OnAutoFixApplying(AutoFixApplyingEventArgs e)

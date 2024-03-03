@@ -2,6 +2,7 @@
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -140,6 +141,7 @@ namespace SLC_LayoutEditor.Controls
                         App.GuidedTour.ContinueTour(true);
                     }
                 }
+
             }
         }
 

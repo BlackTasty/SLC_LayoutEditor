@@ -8,7 +8,7 @@ namespace SLC_LayoutEditor.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            //value == actual width
+            //data == actual width
             return (double)value / 2;
         }
 

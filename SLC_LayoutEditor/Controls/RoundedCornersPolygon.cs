@@ -31,7 +31,7 @@ namespace SLC_LayoutEditor.Controls
 
         private bool _isClosed;
         /// <summary>
-        /// Gets or sets a value that specifies if the polygon will be closed or not.
+        /// Gets or sets a data that specifies if the polygon will be closed or not.
         /// </summary>
         public bool IsClosed
         {
@@ -48,7 +48,7 @@ namespace SLC_LayoutEditor.Controls
 
         private bool _useRoundnessPercentage;
         /// <summary>
-        /// Gets or sets a value that specifies if the ArcRoundness property value will be used as a percentage of the connecting segment or not.
+        /// Gets or sets a data that specifies if the ArcRoundness property data will be used as a percentage of the connecting segment or not.
         /// </summary>
         public bool UseRoundnessPercentage
         {
@@ -65,7 +65,7 @@ namespace SLC_LayoutEditor.Controls
 
         private double _arcRoundness;
         /// <summary>
-        /// Gets or sets a value that specifies the arc roundness.
+        /// Gets or sets a data that specifies the arc roundness.
         /// </summary>
         public double ArcRoundness
         {
@@ -217,7 +217,7 @@ namespace SLC_LayoutEditor.Controls
         /// <param name="p2">Second point, the common point</param>
         /// <param name="p3">Third point, the second point of the second segment</param>
         /// <param name="roundness">The roundness of the arc</param>
-        /// <param name="usePercentage">A value that indicates if the roundness of the arc will be used as a percentage or not</param>
+        /// <param name="usePercentage">A data that indicates if the roundness of the arc will be used as a percentage or not</param>
         private static void ConnectLinePoints(PathFigure pathFigure, Point p1, Point p2, Point p3, double roundness, bool usePercentage)
         {
             //The point on the first segment where the curve will start.
@@ -252,7 +252,7 @@ namespace SLC_LayoutEditor.Controls
         /// <param name="p1">First point of the segment</param>
         /// <param name="p2">Second point of the segment</param>
         /// <param name="distancePercent">Distance percent to the point</param>
-        /// <param name="firstPoint">A value that indicates if the distance is calculated by the first or the second point</param>
+        /// <param name="firstPoint">A data that indicates if the distance is calculated by the first or the second point</param>
         /// <returns></returns>
         private static Point GetPointAtDistancePercent(Point p1, Point p2, double distancePercent, bool firstPoint)
         {
@@ -266,7 +266,7 @@ namespace SLC_LayoutEditor.Controls
         /// <param name="p1">First point of the segment</param>
         /// <param name="p2">Second point of the segment</param>
         /// <param name="distance">Distance  to the point</param>
-        /// <param name="firstPoint">A value that indicates if the distance is calculated by the first or the second point</param>
+        /// <param name="firstPoint">A data that indicates if the distance is calculated by the first or the second point</param>
         /// <returns>The point calculated.</returns>
         private static Point GetPointAtDistance(Point p1, Point p2, double distance, bool firstPoint)
         {

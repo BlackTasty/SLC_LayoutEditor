@@ -9,5 +9,17 @@ namespace SLC_LayoutEditor.ViewModel.Commands
 {
     internal class UndoCommand : CommandBase
     {
+        public override bool CanExecute(object parameter)
+        {
+            return parameter is MainViewModel;
+        }
+
+        public override void Execute(object parameter)
+        {
+            if (parameter is MainViewModel vm && vm.History.CanUndo)
+            {
+                vm.History.Undo();
+            }
+        }
     }
 }

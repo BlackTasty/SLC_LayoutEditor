@@ -3,6 +3,7 @@ using SLC_LayoutEditor.Controls;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.UI.Dialogs;
@@ -25,6 +26,8 @@ namespace SLC_LayoutEditor.ViewModel
 {
     class MainViewModel : MementoViewModel
     {
+        public event EventHandler<HistoryChangedEventArgs<CabinHistoryEntry>> HistoryChanged;
+
         private Queue<IDialog> queuedDialogs = new Queue<IDialog>();
         private IDialog mDialog;
 
@@ -63,6 +66,14 @@ namespace SLC_LayoutEditor.ViewModel
         public ShowKeybindsWindowCommand ShowKeybindsWindowCommand => CommandInterface.ShowKeybindsWindowCommand;
 
         public CancelDialogCommand CancelDialogCommand => CommandInterface.CancelDialogCommand;
+
+        public UndoCommand UndoCommand => CommandInterface.UndoCommand;
+
+        public RedoCommand RedoCommand => CommandInterface.RedoCommand;
+
+        public UndoUntilCommand UndoUntilCommand => CommandInterface.UndoUntilCommand;
+
+        public RedoUntilCommand RedoUntilCommand => CommandInterface.RedoUntilCommand;
 
         #region Slot type commands
         public SlotTypeAisleCommand SlotTypeAisleCommand => CommandInterface.SlotTypeAisleCommand;
@@ -232,6 +243,8 @@ namespace SLC_LayoutEditor.ViewModel
 
         public LayoutEditorViewModel EditorViewModel => editor != null ? editor.DataContext as LayoutEditorViewModel : null;
 
+        public bool IsLayoutOpened => EditorViewModel?.ActiveLayout != null;
+
         public CabinDeckControl SelectedDeck
         {
             get => mSelectedDeck;
@@ -277,6 +290,7 @@ namespace SLC_LayoutEditor.ViewModel
                 mContent = GetEditor();
             }
 
+            History.HistoryApplying += History_HistoryApplying;
 
             Mediator.Instance.Register(o =>
             {
@@ -299,6 +313,26 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 IsSearching = (bool)o;
             }, ViewModelMessage.Patcher_IsSearchingChanged);
+        }
+
+        private void History_HistoryApplying(object sender, HistoryApplyingEventArgs<CabinHistoryEntry> e)
+        {
+            EditorViewModel.ActiveLayout.ApplyHistoryEntry(e.HistoryEntry, e.IsUndo);
+        }
+
+        protected override void History_Changed(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
+        {
+            base.History_Changed(sender, e);
+            if (!e.IsClear)
+            {
+                EditorViewModel.ActiveLayout.ToggleIssueChecking(true);
+            }
+            OnHistoryChanged(e);
+        }
+
+        protected override void History_HistoryChanging(object sender, EventArgs e)
+        {
+            EditorViewModel.ActiveLayout.ToggleIssueChecking(false);
         }
 
         public void ShowWelcomeScreen()
@@ -369,6 +403,13 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(nameof(IsNotLatestTourStep));
         }
 
+        private void CheckForSnapshots()
+        {
+            List<CabinLayout> snapshots = new List<CabinLayout>();
+
+            
+        }
+
         private LayoutEditor GetEditor()
         {
             if (this.editor != null)
@@ -433,12 +474,19 @@ namespace SLC_LayoutEditor.ViewModel
         {
             CabinLayoutName = e.CabinLayoutName;
             IsTemplate = e.IsTemplate;
+            InvokePropertyChanged(nameof(IsLayoutOpened));
+            History.Clear();
         }
 
         private void Editor_TourRunningStateChanged(object sender, EventArgs e)
         {
             UpdateTourStepper();
             InvokePropertyChanged(nameof(IsTourRunning));
+        }
+
+        protected virtual void OnHistoryChanged(HistoryChangedEventArgs<CabinHistoryEntry> e)
+        {
+            HistoryChanged?.Invoke(this, e);
         }
     }
 }

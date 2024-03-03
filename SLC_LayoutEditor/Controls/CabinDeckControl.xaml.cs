@@ -4,6 +4,7 @@ using SLC_LayoutEditor.Core.Cabin.Renderer;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
@@ -64,10 +65,10 @@ namespace SLC_LayoutEditor.Controls
 
         private static FrameworkPropertyMetadata cabinDeckMetadata =
                 new FrameworkPropertyMetadata(
-                    null,     // Default value
+                    null,     // Default data
                     FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender | FrameworkPropertyMetadataOptions.Journal,
                     null,    // Property changed callback
-                    null);   // Coerce value callback
+                    null);   // Coerce data callback
 
         // Using a DependencyProperty as the backing store for CabinDeck.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinDeckProperty =
@@ -153,9 +154,14 @@ namespace SLC_LayoutEditor.Controls
             }
         }
 
-        private void Renderer_SizeChanged(object sender, EventArgs e)
+        private void Renderer_SizeChanged(object sender, CabinDeckSizeChangedEventArgs e)
         {
             deck_view.Source = renderer.Output;
+
+            if (e.CreateHistoryStep)
+            {
+                CabinHistory.Instance.RecordChanges(e);
+            }
             OnRenderSizeChanged(e);
         }
 

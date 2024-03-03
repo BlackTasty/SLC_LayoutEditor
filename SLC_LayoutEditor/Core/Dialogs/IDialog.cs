@@ -12,5 +12,7 @@ namespace SLC_LayoutEditor.Core.Dialogs
         event EventHandler<DialogClosingEventArgs> DialogClosing;
 
         void CancelDialog();
+
+        void ShowDialog();
     }
 }

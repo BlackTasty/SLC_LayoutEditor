@@ -12,10 +12,8 @@ namespace SLC_LayoutEditor.UI.Dialogs
     /// <summary>
     /// Interaction logic for CreateTemplateDialog.xaml
     /// </summary>
-    public partial class CreateTemplateDialog : DockPanel, IDialog
+    public partial class CreateTemplateDialog : DialogBase
     {
-        public event EventHandler<DialogClosingEventArgs> DialogClosing;
-
         private AddEditDialogViewModel vm;
 
         public CreateTemplateDialog(IEnumerable<string> templateNames)
@@ -38,16 +36,6 @@ namespace SLC_LayoutEditor.UI.Dialogs
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             CancelDialog();
-        }
-
-        protected virtual void OnDialogClosing(DialogClosingEventArgs e)
-        {
-            DialogClosing?.Invoke(this, e);
-        }
-
-        public void CancelDialog()
-        {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
         }
 
         private void DockPanel_Loaded(object sender, RoutedEventArgs e)

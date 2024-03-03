@@ -12,7 +12,6 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         private static readonly MakeTemplateCommand _makeTemplateCommand = new MakeTemplateCommand();
         private static readonly OpenLayoutFolderCommand _openLayoutFolderCommand = new OpenLayoutFolderCommand();
         private static readonly OpenLayoutInTextEditor _openLayoutInTextEditor = new OpenLayoutInTextEditor();
-        private static readonly RedoCommand _redoCommand = new RedoCommand();
         private static readonly ReloadLayoutCommand _reloadLayoutCommand = new ReloadLayoutCommand();
         private static readonly RenameLayoutCommand _renameLayoutCommand = new RenameLayoutCommand();
         private static readonly SaveLayoutCommand _saveLayoutCommand = new SaveLayoutCommand();
@@ -20,7 +19,11 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         private static readonly SelectAllSlotsCommand _selectAllSlotsCommand = new SelectAllSlotsCommand();
         private static readonly SelectAllSlotsOnDeckCommand _selectAllSlotsOnDeckCommand = new SelectAllSlotsOnDeckCommand();
         private static readonly ShowKeybindsWindowCommand _showKeybindsWindowCommand = new ShowKeybindsWindowCommand();
+
         private static readonly UndoCommand _undoCommand = new UndoCommand();
+        private static readonly RedoCommand _redoCommand = new RedoCommand();
+        private static readonly UndoUntilCommand _undoUntilCommand = new UndoUntilCommand();
+        private static readonly RedoUntilCommand _redoUntilCommand = new RedoUntilCommand();
 
         private static readonly CancelDialogCommand _cancelDialogCommand = new CancelDialogCommand();
 
@@ -52,8 +55,6 @@ namespace SLC_LayoutEditor.ViewModel.Commands
 
         public static OpenLayoutInTextEditor OpenLayoutInTextEditor => _openLayoutInTextEditor;
 
-        public static RedoCommand RedoCommand => _redoCommand;
-
         public static ReloadLayoutCommand ReloadLayoutCommand => _reloadLayoutCommand;
 
         public static RenameLayoutCommand RenameLayoutCommand => _renameLayoutCommand;
@@ -69,6 +70,12 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         public static ShowKeybindsWindowCommand ShowKeybindsWindowCommand => _showKeybindsWindowCommand;
 
         public static UndoCommand UndoCommand => _undoCommand;
+
+        public static RedoCommand RedoCommand => _redoCommand;
+
+        public static UndoUntilCommand UndoUntilCommand => _undoUntilCommand;
+
+        public static RedoUntilCommand RedoUntilCommand => _redoUntilCommand;
 
         public static CancelDialogCommand CancelDialogCommand => _cancelDialogCommand;
 

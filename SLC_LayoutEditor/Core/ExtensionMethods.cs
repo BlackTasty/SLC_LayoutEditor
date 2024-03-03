@@ -22,7 +22,7 @@ namespace SLC_LayoutEditor.Core
         /// </summary>
         /// <param name="source">Any string where strings shall be replaced</param>
         /// <param name="oldValues">A number of strings which shall be replaced</param>
-        /// <param name="newValue">The new value which replaces all occurences</param>
+        /// <param name="newValue">The new data which replaces all occurences</param>
         /// <returns></returns>
         public static string Replace(this string source, string[] oldValues, string newValue = "")
         {

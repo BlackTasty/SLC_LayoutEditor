@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace SLC_LayoutEditor.Core.Enum
 {
-    public enum StateChangeType
+    public enum CabinChangeCategory
     {
-        Add,
-        Modify,
-        Remove
+        Unset,
+        SlotData,
+        SlotAmount,
+        Deck,
+        AutoFix
     }
 }

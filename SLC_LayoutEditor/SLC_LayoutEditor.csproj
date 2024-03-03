@@ -148,6 +148,7 @@
     <Compile Include="Converter\EnumInRangeConverter.cs" />
     <Compile Include="Converter\EqualsToVisibilityConverter.cs" />
     <Compile Include="Converter\GreaterThanConverter.cs" />
+    <Compile Include="Converter\HistoryStepDataConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\ModifyNumberConverter.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Core\Cabin\Renderer\SlotHitResult.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Dialogs\DialogButtonConfig.cs" />
+    <Compile Include="Core\Enum\AutomationMode.cs" />
     <Compile Include="Core\Enum\CabinSlotIssueType.cs" />
     <Compile Include="Core\Enum\DialogButtonStyle.cs" />
     <Compile Include="Core\Enum\DialogResultType.cs" />
@@ -182,11 +184,14 @@
     <Compile Include="Core\Enum\GuidedTourStep.cs" />
     <Compile Include="Core\Enum\GuideTextPosition.cs" />
     <Compile Include="Core\Enum\RollbackType.cs" />
-    <Compile Include="Core\Enum\StateChangeType.cs" />
+    <Compile Include="Core\Enum\CabinChangeCategory.cs" />
     <Compile Include="Core\Dialogs\AddDialogResult.cs" />
     <Compile Include="Core\Events\AutoFixApplyingEventArgs.cs" />
+    <Compile Include="Core\Events\CabinDeckChangedEventArgs.cs" />
+    <Compile Include="Core\Events\CabinDeckSizeChangedEventArgs.cs" />
     <Compile Include="Core\Events\LiveGuideClosedEventArgs.cs" />
     <Compile Include="Controls\Notifications\NotificationClosedEventArgs.cs" />
+    <Compile Include="Core\Events\RowColumnChangeApplyingEventArgs.cs" />
     <Compile Include="Core\Events\SelectedDeckChangedEventArgs.cs" />
     <Compile Include="Core\Events\TemplateCreatedEventArgs.cs" />
     <Compile Include="Core\Events\ChangedEventArgs.cs" />
@@ -203,10 +208,16 @@
     <Compile Include="Core\Guide\GuidedTour.cs" />
     <Compile Include="Core\Guide\LiveGuideData.cs" />
     <Compile Include="Core\IThemeManager.cs" />
+    <Compile Include="Core\Memento\CabinChange.cs" />
+    <Compile Include="Core\Memento\CabinHistory.cs" />
+    <Compile Include="Core\Memento\CabinHistoryEntry.cs" />
     <Compile Include="Core\Memento\Change.cs" />
     <Compile Include="Core\Memento\History.cs" />
+    <Compile Include="Core\Memento\HistoryApplyingEventArgs.cs" />
+    <Compile Include="Core\Memento\HistoryChangedEventArgs.cs" />
     <Compile Include="Core\Memento\HistoryStack.cs" />
-    <Compile Include="Core\Memento\HistoryStep.cs" />
+    <Compile Include="Core\Memento\HistoryEntry.cs" />
+    <Compile Include="Core\Memento\IChange.cs" />
     <Compile Include="Core\Memento\IHistorical.cs" />
     <Compile Include="Core\Patcher\ChangelogEntry.cs" />
     <Compile Include="Core\Patcher\Server.cs" />
@@ -248,9 +259,11 @@
     <Compile Include="UI\Dialogs\ConfirmationDialog.xaml.cs">
       <DependentUpon>ConfirmationDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\CreateDialogBase.cs" />
     <Compile Include="UI\Dialogs\CreateTemplateDialog.xaml.cs">
       <DependentUpon>CreateTemplateDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\DialogBase.cs" />
     <Compile Include="UI\Dialogs\EditCabinLayoutNameDialog.xaml.cs">
       <DependentUpon>EditCabinLayoutNameDialog.xaml</DependentUpon>
     </Compile>
@@ -271,6 +284,7 @@
     <Compile Include="ViewModel\Commands\OpenLayoutFolderCommand.cs" />
     <Compile Include="ViewModel\Commands\OpenLayoutInTextEditor.cs" />
     <Compile Include="ViewModel\Commands\RedoCommand.cs" />
+    <Compile Include="ViewModel\Commands\RedoUntilCommand.cs" />
     <Compile Include="ViewModel\Commands\ReloadLayoutCommand.cs" />
     <Compile Include="ViewModel\Commands\RenameLayoutCommand.cs" />
     <Compile Include="ViewModel\Commands\SaveLayoutAsCommand.cs" />
@@ -299,6 +313,7 @@
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeUnavailableSeatCommand.cs" />
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeWallCommand.cs" />
     <Compile Include="ViewModel\Commands\UndoCommand.cs" />
+    <Compile Include="ViewModel\Commands\UndoUntilCommand.cs" />
     <Compile Include="ViewModel\CreateAircraftDialogViewModel.cs" />
     <Compile Include="ViewModel\CreateCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\AddEditDialogViewModel.cs" />

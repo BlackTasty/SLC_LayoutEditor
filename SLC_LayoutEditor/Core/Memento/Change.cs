@@ -7,19 +7,28 @@ using System.Threading.Tasks;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
-    public class Change
+    public class Change<T> : IChange<T>
     {
-        private readonly IHistorical previousState;
-        private readonly StateChangeType changeType;
+        //private readonly CabinChangeCategory changeType;
 
-        public IHistorical PreviousState => previousState;
+        private readonly T previousData;
+        private readonly T data;
 
-        public StateChangeType ChangeType => changeType;
+        //public CabinChangeCategory ChangeType => changeType;
 
-        public Change(IHistorical previousState, StateChangeType changeType)
+        public T Data => data;
+
+        public T PreviousData => previousData;
+
+        public Change(T data, T previousData)
         {
-            this.previousState = previousState;
-            this.changeType = changeType;
+            this.data = data;
+            this.previousData = previousData;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("\"{0}\" >> \"{1}\"", previousData.ToString(), data.ToString());
         }
     }
 }

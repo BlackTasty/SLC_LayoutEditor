@@ -1,6 +1,7 @@
 ﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.Core.Patcher;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 using Tasty.Logging;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor
 {
@@ -31,6 +33,7 @@ namespace SLC_LayoutEditor
 
         private static readonly string tempPath = Path.Combine(Path.GetTempPath(), "Tasty Apps", "SLC Layout Editor");
         private static readonly string thumbnailsPath = Path.Combine(tempPath, "thumbnails");
+        private static readonly string snapshotsPath = Path.Combine(tempPath, "snapshots");
 
         private static UpdateManager patcher;
 
@@ -39,6 +42,8 @@ namespace SLC_LayoutEditor
         public static string DefaultEditorLayoutsPath => defaultEditorLayoutsPath;
 
         public static string ThumbnailsPath => thumbnailsPath;
+
+        public static string SnapshotsPath => snapshotsPath;
 
         public static string TempPath => tempPath;
 
@@ -68,6 +73,14 @@ namespace SLC_LayoutEditor
             {
                 Logger.Default.WriteLog("SLC Layout Editor crashed with a fatal exception! Version {0}", LogType.FATAL, ex,
                     PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3));
+
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.CreateSnapshot);
+
+                MessageBox.Show(
+                    string.Format("It seems like the editor ({0}) has crashed!\n\n" +
+                        "Please send the log file via Discord to midnightbagel, this way I can look into what happened.", 
+                        GetVersionText()), 
+                    "This is awkward but...", MessageBoxButton.OK);
             }
 #endif
         }
@@ -190,6 +203,12 @@ namespace SLC_LayoutEditor
 
             Logger.Default.WriteLog("Editor shutting down...");
             SaveAppSettings();
+
+            if (Directory.Exists(SnapshotsPath))
+            {
+                Directory.Delete(SnapshotsPath, true);
+                Logger.Default.WriteLog("Removed leftover cabin layout snapshots");
+            }
 
 
             // Installation of an update pending, restart editor

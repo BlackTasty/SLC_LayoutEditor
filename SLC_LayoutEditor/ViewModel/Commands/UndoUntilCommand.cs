@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Core.Memento;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,18 +8,18 @@ using Tasty.ViewModel.Commands;
 
 namespace SLC_LayoutEditor.ViewModel.Commands
 {
-    internal class RedoCommand : CommandBase
+    internal class UndoUntilCommand : CommandBase
     {
         public override bool CanExecute(object parameter)
         {
-            return parameter is MainViewModel;
+            return parameter is CabinHistoryEntry;
         }
 
         public override void Execute(object parameter)
         {
-            if (parameter is MainViewModel vm && vm.History.CanRedo)
+            if (parameter is CabinHistoryEntry entry)
             {
-                vm.History.Redo();
+                CabinHistory.Instance.UndoUntil(entry);
             }
         }
     }

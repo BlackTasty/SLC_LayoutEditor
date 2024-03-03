@@ -25,7 +25,7 @@
                         <Style TargetType="Grid">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsMaximized}" Value="True">
-                                    <Setter Property="Margin" Value="4"/>
+                                    <Setter Property="Margin" Value="6,4"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -51,7 +51,7 @@
                                            Margin="8,0" VerticalAlignment="Center"/>
                             <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14" VerticalAlignment="Center"
                                   IsEnabled="{Binding IsDialogOpen, Converter={StaticResource InverseBooleanConverter}}">
-                                <MenuItem Background="{DynamicResource BackgroundDarkBrush}"
+                                <MenuItem
                                           IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
                                     <MenuItem.Style>
                                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -103,7 +103,7 @@
                                               CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+E"
                                               Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                                 </MenuItem>
-                                <MenuItem Header="Editor" Background="{DynamicResource BackgroundDarkBrush}"
+                                <MenuItem Header="Editor"
                                           IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
                                     <MenuItem Header="Settings" Click="Settings_Click"/>
                                     <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
@@ -111,7 +111,7 @@
                                     <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
                                               IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
                                 </MenuItem>
-                                <MenuItem Header="Help" Background="{DynamicResource BackgroundDarkBrush}">
+                                <MenuItem Header="Help">
                                     <MenuItem Click="ToggleGuide_Click">
                                         <MenuItem.Style>
                                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -135,6 +135,27 @@
                                 </MenuItem>
                             </Menu>
                             <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0" x:Name="panel_historyButtons">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsLayoutOpened}" Value="True"/>
+                                                    <Condition Binding="{Binding IsDialogOpen}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Button x:Name="btn_undo" Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Undo}" Margin="4,0" ToolTip="Undo"
+                                        Click="Undo_Click" IsEnabled="{Binding CanUndo}" Loaded="UndoButton_Loaded"/>
+                                <Button x:Name="btn_redo" Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Redo}" Margin="4,0" ToolTip="Redo"
+                                        Click="Redo_Click" IsEnabled="{Binding CanRedo}" Loaded="RedoButton_Loaded"/>
+                            </StackPanel>
                             <Border Margin="0,6,8,6" Padding="8,2" CornerRadius="4"
                                         Visibility="{Binding CabinLayoutName, Converter={StaticResource NotNullToVisibilityConverter}}">
                                 <Border.Style>
@@ -182,8 +203,8 @@
                                     </Run>
                                 </TextBlock>
                             </Border>
-                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal"
-                                            Visibility="{Binding IsTourRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel x:Name="panel_guideStepper" VerticalAlignment="Center" Orientation="Horizontal"
+                                        Visibility="{Binding IsTourRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource ChevronLeftData}"
                                         IsEnabled="{Binding IsNotFirstTourStep}" Click="StepBackInTour_Click"
                                         ToolTip="Show previous step"/>
@@ -205,7 +226,7 @@
                         </StackPanel>
                     </DockPanel>
                     <AdornerDecorator ClipToBounds="True" Grid.Row="1">
-                        <ContentPresenter Loaded="Root_Loaded" Margin="0,4,0,0"/>
+                        <ContentPresenter Loaded="Root_Loaded" Margin="2,4,0,0"/>
                     </AdornerDecorator>
                 </Grid>
             </Border>
@@ -226,6 +247,8 @@
         <KeyBinding Key="R" Modifiers="Ctrl+Alt" Command="{Binding ReloadLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="A" Modifiers="Ctrl" Command="{Binding SelectAllSlotsOnDeckCommand}" CommandParameter="{Binding SelectedDeck}"/>
         <KeyBinding Key="K" Modifiers="Ctrl" Command="{Binding ShowKeybindsWindowCommand}"/>
+        <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}" CommandParameter="{Binding}"/>
+        <KeyBinding Key="Y" Modifiers="Ctrl" Command="{Binding RedoCommand}" CommandParameter="{Binding}"/>
 
         <!-- Dialog commands -->
         <KeyBinding Key="Esc" Command="{Binding CancelDialogCommand}" CommandParameter="{Binding Dialog}"/>
@@ -263,19 +286,6 @@
                     </Style.Triggers>
                 </Style>
             </DockPanel.Style>
-            <DockPanel DockPanel.Dock="Top">
-                <DockPanel LastChildFill="False">
-                    <Border BorderThickness=".75,0" CornerRadius=".75" Margin="16,6"
-                        BorderBrush="{DynamicResource SeparatorColorBrush}"
-                        Visibility="Collapsed"/>
-                    <DockPanel Margin="0,0,12,0" Visibility="Collapsed">
-                        <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Undo}" Margin="4,0" ToolTip="Undo"
-                        Click="Undo_Click" IsEnabled="{Binding History.CanUndo}"/>
-                        <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource Redo}" Margin="4,0" ToolTip="Redo"
-                        Click="Redo_Click" IsEnabled="{Binding History.CanRedo}"/>
-                    </DockPanel>
-                </DockPanel>
-            </DockPanel>
             <ContentPresenter Content="{Binding Content}"/>
         </DockPanel>
         <notifications:NotificationBar HorizontalAlignment="Right" Panel.ZIndex="100" Margin="0,48,0,96"/>

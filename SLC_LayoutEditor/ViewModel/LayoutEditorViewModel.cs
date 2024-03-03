@@ -6,6 +6,7 @@ using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Commands;
 using SLC_LayoutEditor.ViewModel.Communication;
@@ -80,6 +81,8 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mIsSidebarOpen = true;
         private bool mIsIssueTrackerExpanded;
         private bool mPlayExpanderAnimations = true;
+
+        private bool postponeLayoutChangeFinish;
 
         #region Input error checks & texts
         public string SeatLetterError => SelectedCabinSlot != null && !Regex.IsMatch(SelectedCabinSlot.SeatLetter.ToString(), @"^[a-zA-Z]+$") ?
@@ -179,7 +182,10 @@ namespace SLC_LayoutEditor.ViewModel
                     SelectedTemplate = null;
                 }
 
-                FinishCabinLayoutChange(mSelectedCabinLayout, SelectedCabinLayout_Deleted);
+                if (!postponeLayoutChangeFinish)
+                {
+                    FinishCabinLayoutChange(mSelectedCabinLayout, SelectedCabinLayout_Deleted);
+                }
                 InvokePropertyChanged();
             }
         }
@@ -197,13 +203,16 @@ namespace SLC_LayoutEditor.ViewModel
                 }
                 mSelectedTemplate = value;
 
-                if (value != null)
+                if (value != null && SelectedCabinLayout != null)
                 {
                     SelectedCabinLayout = null;
                 }
 
-                FinishCabinLayoutChange(mSelectedTemplate, SelectedTemplate_Deleted);
-                InvokePropertyChanged();
+                if (!postponeLayoutChangeFinish)
+                {
+                    FinishCabinLayoutChange(mSelectedTemplate, SelectedTemplate_Deleted);
+                }
+
                 if (ForceUpdateActiveLayout)
                 {
                     mIsTemplatingMode = true;
@@ -212,6 +221,8 @@ namespace SLC_LayoutEditor.ViewModel
                     InvokePropertyChanged(nameof(ActiveLayout));
                     mIsTemplatingMode = false;
                 }
+
+                InvokePropertyChanged();
             }
         }
 
@@ -423,11 +434,7 @@ namespace SLC_LayoutEditor.ViewModel
             //SelectedCabinLayout.DeepRefreshProblemChecks();
         }
 
-        private void CabinSlotChanged(object sender, CabinSlotChangedEventArgs e)
-        {
-            RefreshUnsavedChanges();
-            InvokePropertyChanged(nameof(SeatLetterError));
-        }
+
 
         public int SelectedAutomationIndex
         {
@@ -581,10 +588,31 @@ namespace SLC_LayoutEditor.ViewModel
                         layout.IsTemplate);
 
                     dialog.DialogClosing += EditLayoutName_DialogClosing;
-
-                    Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                    dialog.ShowDialog();
                 }
             }, ViewModelMessage.EditLayoutNameRequested);
+
+            Mediator.Instance.Register(o =>
+            {
+                ActiveLayout?.CreateSnapshot();
+            }, ViewModelMessage.CreateSnapshot);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is CabinLayout layout)
+                {
+                    if (!layout.IsTemplate)
+                    {
+                        FinishCabinLayoutChange(mSelectedCabinLayout, SelectedCabinLayout_Deleted);
+                    }
+                    else
+                    {
+                        FinishCabinLayoutChange(mSelectedTemplate, SelectedTemplate_Deleted);
+                    }
+
+                    RefreshUnsavedChanges();
+                }
+            }, ViewModelMessage.FinishLayoutChange);
         }
 
         private void EditLayoutName_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -614,8 +642,7 @@ namespace SLC_LayoutEditor.ViewModel
                     "Do you want to save the current " + (!isTemplate ? "layout" : "template") + " before " + (!isClosing ? "proceeding" : "closing the editor") + "?", DialogType.YesNoCancel);
 
                 dialog.DialogClosing += UnsavedChangesDialog_DialogClosing;
-
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                dialog.ShowDialog();
             }
 
             return hasUnsavedChanges;
@@ -706,7 +733,7 @@ namespace SLC_LayoutEditor.ViewModel
 
             if (!(storedNewValue is Unset))
             {
-                if (e.DialogResult != DialogResultType.Cancel) // User doesn't cancel, apply newly selected value
+                if (e.DialogResult != DialogResultType.Cancel) // User doesn't cancel, apply newly selected data
                 {
                     HasUnsavedChanges = false;
                     if (storedNewValue is CabinLayoutSet selectedLayoutSet)
@@ -756,7 +783,7 @@ namespace SLC_LayoutEditor.ViewModel
             IsAutomationChecked = false;
             if (current != null)
             {
-                current.CabinDeckCountChanged -= SelectedLayout_LayoutChanged;
+                current.CabinDeckCountChanged -= SelectedLayout_CabinDeckCountChanged;
                 current.CabinSlotsChanged -= SelectedLayout_LayoutChanged;
                 current.Deleted -= deletedCallback;
                 current.Deleting -= SelectedLayout_Deleting;
@@ -767,7 +794,7 @@ namespace SLC_LayoutEditor.ViewModel
                 }
             }
 
-            updated?.LoadCabinLayoutFromFile();
+            postponeLayoutChangeFinish = updated?.LoadCabinLayoutFromFile() ?? false;
             return true;
         }
 
@@ -776,7 +803,7 @@ namespace SLC_LayoutEditor.ViewModel
             ClearSelection();
             if (updated != null)
             {
-                updated.CabinDeckCountChanged += SelectedLayout_LayoutChanged;
+                updated.CabinDeckCountChanged += SelectedLayout_CabinDeckCountChanged;
                 updated.CabinSlotsChanged += SelectedLayout_LayoutChanged;
                 updated.Deleted += deletedCallback;
                 updated.Deleting += SelectedLayout_Deleting;
@@ -793,6 +820,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 IsSidebarOpen = false;
             }
+        }
+
+        private void SelectedLayout_CabinDeckCountChanged(object sender, CabinDeckChangedEventArgs e)
+        {
+            SelectedLayout_LayoutChanged(sender, EventArgs.Empty);
         }
 
         private void SelectedLayout_Deleting(object sender, EventArgs e)

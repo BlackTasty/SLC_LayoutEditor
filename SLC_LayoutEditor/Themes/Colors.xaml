@@ -7,22 +7,22 @@
     <DropShadowEffect x:Key="DropShadowDepth2" Color="{DynamicResource BackgroundDark}" Opacity=".4"
                       ShadowDepth="2" BlurRadius="10" Direction="270" RenderingBias="Performance"/>
 
-    <Color x:Key="CockpitColor">#00ffe0</Color>
+    <Color x:Key="CockpitColor">#dd00ffe0</Color>
     <Color x:Key="CrewAreaColor">#800094ff</Color>
-    <Color x:Key="FirstClassColor">#ffd700</Color>
-    <Color x:Key="BusinessClassColor">#0094ff</Color>
-    <Color x:Key="PremiumClassColor">#ffffff</Color>
-    <Color x:Key="EconomyClassColor">#808080</Color>
-    <Color x:Key="SupersonicClassColor">#daa520</Color>
-    <Color x:Key="UnavailableSeatColor">#333333</Color>
-    <Color x:Key="ToiletColor">#663399</Color>
+    <Color x:Key="FirstClassColor">#ccffd700</Color>
+    <Color x:Key="BusinessClassColor">#cc0094ff</Color>
+    <Color x:Key="PremiumClassColor">#ccffffff</Color>
+    <Color x:Key="EconomyClassColor">#cc808080</Color>
+    <Color x:Key="SupersonicClassColor">#ccdaa520</Color>
+    <Color x:Key="UnavailableSeatColor">#cc333333</Color>
+    <Color x:Key="ToiletColor">#cc663399</Color>
     <Color x:Key="StairwellColor">#60ffab00</Color>
     <Color x:Key="WallColor">#40cc1000</Color>
     <Color x:Key="DoorColor">#00ff90</Color>
     <Color x:Key="CateringDoorColor">#666</Color>
     <Color x:Key="LoadingBayColor">#666</Color>
     <Color x:Key="KitchenColor">#BF0094ff</Color>
-    <Color x:Key="IntercomColor">#ffaa00</Color>
+    <Color x:Key="IntercomColor">#ccffaa00</Color>
     <Color x:Key="ServicePointStartColor">#4000ff90</Color>
     <Color x:Key="ServicePointEndColor">#40cc1100</Color>
 

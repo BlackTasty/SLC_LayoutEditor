@@ -1,36 +1,62 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Memento;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tasty.ViewModel;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.ViewModel
 {
     class MementoViewModel : ViewModelBase
     {
-        private History history = History.Instance;
+        private CabinHistory history = CabinHistory.Instance;
 
-        public History History => history;
+        public CabinHistory History => history;
+
+        public List<CabinHistoryEntry> UndoHistory => History.UndoHistory.Stack;
+
+        public IEnumerable<string> UndoSteps => History.UndoHistory.GetMessages();
+
+        public List<CabinHistoryEntry> RedoHistory => History.RedoHistory.Stack;
+
+        public IEnumerable<string> RedoSteps => History.RedoHistory.GetMessages();
+
+        public bool CanUndo => History.CanUndo;
+
+        public bool CanRedo => History.CanRedo;
+
+        public MementoViewModel()
+        {
+            history.HistoryChanging += History_HistoryChanging;
+            history.HistoryChanged += History_Changed;
+        }
+
+        protected virtual void History_HistoryChanging(object sender, EventArgs e)
+        {
+        }
+
+        protected virtual void History_Changed(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
+        {
+            InvokePropertyChanged(nameof(CanUndo));
+            InvokePropertyChanged(nameof(UndoHistory));
+            InvokePropertyChanged(nameof(UndoSteps));
+            InvokePropertyChanged(nameof(CanRedo));
+            InvokePropertyChanged(nameof(RedoHistory));
+            InvokePropertyChanged(nameof(RedoSteps));
+        }
 
         public void Undo()
         {
-            HistoryStep step = history.Undo();
-
-            if (step != null)
-            {
-                if (step.Parent is CabinSlot cabinSlot)
-                {
-
-                }
-            }
+            CabinHistoryEntry step = history.Undo();
         }
 
         public void Redo()
         {
-            HistoryStep step = history.Redo();
+            CabinHistoryEntry step = history.Redo();
         }
     }
 }

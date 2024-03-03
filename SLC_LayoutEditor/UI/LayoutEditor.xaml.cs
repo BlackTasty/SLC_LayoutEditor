@@ -7,6 +7,7 @@ using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Guide;
+using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
@@ -45,6 +46,8 @@ namespace SLC_LayoutEditor.UI
         private readonly LayoutEditorViewModel vm;
         private Adorner sidebarToggleAdorner;
         private Adorner currentGuideAdorner;
+        private bool isAutomationRunning;
+        private AutomationMode usedAutomationMode = AutomationMode.None;
 
         public LayoutEditor()
         {
@@ -207,7 +210,7 @@ namespace SLC_LayoutEditor.UI
                     DialogType.YesNo);
 
                 dialog.DialogClosing += LayoutIssues_DialogClosing;
-                Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                dialog.ShowDialog();
             }
             else
             {
@@ -260,7 +263,7 @@ namespace SLC_LayoutEditor.UI
             CreateAircraftDialog dialog = new CreateAircraftDialog(vm.LayoutSets.Select(x => x.AircraftName));
             dialog.DialogClosing += CreateAircraft_DialogClosing;
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void CreateAircraft_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -302,7 +305,7 @@ namespace SLC_LayoutEditor.UI
                 dialog.DialogClosing += CreateTemplate_DialogClosing;
             }
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void CreateTemplate_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -372,18 +375,16 @@ namespace SLC_LayoutEditor.UI
             {
                 foreach (CabinSlot cabinSlot in control_layout.SelectedCabinSlots)
                 {
-                    cabinSlot.IsEvaluationActive = false;
                     cabinSlot.Type = slotType;
-                    cabinSlot.IsEvaluationActive = true;
                 }
 
                 RefreshLayoutFlags();
 
-                control_layout.SelectedCabinSlots.ForEach(x =>
+                /*control_layout.SelectedCabinSlots.ForEach(x =>
                 {
                     //x.SlotIssues.RefreshProblematicFlag(true);
                     x.FireChangedEvent();
-                });
+                });*/
                 SlotTypeChangedForTour();
             }
         }
@@ -397,12 +398,14 @@ namespace SLC_LayoutEditor.UI
 
         private void Automate_Click(object sender, RoutedEventArgs e)
         {
+            isAutomationRunning = true;
             char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
             int currentLetterIndex = 0;
 
-            switch (vm.SelectedAutomationIndex)
+            usedAutomationMode = (AutomationMode)vm.SelectedAutomationIndex;
+            switch (usedAutomationMode)
             {
-                case 0: // Seat numeration
+                case AutomationMode.SeatNumeration: // Seat numeration
                     foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
                     {
                         var seatRowGroups =
@@ -448,7 +451,9 @@ namespace SLC_LayoutEditor.UI
                         }
                     }
                     break;
-                case 1: // Wall generator
+                case AutomationMode.WallGenerator: // Wall generator
+                    vm.SelectedCabinSlotFloor = vm.AutomationSelectedDeck.Floor;
+
                     IEnumerable<CabinSlot> wallSlots = vm.AutomationSelectedDeck.CabinSlots
                         .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.AutomationSelectedDeck.Rows || x.Column == vm.AutomationSelectedDeck.Columns) && 
                             !x.IsDoor && x.Type != CabinSlotType.Wall && x.Type != CabinSlotType.Cockpit);
@@ -460,7 +465,7 @@ namespace SLC_LayoutEditor.UI
                         wallSlot.IsEvaluationActive = true;
                     }
                     break;
-                case 2: //Service points (BETA)
+                case AutomationMode.ServicePoints: //Service points (BETA)
                     foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
                     {
                         // Reset all service start- and endpoints to type Aisle
@@ -619,6 +624,7 @@ namespace SLC_LayoutEditor.UI
             vm.RefreshUnsavedChanges();
             control_layout.RefreshState();
             control_layout.RedrawDirtySlots();
+            isAutomationRunning = false;
 
             if (App.GuidedTour.IsAwaitingCompletedSeatAutomation)
             {
@@ -639,6 +645,8 @@ namespace SLC_LayoutEditor.UI
                     App.GuidedTour.ContinueTour(true);
                 }
             }
+            RecordHistoryEntry();
+            usedAutomationMode = AutomationMode.None;
         }
 
         private void Layout_TemplatingModeToggled(object sender, EventArgs e)
@@ -684,7 +692,7 @@ namespace SLC_LayoutEditor.UI
             IDialog dialog = new CreateCabinLayoutDialog(existingLayouts, null, vm.IsTemplatingMode, true);
             dialog.DialogClosing += CabinLayout_SaveAs_DialogClosing;
 
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+            dialog.ShowDialog();
         }
 
         private void CabinLayout_SaveAs_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -766,7 +774,7 @@ namespace SLC_LayoutEditor.UI
 
                         dialog.DialogClosing += GuidedTour_DialogClosing;
 
-                        Mediator.Instance.NotifyColleagues(ViewModelMessage.DialogOpening, dialog);
+                        dialog.ShowDialog();
                     }
                 }
             }
@@ -782,6 +790,11 @@ namespace SLC_LayoutEditor.UI
             if (e.DialogResult == DialogResultType.CustomLeft)
             {
                 App.GuidedTour.StartTour();
+            }
+            else if (e.DialogResult == DialogResultType.CustomMiddle)
+            {
+                App.Settings.GettingStartedGuideShown = true;
+                App.SaveAppSettings();
             }
         }
 
@@ -837,6 +850,21 @@ namespace SLC_LayoutEditor.UI
                 {
                     App.GuidedTour.ContinueTour(true);
                 }
+            }
+            RecordHistoryEntry();
+        }
+
+        private void RecordHistoryEntry()
+        {
+            if (!isAutomationRunning)
+            {
+                Dictionary<int, IEnumerable<CabinSlot>> changedPerFloor = new Dictionary<int, IEnumerable<CabinSlot>>();
+                foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
+                {
+                    changedPerFloor.Add(cabinDeck.Floor, cabinDeck.CabinSlots.Where(x => x.CollectForHistory));
+                }
+
+                CabinHistory.Instance.RecordChanges(changedPerFloor, usedAutomationMode);
             }
         }
 
@@ -906,6 +934,16 @@ namespace SLC_LayoutEditor.UI
                 todoList.ForceCompleteEntry(0, true);
                 App.GuidedTour.ContinueTour(true);
             }
+        }
+
+        private void SlotData_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RecordHistoryEntry();
+        }
+
+        private void control_layout_CabinDeckChanged(object sender, CabinDeckChangedEventArgs e)
+        {
+            CabinHistory.Instance.RecordChanges(e);
         }
     }
 }
