@@ -304,7 +304,6 @@ namespace SLC_LayoutEditor
 
         private void InitHeader(UIElement header)
         {
-            
             var restoreIfMove = false;
 
             header.MouseLeftButtonDown += (s, e) =>
@@ -312,7 +311,9 @@ namespace SLC_LayoutEditor
                 if (e.ClickCount == 2)
                 {
                     if (e.OriginalSource is FrameworkElement originalSource &&
-                    originalSource.Name == "panel_guideStepper" && App.GuidedTour.IsTourRunning)
+                        (originalSource.Name == "panel_historyButtons" ||
+                        (originalSource.Name == "panel_guideStepper" && App.GuidedTour.IsTourRunning)
+                        ))
                     {
                         return;
                     }
@@ -439,7 +440,10 @@ namespace SLC_LayoutEditor
 
         private ContextMenu GenerateMenu(IEnumerable<CabinHistoryEntry> history, bool isUndo)
         {
-            ContextMenu contextMenu = new ContextMenu();
+            ContextMenu contextMenu = new ContextMenu()
+            {
+                MaxHeight = 300
+            };
 
             foreach (CabinHistoryEntry historyEntry in history)
             {

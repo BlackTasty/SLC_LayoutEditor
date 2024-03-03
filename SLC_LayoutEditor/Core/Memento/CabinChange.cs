@@ -13,14 +13,18 @@ namespace SLC_LayoutEditor.Core.Memento
     {
         private readonly int row;
         private readonly int column;
+        private readonly int floor;
 
         public int Row => row;
 
         public int Column => column;
 
-        private CabinChange(string data, string previousData) : 
+        public int Floor => floor;
+
+        private CabinChange(string data, string previousData, int floor) : 
             base (data, previousData)
         {
+            this.floor = floor;
         }
 
         /// <summary>
@@ -29,14 +33,14 @@ namespace SLC_LayoutEditor.Core.Memento
         /// <param name="cabinSlot">The <see cref="CabinSlot"/> that has been changed</param>
         /// <param name="floor">The floor this <see cref="CabinSlot"/> is on</param>
         /// <param name="usedAutomationMode">The <see cref="AutomationMode"/> used to modify this <see cref="CabinSlot"/></param>
-        public CabinChange(CabinSlot cabinSlot) : 
+        public CabinChange(CabinSlot cabinSlot, int floor) : 
             this(cabinSlot.ToString(), cabinSlot.PreviousState, 
-                cabinSlot.Row, cabinSlot.Column)
+                floor, cabinSlot.Row, cabinSlot.Column)
         {
         }
 
-        private CabinChange(string cabinSlotData, string previousCabinSlotData, int row, int column) :
-            this(cabinSlotData, previousCabinSlotData)
+        private CabinChange(string cabinSlotData, string previousCabinSlotData, int floor, int row, int column) :
+            this(cabinSlotData, previousCabinSlotData, floor)
         {
             this.row = row;
             this.column = column;
@@ -49,7 +53,7 @@ namespace SLC_LayoutEditor.Core.Memento
         /// <param name="isRemoved">False when added, true when removed</param>
         public CabinChange(CabinDeck cabinDeck, bool isRemoved) :
             this(!isRemoved ? cabinDeck.ToFileString() : null, 
-                !isRemoved ? null : cabinDeck.ToFileString())
+                !isRemoved ? null : cabinDeck.ToFileString(), cabinDeck.Floor)
         {
             row = -1;
             column = -1;

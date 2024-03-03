@@ -15,17 +15,18 @@ namespace SLC_LayoutEditor.Core.Memento
         private readonly bool isRowAffected;
         private readonly int targetRowColumn = -1;
         private readonly CabinChangeCategory category;
-        private readonly int floor;
 
         private readonly AutomationMode usedAutomationMode = AutomationMode.None;
 
         public CabinChangeCategory Category => category;
 
-        public int Floor => floor;
-
         public string UsedAutomationMode => EnumDescriptionConverter.GetDescription(usedAutomationMode);
 
         public bool WasAutomationUsed => usedAutomationMode != AutomationMode.None;
+
+        public bool WasAutoFixUsed => usedAutomationMode == AutomationMode.AutoFix_Doors ||
+            usedAutomationMode == AutomationMode.AutoFix_Stairways ||
+            usedAutomationMode == AutomationMode.AutoFix_SlotCount;
 
         public bool IsRemoved => isRemoved;
 
@@ -33,24 +34,22 @@ namespace SLC_LayoutEditor.Core.Memento
 
         public int TargetRowColumn => targetRowColumn;
 
-        public CabinHistoryEntry(IEnumerable<CabinChange> changes, int floor, CabinChangeCategory category, AutomationMode usedAutomationMode) : base(changes)
+        public CabinHistoryEntry(IEnumerable<CabinChange> changes, CabinChangeCategory category, AutomationMode usedAutomationMode) : base(changes)
         {
-            this.floor = floor;
             this.category = category;
             this.usedAutomationMode = usedAutomationMode;
         }
 
         public CabinHistoryEntry(IEnumerable<CabinChange> changes, CabinDeckSizeChangedEventArgs deckSizeChangedEvent) : 
-            this(changes, deckSizeChangedEvent.Floor, CabinChangeCategory.SlotAmount, AutomationMode.None)
+            this(changes, CabinChangeCategory.SlotAmount, AutomationMode.None)
         {
             this.isRemoved = !deckSizeChangedEvent.IsAdded;
             this.isRowAffected = deckSizeChangedEvent.TargetIsRow;
             this.targetRowColumn = deckSizeChangedEvent.TargetRowColumn;
         }
 
-        public CabinHistoryEntry(CabinChange change, bool isRemoved, int floor) : base(change)
+        public CabinHistoryEntry(CabinChange change, bool isRemoved) : base(change)
         {
-            this.floor = floor;
             category = CabinChangeCategory.Deck;
             this.isRemoved = isRemoved;
         }
@@ -75,7 +74,7 @@ namespace SLC_LayoutEditor.Core.Memento
                         string subMessage = "";
                         if (WasAutomationUsed)
                         {
-                            subMessage = string.Format("modified using \"{0}\" automation", usedAutomationMode);
+                            subMessage = string.Format("modified using \"{0}\" automation", EnumDescriptionConverter.GetDescription(usedAutomationMode));
                         }
                         else if (firstChange.HasTypeChanged())
                         {

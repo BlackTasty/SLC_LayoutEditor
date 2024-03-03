@@ -18,6 +18,13 @@ namespace SLC_LayoutEditor.Core.Enum
         [Description("Wall generator")]
         WallGenerator,
         [Description("Service points")]
-        ServicePoints
+        ServicePoints,
+
+        [Description("Door numeration")]
+        AutoFix_Doors,
+        [Description("Missing slots")]
+        AutoFix_SlotCount,
+        [Description("Stairways")]
+        AutoFix_Stairways
     }
 }

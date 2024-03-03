@@ -385,6 +385,9 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             var ordered = CabinSlots.GroupBy(x => x.Column).OrderBy(x => x.Key);
 
+            ToggleIssueChecking(false);
+            List<CabinSlot> addedSlots = new List<CabinSlot>();
+
             foreach (var deckColumn in ordered)
             {
                 int columnRowsCount = deckColumn.Max(x => x.Row);
@@ -394,6 +397,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     {
                         columnRowsCount++;
                         CabinSlot slot = new CabinSlot(columnRowsCount, deckColumn.Key);
+                        addedSlots.Add(slot);
                         AddCabinSlot(slot);
                         autoFixResult.CountSuccess();
                     } while (columnRowsCount < expectedRowsCount);
@@ -402,6 +406,9 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             RefreshProblemChecks();
             OnDeckSlotLayoutChanged(EventArgs.Empty);
+            CabinHistory.Instance.RecordChanges(addedSlots, mFloor, AutomationMode.AutoFix_SlotCount);
+            ToggleIssueChecking(true);
+
             return autoFixResult;
         }
 
@@ -417,7 +424,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             CabinSlots.Remove(cabinSlot);
         }
 
-        public int FixDuplicateDoors(int slotNumber, bool isZeroDoorSet, bool ignoreCateringDoors, out int successes, out int fails, out bool wasZeroDoorSet)
+        public int FixDuplicateDoors(int slotNumber, bool isZeroDoorSet, bool ignoreCateringDoors, out int successes, out int fails, out bool wasZeroDoorSet,
+            out List<CabinSlot> affectedSlots)
         {
             CabinSlot zeroDoor = null;
             wasZeroDoorSet = isZeroDoorSet;
@@ -425,6 +433,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             successes = 0;
             fails = 0;
+            affectedSlots = new List<CabinSlot>();
 
             if (ignoreCateringDoors)
             {
@@ -452,6 +461,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     doorSlot.SlotNumber = slotNumber;
                     slotNumber++;
                     successes++;
+                    affectedSlots.Add(doorSlot);
                 }
                 else
                 {
@@ -463,10 +473,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             return slotNumber;
         }
 
-        public int FixDuplicateCateringDoors(int slotNumber, out int successes, out int fails)
+        public int FixDuplicateCateringDoors(int slotNumber, out int successes, out int fails, out List<CabinSlot> affectedSlots)
         {
             successes = 0;
             fails = 0;
+            affectedSlots = new List<CabinSlot>();
 
             foreach (CabinSlot doorSlot in DoorSlots.Where(x => x.Type == CabinSlotType.CateringDoor)
                 .OrderBy(x => x.Row).ThenByDescending(x => x.Column))
@@ -476,6 +487,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     doorSlot.SlotNumber = slotNumber;
                     slotNumber++;
                     successes++;
+                    affectedSlots.Add(doorSlot);
                 }
                 else
                 {
@@ -643,10 +655,11 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         internal void ApplyHistoryEntry(CabinHistoryEntry historyEntry, bool isUndo)
         {
+            ToggleIssueChecking(false);
             switch (historyEntry.Category)
             {
                 case CabinChangeCategory.SlotData:
-                    foreach (CabinChange change in historyEntry.Changes)
+                    foreach (CabinChange change in historyEntry.Changes.Where(x => x.Floor == mFloor))
                     {
                         CabinSlot targetSlot = mCabinSlots.FirstOrDefault(x => x.Row == change.Row && x.Column == change.Column);
                         if (targetSlot != null)
@@ -660,7 +673,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     break;
             }
 
-            RefreshProblemChecks();
+            ToggleIssueChecking(true);
         }
 
         protected virtual void OnRowColumnChangeApplying(RowColumnChangeApplyingEventArgs e)
@@ -736,45 +749,48 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void RefreshProblemChecks()
         {
-            string newHash = Util.GetSHA256Hash(ToFileString());
-
-            if (isIssueCheckingEnabled && (!IsRendered || currentHash != newHash))
+            if (isIssueCheckingEnabled)
             {
-                RefreshPathGrid();
-                RefreshIssues();
+                string newHash = Util.GetSHA256Hash(ToFileString());
 
-                InvokePropertyChanged(nameof(AreServicePointsValid));
-                InvokePropertyChanged(nameof(AreGalleysValid));
-                InvokePropertyChanged(nameof(AreKitchensValid));
-                InvokePropertyChanged(nameof(AreIntercomsValid));
-                InvokePropertyChanged(nameof(AreDoorsValid));
-                InvokePropertyChanged(nameof(AreToiletsAvailable));
-                InvokePropertyChanged(nameof(AreSeatsReachableByService));
-                InvokePropertyChanged(nameof(AreSlotsValid));
+                if (!IsRendered || currentHash != newHash)
+                {
+                    RefreshPathGrid();
+                    RefreshIssues();
 
-                InvokePropertyChanged(nameof(UnreachableSlots));
-                InvokePropertyChanged(nameof(AllSlotsReachable));
-                InvokePropertyChanged(nameof(AreCateringAndLoadingBaysValid));
-                InvokePropertyChanged(nameof(InvalidCateringDoorsAndLoadingBays));
-                InvokePropertyChanged(nameof(InvalidPositionedSlots));
-                InvokePropertyChanged(nameof(AllInteriorSlotPositionsValid));
-                InvokePropertyChanged(nameof(InvalidPositionedCockpitSlots));
-                InvokePropertyChanged(nameof(AllCockpitSlotPositionsValid));
-                InvokePropertyChanged(nameof(InvalidPositionedDoorSlots));
-                InvokePropertyChanged(nameof(AllDoorSlotPositionsValid));
+                    InvokePropertyChanged(nameof(AreServicePointsValid));
+                    InvokePropertyChanged(nameof(AreGalleysValid));
+                    InvokePropertyChanged(nameof(AreKitchensValid));
+                    InvokePropertyChanged(nameof(AreIntercomsValid));
+                    InvokePropertyChanged(nameof(AreDoorsValid));
+                    InvokePropertyChanged(nameof(AreToiletsAvailable));
+                    InvokePropertyChanged(nameof(AreSeatsReachableByService));
+                    InvokePropertyChanged(nameof(AreSlotsValid));
 
-                InvokePropertyChanged(nameof(MinorIssuesCount));
-                InvokePropertyChanged(nameof(HasMinorIssues));
-                InvokePropertyChanged(nameof(SevereIssuesCount));
-                InvokePropertyChanged(nameof(HasSevereIssues));
-                InvokePropertyChanged(nameof(HasAnyIssues));
-                InvokePropertyChanged(nameof(MinorIssuesText));
-                InvokePropertyChanged(nameof(SevereIssuesText));
-                InvokePropertyChanged(nameof(MinorIssuesList));
-                InvokePropertyChanged(nameof(SevereIssuesList));
+                    InvokePropertyChanged(nameof(UnreachableSlots));
+                    InvokePropertyChanged(nameof(AllSlotsReachable));
+                    InvokePropertyChanged(nameof(AreCateringAndLoadingBaysValid));
+                    InvokePropertyChanged(nameof(InvalidCateringDoorsAndLoadingBays));
+                    InvokePropertyChanged(nameof(InvalidPositionedSlots));
+                    InvokePropertyChanged(nameof(AllInteriorSlotPositionsValid));
+                    InvokePropertyChanged(nameof(InvalidPositionedCockpitSlots));
+                    InvokePropertyChanged(nameof(AllCockpitSlotPositionsValid));
+                    InvokePropertyChanged(nameof(InvalidPositionedDoorSlots));
+                    InvokePropertyChanged(nameof(AllDoorSlotPositionsValid));
+
+                    InvokePropertyChanged(nameof(MinorIssuesCount));
+                    InvokePropertyChanged(nameof(HasMinorIssues));
+                    InvokePropertyChanged(nameof(SevereIssuesCount));
+                    InvokePropertyChanged(nameof(HasSevereIssues));
+                    InvokePropertyChanged(nameof(HasAnyIssues));
+                    InvokePropertyChanged(nameof(MinorIssuesText));
+                    InvokePropertyChanged(nameof(SevereIssuesText));
+                    InvokePropertyChanged(nameof(MinorIssuesList));
+                    InvokePropertyChanged(nameof(SevereIssuesList));
+                }
+
+                currentHash = newHash;
             }
-
-            currentHash = newHash;
         }
 
         private void RefreshIssues()

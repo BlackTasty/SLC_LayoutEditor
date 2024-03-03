@@ -858,12 +858,13 @@ namespace SLC_LayoutEditor.UI
         {
             if (!isAutomationRunning)
             {
-                CabinHistory.Instance.RecordChanges(
-                    vm.SelectedCabinLayout.CabinDecks
-                        .SelectMany(x => x.CabinSlots)
-                        .Where(x => x.CollectForHistory), 
-                    vm.SelectedCabinSlotFloor,
-                    usedAutomationMode);
+                Dictionary<int, IEnumerable<CabinSlot>> changedPerFloor = new Dictionary<int, IEnumerable<CabinSlot>>();
+                foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
+                {
+                    changedPerFloor.Add(cabinDeck.Floor, cabinDeck.CabinSlots.Where(x => x.CollectForHistory));
+                }
+
+                CabinHistory.Instance.RecordChanges(changedPerFloor, usedAutomationMode);
             }
         }
 

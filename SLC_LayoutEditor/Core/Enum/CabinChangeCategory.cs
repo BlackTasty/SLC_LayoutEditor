@@ -11,6 +11,7 @@ namespace SLC_LayoutEditor.Core.Enum
         Unset,
         SlotData,
         SlotAmount,
-        Deck
+        Deck,
+        AutoFix
     }
 }

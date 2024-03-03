@@ -20,6 +20,8 @@
                            Description="{Binding ActiveLayout.IssuesCountText}" ExpandDirection="Up"
                            IsExpanded="{Binding IsIssueTrackerExpanded}"
                            PlayAnimations="{Binding PlayExpanderAnimations}"
+                           BorderBrush="{DynamicResource BackgroundDarkBrush}"
+                           BorderThickness="1.5"
                            Margin="0,8">
         <local:RefinedExpander.Style>
             <Style TargetType="local:RefinedExpander" BasedOn="{StaticResource {x:Type local:RefinedExpander}}">
@@ -78,7 +80,6 @@
                                          ShowProblemsChanged="StairwayPositions_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowStairwayIssues}"
                                          ShowAutoFix="True"
-                                         IsAutoFixEnabled="False"
                                          AutoFixApplying="StairwayPositions_AutoFixApplying"
                                          AutoFixTarget="{Binding ActiveLayout}"
                                          Description="When using multiple decks and adding stairways, make sure to align them on the same x/y coordinate"

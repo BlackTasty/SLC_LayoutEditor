@@ -136,7 +136,7 @@
                             </Menu>
                             <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
 
-                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,12,0" x:Name="panel_historyButtons">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Setter Property="IsEnabled" Value="False"/>
