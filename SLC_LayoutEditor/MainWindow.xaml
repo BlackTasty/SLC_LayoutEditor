@@ -11,7 +11,7 @@
         Background="{DynamicResource BackgroundDarkBrush}"
         BorderBrush="{DynamicResource BackgroundLightBrush}"
         mc:Ignorable="d" Closing="Window_Closing" WindowStyle="SingleBorderWindow"
-        Title="{Binding Title}" MinHeight="780" MinWidth="1100"
+        Title="{Binding Title}" MinHeight="810" MinWidth="1260"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
         Icon="Resources/icon.ico" StateChanged="Window_StateChanged">
     <WindowChrome.WindowChrome>
@@ -145,6 +145,8 @@
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding IsLayoutOpened}" Value="True"/>
                                                     <Condition Binding="{Binding IsDialogOpen}" Value="False"/>
+                                                    <Condition Binding="{Binding IsGuideOpen}" Value="False"/>
+                                                    <Condition Binding="{Binding IsViewNotEditor}" Value="False"/>
                                                 </MultiDataTrigger.Conditions>
                                                 <Setter Property="IsEnabled" Value="True"/>
                                             </MultiDataTrigger>

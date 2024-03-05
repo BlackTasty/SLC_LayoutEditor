@@ -242,7 +242,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                         if (targetSlot != null)
                         {
                             slotHitResults.Add(new SlotHitResult(DrawCabinSlot(context, targetSlot), targetSlot));
-                            targetSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
+                            targetSlot.Changed += TargetSlot_CabinSlotChanged;
                             targetSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
                         }
                     }
@@ -605,7 +605,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     cabinSlot.CollectForHistory = true;
                 }
                 affectedSlots.Add(cabinSlot);
-                cabinSlot.CabinSlotChanged += TargetSlot_CabinSlotChanged;
+                cabinSlot.Changed += TargetSlot_CabinSlotChanged;
                 cabinSlot.ProblematicChanged += TargetSlot_CabinSlotChanged;
                 cabinDeck.AddCabinSlot(cabinSlot);
                 Rect hitbox = GetCabinSlotHitbox(cabinSlot);
@@ -701,7 +701,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             foreach (SlotHitResult slotHitResult in slotHitResults.Where(removalCondition).ToList())
             {
                 slotHitResult.IsRemoved = true;
-                slotHitResult.CabinSlot.CabinSlotChanged -= TargetSlot_CabinSlotChanged;
+                slotHitResult.CabinSlot.Changed -= TargetSlot_CabinSlotChanged;
                 slotHitResult.CabinSlot.ProblematicChanged -= TargetSlot_CabinSlotChanged;
                 cabinDeck.RemoveCabinSlot(slotHitResult.CabinSlot);
                 slotHitResults.Remove(slotHitResult);
@@ -1065,6 +1065,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
 
             output.RedrawArea(drawingVisual.RenderVisual(cabinSlotRect.Size), cabinSlotRect);
+
+            if (cabinSlot.IsRemoved)
+            {
+                slotHitResults.RemoveWhere(x => x.Rect == GetCabinSlotHitbox(cabinSlot));
+            }
         }
 
         private Rect GetCabinSlotHitbox(CabinSlot cabinSlot, double calculatedX = -1, double calculatedY = -1)
@@ -1094,55 +1099,65 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
             Rect cabinSlotRect = new Rect(position, size);
 
-            GetColorsForCabinSlot(cabinSlot, out Brush background, out Pen borderColor);
-
-            if (!isGeneratingThumbnail && !RenderProblematicAfter(cabinSlot) && 
-                cabinSlot.SlotIssues.IsProblematic)
+            if (!cabinSlot.IsRemoved)
             {
-                context.DrawRoundedRectangle(ERROR_HIGHLIGHT_BACKGROUND, null, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
+                // Draw actual cabin slot
+                #region Draw actual cabin slot
+                GetColorsForCabinSlot(cabinSlot, out Brush background, out Pen borderColor);
+
+                if (!isGeneratingThumbnail && !RenderProblematicAfter(cabinSlot) &&
+                    cabinSlot.SlotIssues.IsProblematic)
+                {
+                    context.DrawRoundedRectangle(ERROR_HIGHLIGHT_BACKGROUND, null, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
+                }
+
+                if (!cabinSlot.IsDoor)
+                {
+                    context.DrawRoundedRectangle(background, borderColor, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
+                }
+
+                if (!isGeneratingThumbnail && RenderProblematicAfter(cabinSlot) &&
+                    cabinSlot.SlotIssues.IsProblematic)
+                {
+                    context.DrawRoundedRectangle(ERROR_HIGHLIGHT_BACKGROUND, null, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
+                }
+
+                if (cabinSlot.IsDoor || cabinSlot.IsSeat)
+                {
+                    Size textAreaSize = new Size(size.Width + 2, 20);
+                    Point textAreaPosition = new Point(position.X - 1, position.Y + (size.Height - textAreaSize.Height) / 2);
+                    Rect textAreaRect = new Rect(textAreaPosition, textAreaSize);
+
+                    context.DrawRectangle(cabinSlot.Type != CabinSlotType.PremiumClassSeat ? TEXT_AREA_BACKGROUND : TEXT_AREA_BACKGROUND_DARK,
+                        null, textAreaRect);
+
+                    FormattedText formattedText = GetFormattedText(cabinSlot.DisplayText);
+
+                    Point textPosition = Util.GetChildCenterPosition(textAreaRect, new Rect(textAreaPosition, formattedText.GetSize()), true, true);
+                    context.DrawText(formattedText, textPosition);
+                }
+
+                if (cabinSlot.IsDoor)
+                {
+                    context.DrawRoundedRectangle(background, borderColor, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
+                }
+
+                Size highlightSize = FixedValues.SLOT_DIMENSIONS.Modify(2, 2);
+                if (!isGeneratingThumbnail && cabinSlot.IsSelected)
+                {
+                    context.DrawRoundedRectangle(SLOT_SELECTED_BRUSH, null, new Rect(new Point(), highlightSize),
+                        SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
+                }
+
+                if (!isGeneratingThumbnail && isMouseOver)
+                {
+                    context.DrawRectangle(SLOT_MOUSE_OVER_BRUSH, null, new Rect(new Point(), highlightSize));
+                }
+                #endregion
             }
-
-            if (!cabinSlot.IsDoor)
+            else
             {
-                context.DrawRoundedRectangle(background, borderColor, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
-            }
-
-            if (!isGeneratingThumbnail && RenderProblematicAfter(cabinSlot) && 
-                cabinSlot.SlotIssues.IsProblematic)
-            {
-                context.DrawRoundedRectangle(ERROR_HIGHLIGHT_BACKGROUND, null, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
-            }
-
-            if (cabinSlot.IsDoor || cabinSlot.IsSeat)
-            {
-                Size textAreaSize = new Size(size.Width + 2, 20);
-                Point textAreaPosition = new Point(position.X - 1, position.Y + (size.Height - textAreaSize.Height) / 2);
-                Rect textAreaRect = new Rect(textAreaPosition, textAreaSize);
-
-                context.DrawRectangle(cabinSlot.Type != CabinSlotType.PremiumClassSeat ? TEXT_AREA_BACKGROUND : TEXT_AREA_BACKGROUND_DARK,
-                    null, textAreaRect);
-
-                FormattedText formattedText = GetFormattedText(cabinSlot.DisplayText);
-
-                Point textPosition = Util.GetChildCenterPosition(textAreaRect, new Rect(textAreaPosition, formattedText.GetSize()), true, true);
-                context.DrawText(formattedText, textPosition);
-            }
-
-            if (cabinSlot.IsDoor)
-            {
-                context.DrawRoundedRectangle(background, borderColor, cabinSlotRect, SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
-            }
-
-            Size highlightSize = FixedValues.SLOT_DIMENSIONS.Modify(2, 2);
-            if (!isGeneratingThumbnail && cabinSlot.IsSelected)
-            {
-                context.DrawRoundedRectangle(SLOT_SELECTED_BRUSH, null, new Rect(new Point(), highlightSize),
-                    SLOT_CORNER_RADIUS, SLOT_CORNER_RADIUS);
-            }
-
-            if (!isGeneratingThumbnail && isMouseOver)
-            {
-                context.DrawRectangle(SLOT_MOUSE_OVER_BRUSH, null, new Rect(new Point(), highlightSize));
+                context.DrawRectangle(null, null, cabinSlotRect);
             }
 
             cabinSlot.IsDirty = false;

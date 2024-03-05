@@ -281,19 +281,21 @@ namespace SLC_LayoutEditor.Core.Cabin
             int doorsCount = mCabinDecks.Select(x => x.CabinSlots.Where(y => y.IsDoor).Count()).Sum();
 
             ToggleIssueChecking(false);
+            CabinHistory.Instance.IsRecording = false;
 
             int slotNumber = 1;
             bool isZeroDoorSet = false;
             bool handleCateringDoorsSeparately = doorsCount > 9;
 
-            Dictionary<int, IEnumerable<CabinSlot>> changesPerFloor = new Dictionary<int, IEnumerable<CabinSlot>>();
+            Dictionary<int, IEnumerable<CabinChange>> changesPerFloor = new Dictionary<int, IEnumerable<CabinChange>>();
+
             if (handleCateringDoorsSeparately) // Prioritize numbering catering doors over other doors
             {
                 foreach (CabinDeck cabinDeck in mCabinDecks.Where(x => x.DoorSlots.Any(y => y.Type == CabinSlotType.CateringDoor)).OrderByDescending(x => x.Floor))
                 {
                     slotNumber = cabinDeck.FixDuplicateCateringDoors(slotNumber, out int successes, out int fails, 
-                        out List<CabinSlot> affectedDeckSlots);
-                    changesPerFloor.Add(cabinDeck.Floor, affectedDeckSlots);
+                        out List<CabinChange> changes);
+                    changesPerFloor.Add(cabinDeck.Floor, changes);
                     autoFixResult.CountSuccesses(successes);
                     autoFixResult.CountFails(fails);
                 }
@@ -302,12 +304,13 @@ namespace SLC_LayoutEditor.Core.Cabin
             foreach (CabinDeck cabinDeck in mCabinDecks.Where(x => x.HasDoors).OrderByDescending(x => x.Floor))
             {
                 slotNumber = cabinDeck.FixDuplicateDoors(slotNumber, isZeroDoorSet, handleCateringDoorsSeparately, 
-                    out int successes, out int fails, out isZeroDoorSet, out List<CabinSlot> affectedDeckSlots);
-                changesPerFloor.Add(cabinDeck.Floor, affectedDeckSlots);
+                    out int successes, out int fails, out isZeroDoorSet, out List<CabinChange> changes);
+                changesPerFloor.Add(cabinDeck.Floor, changes);
                 autoFixResult.CountSuccesses(successes);
                 autoFixResult.CountFails(fails);
             }
 
+            CabinHistory.Instance.IsRecording = true;
             CabinHistory.Instance.RecordChanges(changesPerFloor, AutomationMode.AutoFix_Doors);
             ToggleIssueChecking(true);
             return autoFixResult;
@@ -639,19 +642,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 bool hasPreviousDeckStairways = false;
                 foreach (CabinDeck cabinDeck in mCabinDecks)
                 {
-                    List<CabinSlot> changedSlots = new List<CabinSlot>();
                     foreach (CabinSlot cabinSlot in cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway))
                     {
-                        if (nextDeck != null)
-                        {
-                            CabinSlot slotAbove = nextDeck.GetSlotAtPosition(cabinSlot.Row, cabinSlot.Column);
-
-                            if (slotAbove?.Type != CabinSlotType.Stairway)
-                            {
-                                slotAbove.Type = CabinSlotType.Stairway;
-                                changedSlots.Add(slotAbove);
-                            }
-                        }
                         if (previousDeck != null) // Check stairway connections above
                         {
                             CabinSlot slotBelow = previousDeck.GetSlotAtPosition(cabinSlot.Row, cabinSlot.Column);
@@ -661,18 +653,29 @@ namespace SLC_LayoutEditor.Core.Cabin
                                 if (hasPreviousDeckStairways)
                                 {
                                     cabinSlot.Type = CabinSlotType.Aisle;
-                                    changedSlots.Add(cabinSlot);
                                 }
                                 else
                                 {
                                     slotBelow.Type = CabinSlotType.Stairway;
-                                    changedSlots.Add(slotBelow);
                                 }
+                            }
+                        }
+                        if (nextDeck != null)
+                        {
+                            CabinSlot slotAbove = nextDeck.GetSlotAtPosition(cabinSlot.Row, cabinSlot.Column);
+
+                            if (slotAbove?.Type != CabinSlotType.Stairway)
+                            {
+                                slotAbove.Type = CabinSlotType.Stairway;
                             }
                         }
                     }
 
-                    changesPerFloor.Add(cabinDeck.Floor, changedSlots);
+                    IEnumerable<CabinSlot> changedSlots = cabinDeck.CabinSlots.Where(x => x.CollectForHistory);
+                    if (changedSlots.Any())
+                    {
+                        changesPerFloor.Add(cabinDeck.Floor, changedSlots);
+                    }
                     previousDeck = cabinDeck;
                     hasPreviousDeckStairways = cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Stairway).Any();
                     nextDeck = mCabinDecks.Skip(mCabinDecks.IndexOf(nextDeck) + 1).FirstOrDefault();

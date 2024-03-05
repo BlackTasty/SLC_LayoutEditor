@@ -20,7 +20,7 @@ namespace SLC_LayoutEditor.Core.Memento
 
         public CabinChangeCategory Category => category;
 
-        public string UsedAutomationMode => EnumDescriptionConverter.GetDescription(usedAutomationMode);
+        public AutomationMode UsedAutomationMode => usedAutomationMode;
 
         public bool WasAutomationUsed => usedAutomationMode != AutomationMode.None;
 

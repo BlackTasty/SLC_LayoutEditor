@@ -217,8 +217,15 @@ namespace SLC_LayoutEditor.ViewModel
             get => mContent;
             set
             {
+                LayoutEditor newValue = value as LayoutEditor;
+
                 if (mContent is LayoutEditor oldEditor)
                 {
+                    if (newValue == null)
+                    {
+                        this.editor.DeselectSlots();
+                    }
+
                     this.editor = oldEditor;
                     oldEditor.CabinLayoutSelected -= Editor_CabinLayoutSelected;
                     oldEditor.Changed -= Editor_LayoutChanged;
@@ -228,12 +235,12 @@ namespace SLC_LayoutEditor.ViewModel
 
                 mContent = value;
 
-                if (value is LayoutEditor editor)
+                if (newValue != null)
                 {
-                    editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
-                    editor.Changed += Editor_LayoutChanged;
-                    editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
-                    editor.SelectedDeckChanged += Editor_SelectedDeckChanged;
+                    newValue.CabinLayoutSelected += Editor_CabinLayoutSelected;
+                    newValue.Changed += Editor_LayoutChanged;
+                    newValue.TourRunningStateChanged += Editor_TourRunningStateChanged;
+                    newValue.SelectedDeckChanged += Editor_SelectedDeckChanged;
                 }
 
                 InvokePropertyChanged();

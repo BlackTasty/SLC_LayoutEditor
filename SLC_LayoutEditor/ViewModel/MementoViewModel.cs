@@ -13,17 +13,15 @@ namespace SLC_LayoutEditor.ViewModel
 {
     class MementoViewModel : ViewModelBase
     {
+        protected const int MAX_SHOWN_STEPS = 10;
+
         private CabinHistory history = CabinHistory.Instance;
 
         public CabinHistory History => history;
 
-        public List<CabinHistoryEntry> UndoHistory => History.UndoHistory.Stack;
+        public IEnumerable<CabinHistoryEntry> UndoHistory => History.UndoHistory.Stack;
 
-        public IEnumerable<string> UndoSteps => History.UndoHistory.GetMessages();
-
-        public List<CabinHistoryEntry> RedoHistory => History.RedoHistory.Stack;
-
-        public IEnumerable<string> RedoSteps => History.RedoHistory.GetMessages();
+        public IEnumerable<CabinHistoryEntry> RedoHistory => History.RedoHistory.Stack;
 
         public bool CanUndo => History.CanUndo;
 
@@ -43,10 +41,8 @@ namespace SLC_LayoutEditor.ViewModel
         {
             InvokePropertyChanged(nameof(CanUndo));
             InvokePropertyChanged(nameof(UndoHistory));
-            InvokePropertyChanged(nameof(UndoSteps));
             InvokePropertyChanged(nameof(CanRedo));
             InvokePropertyChanged(nameof(RedoHistory));
-            InvokePropertyChanged(nameof(RedoSteps));
         }
 
         public void Undo()

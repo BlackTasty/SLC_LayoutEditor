@@ -31,15 +31,27 @@ namespace SLC_LayoutEditor.Core.Memento
         private CabinHistory() { }
         #endregion
 
-        public void RecordChanges(Dictionary<int, IEnumerable<CabinSlot>> changesPerFloor, AutomationMode usedAutomationMode)
+        public void RecordChanges(Dictionary<int, IEnumerable<CabinChange>> changesPerFloor, AutomationMode usedAutomationMode)
         {
-            IEnumerable<CabinChange> changedData = changesPerFloor.SelectMany(x => GetCabinChanges(x.Value, x.Key)).ToList();
+            IEnumerable<CabinChange> changedData = changesPerFloor.SelectMany(x => x.Value);
 
             if (changedData.Count() > 0)
             {
-                base.RecordChanges(new CabinHistoryEntry(changedData, 
+                base.RecordChanges(new CabinHistoryEntry(changedData,
                     CabinChangeCategory.SlotData, usedAutomationMode));
             }
+        }
+
+        public void RecordChanges(Dictionary<int, IEnumerable<CabinSlot>> changedSlotsPerFloor, AutomationMode usedAutomationMode)
+        {
+            Dictionary<int, IEnumerable<CabinChange>> changesPerFloor = new Dictionary<int, IEnumerable<CabinChange>>();
+            foreach (var changedSlots in changedSlotsPerFloor)
+            {
+                changesPerFloor.Add(changedSlots.Key, GetCabinChanges(changedSlots.Value, changedSlots.Key, false,
+                    usedAutomationMode == AutomationMode.AutoFix_SlotCount));
+            }
+
+            RecordChanges(changesPerFloor, usedAutomationMode);
         }
 
         public void RecordChanges(IEnumerable<CabinSlot> changedSlots, int floor, AutomationMode usedAutomationMode)
@@ -68,15 +80,15 @@ namespace SLC_LayoutEditor.Core.Memento
             }
         }
 
-        private IEnumerable<CabinChange> GetCabinChanges(IEnumerable<CabinSlot> changedSlots, int floor, bool force = false)
+        private IEnumerable<CabinChange> GetCabinChanges(IEnumerable<CabinSlot> changedSlots, int floor, bool force = false, bool isInserted = false)
         {
             List<CabinChange> changedData = new List<CabinChange>();
 
             foreach (CabinSlot change in changedSlots)
             {
-                if (force || change.PreviousState != change.ToString())
+                if (force || isInserted || change.PreviousState != change.ToString())
                 {
-                    changedData.Add(new CabinChange(change, floor));
+                    changedData.Add(new CabinChange(change, floor, isInserted));
                 }
 
                 change.CollectForHistory = false;
