@@ -11,6 +11,7 @@
              local:GuideAssist.HasGuide="True"
              local:GuideAssist.IsCircularCutout="False"
              local:GuideAssist.RadiusOffset="-12"
+             local:GuideAssist.TextPosition="Right"
              UseLayoutRounding="True"
              Cursor="Help">
     <UserControl.DataContext>
@@ -138,14 +139,14 @@
                                                 </Style>
                                             </local:LayoutProblemText.Style>
                                         </local:LayoutProblemText>
-                                        <local:LayoutProblemText ValidText="Deck slots valid"
+                                        <local:LayoutProblemText ValidText="No missing cabin slots"
                                                                  Floor="{Binding Floor}"
-                                                                 InvalidText="Invalid amount of deck slots!"
+                                                                 InvalidText="Missing cabin slots found!"
                                                                  IsValid="{Binding AreSlotsValid}"
                                                                  ShowAutoFix="True"
                                                                  AutoFixTarget="{Binding}"
                                                                  AutoFixApplying="Slots_AutoFixApplying"
-                                                                 Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing tiles"/>
+                                                                 Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing slots"/>
 
                                         <local:LayoutProblemText ValidText="Doors available"
                                                                  Floor="{Binding Floor}"

@@ -38,7 +38,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
                 App.SaveAppSettings();
             }
 
-            CloseDialog(DialogResultType.OK);
+            base.OnDialogClosing(e);
         }
 
         public override void CancelDialog()

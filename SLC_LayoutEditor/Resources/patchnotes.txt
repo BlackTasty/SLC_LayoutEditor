@@ -1,7 +1,11 @@
 ﻿20.01.2024 m
+Re-enabled: The stairway autofix is working again!
 Added: You can now undo and redo actions while editing!
+Added: Holding down Shift while scrolling your mouse wheel over your layout will now horizontally scroll if possible
 Added: In case the editor crashes while a layout/template with unsaved changes was open, a snapshot is created which can be restored at next startup
 Fixed: The "getting started" dialog now remembers when you click "No"
 Fixed: Fixed a minor alignment problem with the editor view, when the window was maximized
 Fixed: The text for duplicate seats didn't update properly
 Fixed: Issue trackers for doors and cockpits showed slots like seats as invalid positioned
+Fixed: In case where a layout had missing slots in a column, the editor would crash when loading this layout
+Fixed: When you have slots selected and open your settings or the welcome screen, returning to the editor would leave behind artifacts

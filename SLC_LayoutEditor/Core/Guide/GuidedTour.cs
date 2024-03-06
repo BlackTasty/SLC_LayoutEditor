@@ -61,6 +61,8 @@ namespace SLC_LayoutEditor.Core.Guide
 
         public bool AwaitUserInput { get; set; }
 
+        public bool WaitForUIElement { get; set; }
+
         public bool IsAwaitingAircraftSelection => _awaitUserInput && CurrentStep == GuidedTourStep.AircraftSelectionArea;
 
         public bool IsAwaitingLayoutSelection => _awaitUserInput && CurrentStep == GuidedTourStep.CreateLayout;
@@ -68,6 +70,8 @@ namespace SLC_LayoutEditor.Core.Guide
         public bool IsAwaitingBorderSlotSelection => _awaitUserInput && CurrentStep == GuidedTourStep.FirstLayoutIntroduction;
 
         public bool IsAwaitingSlotChangeToDoor => _awaitUserInput && CurrentStep == GuidedTourStep.SlotConfiguratorArea;
+
+        public bool IsExplainingDeckIssueCards => IsTourRunning && CurrentStep == GuidedTourStep.DeckIssueCards;
 
         public bool IsAwaitingEssentialSlots => _awaitUserInput && CurrentStep == GuidedTourStep.PlacingEssentials;
 
@@ -179,16 +183,21 @@ namespace SLC_LayoutEditor.Core.Guide
         
         public void ContinueTour(bool resetAwaitInputFlag = false)
         {
-            if (!resetAwaitInputFlag && AwaitUserInput)
+            bool wasWaitingForUIElement = WaitForUIElement;
+            if (!resetAwaitInputFlag && (AwaitUserInput || WaitForUIElement))
             {
                 return;
             }
             else if (resetAwaitInputFlag)
             {
                 AwaitUserInput = false;
+                WaitForUIElement = false;
             }
-
-            this.currentStep++;
+            
+            if (!wasWaitingForUIElement)
+            {
+                this.currentStep++;
+            }
 
             if (System.Enum.TryParse(this.currentStep.ToString(), out GuidedTourStep currentStep))
             {
@@ -323,7 +332,37 @@ namespace SLC_LayoutEditor.Core.Guide
                         guidedElement = layoutIssuesArea;
                         break;
                     case GuidedTourStep.DeckIssueCards:
-                        guidedElement = editorArea.GetDeckIssueElement();
+                        bool waitedForUIElement = false;
+
+                        if (editorArea.deck_scroll.VerticalOffset != 0)
+                        {
+                            if (editorArea.deck_scroll.HorizontalOffset == 0)
+                            {
+                                waitedForUIElement = true;
+                                WaitForUIElement = true;
+                            }
+
+                            editorArea.deck_scroll.ScrollToVerticalOffset(0);
+                        }
+
+                        if (editorArea.deck_scroll.HorizontalOffset != 0)
+                        {
+                            if (!WaitForUIElement)
+                            {
+                                waitedForUIElement = true;
+                                WaitForUIElement = true;
+                            }
+                            editorArea.deck_scroll.ScrollToHorizontalOffset(0);
+                        }
+
+                        if (!waitedForUIElement)
+                        {
+                            guidedElement = editorArea.GetDeckIssueElement();
+                        }
+                        else
+                        {
+                            return;
+                        }
                         break;
                     case GuidedTourStep.SelectingSlots:
                         overrides.Title = "Selecting slots";

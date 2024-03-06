@@ -15,8 +15,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 {
     public class CabinSlot : ViewModelBase
     {
-        public event EventHandler<CabinSlotChangedEventArgs> CabinSlotChanged;
-        public event EventHandler<CabinSlotChangedEventArgs> SlotTypeChanged;
+        public event EventHandler<CabinSlotChangedEventArgs> Changed;
+        public event EventHandler<CabinSlotChangedEventArgs> TypeChanged;
         public event EventHandler<CabinSlotChangedEventArgs> ProblematicChanged;
 
         private int mRow;
@@ -32,6 +32,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private bool isDirty = true;
         private bool hasTypeChanged;
         private bool collectForHistory;
+        private bool isRemoved;
 
         private string guid;
 
@@ -41,12 +42,14 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public bool IsDirty
         {
-            get => isDirty;
+            get => !isRemoved ? isDirty : true;
             set
             {
                 isDirty = value;
             }
         }
+
+        public bool IsRemoved => isRemoved;
 
         public int Row
         {
@@ -104,8 +107,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                     SlotNumber = 0;
                 }
 
-                OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
-                OnSlotTypeChanged(new CabinSlotChangedEventArgs(this));
+                OnChanged(new CabinSlotChangedEventArgs(this));
+                OnTypeChanged(new CabinSlotChangedEventArgs(this));
 
                 hasTypeChanged = false;
             }
@@ -129,15 +132,18 @@ namespace SLC_LayoutEditor.Core.Cabin
                     return;
                 }
 
-                mSlotNumber = Math.Min(Math.Max(value, 0), MaxSlotNumber);
                 if (!hasTypeChanged)
                 {
                     CollectForHistory = true;
-                    InvokePropertyChanged();
-                    InvokePropertyChanged(nameof(DisplayText));
-                    OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
                 }
 
+                mSlotNumber = Math.Min(Math.Max(value, 0), MaxSlotNumber);
+                if (!hasTypeChanged)
+                {
+                    InvokePropertyChanged();
+                    InvokePropertyChanged(nameof(DisplayText));
+                    OnChanged(new CabinSlotChangedEventArgs(this));
+                }
             }
         }
 
@@ -153,6 +159,11 @@ namespace SLC_LayoutEditor.Core.Cabin
                     return;
                 }
 
+                if (!hasTypeChanged)
+                {
+                    CollectForHistory = true;
+                }
+
                 if (char.IsLetter(value))
                 {
                     mSeatLetter = char.ToUpper(value);
@@ -164,10 +175,9 @@ namespace SLC_LayoutEditor.Core.Cabin
 
                 if (!hasTypeChanged)
                 {
-                    CollectForHistory = true;
                     InvokePropertyChanged();
                     InvokePropertyChanged(nameof(DisplayText));
-                    OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
+                    OnChanged(new CabinSlotChangedEventArgs(this));
                 }
             }
         }
@@ -224,7 +234,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             set
             {
                 collectForHistory = value;
-                if (!value)
+                if (value)
                 {
                     previousState = ToString();
                 }
@@ -341,7 +351,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             ApplySlotData(isUndo ? change.PreviousData : change.Data);
             previousState = ToString();
             CabinSlotChangedEventArgs e = new CabinSlotChangedEventArgs(this);
-            OnCabinSlotChanged(e);
+            OnChanged(e);
         }
 
         private void SlotIssues_ProblematicChanged(object sender, EventArgs e)
@@ -352,7 +362,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public void FireChangedEvent()
         {
             previousState = "";
-            OnCabinSlotChanged(new CabinSlotChangedEventArgs(this));
+            OnChanged(new CabinSlotChangedEventArgs(this));
         }
 
         public bool IsReachable(CabinDeck deck)
@@ -385,7 +395,13 @@ namespace SLC_LayoutEditor.Core.Cabin
         public void Validate()
         {
             OnProblematicChanged(new CabinSlotChangedEventArgs(this));
-            //OnCabinSlotChanged(new CabinSlotChangedEventArgs(mType));
+            //OnChanged(new CabinSlotChangedEventArgs(mType));
+        }
+
+        public void MarkForRemoval()
+        {
+            isRemoved = true;
+            //OnChanged(new CabinSlotChangedEventArgs(this));
         }
 
         public string GetNumberAndLetter()
@@ -444,14 +460,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        protected virtual void OnCabinSlotChanged(CabinSlotChangedEventArgs e)
+        protected virtual void OnChanged(CabinSlotChangedEventArgs e)
         {
-            if (previousState != ToString())
+            if (previousState != ToString() || isRemoved)
             {
                 IsDirty = true;
                 if (IsEvaluationActive)
                 {
-                    CabinSlotChanged?.Invoke(this, e);
+                    Changed?.Invoke(this, e);
                 }
             }
         }
@@ -465,10 +481,10 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        protected virtual void OnSlotTypeChanged(CabinSlotChangedEventArgs e)
+        protected virtual void OnTypeChanged(CabinSlotChangedEventArgs e)
         {
             IsDirty = true;
-            SlotTypeChanged?.Invoke(this, e);
+            TypeChanged?.Invoke(this, e);
         }
     }
 }

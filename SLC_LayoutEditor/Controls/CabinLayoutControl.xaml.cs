@@ -322,12 +322,17 @@ namespace SLC_LayoutEditor.Controls
             container_decks.Children.Add(cabinDeckControl);
         }
 
+        public void DeselectSlots()
+        {
+            selectedDeck?.DeselectSlots();
+        }
+
         private void CabinDeckControl_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
         {
             if (selectedDeck != null &&
                 selectedDeck.CabinDeck.Floor != e.DeckControl.CabinDeck.Floor)
             {
-                selectedDeck.DeselectSlots();
+                DeselectSlots();
             }
 
             SelectedCabinSlots = e.NewSelection.ToList();
@@ -636,6 +641,24 @@ namespace SLC_LayoutEditor.Controls
         protected virtual void OnSelectedSlotsChanged(SelectedSlotsChangedEventArgs e)
         {
             SelectedSlotsChanged?.Invoke(this, e);
+        }
+
+        private void deck_scroll_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Util.IsShiftDown())
+            {
+                deck_scroll.ScrollToHorizontalOffset(deck_scroll.HorizontalOffset + e.Delta);
+                e.Handled = true;
+            }
+        }
+
+        private void deck_scroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if ((App.GuidedTour?.IsExplainingDeckIssueCards ?? false) && 
+                (App.GuidedTour?.WaitForUIElement ?? false))
+            {
+                App.GuidedTour.ContinueTour(true);
+            }
         }
     }
 }

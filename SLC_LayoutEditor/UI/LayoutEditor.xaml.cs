@@ -85,6 +85,11 @@ namespace SLC_LayoutEditor.UI
             }, ViewModelMessage.Keybind_SaveLayout);
         }
 
+        public void DeselectSlots()
+        {
+            control_layout.DeselectSlots();
+        }
+
         public bool CheckUnsavedChanges(bool isClosing)
         {
             return vm.CheckUnsavedChanges(null, isClosing);
@@ -580,6 +585,11 @@ namespace SLC_LayoutEditor.UI
                                         CabinSlot newServiceStartSlot = cabinDeck.GetSlotAtPosition(startRow, column);
                                         CabinSlot newServiceEndSlot = cabinDeck.GetSlotAtPosition(endRow, column);
 
+                                        if (newServiceEndSlot == null)
+                                        {
+                                            newServiceEndSlot = lastServiceEndSlot;
+                                        }
+
                                         bool isServiceEndSlotAdjacentToSeat = cabinDeck.HasSeatInRow(newServiceEndSlot);
                                         if (!isServiceEndSlotAdjacentToSeat)
                                         {
@@ -832,11 +842,16 @@ namespace SLC_LayoutEditor.UI
             {
                 App.GuidedTour.ContinueTour(true);
             }
+            else
+            {
+                SlotTypeChangedForTour();
+            }
         }
 
         private void SlotTypeChangedForTour()
         {
-            if (App.GuidedTour?.IsAwaitingSlotChangeToDoor ?? false)
+            if (App.GuidedTour != null && (App.GuidedTour.IsAwaitingSlotChangeToDoor ||
+                App.GuidedTour.IsAwaitingBorderSlotSelection))
             {
                 int doorCount = vm.ActiveLayout.CountSlots(CabinSlotType.Door);
                 int loadingBayCount = vm.ActiveLayout.CountSlots(CabinSlotType.LoadingBay);
@@ -856,7 +871,7 @@ namespace SLC_LayoutEditor.UI
 
         private void RecordHistoryEntry()
         {
-            if (!isAutomationRunning)
+            if (!isAutomationRunning && vm.ActiveLayout != null)
             {
                 Dictionary<int, IEnumerable<CabinSlot>> changedPerFloor = new Dictionary<int, IEnumerable<CabinSlot>>();
                 foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)

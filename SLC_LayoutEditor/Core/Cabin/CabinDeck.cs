@@ -414,18 +414,19 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void AddCabinSlot(CabinSlot cabinSlot)
         {
-            cabinSlot.CabinSlotChanged += CabinSlot_CabinSlotChanged;
+            cabinSlot.Changed += CabinSlot_CabinSlotChanged;
             CabinSlots.Add(cabinSlot);
         }
 
         public void RemoveCabinSlot(CabinSlot cabinSlot)
         {
-            cabinSlot.CabinSlotChanged -= CabinSlot_CabinSlotChanged;
+            cabinSlot.MarkForRemoval();
+            cabinSlot.Changed -= CabinSlot_CabinSlotChanged;
             CabinSlots.Remove(cabinSlot);
         }
 
         public int FixDuplicateDoors(int slotNumber, bool isZeroDoorSet, bool ignoreCateringDoors, out int successes, out int fails, out bool wasZeroDoorSet,
-            out List<CabinSlot> affectedSlots)
+            out List<CabinChange> changes)
         {
             CabinSlot zeroDoor = null;
             wasZeroDoorSet = isZeroDoorSet;
@@ -433,7 +434,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             successes = 0;
             fails = 0;
-            affectedSlots = new List<CabinSlot>();
+            changes = new List<CabinChange>();
 
             if (ignoreCateringDoors)
             {
@@ -461,7 +462,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     doorSlot.SlotNumber = slotNumber;
                     slotNumber++;
                     successes++;
-                    affectedSlots.Add(doorSlot);
+                    changes.Add(new CabinChange(doorSlot, mFloor));
                 }
                 else
                 {
@@ -473,11 +474,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             return slotNumber;
         }
 
-        public int FixDuplicateCateringDoors(int slotNumber, out int successes, out int fails, out List<CabinSlot> affectedSlots)
+        public int FixDuplicateCateringDoors(int slotNumber, out int successes, out int fails, out List<CabinChange> changes)
         {
             successes = 0;
             fails = 0;
-            affectedSlots = new List<CabinSlot>();
+            changes = new List<CabinChange>();
 
             foreach (CabinSlot doorSlot in DoorSlots.Where(x => x.Type == CabinSlotType.CateringDoor)
                 .OrderBy(x => x.Row).ThenByDescending(x => x.Column))
@@ -487,7 +488,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     doorSlot.SlotNumber = slotNumber;
                     slotNumber++;
                     successes++;
-                    affectedSlots.Add(doorSlot);
+                    changes.Add(new CabinChange(doorSlot, mFloor));
                 }
                 else
                 {
@@ -664,8 +665,24 @@ namespace SLC_LayoutEditor.Core.Cabin
                         CabinSlot targetSlot = mCabinSlots.FirstOrDefault(x => x.Row == change.Row && x.Column == change.Column);
                         if (targetSlot != null)
                         {
-                            targetSlot.ApplyHistoryChange(change, isUndo);
+                            if (!change.IsInserted)
+                            {
+                                targetSlot.ApplyHistoryChange(change, isUndo);
+                            }
+                            else
+                            {
+                                RemoveCabinSlot(targetSlot);
+                            }
                         }
+                        else if (change.IsInserted)
+                        {
+                            AddCabinSlot(new CabinSlot(change.Data, change.Row, change.Column));
+                        }
+                    }
+
+                    if (historyEntry.UsedAutomationMode == AutomationMode.AutoFix_SlotCount)
+                    {
+                        OnDeckSlotLayoutChanged(EventArgs.Empty);
                     }
                     break;
                 case CabinChangeCategory.SlotAmount:
@@ -922,7 +939,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             foreach (CabinSlot cabinSlot in mCabinSlots)
             {
-                cabinSlot.CabinSlotChanged -= CabinSlot_CabinSlotChanged;
+                cabinSlot.Changed -= CabinSlot_CabinSlotChanged;
             }
         }
     }

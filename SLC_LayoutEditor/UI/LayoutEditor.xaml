@@ -196,7 +196,7 @@
                 controls:GuideAssist.Title="{StaticResource GuideSelectorCardTitle}"
                 controls:GuideAssist.Description="{StaticResource GuideSelectorCardDescription}"
                 controls:GuideAssist.HasGuide="True"
-                controls:GuideAssist.TextPosition="Bottom"
+                controls:GuideAssist.TextPosition="Right"
                 controls:GuideAssist.IsCircularCutout="False"
                 Cursor="Help"
                 ContextMenu="{StaticResource GuideMenu}">

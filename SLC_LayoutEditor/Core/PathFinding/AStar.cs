@@ -36,7 +36,7 @@ namespace SLC_LayoutEditor.Core.PathFinding
 
                 foreach (Node neighbor in GetNeighbors(grid, currentNode))
                 {
-                    if (closedSet.Contains(neighbor) || 
+                    if (neighbor == null || closedSet.Contains(neighbor) || 
                         neighbor.IsObstacle && (neighbor.IsObstacleOverride == null || neighbor.IsObstacleOverride.Value))
                     {
                         continue;

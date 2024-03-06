@@ -45,7 +45,8 @@
             </Grid.RowDefinitions>
             <Border Grid.RowSpan="2" Background="{DynamicResource TemplatingModeBackBrush}"
                     Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <ScrollViewer x:Name="deck_scroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.RowSpan="2">
+                <ScrollViewer x:Name="deck_scroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.RowSpan="2"
+                              PreviewMouseWheel="deck_scroll_PreviewMouseWheel" ScrollChanged="deck_scroll_ScrollChanged">
                     <ScrollViewer.Style>
                         <Style TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
                             <Style.Triggers>

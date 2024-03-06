@@ -47,12 +47,12 @@ namespace SLC_LayoutEditor.Core.Memento
 
         protected void RecordChanges(T recordedUndoStep)
         {
-            undoHistory.Push(recordedUndoStep);
-
             if (!IsRecording)
             {
                 return;
             }
+
+            undoHistory.Push(recordedUndoStep);
 
             if (redoHistory.Count > 0)
             {

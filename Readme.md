@@ -1,0 +1,43 @@
+<p align="center">
+  <a href="https://github.com/BlackTasty/SLC_LayoutEditor">
+    <img alt="Osmo" width="256" heigth="256" src="https://i.imgur.com/Gmpo22E.png">
+  </a>
+</p>
+
+# SLC Layout Editor - Creating cabin layouts with ease 
+
+This editor is a support tool for [SLC (Self Loading Cargo)](https://www.selfloadingcargo.com/), and makes creating and modifying cabin layouts as easy as it gets!
+ The editor comes with many useful features such as:
+ - **In-app updates**: Once you have extracted the files for the editor, you can get future updates via the editor itself!
+ - **Issue checking**: While editing any layout, the editor makes constant checks against cabin layout restraints, and shows all issues in a convenient list
+ - **Autofixing issues**: Some issues like misplaced stairways or duplicate doors can be automatically corrected by the editor itself!
+ -  **Automating slot configuration**: Let the editor handle setting up slot configs for seats, doors and service points
+ - **Getting started guide**: If you are new to the editor or you need a refresher, you can use the interactive guide to get into creating awesome layouts with ease!
+ - **Cabin templates**: Set up cabin templates to quickly create new layouts for the same aircraft
+ - **Undo/Redo system**: Made a mistake while editing your layout? Use either the Undo/Redo buttons in the title bar or Ctrl+Z/Ctrl+Y to quickly step through your changes
+ - **Keybinds upon keybinds**: Most actions you can do in the editor (saving layouts, cancelling dialogs, changing slot types, etc.) have a keybind attached to them. For a full list of keybinds either hit Ctrl+K or go to "Help" > "Show keybinds" 
+ - **Multi-selecting slots**: The editor allows you to freely add or remove slots to your selection on a cabin deck, speeding up the realisation of your next cabin layout
+
+If you're interested, you can download the most recent version here:
+**Download-Link**: [SLC Layout Editor v1.6.5](https://www.dropbox.com/scl/fi/s0265vy3v52eijs5cghka/SLC-Layout-Editor-v1.6.5.zip?rlkey=ruaq7r4erynfo08ss838lojje&dl=0)
+**VirusTotal scan** (SLC_LayoutEditor.exe): [For SLC Layout Editor v1.6.5](https://www.virustotal.com/gui/file/c4c61f2f4ee02f4bbd187b6f148368eeb0c63bd7cb40abae66cb1e48cff2ced7?nocache=1)
+
+### Development status
+
+**Trello roadmap**: [Roadmap](https://trello.com/b/vJMbqwXb/slc-layout-editor-roadmap)
+![GitHub last commit](https://img.shields.io/github/last-commit/BlackTasty/SLC_LayoutEditor?style=flat-square)
+
+## Screenshots
+
+### The editor
+![The editor](https://i.imgur.com/lLU8Fcx.jpeg "The editor")
+
+### Creating a new layout
+![Creating a new layout](https://i.imgur.com/MOpAWJB.jpeg "Creating a new layout")
+
+### Issue detection
+![Issue detection](https://i.imgur.com/lqGRmvG.jpeg "Issue detection")
+
+### Automating slot configuration
+![Automating slot configuration](https://i.imgur.com/FVKK5ZQ.gif "Automating slot configuration")
+![Autofixing faulty slots](https://i.imgur.com/BWHH5Sj.gif "Autofixing faulty slots")

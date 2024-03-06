@@ -442,7 +442,7 @@ namespace SLC_LayoutEditor
         {
             ContextMenu contextMenu = new ContextMenu()
             {
-                MaxHeight = 300
+                //MaxHeight = 300,
             };
 
             foreach (CabinHistoryEntry historyEntry in history)

@@ -20,7 +20,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         public virtual void CancelDialog()
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
+            this.OnDialogClosing(new DialogClosingEventArgs(DialogResultType.Cancel, null));
         }
 
         public void ShowDialog()
@@ -30,7 +30,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         protected void CloseDialog(DialogResultType result)
         {
-            OnDialogClosing(new DialogClosingEventArgs(result));
+            this.OnDialogClosing(new DialogClosingEventArgs(result));
         }
 
         protected virtual void OnDialogClosing(DialogClosingEventArgs e)

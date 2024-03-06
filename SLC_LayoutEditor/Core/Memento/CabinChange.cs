@@ -14,12 +14,15 @@ namespace SLC_LayoutEditor.Core.Memento
         private readonly int row;
         private readonly int column;
         private readonly int floor;
+        private readonly bool isInserted;
 
         public int Row => row;
 
         public int Column => column;
 
         public int Floor => floor;
+
+        public bool IsInserted => isInserted;
 
         private CabinChange(string data, string previousData, int floor) : 
             base (data, previousData)
@@ -32,11 +35,21 @@ namespace SLC_LayoutEditor.Core.Memento
         /// </summary>
         /// <param name="cabinSlot">The <see cref="CabinSlot"/> that has been changed</param>
         /// <param name="floor">The floor this <see cref="CabinSlot"/> is on</param>
-        /// <param name="usedAutomationMode">The <see cref="AutomationMode"/> used to modify this <see cref="CabinSlot"/></param>
         public CabinChange(CabinSlot cabinSlot, int floor) : 
             this(cabinSlot.ToString(), cabinSlot.PreviousState, 
                 floor, cabinSlot.Row, cabinSlot.Column)
         {
+        }
+
+        /// <summary>
+        /// When inserting cabin slots via for example a autofix
+        /// </summary>
+        /// <param name="cabinSlot">The <see cref="CabinSlot"/> that has been changed</param>
+        /// <param name="floor">The floor this <see cref="CabinSlot"/> is on</param>
+        /// <param name="isInserted">Set to true to tell the history this slot was inserted</param>
+        public CabinChange(CabinSlot cabinSlot, int floor, bool isInserted) : this(cabinSlot, floor)
+        {
+            this.isInserted = isInserted;
         }
 
         private CabinChange(string cabinSlotData, string previousCabinSlotData, int floor, int row, int column) :
