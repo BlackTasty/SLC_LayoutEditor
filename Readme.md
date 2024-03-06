@@ -25,6 +25,9 @@ If you're interested, you can download the most recent version here:
 ### Development status
 
 **Trello roadmap**: [Roadmap](https://trello.com/b/vJMbqwXb/slc-layout-editor-roadmap)
+
+![GitHub Release](https://img.shields.io/github/v/release/BlackTasty/SLC_LayoutEditor?style=flat-square)  ![GitHub Release](https://img.shields.io/github/release-date/BlackTasty/SLC_LayoutEditor?style=flat-square)
+
 ![GitHub last commit](https://img.shields.io/github/last-commit/BlackTasty/SLC_LayoutEditor?style=flat-square)
 
 ## Screenshots
