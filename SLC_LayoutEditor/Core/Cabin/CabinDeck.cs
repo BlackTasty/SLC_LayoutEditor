@@ -270,7 +270,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             OnCabinSlotsChanged(e);
         }*/
 
-        public CabinDeck(string deckData, int floor)
+        public CabinDeck(string deckData, int floor, bool isThumbnailMode = false)
         {
             mFloor = floor + 1;
 
@@ -282,11 +282,14 @@ namespace SLC_LayoutEditor.Core.Cabin
                 for (int row = 0; row < columnData.Length; row++)
                 {
                     CabinSlot cabinSlot = new CabinSlot(columnData[row], row, column);
-                    AddCabinSlot(cabinSlot);
+                    AddCabinSlot(cabinSlot, !isThumbnailMode);
                 }
             }
 
-            RefreshPathGrid();
+            if (!isThumbnailMode)
+            {
+                RefreshPathGrid();
+            }
             currentHash = Util.GetSHA256Hash(ToFileString());
         }
 
@@ -412,9 +415,12 @@ namespace SLC_LayoutEditor.Core.Cabin
             return autoFixResult;
         }
 
-        public void AddCabinSlot(CabinSlot cabinSlot)
+        public void AddCabinSlot(CabinSlot cabinSlot, bool hookEvents = true)
         {
-            cabinSlot.Changed += CabinSlot_CabinSlotChanged;
+            if (hookEvents)
+            {
+                cabinSlot.Changed += CabinSlot_CabinSlotChanged;
+            }
             CabinSlots.Add(cabinSlot);
         }
 

@@ -388,10 +388,10 @@ namespace SLC_LayoutEditor.Core.Cabin
                                                     .Where(x => x.Type == slotType).Count();
         }
 
-        public void LoadLayoutData()
+        public void LoadLayoutData(bool isThumbnailMode = false)
         {
             string layoutCode = File.ReadAllText(layoutFile.FullName);
-            LoadCabinLayout(layoutCode, true);
+            LoadCabinLayout(layoutCode, true, isThumbnailMode);
         }
 
         private string GetIssuesList(bool getSevereIssues)
@@ -458,7 +458,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             sb.Append(text);
         }
 
-        private void LoadCabinLayout(string layoutCode, bool skipRefresh = false)
+        private void LoadCabinLayout(string layoutCode, bool skipRefresh = false, bool isThumbnailMode = false)
         {
             string[] decks = layoutCode.ToUpper().Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -469,8 +469,11 @@ namespace SLC_LayoutEditor.Core.Cabin
                     continue;
                 }
 
-                CabinDeck deck = new CabinDeck(decks[floor], floor);
-                deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
+                CabinDeck deck = new CabinDeck(decks[floor], floor, isThumbnailMode);
+                if (!isThumbnailMode)
+                {
+                    deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
+                }
                 mCabinDecks.Add(deck);
             }
 

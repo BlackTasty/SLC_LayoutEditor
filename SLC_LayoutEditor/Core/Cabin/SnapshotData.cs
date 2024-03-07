@@ -56,7 +56,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             if (!thumbnailsGenerated)
             {
-                snapshot.LoadLayoutData();
+                snapshot.LoadLayoutData(true);
                 foreach (CabinDeck cabinDeck in snapshot.CabinDecks)
                 {
                     CabinDeckRenderer renderer = new CabinDeckRenderer(cabinDeck);

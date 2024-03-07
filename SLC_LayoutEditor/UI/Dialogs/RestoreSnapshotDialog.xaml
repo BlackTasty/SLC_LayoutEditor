@@ -78,18 +78,19 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <DockPanel Margin="4,0,0,0" IsEnabled="{Binding IsValid}">
-            <DockPanel Margin="0,0,0,4" DockPanel.Dock="Top">
-                <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding SelectedSnapshot.DeckNames}"
+        <Border BorderBrush="{DynamicResource BackgroundDarkBrush}" BorderThickness="1.5"
+                CornerRadius="4" Background="{StaticResource BackgroundDarkBrush}"
+                Margin="4,0,0,0">
+            <DockPanel IsEnabled="{Binding IsValid}">
+                <DockPanel Margin="4,0,4,4" DockPanel.Dock="Top">
+                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding SelectedSnapshot.DeckNames}"
                           MinWidth="140"
                           SelectedIndex="{Binding SelectedDeckThumbnailIndex}"
                           IsEnabled="{Binding SelectedSnapshot.HasThumbnails}"
                           Visibility="{Binding HasMultipleDecks, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <TextBlock VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"
                            Text="Preview"/>
-            </DockPanel>
-            <Border BorderBrush="{DynamicResource BackgroundColorBrush}" BorderThickness="1.5"
-                    CornerRadius="4">
+                </DockPanel>
                 <Grid>
                     <Image Source="{Binding SelectedDeckThumbnail}" Height="180" Stretch="Uniform"/>
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -109,7 +110,7 @@
                         </TextBlock>
                     </StackPanel>
                 </Grid>
-            </Border>
-        </DockPanel>
+            </DockPanel>
+        </Border>
     </DockPanel>
 </local:DialogBase>
