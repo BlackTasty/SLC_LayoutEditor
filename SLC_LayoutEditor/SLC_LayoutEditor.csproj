@@ -174,6 +174,7 @@
     <Compile Include="Core\Cabin\Renderer\IHitResult.cs" />
     <Compile Include="Core\Cabin\Renderer\HitResult.cs" />
     <Compile Include="Core\Cabin\Renderer\SlotHitResult.cs" />
+    <Compile Include="Core\Cabin\SnapshotData.cs" />
     <Compile Include="Core\Cabin\TemplatePreview.cs" />
     <Compile Include="Core\Dialogs\DialogButtonConfig.cs" />
     <Compile Include="Core\Enum\AutomationMode.cs" />
@@ -270,6 +271,9 @@
     <Compile Include="UI\Dialogs\MakeTemplateDialog.xaml.cs">
       <DependentUpon>MakeTemplateDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\RestoreSnapshotDialog.xaml.cs">
+      <DependentUpon>RestoreSnapshotDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -277,6 +281,7 @@
       <DependentUpon>WelcomeScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\AddEditCabinLayoutDialogViewModel.cs" />
+    <Compile Include="ViewModel\BaseDialogViewModel.cs" />
     <Compile Include="ViewModel\Commands\CancelDialogCommand.cs" />
     <Compile Include="ViewModel\Commands\CommandInterface.cs" />
     <Compile Include="ViewModel\Commands\LayoutBaseCommand.cs" />
@@ -327,6 +332,7 @@
     <Compile Include="ViewModel\MakeTemplateDialogViewModel.cs" />
     <Compile Include="ViewModel\MementoViewModel.cs" />
     <Compile Include="ViewModel\NotificationViewModel.cs" />
+    <Compile Include="ViewModel\RestoreSnapshotDialogViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="ViewModel\TodoListViewModel.cs" />
     <Compile Include="ViewModel\UpdaterViewModel.cs" />
@@ -523,6 +529,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\MakeTemplateDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\RestoreSnapshotDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

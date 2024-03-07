@@ -107,7 +107,7 @@ namespace SLC_LayoutEditor.Core
             string json = JsonConvert.SerializeObject(@object);
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new Exception("FilePath must be set! Use SaveFile(string filePath, T @object) to create a new file instead!");
+                throw new Exception("FileContent must be set! Use SaveFile(string fileContent, T @object) to create a new file instead!");
             }
 
             File.WriteAllText(Path.Combine(filePath, fileName), json);
@@ -125,9 +125,9 @@ namespace SLC_LayoutEditor.Core
 
         protected virtual void SaveFile(string filePath, T @object)
         {
-            /*if (!Directory.Exists(filePath))
+            /*if (!Directory.Exists(fileContent))
             {
-                Directory.CreateDirectory(filePath);
+                Directory.CreateDirectory(fileContent);
             }*/
 
             this.filePath = filePath;

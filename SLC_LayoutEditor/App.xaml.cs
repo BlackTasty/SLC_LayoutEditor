@@ -207,7 +207,7 @@ namespace SLC_LayoutEditor
             if (Directory.Exists(SnapshotsPath))
             {
                 Directory.Delete(SnapshotsPath, true);
-                Logger.Default.WriteLog("Removed leftover cabin layout snapshots");
+                Logger.Default.WriteLog("Removed leftover cabin layout mSnapshots");
             }
 
 

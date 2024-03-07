@@ -7,7 +7,7 @@ using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.ViewModel
 {
-    public class AddEditDialogViewModel : ViewModelBase
+    public class AddEditDialogViewModel : BaseDialogViewModel
     {
         private string nameExistsErrorMessage;
 
@@ -32,7 +32,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public bool IsValid => !string.IsNullOrWhiteSpace(mName) && !mExistingNames.Contains(mName);
+        public override bool IsValid => !string.IsNullOrWhiteSpace(mName) && !mExistingNames.Contains(mName);
 
         public string ErrorMessage
         {

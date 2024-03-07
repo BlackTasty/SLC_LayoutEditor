@@ -182,7 +182,15 @@ namespace SLC_LayoutEditor.Core.Cabin
         private string SnapshotSubDirectory => !IsTemplate ? Path.Combine(App.SnapshotsPath, layoutFile.Directory.Name) :
             Path.Combine(App.SnapshotsPath, layoutFile.Directory.Parent.Name, "templates");
 
-        private string SnapshotFilePath => Path.Combine(SnapshotSubDirectory, layoutFile.Name);
+        //private string SnapshotFilePath => Path.Combine(SnapshotSubDirectory, layoutFile.Name);
+
+        private bool HasSnapshots => Directory.Exists(SnapshotSubDirectory) &&
+            Directory.EnumerateFiles(SnapshotSubDirectory, string.Format("{0}.*.txt", LayoutName)).Count() > 0;
+
+        public IEnumerable<string> GetSnapshots()
+        {
+            return Directory.EnumerateFiles(SnapshotSubDirectory, string.Format("{0}.*.txt", LayoutName)).Reverse();
+        }
 
         public CabinLayout(string layoutName, string aircraftName, bool isTemplate) :
             this(new FileInfo(
@@ -246,7 +254,9 @@ namespace SLC_LayoutEditor.Core.Cabin
             if (Util.HasLayoutChanged(this))
             {
                 Directory.CreateDirectory(SnapshotSubDirectory);
-                File.WriteAllText(SnapshotFilePath, ToLayoutFile());
+                string filePath = Path.Combine(SnapshotSubDirectory, string.Format("{0}.{1}.txt", LayoutName,
+                    DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")));
+                File.WriteAllText(filePath, ToLayoutFile());
             }
         }
 
@@ -320,14 +330,12 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             if (!isLoaded || reload)
             {
-                if (File.Exists(SnapshotFilePath) && !isLoaded)
+                if (HasSnapshots && !isLoaded)
                 {
-                    ConfirmationDialog loadSnapshotDialog = new ConfirmationDialog("Backup found", "It seems like the editor crashed during the last session.\n\nDo you want to restore your unsaved changes from before?",
-                        DialogType.YesNo);
+                    RestoreSnapshotDialog restoreSnapshotDialog = new RestoreSnapshotDialog(this);
 
-                    loadSnapshotDialog.DialogClosing += LoadSnapshotDialog_DialogClosing;
-                    loadSnapshotDialog.ShowDialog();
-
+                    restoreSnapshotDialog.DialogClosing += RestoreSnapshotDialog_DialogClosing;
+                    restoreSnapshotDialog.ShowDialog();
                     return true;
                 }
                 else
@@ -353,9 +361,9 @@ namespace SLC_LayoutEditor.Core.Cabin
             LoadCabinLayout(layoutCodeOverride == null ? File.ReadAllText(layoutFile.FullName) : layoutCodeOverride, false);
         }
 
-        private void LoadSnapshotDialog_DialogClosing(object sender, Events.DialogClosingEventArgs e)
+        private void RestoreSnapshotDialog_DialogClosing(object sender, Events.DialogClosingEventArgs e)
         {
-            LoadCabinLayout(e.DialogResult == DialogResultType.Yes ? File.ReadAllText(SnapshotFilePath) : null);
+            LoadCabinLayout(e.DialogResult == DialogResultType.OK ? e.Data : null);
 
             Mediator.Instance.NotifyColleagues(ViewModelMessage.FinishLayoutChange, this);
         }

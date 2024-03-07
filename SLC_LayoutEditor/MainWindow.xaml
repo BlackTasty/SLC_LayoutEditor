@@ -143,6 +143,7 @@
                                     <MenuItem Header="Roadmap" Click="Roadmap_Click"
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
                                 </MenuItem>
+                                <MenuItem Header="Make snapshot" Click="MenuItem_Click"/>
                             </Menu>
                             <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
 

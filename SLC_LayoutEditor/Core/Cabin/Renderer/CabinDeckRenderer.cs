@@ -159,20 +159,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
                 try
                 {
-                    Int32Rect cropRect = new Int32Rect((int)slotAreaRect.X - 1, (int)slotAreaRect.Y - 1, (int)slotAreaRect.Width + 1, (int)slotAreaRect.Height + 1);
-
-                    Logger.Default.WriteLog("Rendering cabin deck onto bitmap... (source width: {0}px; source height: {1}px)", cropRect.Width, cropRect.Height);
-
-                    Logger.Default.WriteLog("Cropping bitmap... (cropped width: {0}px; cropped height: {1}px)", cropRect.Width, cropRect.Height);
-                    CroppedBitmap croppedBitmap = new CroppedBitmap(output, cropRect);
-
-                    double scalingFactor = .5;
-                    Logger.Default.WriteLog("Scaling down bitmap... (final width: {0}px; final height: {1}px)", cropRect.Width * scalingFactor, cropRect.Height * scalingFactor);
-                    TransformedBitmap transformedBitmap = new TransformedBitmap(croppedBitmap, new ScaleTransform(scalingFactor, scalingFactor));
+                    BitmapSource renderedThumbnail = GenerateThumbnail();
 
                     Logger.Default.WriteLog("Finalizing thumbnail...");
                     PngBitmapEncoder pngImage = new PngBitmapEncoder();
-                    pngImage.Frames.Add(BitmapFrame.Create(transformedBitmap));
+                    pngImage.Frames.Add(BitmapFrame.Create(renderedThumbnail));
 
                     Util.SafeDeleteFile(thumbnailPath);
                     using (Stream fileStream = File.Create(thumbnailPath))
@@ -199,6 +190,20 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
 
             return success;
+        }
+
+        public BitmapSource GenerateThumbnail()
+        {
+            Int32Rect cropRect = new Int32Rect((int)slotAreaRect.X - 1, (int)slotAreaRect.Y - 1, (int)slotAreaRect.Width + 1, (int)slotAreaRect.Height + 1);
+
+            Logger.Default.WriteLog("Rendering cabin deck onto bitmap... (source width: {0}px; source height: {1}px)", cropRect.Width, cropRect.Height);
+
+            Logger.Default.WriteLog("Cropping bitmap... (cropped width: {0}px; cropped height: {1}px)", cropRect.Width, cropRect.Height);
+            CroppedBitmap croppedBitmap = new CroppedBitmap(output, cropRect);
+
+            double scalingFactor = .5;
+            Logger.Default.WriteLog("Scaling down bitmap... (final width: {0}px; final height: {1}px)", cropRect.Width * scalingFactor, cropRect.Height * scalingFactor);
+            return new TransformedBitmap(croppedBitmap, new ScaleTransform(scalingFactor, scalingFactor));
         }
 
         public void RenderCabinDeck()
