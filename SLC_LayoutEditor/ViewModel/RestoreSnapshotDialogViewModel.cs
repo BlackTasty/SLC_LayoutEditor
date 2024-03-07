@@ -15,6 +15,8 @@ namespace SLC_LayoutEditor.ViewModel
         private SnapshotData mSelectedSnapshot;
         private string mTargetLayoutName;
         private bool mIsTemplate;
+        private bool mDeleteSnapshotAfterLoading = true;
+        private bool mDeleteAllSnapshotsAfterLoading;
 
         private int mSelectedDeckThumbnailIndex;
 
@@ -39,6 +41,8 @@ namespace SLC_LayoutEditor.ViewModel
 
                 SelectedDeckThumbnailIndex = 0;
                 InvokePropertyChanged(nameof(HasMultipleDecks));
+                InvokePropertyChanged(nameof(HasSelectedSnapshotThumbnails));
+                InvokePropertyChanged(nameof(IsSnapshotSelected));
             }
         }
 
@@ -62,6 +66,26 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public bool DeleteAllSnapshotsAfterLoading
+        {
+            get => mDeleteAllSnapshotsAfterLoading;
+            set
+            {
+                mDeleteAllSnapshotsAfterLoading = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool DeleteSnapshotAfterLoading
+        {
+            get => mDeleteSnapshotAfterLoading;
+            set
+            {
+                mDeleteSnapshotAfterLoading = value;
+                InvokePropertyChanged();
+            }
+        }
+
         public bool HasMultipleDecks => mSelectedSnapshot?.Thumbnails.Count > 1;
 
         public int SelectedDeckThumbnailIndex
@@ -76,6 +100,10 @@ namespace SLC_LayoutEditor.ViewModel
         }
 
         public ImageSource SelectedDeckThumbnail => mSelectedSnapshot?.GetThumbnailForDeck(mSelectedDeckThumbnailIndex);
+
+        public bool HasSelectedSnapshotThumbnails => mSelectedSnapshot?.HasThumbnails ?? false;
+
+        public bool IsSnapshotSelected => mSelectedSnapshot != null;
 
         public override bool IsValid => mSelectedSnapshot != null;
 

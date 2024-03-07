@@ -48,6 +48,18 @@ namespace SLC_LayoutEditor.UI.Dialogs
         {
             OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, vm.SelectedSnapshot.FileContent));
             vm.UnloadThumbnails();
+            if (vm.DeleteSnapshotAfterLoading)
+            {
+                vm.SelectedSnapshot.Delete();
+
+                if (vm.DeleteAllSnapshotsAfterLoading)
+                {
+                    foreach (SnapshotData snapshot in vm.Snapshots.Where(x => !x.IsRemoved))
+                    {
+                        snapshot.Delete();
+                    }
+                }
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

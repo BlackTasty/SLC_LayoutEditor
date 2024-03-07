@@ -204,11 +204,11 @@ namespace SLC_LayoutEditor
             Logger.Default.WriteLog("Editor shutting down...");
             SaveAppSettings();
 
-            if (Directory.Exists(SnapshotsPath))
+            /*if (Directory.Exists(SnapshotsPath))
             {
                 Directory.Delete(SnapshotsPath, true);
                 Logger.Default.WriteLog("Removed leftover cabin layout mSnapshots");
-            }
+            }*/
 
 
             // Installation of an update pending, restart editor

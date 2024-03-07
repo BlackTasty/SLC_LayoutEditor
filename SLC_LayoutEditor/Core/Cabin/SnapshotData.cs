@@ -22,6 +22,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         private CabinLayout snapshot;
         private bool thumbnailsGenerated;
 
+        private bool isRemoved;
+
         public string FileContent => fileContent;
 
         public DateTime CreationDateTime => creationDateTime;
@@ -31,6 +33,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         public List<string> DeckNames => deckNames;
 
         public bool HasThumbnails => thumbnails.Count > 0;
+
+        public bool IsRemoved => isRemoved;
 
         public SnapshotData(string snapshotPath)
         {
@@ -66,7 +70,13 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void Delete()
         {
+            if (isRemoved)
+            {
+                return;
+            }
+
             snapshotFile.Delete();
+            isRemoved = true;
         }
     }
 }
