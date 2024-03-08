@@ -747,6 +747,26 @@
                 controls:GuideAssist.TextPosition="Top"
                 ContextMenu="{StaticResource GuideMenu}"/>
     </Grid>
+    <Border Background="{StaticResource BackgroundColorBrush}" BorderBrush="{StaticResource BackgroundLightBrush}" 
+            Grid.Column="1" Grid.ColumnSpan="2" BorderThickness="1.5"
+            CornerRadius="6" Visibility="Collapsed">
+        <DockPanel>
+            <ListBox Background="Transparent" BorderBrush="Transparent" ItemsSource="{Binding CabinLayouts}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Image Source="{Binding }"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Border>
     <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
         <Grid.Style>
             <Style TargetType="Grid">

@@ -3,6 +3,7 @@ Re-enabled: The stairway autofix is working again!
 Added: You can now undo and redo actions while editing!
 Added: Holding down Shift while scrolling your mouse wheel over your layout will now horizontally scroll if possible
 Added: In case the editor crashes while a layout/template with unsaved changes was open, a snapshot is created which can be restored at next startup
+Fixed: There was a noticeable performance hit when changing a lot of slots at once
 Fixed: The "getting started" dialog now remembers when you click "No"
 Fixed: Fixed a minor alignment problem with the editor view, when the window was maximized
 Fixed: The text for duplicate seats didn't update properly

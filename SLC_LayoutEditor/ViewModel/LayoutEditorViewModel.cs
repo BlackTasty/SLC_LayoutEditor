@@ -154,6 +154,7 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged(nameof(SelectedLayoutSetText));
                 InvokePropertyChanged(nameof(SelectedLayoutText));
                 InvokePropertyChanged(nameof(SelectedTemplateText));
+                InvokePropertyChanged(nameof(CabinLayouts));
 
                 if (mSelectedLayoutSet != null)
                 {
@@ -165,6 +166,8 @@ namespace SLC_LayoutEditor.ViewModel
         public string SelectedLayoutSetText => mSelectedLayoutSet != null ? null : TEXT_LAYOUTSET_NO_SELECTION;
 
         public bool IsAddCabinLayoutButtonEnabled => SelectedLayoutSet != null && !SelectedLayoutSet.IsLoadingLayouts;
+
+        public VeryObservableCollection<CabinLayout> CabinLayouts => SelectedLayoutSet?.CabinLayouts; 
 
         public CabinLayout SelectedCabinLayout
         {

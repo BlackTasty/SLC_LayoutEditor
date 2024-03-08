@@ -764,7 +764,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             this.isIssueCheckingEnabled = isIssueCheckingEnabled;
 
-            if (isIssueCheckingEnabled )
+            if (isIssueCheckingEnabled)
             {
                 RefreshProblemChecks();
             }
@@ -927,8 +927,11 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         protected virtual void OnCabinSlotsChanged(EventArgs e)
         {
-            RefreshProblemChecks();
-            CabinSlotsChanged?.Invoke(this, e);
+            if (isIssueCheckingEnabled)
+            {
+                RefreshProblemChecks();
+                CabinSlotsChanged?.Invoke(this, e);
+            }
         }
 
         protected virtual void OnProblematicSlotsCollected(ProblematicSlotsCollectedEventArgs e)

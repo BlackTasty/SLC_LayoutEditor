@@ -647,7 +647,7 @@ namespace SLC_LayoutEditor.Controls
         {
             if (Util.IsShiftDown())
             {
-                deck_scroll.ScrollToHorizontalOffset(deck_scroll.HorizontalOffset + e.Delta);
+                deck_scroll.ScrollToHorizontalOffset(deck_scroll.HorizontalOffset - e.Delta);
                 e.Handled = true;
             }
         }

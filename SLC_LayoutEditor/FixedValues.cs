@@ -52,6 +52,7 @@ namespace SLC_LayoutEditor
         internal static readonly string ICON_FILE_OPENED = (string)App.Current.FindResource("OpenInNew");
         internal static readonly string ICON_BROWSER_OPENED = (string)App.Current.FindResource("OpenInBrowser");
         internal static readonly string ICON_CHECK_CIRCLE = (string)App.Current.FindResource("CheckCircle");
+        internal static readonly string ICON_BACKUP_RESTORE = (string)App.Current.FindResource("BackupRestore");
 
         internal readonly static int TOTAL_TOUR_STEPS = (int)System.Enum.GetValues(typeof(GuidedTourStep)).Cast<GuidedTourStep>().Max();
 

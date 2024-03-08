@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core.AutoFix;
+﻿using SLC_LayoutEditor.Controls.Notifications;
+using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Memento;
@@ -363,8 +364,14 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void RestoreSnapshotDialog_DialogClosing(object sender, Events.DialogClosingEventArgs e)
         {
-            LoadCabinLayout(e.DialogResult == DialogResultType.OK ? e.Data : null);
+            bool isRestoringBackup = e.DialogResult == DialogResultType.OK;
 
+            LoadCabinLayout(isRestoringBackup ? e.Data : null);
+
+            if (isRestoringBackup)
+            {
+                Notification.MakeTimedNotification("Backup restored", "Your selected backup has been restored!", 8000, FixedValues.ICON_BACKUP_RESTORE);
+            }
             Mediator.Instance.NotifyColleagues(ViewModelMessage.FinishLayoutChange, this);
         }
 
@@ -869,13 +876,13 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             this.isIssueCheckingEnabled = isIssueCheckingEnabled;
 
+            foreach (CabinDeck cabinDeck in mCabinDecks)
+            {
+                cabinDeck.ToggleIssueChecking(isIssueCheckingEnabled);
+            }
+
             if (isIssueCheckingEnabled)
             {
-                foreach (CabinDeck cabinDeck in mCabinDecks)
-                {
-                    cabinDeck.ToggleIssueChecking(isIssueCheckingEnabled);
-                }
-
                 RefreshProblemChecks();
             }
         }

@@ -378,12 +378,15 @@ namespace SLC_LayoutEditor.UI
         {
             if (!vm.IgnoreMultiSlotTypeChange && sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
             {
+                vm.ActiveLayout.ToggleIssueChecking(false);
                 foreach (CabinSlot cabinSlot in control_layout.SelectedCabinSlots)
                 {
                     cabinSlot.Type = slotType;
                 }
 
+                vm.ActiveLayout.ToggleIssueChecking(true);
                 RefreshLayoutFlags();
+                control_layout.RefreshState(false);
 
                 /*control_layout.SelectedCabinSlots.ForEach(x =>
                 {

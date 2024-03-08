@@ -100,6 +100,7 @@ namespace SLC_LayoutEditor
             MoveEntries(e.PoppedHistory, e.IsRecorded ? e.IsUndo : !e.IsUndo,
                 isUndo ? undoHistoryMenu : redoHistoryMenu,
                 isUndo ? redoHistoryMenu : undoHistoryMenu);
+            (vm.Content as LayoutEditor)?.control_layout.RefreshState(false);
         }
 
         private void MoveEntries(IEnumerable<CabinHistoryEntry> poppedHistory, bool isUndo, ContextMenu sourceHistory, ContextMenu targetHistory)
