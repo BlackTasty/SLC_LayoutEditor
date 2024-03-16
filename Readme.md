@@ -19,9 +19,8 @@ This editor is a support tool for [SLC (Self Loading Cargo)](https://www.selfloa
  - **Multi-selecting slots**: The editor allows you to freely add or remove slots to your selection on a cabin deck, speeding up the realisation of your next cabin layout
  - **In-app updates**: Once you have extracted the files for the editor, you can get future updates via the editor itself!
 
-If you're interested, you can download the most recent version here:
-**Download-Link**: [SLC Layout Editor v1.6.5](https://www.dropbox.com/scl/fi/s0265vy3v52eijs5cghka/SLC-Layout-Editor-v1.6.5.zip?rlkey=ruaq7r4erynfo08ss838lojje&dl=0)
-**VirusTotal scan** (SLC_LayoutEditor.exe): [For SLC Layout Editor v1.6.5](https://www.virustotal.com/gui/file/c4c61f2f4ee02f4bbd187b6f148368eeb0c63bd7cb40abae66cb1e48cff2ced7?nocache=1)
+If you're interested, you can download the most recent version here: 
+[SLC Layout Editor](https://github.com/BlackTasty/SLC_LayoutEditor/releases/latest)
 
 ### Development status
 
