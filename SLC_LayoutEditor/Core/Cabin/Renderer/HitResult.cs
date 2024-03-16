@@ -14,6 +14,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         protected readonly string tooltip;
         protected int row;
         protected int column;
+        protected int targetRow;
+        protected int targetColumn;
 
         public Rect Rect => rect;
 
@@ -25,6 +27,10 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         public int Column => column;
 
+        public int TargetRow => targetRow;
+
+        public int TargetColumn => targetColumn;
+
         public bool IsRemoved { get; set; }
 
         public HitResult(Rect rect, bool isSlot, string tooltip, int row, int column)
@@ -35,5 +41,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             this.row = row;
             this.column = column;
         }
+
+        public HitResult(Rect rect, bool isSlot, string tooltip, int row, int column,             int targetRow, int targetColumn) : this(rect, isSlot, tooltip, row, column)        {
+            this.targetRow = targetRow;
+            this.targetColumn = targetColumn;
+        }
+
     }
 }

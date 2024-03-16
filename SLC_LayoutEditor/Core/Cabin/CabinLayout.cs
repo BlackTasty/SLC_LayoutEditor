@@ -218,6 +218,13 @@ namespace SLC_LayoutEditor.Core.Cabin
             currentHash = Util.GetSHA256Hash(ToLayoutFile());
         }
 
+        public CabinLayout(string layoutCode, string filePath, string layoutName)
+        {
+            this.layoutFile = new FileInfo(filePath);
+            mLayoutName = layoutName;
+            LoadCabinLayout(layoutCode, true, true);
+        }
+
         private void UpdateThumbnailDirectory()
         {
             foreach (CabinDeck cabinDeck in CabinDecks)
@@ -274,7 +281,10 @@ namespace SLC_LayoutEditor.Core.Cabin
                 cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
             }
 
-            Directory.Delete(ThumbnailDirectory, true);
+            if (Directory.Exists(ThumbnailDirectory))
+            {
+                Directory.Delete(ThumbnailDirectory, true);
+            }
 
             OnDeleted(EventArgs.Empty);
         }
@@ -874,16 +884,19 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public void ToggleIssueChecking(bool isIssueCheckingEnabled)
         {
-            this.isIssueCheckingEnabled = isIssueCheckingEnabled;
-
-            foreach (CabinDeck cabinDeck in mCabinDecks)
+            if (this.isIssueCheckingEnabled != isIssueCheckingEnabled)
             {
-                cabinDeck.ToggleIssueChecking(isIssueCheckingEnabled);
-            }
+                this.isIssueCheckingEnabled = isIssueCheckingEnabled;
 
-            if (isIssueCheckingEnabled)
-            {
-                RefreshProblemChecks();
+                foreach (CabinDeck cabinDeck in mCabinDecks)
+                {
+                    cabinDeck.ToggleIssueChecking(isIssueCheckingEnabled);
+                }
+
+                if (isIssueCheckingEnabled)
+                {
+                    RefreshProblemChecks();
+                }
             }
         }
 

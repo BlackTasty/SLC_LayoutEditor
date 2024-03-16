@@ -330,7 +330,7 @@ namespace SLC_LayoutEditor.ViewModel
         protected override void History_Changed(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
         {
             base.History_Changed(sender, e);
-            if (!e.IsClear)
+            if (!e.IsClear && e.PoppedHistory.Count() == 1)
             {
                 EditorViewModel.ActiveLayout.ToggleIssueChecking(true);
             }

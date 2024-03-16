@@ -844,4 +844,19 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="GreenIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
+        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ButtonBorderHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ButtonBorderPressedColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

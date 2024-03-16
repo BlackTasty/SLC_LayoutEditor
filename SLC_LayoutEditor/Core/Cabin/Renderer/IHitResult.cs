@@ -20,5 +20,9 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         int Row { get; }
 
         int Column { get; }
+
+        int TargetRow { get; }
+
+        int TargetColumn { get; }
     }
 }

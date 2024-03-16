@@ -47,12 +47,12 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void Undo()
         {
-            CabinHistoryEntry step = history.Undo();
+            history.Undo();
         }
 
         public void Redo()
         {
-            CabinHistoryEntry step = history.Redo();
+            history.Redo();
         }
     }
 }

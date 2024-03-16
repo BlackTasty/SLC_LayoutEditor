@@ -11,7 +11,7 @@ namespace SLC_LayoutEditor.ViewModel.Commands
     {
         public override bool CanExecute(object parameter)
         {
-            return parameter is MainViewModel;
+            return parameter is MainViewModel vm && !vm.IsViewNotEditor && vm.History.CanUndo;
         }
 
         public override void Execute(object parameter)

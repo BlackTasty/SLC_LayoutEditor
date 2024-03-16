@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.Core;
+﻿using Newtonsoft.Json.Bson;
+using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.ViewModel.Communication;
@@ -168,7 +169,7 @@ namespace SLC_LayoutEditor
                 }
                 else
                 {
-                    Logger.Default.WriteLog("No config file exists, creating");
+                    Logger.Default.WriteLog("No config file exists, creating file \"{0}\"", fi.Name);
                     Settings = new AppSettings();
                     Settings.Save(AppDomain.CurrentDomain.BaseDirectory);
                 }
@@ -243,39 +244,44 @@ namespace SLC_LayoutEditor
 #endregion
         }
 
+        public static void CopyTemplates()
+        {
+            Logger.Default.WriteLog("Copying baked-in templates to cabin layouts directory...");
+            int copiedTemplates = 0;
+
+            foreach (string bakedTemplatePath in Util.GetBakedTemplates())
+            {
+                string template = Util.ReadTextResource(bakedTemplatePath);
+
+                int newLineIndex = template.IndexOf("\r\n");
+                string aircraftName = template.Substring(0, newLineIndex);
+                template = template.Substring(newLineIndex + 2);
+
+                string templatePath = GetTemplatePath(aircraftName);
+                string templateFilePath = Path.Combine(templatePath, "Default.txt");
+
+                if (!File.Exists(templateFilePath))
+                {
+                    Directory.CreateDirectory(templatePath);
+                    File.WriteAllText(templateFilePath, template);
+                    copiedTemplates++;
+                }
+                else
+                {
+                    Logger.Default.WriteLog("Skipped template for aircraft \"{0}\" as it exists already.", aircraftName);
+                }
+            }
+
+            Logger.Default.WriteLog("Copying complete! {0} templates have been created.", copiedTemplates);
+            Settings.TemplatesCopied = true;
+            SaveAppSettings();
+        }
+
         private static void CheckTemplates()
         {
             if (!Settings.TemplatesCopied)
             {
-                Logger.Default.WriteLog("Copying baked-in templates to cabin layouts directory...");
-                int copiedTemplates = 0;
-
-                foreach (string bakedTemplatePath in Util.GetBakedTemplates())
-                {
-                    string template = Util.ReadTextResource(bakedTemplatePath);
-
-                    int newLineIndex = template.IndexOf("\r\n");
-                    string aircraftName = template.Substring(0, newLineIndex);
-                    template = template.Substring(newLineIndex + 2);
-
-                    string templatePath = GetTemplatePath(aircraftName);
-                    string templateFilePath = Path.Combine(templatePath, "Default.txt");
-
-                    if (!File.Exists(templateFilePath))
-                    {
-                        Directory.CreateDirectory(templatePath);
-                        File.WriteAllText(templateFilePath, template);
-                        copiedTemplates++;
-                    }
-                    else
-                    {
-                        Logger.Default.WriteLog("Skipped template for aircraft \"{0}\" as it exists already.", aircraftName);
-                    }
-                }
-
-                Logger.Default.WriteLog("Copying complete! {0} templates have been created.");
-                Settings.TemplatesCopied = true;
-                SaveAppSettings();
+                CopyTemplates();
             }
         }
 

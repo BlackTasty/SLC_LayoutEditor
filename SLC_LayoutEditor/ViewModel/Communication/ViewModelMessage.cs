@@ -26,5 +26,8 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         Notification_AddNotification,
         CreateSnapshot,
         FinishLayoutChange,
+        Layout_ToggleIssueChecking,
+        BakedTemplate_Add,
+        BakedTemplate_Delete
     }
 }

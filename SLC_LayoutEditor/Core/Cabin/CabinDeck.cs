@@ -695,8 +695,6 @@ namespace SLC_LayoutEditor.Core.Cabin
                     OnRowColumnChangeApplying(new RowColumnChangeApplyingEventArgs(historyEntry, isUndo));
                     break;
             }
-
-            ToggleIssueChecking(true);
         }
 
         protected virtual void OnRowColumnChangeApplying(RowColumnChangeApplyingEventArgs e)

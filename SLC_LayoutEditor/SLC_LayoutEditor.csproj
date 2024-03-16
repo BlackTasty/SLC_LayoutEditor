@@ -165,6 +165,7 @@
     <Compile Include="Converter\UpdateProgressBarIndeterminateConverter.cs" />
     <Compile Include="Core\AutoFix\AutoFixResult.cs" />
     <Compile Include="Core\Cabin\AdjacentSlots.cs" />
+    <Compile Include="Core\Cabin\BakedTemplateData.cs" />
     <Compile Include="Core\Cabin\Renderer\ButtonActionType.cs" />
     <Compile Include="Core\Cabin\Renderer\ButtonHitResult.cs" />
     <Compile Include="Core\Cabin\Renderer\CabinDeckRenderer.cs" />
@@ -271,6 +272,9 @@
     <Compile Include="UI\Dialogs\MakeTemplateDialog.xaml.cs">
       <DependentUpon>MakeTemplateDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\ManageBakedTemplatesDialog.xaml.cs">
+      <DependentUpon>ManageBakedTemplatesDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\RestoreSnapshotDialog.xaml.cs">
       <DependentUpon>RestoreSnapshotDialog.xaml</DependentUpon>
     </Compile>
@@ -330,6 +334,7 @@
     <Compile Include="ViewModel\DesignTime\UpdaterDesignViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MakeTemplateDialogViewModel.cs" />
+    <Compile Include="ViewModel\ManageBakedTemplatesDialogViewModel.cs" />
     <Compile Include="ViewModel\MementoViewModel.cs" />
     <Compile Include="ViewModel\NotificationViewModel.cs" />
     <Compile Include="ViewModel\RestoreSnapshotDialogViewModel.cs" />
@@ -532,6 +537,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Dialogs\ManageBakedTemplatesDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Dialogs\RestoreSnapshotDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -612,7 +621,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\patchnotes.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LayoutTemplates\B744 - Boeing 747-400.txt" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\LayoutTemplates\A20N - Airbus A320neo.txt" />
     <EmbeddedResource Include="Resources\LayoutTemplates\A310 - Airbus A310-300.txt" />
@@ -655,6 +666,9 @@
     <Resource Include="Resources\Guides\Deselecting_slots.gif" />
     <Resource Include="Resources\Guides\Selecting_Rows_And_Columns.gif" />
     <Resource Include="Resources\Guides\Select_multiple_slots.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LayoutTemplates\B748 - Boeing 747-8i.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

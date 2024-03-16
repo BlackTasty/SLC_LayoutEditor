@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tasty.Logging;
 using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Memento
@@ -52,90 +53,161 @@ namespace SLC_LayoutEditor.Core.Memento
                 return;
             }
 
+            if (recordedUndoStep == null)
+            {
+                Logger.Default.WriteLog("Tried adding empty changes to undo history!", LogType.WARNING);
+                return;
+            }
+
             undoHistory.Push(recordedUndoStep);
+            Logger.Default.WriteLog("Recorded changes: \"{0}\" (total undo steps: {1}/{2})", 
+                recordedUndoStep, undoHistory.Count, undoHistory.Capacity);
 
             if (redoHistory.Count > 0)
             {
+                Logger.Default.WriteLog("Redo history cleared ({0} items)", redoHistory.Count);
                 redoHistory.Clear();
                 InvokePropertyChanged(nameof(CanRedo));
             }
             OnHistoryChanged(new HistoryChangedEventArgs<T>(recordedUndoStep, true, true));
         }
 
-        public T Undo()
+        public bool Undo()
         {
-            return Undo(true);
+            Logger.Default.WriteLog("User requested undo...");
+            T historyStep = Undo(true);
+            bool success = historyStep != null;
+
+            if (success)
+            {
+                Logger.Default.WriteLog("Change \"{0}\" reverted", historyStep);
+            }
+            else
+            {
+                Logger.Default.WriteLog("Unable to revert changes, there was no data!", LogType.WARNING);
+            }
+
+            return success;
         }
 
         private T Undo(bool fireEvent)
         {
             T historyStep = ShiftStep(undoHistory, redoHistory, true);
-            if (fireEvent)
+            if (fireEvent && historyStep != null)
             {
                 OnHistoryChanged(new HistoryChangedEventArgs<T>(historyStep, true));
             }
             return historyStep;
         }
 
-        public T Redo()
+        public bool Redo()
         {
-            return Redo(true);
+            Logger.Default.WriteLog("User requested redo...");
+            T historyStep = Redo(true);
+            bool success = historyStep != null;
+
+            if (success)
+            {
+                Logger.Default.WriteLog("Change \"{0}\" restored", historyStep);
+            }
+            else
+            {
+                Logger.Default.WriteLog("Unable to restore changes, there was no data!", LogType.WARNING);
+            }
+
+            return success;
         }
 
         private T Redo(bool fireEvent)
         {
             T historyStep = ShiftStep(redoHistory, undoHistory, false);
-            if (fireEvent)
+            if (fireEvent && historyStep != null)
             {
                 OnHistoryChanged(new HistoryChangedEventArgs<T>(historyStep, false));
             }
             return historyStep;
         }
 
-        public T UndoUntil(T target)
+        public bool UndoUntil(T target)
         {
-            if (undoHistory.Contains(target))
+            if (!IsNextStepTarget(undoHistory, target))
             {
-                OnHistoryChanging(EventArgs.Empty);
-                T shiftedStep = Undo(false);
-                List<T> poppedSteps = new List<T>()
+                Logger.Default.WriteLog("User requested undoing multiple changes...");
+                bool success = PopUntil(target, true, out int poppedEntries);
+
+                if (success)
                 {
-                    shiftedStep
-                };
-                while (shiftedStep.Guid != target.Guid)
+                    Logger.Default.WriteLog("Change \"{0}\" reverted (including {1} more changes)", target, poppedEntries);
+                }
+                else
                 {
-                    shiftedStep = Undo(false);
-                    poppedSteps.Add(shiftedStep);
+                    Logger.Default.WriteLog("Unable to revert changes, there was no data!", LogType.WARNING);
                 }
 
-                OnHistoryChanged(new HistoryChangedEventArgs<T>(poppedSteps, true));
-                return shiftedStep;
+                return success;
             }
-
-            return default;
+            else
+            {
+                return Undo();
+            }
         }
 
-        public T RedoUntil(T target)
+        public bool RedoUntil(T target)
         {
-            if (redoHistory.Contains(target))
+            if (!IsNextStepTarget(redoHistory, target))
+            {
+                Logger.Default.WriteLog("User requested redoing multiple changes...");
+                bool success = PopUntil(target, false, out int poppedEntries);
+
+                if (success)
+                {
+                    Logger.Default.WriteLog("Change \"{0}\" restored (including {1} more changes)", target, poppedEntries);
+                }
+                else
+                {
+                    Logger.Default.WriteLog("Unable to restore changes, there was no data!", LogType.WARNING);
+                }
+
+                return success;
+            }
+            else
+            {
+                return Redo();
+            }
+        }
+
+        private bool PopUntil(T target, bool isUndo, out int poppedEntries)
+        {
+            var targetHistory = isUndo ? undoHistory : redoHistory;
+
+            if (targetHistory.Contains(target))
             {
                 OnHistoryChanging(EventArgs.Empty);
-                T shiftedStep = Redo(false);
+                T shiftedStep = isUndo ? Undo(false) : Redo(false);
                 List<T> poppedSteps = new List<T>()
                 {
                     shiftedStep
                 };
+                poppedEntries = 1;
                 while (shiftedStep.Guid != target.Guid)
                 {
-                    shiftedStep = Redo(false);
-                    poppedSteps.Add(shiftedStep);
+                    shiftedStep = isUndo ? Undo(false) : Redo(false);
+                    poppedEntries++;
+                    if (shiftedStep != null)
+                    {
+                        poppedSteps.Add(shiftedStep);
+                    }
                 }
 
-                OnHistoryChanged(new HistoryChangedEventArgs<T>(poppedSteps, false));
-                return shiftedStep;
+                OnHistoryChanged(new HistoryChangedEventArgs<T>(poppedSteps, isUndo));
+                return true;
+            }
+            else
+            {
+                poppedEntries = 0;
             }
 
-            return default;
+            return false;
         }
 
         public void Clear()
@@ -147,6 +219,11 @@ namespace SLC_LayoutEditor.Core.Memento
             OnHistoryChanged(new HistoryChangedEventArgs<T>());
         }
 
+        private bool IsNextStepTarget(HistoryStack<T> targetHistory, T targetEntry)
+        {
+            return targetHistory.Peek().Guid == targetEntry.Guid;
+        }
+
         private T ShiftStep(HistoryStack<T> from, HistoryStack<T> to, bool isUndo)
         {
             if (from.Count == 0)
@@ -155,18 +232,25 @@ namespace SLC_LayoutEditor.Core.Memento
             }
 
             T historyStep = from.Pop();
-            to.Push(historyStep);
+            if (historyStep != null)
+            {
+                to.Push(historyStep);
+                OnHistoryApplying(new HistoryApplyingEventArgs<T>(historyStep, isUndo));
+            }
+
             InvokePropertyChanged(isUndo ? nameof(CanUndo) : nameof(CanRedo));
 
             InvokePropertyChanged(nameof(UndoHistory));
             InvokePropertyChanged(nameof(RedoHistory));
-
-            OnHistoryApplying(new HistoryApplyingEventArgs<T>(historyStep, isUndo));
             return historyStep;
         }
 
         protected virtual void OnHistoryChanged(HistoryChangedEventArgs<T> e)
         {
+            if (!e.IsClear && e.PoppedEntry == null)
+            {
+                return;
+            }
             HistoryChanged?.Invoke(this, e);
         }
 

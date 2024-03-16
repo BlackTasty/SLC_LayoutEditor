@@ -5,6 +5,7 @@ using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.UI;
+using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
@@ -473,6 +474,12 @@ namespace SLC_LayoutEditor
                 Command = command,
                 CommandParameter = historyEntry
             };
+        }
+
+        private void ManageBakedTemplates_Click(object sender, RoutedEventArgs e)
+        {
+            ManageBakedTemplatesDialog dialog = new ManageBakedTemplatesDialog();
+            dialog.ShowDialog();
         }
     }
 }

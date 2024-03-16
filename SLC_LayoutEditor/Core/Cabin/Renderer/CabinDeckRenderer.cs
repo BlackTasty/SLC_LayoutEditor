@@ -226,8 +226,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     buttonHitResults.Add(columnSelectData);
 
                     // Draw add/remove column buttons
-                    buttonHitResults.Add(DrawTriangleButton(context, false, true, false, columnTag, "Remove column", row, column)); // Add column remove hitResult
-                    buttonHitResults.Add(DrawTriangleButton(context, false, false, true, columnTag, "Insert column", row, column)); // Add column create hitResult
+                    buttonHitResults.Add(DrawTriangleButton(context, false, true, false, columnTag, "Remove row", row, column)); // Add column remove hitResult
+                    buttonHitResults.Add(DrawTriangleButton(context, false, false, true, columnTag, "Insert row", row, column)); // Add column create hitResult
 
                     for (; row <= cabinDeck.Rows; row++)
                     {
@@ -239,8 +239,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                             buttonHitResults.Add(rowSelectData);
 
                             // Draw add/remove row buttons
-                            buttonHitResults.Add(DrawTriangleButton(context, true, true, true, rowTag, "Remove row", row, column)); // Add row remove hitResult
-                            buttonHitResults.Add(DrawTriangleButton(context, true, false, false, rowTag, "Insert row", row, column)); // Add row create hitResult
+                            buttonHitResults.Add(DrawTriangleButton(context, true, true, true, rowTag, "Remove column", row, column)); // Add row remove hitResult
+                            buttonHitResults.Add(DrawTriangleButton(context, true, false, false, rowTag, "Insert column", row, column)); // Add row create hitResult
                         }
 
                         CabinSlot targetSlot = cabinDeck.GetSlotAtPosition(row, column);
@@ -254,8 +254,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 }
 
                 // Draw add row/column buttons to top left
-                buttonHitResults.Add(DrawTriangleButton(context, null, false, true, "row-add", "Add row", int.MaxValue, -1));
-                buttonHitResults.Add(DrawTriangleButton(context, null, false, false, "column-add", "Add column", -1, int.MaxValue));
+                buttonHitResults.Add(DrawTriangleButton(context, true, false, true, "row-add", "Add column", int.MaxValue, -1));
+                buttonHitResults.Add(DrawTriangleButton(context, false, false, false, "column-add", "Add row", -1, int.MaxValue));
             }
 
             UpdateSlotAreaRect(width, height);
@@ -356,6 +356,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     if (resultCount == 1) // Usually triggered with select buttons
                     {
                         hitResult = hitResults.First();
+                        var t = buttonHitResults.Where(x => x.Rect == hitResults.First().Rect);
                     }
                     else if (resultCount > 1) // Triggered when hovering over add/remove buttons
                     {
@@ -496,16 +497,16 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
                                 if (!isInsert) // User is adding a new row/column at the end of the deck
                                 {
-                                    Logger.Default.WriteLog("User requested adding a new {0} to cabin deck floor {1}...", isColumnTarget ? "column" : "row", cabinDeck.Floor);
+                                    Logger.Default.WriteLog("User requested adding a new {0} to cabin deck floor {1}...", !isColumnTarget ? "column" : "row", cabinDeck.Floor);
 
                                     int targetRowColumn = (isColumnTarget ? cabinDeck.Columns : cabinDeck.Rows) + 1;
                                     CreateRowColumn(isColumnTarget, targetRowColumn);
 
-                                    Logger.Default.WriteLog("{0} added at index {1}!", isColumnTarget ? "Column" : "Row", targetRowColumn);
+                                    Logger.Default.WriteLog("{0} added at index {1}!", !isColumnTarget ? "Column" : "Row", targetRowColumn);
                                 }
                                 else // User is inserting a new row/column in between others
                                 {
-                                    Logger.Default.WriteLog("User requested inserting a new {0} into cabin deck floor {1}...", isColumnTarget ? "column" : "row", cabinDeck.Floor);
+                                    Logger.Default.WriteLog("User requested inserting a new {0} into cabin deck floor {1}...", !isColumnTarget ? "column" : "row", cabinDeck.Floor);
                                     ConfirmationDialog insertDialog;
 
                                     if (isColumnTarget)
@@ -532,7 +533,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                 Logger.Default.WriteLog("User requested removing a {0} from cabin deck floor {1}...", isColumnRemoval ? "column" : "row", cabinDeck.Floor);
                                 ConfirmationDialog removeDialog;
 
-                                if (isColumnRemoval)
+                                if (!isColumnRemoval)
                                 {
                                     Logger.Default.WriteLog("User requested removing a column from cabin deck floor {0}...", cabinDeck.Floor);
                                     removeDialog = new ConfirmationDialog("Confirm column removal",
@@ -572,12 +573,12 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
                         CreateRowColumn(isColumnInsert, targetRowColumn);
 
-                        Logger.Default.WriteLog("{0} inserted at index {1}!", isColumnInsert ? "Column" : "Row", targetRowColumn);
+                        Logger.Default.WriteLog("{0} inserted at index {1}!", !isColumnInsert ? "Column" : "Row", targetRowColumn);
                     }
                 }
                 else
                 {
-                    Logger.Default.WriteLog("{0} insertion aborted by user", isColumnInsert ? "Column" : "Row");
+                    Logger.Default.WriteLog("{0} insertion aborted by user", !isColumnInsert ? "Column" : "Row");
                 }
             }
         }
@@ -634,10 +635,10 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             //selectButtonHitbox.Location.Offset(-4, -4);
 
             int buttonRowColumn = !isAddingColumn ? cabinDeck.Rows : cabinDeck.Columns;
-            string tooltip = string.Format("Select {0} {1}", !isAddingColumn ? "row" : "column", buttonRowColumn + 1);
+            string tooltip = string.Format("Select {0} {1}", isAddingColumn ? "row" : "column", buttonRowColumn + 1);
             string tag = string.Format("{0}-{1}", !isAddingColumn ? "row" : "column", buttonRowColumn);
             ButtonHitResult selectHitResult = new ButtonHitResult(selectButtonHitbox, ButtonActionType.SELECT, tag, tooltip, buttonRowColumn,
-                buttonRowColumn, !isAddingColumn, true);
+                buttonRowColumn, !isAddingColumn, true, targetRowColumn);
             buttonHitResults.Add(selectHitResult);
 
             RedrawSelectButton(selectHitResult, false, false);
@@ -649,13 +650,13 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             PointCollection insertTrianglePoints = isAddingColumn ? topRightTrianglePoints : bottomLeftTrianglePoints;
 
             ButtonHitResult removeButtonHitResult = new ButtonHitResult(addRemoveButtonHitbox, ButtonActionType.REMOVE, tag,
-                string.Format("Remove {0}", !isAddingColumn ? "row" : "column"), buttonRowColumn, buttonRowColumn,
-                true, true, !isAddingColumn, removeTrianglePoints, true);
+                string.Format("Remove {0}", isAddingColumn ? "row" : "column"), buttonRowColumn, buttonRowColumn,
+                true, true, !isAddingColumn, removeTrianglePoints, true, !isAddingColumn, targetRowColumn);
             buttonHitResults.Add(removeButtonHitResult);
 
             ButtonHitResult insertButtonHitResult = new ButtonHitResult(addRemoveButtonHitbox, ButtonActionType.ADD, tag,
-                string.Format("Insert {0}", !isAddingColumn ? "row" : "column"), buttonRowColumn, buttonRowColumn,
-                true, false, isAddingColumn, insertTrianglePoints, true);
+                string.Format("Insert {0}", isAddingColumn ? "row" : "column"), buttonRowColumn, buttonRowColumn,
+                true, false, isAddingColumn, insertTrianglePoints, true, !isAddingColumn, targetRowColumn);
             buttonHitResults.Add(insertButtonHitResult);
 
             RedrawTriangleButton(removeButtonHitResult, false, false, insertButtonHitResult);
@@ -679,7 +680,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 }
                 else
                 {
-                    Logger.Default.WriteLog("{0} removal aborted by user", isColumnRemoval ? "Column" : "Row");
+                    Logger.Default.WriteLog("{0} removal aborted by user", !isColumnRemoval ? "Column" : "Row");
                 }
             }
         }
@@ -729,7 +730,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             UpdateBitmapSize(true, !isColumnRemoval);
             OnSizeChanged(new CabinDeckSizeChangedEventArgs(affectedSlots, cabinDeck.Floor, false, targetRowColumn, !isColumnRemoval, createHistoryStep));
 
-            Logger.Default.WriteLog("{0} {1} removed!", isColumnRemoval ? "Column" : "Row", targetRowColumn);
+            Logger.Default.WriteLog("{0} {1} removed!", !isColumnRemoval ? "Column" : "Row", targetRowColumn);
         }
 
         private Size UpdateBitmapSize(bool excludeBaseMargin = false, bool? refreshWidth = null)
@@ -921,9 +922,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             context.DrawGeometry(FixedValues.GREEN_BRUSH, null, icon);
             context.Pop();
 
-            string tooltip = string.Format("Select {0} {1}", isRowButton ? "row" : "column", isRowButton ? row + 1 : column + 1);
-            return new ButtonHitResult(drawRect, 
-                ButtonActionType.SELECT, tag, tooltip, row, column, isRowButton, false);
+            string tooltip = string.Format("Select {0} {1}", !isRowButton ? "row" : "column", isRowButton ? row + 1 : column + 1);
+            int targetRow = isRowButton ? row : -1;
+            int targetColumn = !isRowButton ? column : -1;
+
+            return new ButtonHitResult(drawRect, ButtonActionType.SELECT, tag, tooltip, row, column, isRowButton, targetRow, targetColumn);
         }
 
         private Rect GetSelectButtonHitbox(bool isRowButton, int row, int column, bool isPure = false)
@@ -981,10 +984,20 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             output.RedrawArea(drawingVisual.RenderVisual(renderRect.Size), renderRect);
         }
 
-        private ButtonHitResult DrawTriangleButton(DrawingContext context, bool? isRowButton, bool isRemoveButton, bool isTopRightAligned, string tag, string tooltip, 
+        private ButtonHitResult DrawTriangleButton(DrawingContext context, bool isRowButton, bool isRemoveButton, bool isTopRightAligned, string tag, string tooltip, 
             int row, int column, bool isMouseOver = false, bool isMouseDown = false, bool isPure = false, bool useSeparateRectForBorder = false)
         {
-            Rect rect = GetTriangleButtonHitbox(isRowButton, row, column, isPure, useSeparateRectForBorder);
+            bool? realIsRowButtonValue;
+            if (column > -1 && row > -1)
+            {
+                realIsRowButtonValue = isRowButton;
+            }
+            else
+            {
+                realIsRowButtonValue = null;
+            }
+
+            Rect rect = GetTriangleButtonHitbox(realIsRowButtonValue, row, column, isPure, useSeparateRectForBorder);
 
             StreamGeometry geometry = GetTriangleGeometry(isTopRightAligned);
             Brush foreground = !isRemoveButton ? FixedValues.GREEN_BRUSH : FixedValues.RED_BRUSH;
@@ -1019,7 +1032,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
             return new ButtonHitResult(rect, 
                 !isRemoveButton ? ButtonActionType.ADD : ButtonActionType.REMOVE, tag, tooltip, row, column, true, isRemoveButton, isTopRightAligned,
-                isTopRightAligned ? topRightTrianglePoints : bottomLeftTrianglePoints, false);
+                isTopRightAligned ? topRightTrianglePoints : bottomLeftTrianglePoints, false, isRowButton, isRowButton ? row : column);
         }
 
         private Rect GetTriangleButtonHitbox(bool? isRowButton, int row, int column, bool isPure = false, bool useSeparateRectForBorder = false)

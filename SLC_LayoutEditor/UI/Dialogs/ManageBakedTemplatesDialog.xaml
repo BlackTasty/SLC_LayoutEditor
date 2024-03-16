@@ -1,0 +1,94 @@
+﻿<local:DialogBase x:Class="SLC_LayoutEditor.UI.Dialogs.ManageBakedTemplatesDialog"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                  xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
+                  xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
+                  mc:Ignorable="d" 
+                  d:DesignHeight="450" d:DesignWidth="400">
+    <local:DialogBase.DataContext>
+        <vm:ManageBakedTemplatesDialogViewModel/>
+    </local:DialogBase.DataContext>
+    <TextBlock DockPanel.Dock="Top" Margin="4" Text="Manage default templates"
+               Style="{StaticResource Title1TextStyle}"/>
+    <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" TextWrapping="Wrap">
+        <Run Text="This dialog allows you to add or remove pre-existing templates, which are shipped with the editor."/>
+        <LineBreak/>
+        <LineBreak/>
+        <Run Text="Note:" FontStyle="Italic"/>
+        <Run Text="These templates are based off of the default layouts available on the SLC website."/>
+    </TextBlock>
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="Close" Width="80" Margin="8" Click="Close_Click"
+                Style="{StaticResource YellowButtonStyle}" DockPanel.Dock="Right"/>
+    </StackPanel>
+    <DockPanel Margin="8">
+        <DockPanel>
+            <TextBlock Margin="0,3,0,7" FontWeight="SemiBold"
+                       Text="Default templates" DockPanel.Dock="Top"/>
+            <DataGrid ItemsSource="{Binding BakedTemplates}" MinWidth="190"
+                      SelectedItem="{Binding SelectedBakedTemplate}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Aircraft" 
+                                        Binding="{Binding AircraftName}"
+                                        FontSize="16" Width="*"/>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,4">
+                                    <Button Style="{StaticResource ErrorIconButtonStyle}"
+                                            Content="{StaticResource Trash}"
+                                            ToolTip="Delete template"
+                                            Margin="8,0,0,0"
+                                            Click="DeleteTemplate_Click"
+                                            Visibility="{Binding Exists, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <Button Style="{StaticResource GreenIconButtonStyle}"
+                                            Content="{StaticResource Add}"
+                                            ToolTip="Add template"
+                                            Margin="8,0,0,0"
+                                            Click="AddTemplate_Click"
+                                            Visibility="{Binding Exists, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+        <!--<Border BorderBrush="{DynamicResource BackgroundDarkBrush}" BorderThickness="1.5"
+                CornerRadius="4" Background="{StaticResource BackgroundDarkBrush}"
+                Margin="4,0,0,0">
+            <DockPanel IsEnabled="{Binding IsValid}">
+                <DockPanel Margin="4,0,4,4" DockPanel.Dock="Top">
+                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding SelectedBakedTemplate.Preview.DeckNames}"
+                          MinWidth="140"
+                          SelectedIndex="{Binding SelectedDeckThumbnailIndex}"
+                          IsEnabled="{Binding SelectedBakedTemplate.Preview.HasThumbnails}"
+                          Visibility="{Binding HasMultipleDecks, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"
+                           Text="Preview"/>
+                </DockPanel>
+                <Grid>
+                    <Image Source="{Binding SelectedDeckThumbnail}" Height="180" Stretch="Uniform"/>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasSelectedTemplateThumbnails}" Value="False">
+                                            <Setter Property="Text" Value="Preview unavailable (no thumbnails)"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsTemplateSelected}" Value="False">
+                                            <Setter Property="Text" Value="Select a snapshot"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+        </Border>-->
+    </DockPanel>
+</local:DialogBase>

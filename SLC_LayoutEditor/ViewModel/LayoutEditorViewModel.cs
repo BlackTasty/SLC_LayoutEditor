@@ -616,6 +616,48 @@ namespace SLC_LayoutEditor.ViewModel
                     RefreshUnsavedChanges();
                 }
             }, ViewModelMessage.FinishLayoutChange);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (ActiveLayout != null && o is bool enableChecking)
+                {
+                    ActiveLayout.ToggleIssueChecking(enableChecking);
+                }
+            }, ViewModelMessage.Layout_ToggleIssueChecking);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is BakedTemplateData bakedTemplate)
+                {
+                    CabinLayoutSet layoutSet = mLayoutSets.FirstOrDefault(x => x.AircraftName == bakedTemplate.AircraftName);
+
+                    if (layoutSet == null)
+                    {
+                        layoutSet = new CabinLayoutSet(bakedTemplate.AircraftName);
+                        LayoutSets.Add(layoutSet);
+                    }
+
+                    File.WriteAllText(bakedTemplate.TargetFilePath, bakedTemplate.LayoutCode);
+                    CabinLayout defaultTemplate = new CabinLayout(new FileInfo(bakedTemplate.TargetFilePath));
+
+                    layoutSet.RegisterLayout(defaultTemplate);
+                }
+            }, ViewModelMessage.BakedTemplate_Add);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is BakedTemplateData bakedTemplate)
+                {
+                    CabinLayoutSet layoutSet = mLayoutSets.FirstOrDefault(x => x.AircraftName == bakedTemplate.AircraftName);
+
+                    if (layoutSet != null)
+                    {
+                        CabinLayout targetTemplate = layoutSet.Templates.FirstOrDefault(x => x.LayoutFile.Name == bakedTemplate.FileName);
+
+                        targetTemplate?.Delete();
+                    }
+                }
+            }, ViewModelMessage.BakedTemplate_Delete);
         }
 
         private void EditLayoutName_DialogClosing(object sender, DialogClosingEventArgs e)

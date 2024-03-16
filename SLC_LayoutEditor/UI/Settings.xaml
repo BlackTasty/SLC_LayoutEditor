@@ -54,6 +54,8 @@
         <CheckBox IsChecked="{Binding Settings.NavigateToSLCWebsite}" Content="Navigate to the SLC website after saving"/>
         <CheckBox IsChecked="{Binding Settings.HideSidebarAfterLoadingLayout}" Content="Hide sidebar after loading a layout" Margin="16,16,16,4"/>
         <CheckBox IsChecked="{Binding Settings.RememberLastLayout}" Content="Remember last edited layout on exit"/>
+        <Button HorizontalAlignment="Left" Content="Manage default templates" Margin="16,8"
+                Click="ManageBakedTemplates_Click"/>
     </StackPanel>
     <StackPanel Margin="8" DockPanel.Dock="Top">
         <TextBlock Text="Updates" Style="{StaticResource Title2TextStyle}"/>

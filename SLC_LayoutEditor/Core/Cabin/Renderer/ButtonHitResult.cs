@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ScrollBar;
 
 namespace SLC_LayoutEditor.Core.Cabin.Renderer
 {
@@ -21,9 +22,6 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         private readonly Point point3;
         private readonly bool wasAddedAfterRender;
 
-        private readonly int targetRow = -1;
-        private readonly int targetColumn = -1;
-
         public ButtonActionType Action => action;
 
         public string Tag => tag;
@@ -36,29 +34,27 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
 
         public bool WasAddedAfterRender => wasAddedAfterRender;
 
-        public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, int row, int column, bool? isRowButton, bool wasAddedAfterRender) :
-            base(rect, false, tooltip, row, column)
+        public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, int row, int column, 
+            bool wasAddedAfterRender, int targetRow, int targetColumn) :
+            base(rect, false, tooltip, row, column, targetRow, targetColumn)
         {
-            if (isRowButton.HasValue)
-            {
-                if (isRowButton.Value)
-                {
-                    targetRow = row;
-                }
-                else
-                {
-                    targetColumn = column;
-                }
-            }
-
             this.action = action;
             this.tag = tag;
             this.wasAddedAfterRender = wasAddedAfterRender;
         }
 
+        public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, int row, int column,
+            bool isRowButton, bool wasAddedAfterRender, int targetRowColumn) :
+            this(rect, action, tag, tooltip, row, column, wasAddedAfterRender, isRowButton ? targetRowColumn : -1,
+                !isRowButton ? targetRowColumn : -1)
+        {
+
+        }
+
         public ButtonHitResult(Rect rect, ButtonActionType action, string tag, string tooltip, int row, int column, 
             bool isTriangle, bool isRemoveButton, bool isTopRightAligned,
-            PointCollection trianglePoints, bool wasAddedAfterRender) : this(rect, action, tag, tooltip, row, column, null, wasAddedAfterRender)
+            PointCollection trianglePoints, bool wasAddedAfterRender, bool isRowButton, int targetRowColumn) :
+            this(rect, action, tag, tooltip, row, column, isRowButton, wasAddedAfterRender, targetRowColumn)
         {
             this.isTriangle = isTriangle;
             this.isRemoveButton = isRemoveButton;

@@ -103,13 +103,13 @@ namespace SLC_LayoutEditor.Core
 
         protected virtual void SaveFile(T @object)
         {
-            Logger.Default.WriteLog("Saving config file \"{0}\"...", new FileInfo(filePath).Name);
             string json = JsonConvert.SerializeObject(@object);
             if (string.IsNullOrWhiteSpace(filePath))
             {
                 throw new Exception("FileContent must be set! Use SaveFile(string fileContent, T @object) to create a new file instead!");
             }
 
+            Logger.Default.WriteLog("Saving config file \"{0}\"...", fileName);
             File.WriteAllText(Path.Combine(filePath, fileName), json);
             fromFile = true;
             FileAttributes attr = File.GetAttributes(Path.Combine(filePath, fileName));

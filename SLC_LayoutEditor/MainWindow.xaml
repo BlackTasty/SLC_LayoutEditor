@@ -61,8 +61,7 @@
                                        Margin="8,0" VerticalAlignment="Center"/>
                             <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14" VerticalAlignment="Center"
                                   IsEnabled="{Binding IsDialogOpen, Converter={StaticResource InverseBooleanConverter}}">
-                                <MenuItem
-                                          IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                <MenuItem IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
                                     <MenuItem.Style>
                                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                             <Setter Property="Header" Value="Layout"/>
@@ -74,7 +73,7 @@
                                         </Style>
                                     </MenuItem.Style>
                                     <MenuItem Command="{Binding RenameLayoutCommand}" 
-                                      CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+R">
+                                              CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+R">
                                         <MenuItem.Style>
                                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                                 <Setter Property="Header" Value="Rename layout"/>
@@ -113,9 +112,9 @@
                                               CommandParameter="{Binding EditorViewModel}" InputGestureText="Ctrl+E"
                                               Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                                 </MenuItem>
-                                <MenuItem Header="Editor"
-                                          IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                <MenuItem Header="Editor" IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
                                     <MenuItem Header="Settings" Click="Settings_Click"/>
+                                    <MenuItem Header="Manage default templates" Click="ManageBakedTemplates_Click"/>
                                     <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
                                     <Separator Style="{StaticResource MenuSeparatorStyle}"/>
                                     <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 

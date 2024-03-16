@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core;
+using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
@@ -76,6 +77,12 @@ namespace SLC_LayoutEditor.UI
         {
             App.Settings = AppSettings.Load(new System.IO.FileInfo("settings.json"));
             vm.Refresh();
+        }
+
+        private void ManageBakedTemplates_Click(object sender, RoutedEventArgs e)
+        {
+            ManageBakedTemplatesDialog dialog = new ManageBakedTemplatesDialog();
+            dialog.ShowDialog();
         }
     }
 }

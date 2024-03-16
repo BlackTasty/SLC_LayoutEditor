@@ -113,7 +113,7 @@ namespace SLC_LayoutEditor.Core.Memento
 
         public override string ToString()
         {
-            return base.ToString();
+            return GetMessage();
         }
     }
 }
