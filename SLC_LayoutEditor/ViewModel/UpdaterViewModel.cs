@@ -250,9 +250,9 @@ namespace SLC_LayoutEditor.ViewModel
         private void UpdateManager_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
             UpdateText = "Downloading - " +
-                Math.Round((e.BytesReceived / 1024d) / 1024d, 2).ToString("0.00") + " from " +
+                Math.Round((e.BytesReceived / 1024d) / 1024d, 2).ToString("0.00") + " MB from " +
                 Math.Round((e.TotalBytesToReceive / 1024d) / 1024d, 2).ToString("0.00") +
-                " (" + Patcher.CalculateSpeed(e.BytesReceived) + ")";
+                " MB (" + Patcher.CalculateSpeed(e.BytesReceived) + ")";
             DownloadSize = e.TotalBytesToReceive;
             DownloadCurrent = e.BytesReceived;
         }

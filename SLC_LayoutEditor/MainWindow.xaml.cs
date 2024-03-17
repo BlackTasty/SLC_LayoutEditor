@@ -313,7 +313,7 @@ namespace SLC_LayoutEditor
                 if (e.ClickCount == 2)
                 {
                     if (e.OriginalSource is FrameworkElement originalSource &&
-                        (originalSource.Name == "panel_historyButtons" ||
+                        (originalSource.Name == "panel_historyButtons" || originalSource.Name == "updater" ||
                         (originalSource.Name == "panel_guideStepper" && App.GuidedTour.IsTourRunning)
                         ))
                     {

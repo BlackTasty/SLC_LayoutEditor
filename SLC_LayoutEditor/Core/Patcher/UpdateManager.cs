@@ -141,6 +141,7 @@ namespace SLC_LayoutEditor.Core.Patcher
                     Util.SafeDeleteFile(versionFilePath);
                     isPullingVersionFile = true;
                     DownloadFile("version.txt", versionFilePath, false);
+                    isPullingVersionFile = false;
                 }
                 else
                 {
@@ -333,9 +334,9 @@ namespace SLC_LayoutEditor.Core.Patcher
 
                 using (WebClient wc = new WebClient())
                 {
-                    wc.DownloadFileCompleted += DownloadFileCompleted;
                     if (notifyProgress)
                     {
+                        wc.DownloadFileCompleted += DownloadFileCompleted;
                         wc.DownloadProgressChanged += DownloadChanged;
                         downloadSpeedStopWatch.Start();
                         wc.DownloadFileAsync(new Uri(targetServer.URL + fileName), targetDir);
@@ -372,15 +373,8 @@ namespace SLC_LayoutEditor.Core.Patcher
 
         private void DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            if (!isPullingVersionFile)
-            {
-                downloadSpeedStopWatch.Reset();
-                InstallUpdate();
-            }
-            else
-            {
-                isPullingVersionFile = false;
-            }
+            downloadSpeedStopWatch.Reset();
+            InstallUpdate();
         }
 
         private void DownloadChanged(object sender, DownloadProgressChangedEventArgs e)

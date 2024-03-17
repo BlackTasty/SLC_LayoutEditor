@@ -41,6 +41,7 @@ namespace SLC_LayoutEditor.Controls
         private void Grid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             vm.IsPressed = true;
+            e.Handled = true;
         }
 
         private void Grid_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -49,6 +50,7 @@ namespace SLC_LayoutEditor.Controls
             {
                 ProceedThroughUpdate();
                 vm.IsPressed = false;
+                e.Handled = true;
             }
         }
 

@@ -55,7 +55,8 @@
                         <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
                                 DockPanel.Dock="Right" Margin="24,0,24,0"
                                 Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0" InstallUpdateClicked="Updater_InstallUpdateClicked"/>
+                        <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0" InstallUpdateClicked="Updater_InstallUpdateClicked"
+                                          x:Name="updater"/>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource Title3TextStyle}"
                                        Margin="8,0" VerticalAlignment="Center"/>
