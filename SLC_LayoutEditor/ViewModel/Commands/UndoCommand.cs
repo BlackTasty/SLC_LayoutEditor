@@ -7,11 +7,11 @@ using Tasty.ViewModel.Commands;
 
 namespace SLC_LayoutEditor.ViewModel.Commands
 {
-    internal class UndoCommand : CommandBase
+    internal class UndoCommand : HistoryCommandBase
     {
         public override bool CanExecute(object parameter)
         {
-            return parameter is MainViewModel vm && !vm.IsViewNotEditor && vm.History.CanUndo;
+            return base.CanExecute(parameter) && parameter is MainViewModel vm && vm.History.CanUndo;
         }
 
         public override void Execute(object parameter)

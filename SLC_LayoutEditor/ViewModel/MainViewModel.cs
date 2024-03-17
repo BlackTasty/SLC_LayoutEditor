@@ -262,6 +262,8 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+        public bool AllowHistoryCommands => !IsViewNotEditor && !IsDialogOpen && !mIsGuideOpen;
+
         public bool IsViewNotEditor => !(mContent is LayoutEditor) && App.Settings.WelcomeScreenShown;
 
         public bool IsTourRunning => App.GuidedTour?.IsTourRunning ?? false;
@@ -276,6 +278,9 @@ namespace SLC_LayoutEditor.ViewModel
 
         public int MaxSteps => FixedValues.TOTAL_TOUR_STEPS;
 
+        /// <summary>
+        /// Defines if any <see cref="LiveGuideAdorner"/> is currently open
+        /// </summary>
         public bool IsGuideOpen
         {
             get => mIsGuideOpen;

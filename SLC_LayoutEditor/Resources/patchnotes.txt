@@ -2,6 +2,7 @@
 Added: You can now manage pre-packaged templates either via "Editor" -> "Manage default templates" or via the settings
 Added: Two new default templates have been added ("B744 - Boeing 747-400" and "B748 - Boeing 747-8i")
 Changed: Added some more logging to the undo/redo system
+Changed: The undo and redo commands (Ctrl+Z and Ctrl+Y) are now only available if no dialog or guide overlay is open or the current view is not the editor (e.g. settings)
 Fixed: Potential fix for a crash when undoing/redoing a step
 Fixed: "Rows" and "Columns" texts have been swapped
 Fixed: When undoing or redoing multiple steps, the editor no longer checks for issues for every step

@@ -288,6 +288,7 @@
     <Compile Include="ViewModel\BaseDialogViewModel.cs" />
     <Compile Include="ViewModel\Commands\CancelDialogCommand.cs" />
     <Compile Include="ViewModel\Commands\CommandInterface.cs" />
+    <Compile Include="ViewModel\Commands\HistoryCommandBase.cs" />
     <Compile Include="ViewModel\Commands\LayoutBaseCommand.cs" />
     <Compile Include="ViewModel\Commands\MakeTemplateCommand.cs" />
     <Compile Include="ViewModel\Commands\OpenLayoutFolderCommand.cs" />
