@@ -6,14 +6,14 @@
                   xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
                   xmlns:vm="clr-namespace:SLC_LayoutEditor.ViewModel"
                   mc:Ignorable="d" 
-                  d:DesignHeight="450" d:DesignWidth="400">
+                  MaxHeight="650" MaxWidth="450">
     <local:DialogBase.DataContext>
         <vm:ManageBakedTemplatesDialogViewModel/>
     </local:DialogBase.DataContext>
     <TextBlock DockPanel.Dock="Top" Margin="4" Text="Manage default templates"
                Style="{StaticResource Title1TextStyle}"/>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" TextWrapping="Wrap">
-        <Run Text="This dialog allows you to add or remove pre-existing templates, which are shipped with the editor."/>
+        <Run Text="This dialog allows you to add or remove default templates, which are shipped with the editor."/>
         <LineBreak/>
         <LineBreak/>
         <Run Text="Note:" FontStyle="Italic"/>
@@ -28,7 +28,7 @@
             <TextBlock Margin="0,3,0,7" FontWeight="SemiBold"
                        Text="Default templates" DockPanel.Dock="Top"/>
             <DataGrid ItemsSource="{Binding BakedTemplates}" MinWidth="190"
-                      SelectedItem="{Binding SelectedBakedTemplate}">
+                      x:Name="list_templates">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Aircraft" 
                                         Binding="{Binding AircraftName}"

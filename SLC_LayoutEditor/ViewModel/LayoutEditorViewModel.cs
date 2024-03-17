@@ -641,6 +641,7 @@ namespace SLC_LayoutEditor.ViewModel
                     CabinLayout defaultTemplate = new CabinLayout(new FileInfo(bakedTemplate.TargetFilePath));
 
                     layoutSet.RegisterLayout(defaultTemplate);
+                    bakedTemplate.CheckIfExists();
                 }
             }, ViewModelMessage.BakedTemplate_Add);
 
@@ -653,8 +654,14 @@ namespace SLC_LayoutEditor.ViewModel
                     if (layoutSet != null)
                     {
                         CabinLayout targetTemplate = layoutSet.Templates.FirstOrDefault(x => x.LayoutFile.Name == bakedTemplate.FileName);
-
                         targetTemplate?.Delete();
+                        bakedTemplate.CheckIfExists();
+
+                        if (bakedTemplate.Exists)
+                        {
+                            File.Delete(bakedTemplate.TargetFilePath);
+                            bakedTemplate.CheckIfExists();
+                        }
                     }
                 }
             }, ViewModelMessage.BakedTemplate_Delete);

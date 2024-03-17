@@ -19,26 +19,26 @@ namespace SLC_LayoutEditor.ViewModel
 
         public List<BakedTemplateData> BakedTemplates => bakedTemplates;
 
-        public BakedTemplateData SelectedBakedTemplate
+        /*public BakedTemplateData SelectedBakedTemplate
         {
             get => mSelectedBakedTemplate;
             set
             {
                 mSelectedBakedTemplate = value;
-                /*if (!mSelectedBakedTemplate?.IsPreviewLoaded ?? true)
+                if (!mSelectedBakedTemplate?.IsPreviewLoaded ?? true)
                 {
                     mSelectedBakedTemplate.LoadPreview();
-                }*/
+                }
 
                 InvokePropertyChanged();
-                /*SelectedDeckThumbnailIndex = 0;
+                SelectedDeckThumbnailIndex = 0;
                 InvokePropertyChanged(nameof(HasMultipleDecks));
                 InvokePropertyChanged(nameof(HasSelectedTemplateThumbnails));
-                InvokePropertyChanged(nameof(IsTemplateSelected));*/
+                InvokePropertyChanged(nameof(IsTemplateSelected));
             }
         }
 
-        /*public bool HasMultipleDecks => mSelectedBakedTemplate?.Preview.Thumbnails.Count > 1;
+        public bool HasMultipleDecks => mSelectedBakedTemplate?.Preview.Thumbnails.Count > 1;
 
         public int SelectedDeckThumbnailIndex
         {
@@ -64,7 +64,13 @@ namespace SLC_LayoutEditor.ViewModel
                 bakedTemplates.Add(new BakedTemplateData(bakedTemplatePath));
             }
 
-            bakedTemplates = bakedTemplates.OrderBy(x => x.Exists).ToList();
+            OrderTemplates();
+        }
+
+        public void OrderTemplates()
+        {
+            bakedTemplates = bakedTemplates.OrderBy(x => x.Exists).ThenBy(x => x.AircraftName).ToList();
+            InvokePropertyChanged(nameof(BakedTemplates));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SLC_LayoutEditor.ViewModel;
+﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
@@ -33,14 +34,26 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         private void DeleteTemplate_Click(object sender, RoutedEventArgs e)
         {
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.BakedTemplate_Delete, vm.SelectedBakedTemplate);
-            vm.SelectedBakedTemplate.CheckIfExists();
+            if (sender is Button button && button.DataContext is BakedTemplateData bakedTemplate)
+            {
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.BakedTemplate_Delete, bakedTemplate);
+                RefreshList(bakedTemplate);
+            }
         }
 
         private void AddTemplate_Click(object sender, RoutedEventArgs e)
         {
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.BakedTemplate_Add, vm.SelectedBakedTemplate);
-            vm.SelectedBakedTemplate.CheckIfExists();
+            if (sender is Button button && button.DataContext is BakedTemplateData bakedTemplate)
+            {
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.BakedTemplate_Add, bakedTemplate);
+                RefreshList(bakedTemplate);
+            }
+        }
+
+        private void RefreshList(BakedTemplateData bakedTemplate)
+        {
+            vm.OrderTemplates();
+            list_templates.ScrollIntoView(bakedTemplate);
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
