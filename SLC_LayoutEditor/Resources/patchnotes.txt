@@ -1,4 +1,4 @@
-﻿16.03.2024
+﻿17.03.2024
 Added: You can now manage pre-packaged templates either via "Editor" -> "Manage default templates" or via the settings
 Added: Two new default templates have been added ("B744 - Boeing 747-400" and "B748 - Boeing 747-8i")
 Changed: Added some more logging to the undo/redo system
