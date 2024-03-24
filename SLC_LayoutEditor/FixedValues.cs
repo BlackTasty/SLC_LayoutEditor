@@ -55,6 +55,9 @@ namespace SLC_LayoutEditor
         internal static readonly string ICON_BACKUP_RESTORE = (string)App.Current.FindResource("BackupRestore");
         internal static readonly string ICON_SAVE = (string)App.Current.FindResource("SaveConfirm");
 
+        internal static readonly string MAXIMIZE_ICON = (string)App.Current.FindResource("WindowMaximize");
+        internal static readonly string RESTORE_ICON = (string)App.Current.FindResource("WindowRestore");
+
         internal readonly static int TOTAL_TOUR_STEPS = (int)System.Enum.GetValues(typeof(GuidedTourStep)).Cast<GuidedTourStep>().Max();
 
         internal const double DEFAULT_BORDER_THICKNESS = 1.5;

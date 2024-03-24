@@ -36,7 +36,7 @@ namespace SLC_LayoutEditor.ViewModel
         private string mCabinLayoutName;
         private bool mIsTemplate;
         private bool mHasUnsavedChanges;
-        private string mStateToggleButtonContent;
+        private string mStateToggleButtonContent = FixedValues.MAXIMIZE_ICON;
         private bool mIsMaximized;
         private bool mIsGuideOpen;
 

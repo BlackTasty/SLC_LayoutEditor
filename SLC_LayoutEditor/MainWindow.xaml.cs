@@ -36,8 +36,6 @@ namespace SLC_LayoutEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string MAXIMIZE_ICON = (string)App.Current.FindResource("WindowMaximize");
-        private static readonly string RESTORE_ICON = (string)App.Current.FindResource("WindowRestore");
 
         private UIElement root;
 
@@ -58,7 +56,6 @@ namespace SLC_LayoutEditor
 
             InitializeComponent();
             vm = DataContext as MainViewModel;
-            vm.StateToggleButtonContent = MAXIMIZE_ICON;
 
             CheckCleanupFile();
             vm.ShowChangelogIfUpdated();
@@ -233,7 +230,7 @@ namespace SLC_LayoutEditor
         private void Window_StateChanged(object sender, EventArgs e)
         {
             RefreshGuideAdorner();
-            vm.StateToggleButtonContent = WindowState == WindowState.Normal ? MAXIMIZE_ICON : RESTORE_ICON;
+            vm.StateToggleButtonContent = WindowState == WindowState.Normal ? FixedValues.MAXIMIZE_ICON : FixedValues.RESTORE_ICON;
             vm.IsMaximized = WindowState == WindowState.Maximized;
         }
 
