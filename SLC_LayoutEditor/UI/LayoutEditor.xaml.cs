@@ -225,10 +225,12 @@ namespace SLC_LayoutEditor.UI
 
         private void SaveLayout()
         {
+            bool isTemplate = vm.ActiveLayout.IsTemplate;
+
             vm.ActiveLayout.SaveLayout();
             control_layout.GenerateThumbnailForLayout(true);
 
-            if (!vm.IsTemplatingMode)
+            if (!isTemplate)
             {
                 if (App.Settings.CopyLayoutCodeToClipboard)
                 {
@@ -255,6 +257,10 @@ namespace SLC_LayoutEditor.UI
                         8000, FixedValues.ICON_FILE_OPENED);
                 }
             }
+
+            Notification.MakeTimedNotification(string.Format("{0} saved", isTemplate ? "Template" : "Layout"), 
+                string.Format("Your {0} \"{1}\" has been saved successfully!", isTemplate ? "Template" : "Layout", vm.ActiveLayout.LayoutName),
+                8000, FixedValues.ICON_SAVE);
         }
 
         private void layout_LayoutLoading(object sender, EventArgs e)
