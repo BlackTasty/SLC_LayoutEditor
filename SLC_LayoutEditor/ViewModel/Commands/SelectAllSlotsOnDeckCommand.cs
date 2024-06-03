@@ -11,13 +11,8 @@ using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.ViewModel.Commands
 {
-    internal class SelectAllSlotsOnDeckCommand : CommandBase
+    internal class SelectAllSlotsOnDeckCommand : LayoutBaseCommand
     {
-        public override bool CanExecute(object parameter)
-        {
-            return parameter is CabinDeckControl;
-        }
-
         public override void Execute(object parameter)
         {
             if (parameter is CabinDeckControl targetControl)

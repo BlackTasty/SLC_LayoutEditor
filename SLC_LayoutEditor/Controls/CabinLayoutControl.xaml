@@ -45,39 +45,39 @@
             </Grid.RowDefinitions>
             <Border Grid.RowSpan="2" Background="{DynamicResource TemplatingModeBackBrush}"
                     Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <ScrollViewer x:Name="deck_scroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.RowSpan="2"
-                              PreviewMouseWheel="deck_scroll_PreviewMouseWheel" ScrollChanged="deck_scroll_ScrollChanged">
-                    <ScrollViewer.Style>
-                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Margin" Value="0,0,0,-14"/>
-                                </MultiDataTrigger>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Margin" Value="0,0,-14,0"/>
-                                </MultiDataTrigger>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Margin" Value="0,0,-14,-14"/>
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ScrollViewer.Style>
-                    <StackPanel x:Name="container_decks" Grid.IsSharedSizeScope="True" Margin="0,91,0,96"
-                                Loaded="container_decks_Loaded"
-                                SizeChanged="deck_scroll_SizeChanged">
-
+            <ScrollViewer x:Name="deck_scroll" VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Auto" Grid.RowSpan="2"
+                          PreviewMouseWheel="deck_scroll_PreviewMouseWheel" ScrollChanged="deck_scroll_ScrollChanged">
+                <ScrollViewer.Style>
+                    <Style TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Margin" Value="0,0,0,-14"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="False"/>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Margin" Value="0,0,-14,0"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsHorizontalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=IsVerticalScrollBarVisible, UpdateSourceTrigger=PropertyChanged}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Margin" Value="0,0,-14,-14"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ScrollViewer.Style>
+                <StackPanel x:Name="container_decks" Grid.IsSharedSizeScope="True" Margin="0,91,0,96"
+                            Loaded="container_decks_Loaded"
+                            SizeChanged="deck_scroll_SizeChanged">
                 </StackPanel>
             </ScrollViewer>
             <Border Grid.RowSpan="2">

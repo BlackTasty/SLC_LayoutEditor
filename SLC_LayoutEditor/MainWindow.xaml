@@ -254,11 +254,11 @@
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenLayoutInTextEditor}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="S" Modifiers="Ctrl+Shift" Command="{Binding SaveLayoutAsCommand}" CommandParameter="{Binding EditorViewModel}"/>
-        <KeyBinding Key="A" Modifiers="Ctrl+Shift" Command="{Binding SelectAllSlotsCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="T" Modifiers="Ctrl" Command="{Binding MakeTemplateCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding RenameLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="R" Modifiers="Ctrl+Alt" Command="{Binding ReloadLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
-        <KeyBinding Key="A" Modifiers="Ctrl" Command="{Binding SelectAllSlotsOnDeckCommand}" CommandParameter="{Binding SelectedDeck}"/>
+        <!--<KeyBinding Key="A" Modifiers="Ctrl" Command="{Binding SelectAllSlotsOnDeckCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="A" Modifiers="Ctrl+Shift" Command="{Binding SelectAllSlotsCommand}" CommandParameter="{Binding EditorViewModel}"/>-->
         <KeyBinding Key="K" Modifiers="Ctrl" Command="{Binding ShowKeybindsWindowCommand}"/>
         <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}" CommandParameter="{Binding}"/>
         <KeyBinding Key="Y" Modifiers="Ctrl" Command="{Binding RedoCommand}" CommandParameter="{Binding}"/>

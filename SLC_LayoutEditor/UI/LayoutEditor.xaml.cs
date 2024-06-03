@@ -41,7 +41,6 @@ namespace SLC_LayoutEditor.UI
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<EventArgs> TourRunningStateChanged;
-        public event EventHandler<SelectedDeckChangedEventArgs> SelectedDeckChanged;
 
         private readonly LayoutEditorViewModel vm;
         private Adorner sidebarToggleAdorner;
@@ -85,7 +84,7 @@ namespace SLC_LayoutEditor.UI
             }, ViewModelMessage.Keybind_SaveLayout);
         }
 
-        public void DeselectSlots()
+        public void DeselectAllSlots()
         {
             control_layout.DeselectSlots();
         }
@@ -385,7 +384,7 @@ namespace SLC_LayoutEditor.UI
             if (!vm.IgnoreMultiSlotTypeChange && sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
             {
                 vm.ActiveLayout.ToggleIssueChecking(false);
-                foreach (CabinSlot cabinSlot in control_layout.SelectedCabinSlots)
+                foreach (CabinSlot cabinSlot in vm.SelectedCabinSlots)
                 {
                     cabinSlot.Type = slotType;
                 }
@@ -466,8 +465,6 @@ namespace SLC_LayoutEditor.UI
                     }
                     break;
                 case AutomationMode.WallGenerator: // Wall generator
-                    vm.SelectedCabinSlotFloor = vm.AutomationSelectedDeck.Floor;
-
                     IEnumerable<CabinSlot> wallSlots = vm.AutomationSelectedDeck.CabinSlots
                         .Where(x => (x.Row == 0 || x.Column == 0 || x.Row == vm.AutomationSelectedDeck.Rows || x.Column == vm.AutomationSelectedDeck.Columns) && 
                             !x.IsDoor && x.Type != CabinSlotType.Wall && x.Type != CabinSlotType.Cockpit);
@@ -933,27 +930,16 @@ namespace SLC_LayoutEditor.UI
             }
         }
 
-        private void Layout_SelectedDeckChanged(object sender, SelectedDeckChangedEventArgs e)
-        {
-            OnSelectedDeckChanged(e);
-        }
-
         protected virtual void OnTourRunningStateChanged(EventArgs e)
         {
             TourRunningStateChanged?.Invoke(this, e);
         }
 
-        protected virtual void OnSelectedDeckChanged(SelectedDeckChangedEventArgs e)
-        {
-            SelectedDeckChanged?.Invoke(this, e);
-        }
-
         private void CabinLayout_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
         {
-            vm.SelectedCabinSlots = e.NewSelection.ToList();
-            vm.SelectedCabinSlotFloor = e.Floor;
+            vm.ModifyCabinSlotSelection(e);
 
-            if (App.GuidedTour.IsAwaitingBorderSlotSelection && e.NewSelection.All(x => e.DeckControl.CabinDeck.IsSlotValidDoorPosition(x)))
+            if (App.GuidedTour.IsAwaitingBorderSlotSelection && vm.SelectedCabinSlots.All(x => e.DeckControl.CabinDeck.IsSlotValidDoorPosition(x)))
             {
                 todoList.ForceCompleteEntry(0, true);
                 App.GuidedTour.ContinueTour(true);

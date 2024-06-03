@@ -3,14 +3,75 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
              xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="150" Margin="8">
-    <TextBlock DockPanel.Dock="Right" Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Keybind}"
-               FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" 
+                Margin="8,0,0,0" VerticalAlignment="Center">
+        <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Keybind, FallbackValue=Shift}"
+               FontWeight="SemiBold">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=IsKeybindEnabled}" Value="False">
+                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBlock Text=" + ">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=ActionIcon, Converter={StaticResource NotNullToBooleanConverter}}"
+                                     Value="True"/>
+                                <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Keybind, Converter={StaticResource NotNullToBooleanConverter}}"
+                                     Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=SecondActionIcon, Converter={StaticResource NotNullToBooleanConverter}}"
+                                     Value="True"/>
+                                <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Keybind, Converter={StaticResource NotNullToBooleanConverter}}"
+                                     Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <Path Data="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=ActionIcon, Converter={StaticResource StringToGeometryConverter}}"
+              Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=ActionIcon, Converter={StaticResource NotNullToVisibilityConverter}}"
+              Width="16" Height="16" Stretch="Uniform"
+              Fill="{StaticResource ForegroundColorBrush}"/>
+        <Path Data="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=SecondActionIcon, Converter={StaticResource StringToGeometryConverter}}"
+              Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=SecondActionIcon, Converter={StaticResource NotNullToVisibilityConverter}}"
+              Width="16" Height="16" Stretch="Uniform" Margin="4,0,0,0"
+              Fill="{StaticResource ForegroundColorBrush}"/>
+    </StackPanel>
     <TextBlock DockPanel.Dock="Bottom" Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Notes}"
                FontStyle="Italic" Margin="0,4,0,0" FontSize="10"
                Foreground="{StaticResource ForegroundSecondaryColorBrush}"
                Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Notes, Converter={StaticResource NotNullToVisibilityConverter}}"/>
-    <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Title}"
-               VerticalAlignment="Center"/>
+    <TextBlock VerticalAlignment="Center">
+        <Run FontWeight="Bold" Foreground="{StaticResource ErrorForegroundColorBrush}">
+            <Run.Style>
+                <Style TargetType="Run">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=IsKeybindEnabled}" Value="False">
+                            <Setter Property="Text" Value="[DISABLED] "/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Run.Style>
+        </Run><Run Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Title}"/>
+    </TextBlock>
 </DockPanel>

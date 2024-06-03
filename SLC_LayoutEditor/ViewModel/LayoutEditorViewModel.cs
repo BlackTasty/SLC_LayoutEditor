@@ -58,7 +58,6 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mHasSeatNumberInputError;
 
         private List<CabinSlot> mSelectedCabinSlots = new List<CabinSlot>();
-        private int mSelectedCabinSlotFloor;
         private int mSelectedMultiSlotTypeIndex = -1;
 
         private int mSelectedAutomationIndex = -1;
@@ -250,27 +249,7 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedCabinSlots = value;
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
-                InvokePropertyChanged(nameof(SelectedCabinSlot));
-
-                if (value.Count <= 1)
-                {
-                    InvokePropertyChanged(nameof(SelectedCabinSlotTypeId));
-                }
-
-                IgnoreMultiSlotTypeChange = true;
-                if (value?.Count > 0) {
-                    int checkType = value.First().TypeId;
-                    SelectedMultiSlotTypeIndex = value.All(x => x.TypeId == checkType) ? checkType : -1; 
-                }
-                else
-                {
-                    SelectedMultiSlotTypeIndex = -1;
-                }
-                IgnoreMultiSlotTypeChange = false;
-                InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
-                InvokePropertyChanged(nameof(RequiredLettersForAutomation));
-                InvokePropertyChanged(nameof(SeatLettersError));
+                UpdateSelectedCabinSlots();
             }
         }
 
@@ -301,30 +280,25 @@ namespace SLC_LayoutEditor.ViewModel
 
         public bool ShowSelectedCabinSlotDetails => SelectedCabinSlot != null && IsSingleCabinSlotSelected && !IsAutomationChecked;
 
-        public int SelectedCabinSlotFloor
-        {
-            get => mSelectedCabinSlotFloor;
-            set
-            {
-                mSelectedCabinSlotFloor = value;
-                InvokePropertyChanged();
-                InvokePropertyChanged(nameof(SelectedFloorText));
-            }
-        }
+        public int SelectedCabinSlotFloor => ActiveLayout?.GetFloorForCabinSlots(mSelectedCabinSlots) ?? -1;
 
         public string SelectedFloorText
         {
             get
             {
-                switch (mSelectedCabinSlotFloor)
+                int targetFloor = SelectedCabinSlotFloor;
+
+                switch (targetFloor)
                 {
+                    case -1:
+                        return "multiple decks";
                     case 1:
                         return "Lower deck";
                     case 2:
                         return "Upper deck";
                     default:
                         string suffix;
-                        switch (int.Parse(mSelectedCabinSlotFloor.ToString().LastOrDefault().ToString()))
+                        switch (int.Parse(targetFloor.ToString().LastOrDefault().ToString()))
                         {
                             case 1:
                                 suffix = "st";
@@ -340,7 +314,7 @@ namespace SLC_LayoutEditor.ViewModel
                                 break;
                         }
 
-                        return string.Format("{0}{1} deck", mSelectedCabinSlotFloor, suffix);
+                        return string.Format("{0}{1} deck", targetFloor, suffix);
                 }
             }
         }
@@ -665,6 +639,11 @@ namespace SLC_LayoutEditor.ViewModel
                     }
                 }
             }, ViewModelMessage.BakedTemplate_Delete);
+
+            Mediator.Instance.Register(o =>
+            {
+                RefreshUnsavedChanges();
+            }, ViewModelMessage.HistoryStepApplied);
         }
 
         private void EditLayoutName_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -674,6 +653,30 @@ namespace SLC_LayoutEditor.ViewModel
                 editNameTarget.Rename(result.Name);
 
                 Mediator.Instance.NotifyColleagues(ViewModelMessage.LayoutNameChanged);
+            }
+        }
+
+        public void ModifyCabinSlotSelection(SelectedSlotsChangedEventArgs e)
+        {
+            if (e.IsNewSelection)
+            {
+                SelectedCabinSlots = e.Added.ToList();
+            }
+            else if (e.Added != null)
+            {
+                SelectedCabinSlots.AddRangeDistinct(e.Added);
+                InvokePropertyChanged(nameof(SelectedCabinSlots));
+                UpdateSelectedCabinSlots();
+            }
+            else if (e.Removed != null)
+            {
+                foreach (CabinSlot removed in e.Removed)
+                {
+                    SelectedCabinSlots.Remove(removed);
+                }
+
+                InvokePropertyChanged(nameof(SelectedCabinSlots));
+                UpdateSelectedCabinSlots();
             }
         }
 
@@ -710,6 +713,34 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(nameof(SelectedCabinSlots));
             InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
             InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
+        }
+
+        private void UpdateSelectedCabinSlots()
+        {
+            InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
+            InvokePropertyChanged(nameof(SelectedCabinSlot));
+
+            if (mSelectedCabinSlots.Count <= 1)
+            {
+                InvokePropertyChanged(nameof(SelectedCabinSlotTypeId));
+            }
+
+            IgnoreMultiSlotTypeChange = true;
+            if (mSelectedCabinSlots?.Count > 0)
+            {
+                int checkType = mSelectedCabinSlots.First().TypeId;
+                SelectedMultiSlotTypeIndex = mSelectedCabinSlots.All(x => x.TypeId == checkType) ? checkType : -1;
+            }
+            else
+            {
+                SelectedMultiSlotTypeIndex = -1;
+            }
+            IgnoreMultiSlotTypeChange = false;
+            InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
+            InvokePropertyChanged(nameof(RequiredLettersForAutomation));
+            InvokePropertyChanged(nameof(SeatLettersError));
+            InvokePropertyChanged(nameof(SelectedCabinSlotFloor));
+            InvokePropertyChanged(nameof(SelectedFloorText));
         }
 
         private void LayoutSets_CollectionUpdated(object sender, Tasty.ViewModel.Core.Events.CollectionUpdatedEventArgs<CabinLayoutSet> e)

@@ -466,7 +466,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                         slotHitResult.CabinSlot.IsSelected = !Util.IsControlDown();
                         slotHitResult.CabinSlot.IsDirty = true;
                         RedrawCabinSlot(slotHitResult.CabinSlot, true);
-                        OnSelectedSlotsChanged(new SelectedSlotsChangedEventArgs(slotHitResults.Select(x => x.CabinSlot).Where(x => x.IsSelected)));
+                        OnSelectedSlotsChanged(new SelectedSlotsChangedEventArgs(!Util.IsControlDown() ? slotHitResult.CabinSlot : null, Util.IsControlDown() ? slotHitResult.CabinSlot : null));
+                        //OnSelectedSlotsChanged(new SelectedSlotsChangedEventArgs(slotHitResults.Select(x => x.CabinSlot).Where(x => x.IsSelected)));
                     }
                 }
                 // The element is a button
@@ -754,7 +755,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             return new Size(width, height);
         }
 
-        public void SelectSlots(IEnumerable<CabinSlot> targetSlots)
+        public void SelectSlots(IEnumerable<CabinSlot> targetSlots, bool fireEvent = true)
         {
             bool isSelected = !Util.IsControlDown();
 
@@ -765,12 +766,15 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 RedrawCabinSlot(targetSlot, false);
             }
 
-            OnSelectedSlotsChanged(new SelectedSlotsChangedEventArgs(slotHitResults.Select(x => x.CabinSlot).Where(x => x.IsSelected)));
+            if (fireEvent)
+            {
+                OnSelectedSlotsChanged(new SelectedSlotsChangedEventArgs(!Util.IsControlDown() ? targetSlots : null, Util.IsControlDown() ? targetSlots : null));
+            }
         }
 
-        public void SelectAllSlots()
+        public void SelectAllSlots(bool fireEvent = true)
         {
-            SelectSlots(slotHitResults.Select(x => x.CabinSlot));
+            SelectSlots(slotHitResults.Select(x => x.CabinSlot), fireEvent);
         }
 
         public void SelectSlotsInArea(Rect selectionRect)
@@ -781,12 +785,12 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             SelectSlots(targetSlots);
         }
 
-        public void DeselectAllSlots()
+        public void DeselectAllSlots(bool notify = true)
         {
-            DeselectSlots(slotHitResults.Where(x => x.CabinSlot.IsSelected).Select(x => x.CabinSlot), true);
+            DeselectSlots(slotHitResults.Where(x => x.CabinSlot.IsSelected).Select(x => x.CabinSlot), true, notify);
         }
 
-        private void DeselectSlots(IEnumerable<CabinSlot> selectedSlots, bool forceDeselect = false)
+        private void DeselectSlots(IEnumerable<CabinSlot> selectedSlots, bool forceDeselect = false, bool notify = true)
         {
             if (!Util.IsShiftDown() && !Util.IsControlDown()) // If no modifier keys are pressed, remove selection from all other selected slots
             {
@@ -798,6 +802,11 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                     selectedSlot.IsDirty = true;
                     selectedSlot.IsSelected = false;
                     RedrawCabinSlot(selectedSlot, false);
+                }
+
+                if (notify)
+                {
+                    Mediator.Instance.NotifyColleagues(ViewModelMessage.DeselectOther_Deck, cabinDeck);
                 }
             }
         }
