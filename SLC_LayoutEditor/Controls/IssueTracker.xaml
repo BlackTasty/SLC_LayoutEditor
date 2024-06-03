@@ -72,6 +72,35 @@
                                          ShowAutoFix="True"
                                          AutoFixApplying="DuplicateDoors_AutoFixApplying"
                                          Description="Make sure that each door has a unique number across all decks"/>
+                <local:LayoutProblemText ValidText="Less than 100 doors/bays"
+                                         IsValid="{Binding ActiveLayout.HasNoDoorSurplus}"
+                                         ShowEye="False"
+                                         Description="Any cabin layout can only have a maximum of 99 total catering doors, loading bays and doors">
+                    <local:LayoutProblemText.Style>
+                        <Style TargetType="local:LayoutProblemText">
+                            <Setter Property="InvalidText" Value="{Binding ActiveLayout.DoorSurplus, StringFormat={}{0} doors more than allowed!}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActiveLayout.DoorSurplus}" Value="1">
+                                    <Setter Property="InvalidText" Value="1 door more than allowed!"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </local:LayoutProblemText.Style>
+                </local:LayoutProblemText>
+                <local:LayoutProblemText ValidText="Less than 10 catering doors"
+                                         IsValid="{Binding ActiveLayout.HasNoCateringDoorSurplus}"
+                                         ShowEye="False"
+                                         Description="Any cabin layout can only have a maximum of 9 catering doors">
+                    <local:LayoutProblemText.Style>
+                        <Style TargetType="local:LayoutProblemText">
+                            <Setter Property="InvalidText" Value="{Binding ActiveLayout.CateringDoorSurplus, StringFormat={}{0} catering doors more than allowed!}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActiveLayout.CateringDoorSurplus}" Value="1">
+                                    <Setter Property="InvalidText" Value="1 catering door more than allowed!"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </local:LayoutProblemText.Style></local:LayoutProblemText>
 
                 <local:LayoutProblemText ValidText="Stairway positions valid"
                                          InvalidText="{Binding StairwayErrorMessage}"

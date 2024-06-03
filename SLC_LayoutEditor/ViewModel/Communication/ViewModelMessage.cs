@@ -28,6 +28,10 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         FinishLayoutChange,
         Layout_ToggleIssueChecking,
         BakedTemplate_Add,
-        BakedTemplate_Delete
+        BakedTemplate_Delete,
+        HistoryStepApplied,
+        SelectAll_Layout,
+        SelectAll_Deck,
+        DeselectOther_Deck
     }
 }

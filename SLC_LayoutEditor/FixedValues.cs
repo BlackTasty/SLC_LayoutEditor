@@ -54,6 +54,8 @@ namespace SLC_LayoutEditor
         internal static readonly string ICON_CHECK_CIRCLE = (string)App.Current.FindResource("CheckCircle");
         internal static readonly string ICON_BACKUP_RESTORE = (string)App.Current.FindResource("BackupRestore");
         internal static readonly string ICON_SAVE = (string)App.Current.FindResource("SaveConfirm");
+        internal static readonly string ICON_AUTO_FIX = (string)App.Current.FindResource("AutoFix");
+        internal static readonly string ICON_AUTO_FIX_ALERT = (string)App.Current.FindResource("AutoFixAlert");
 
         internal static readonly string MAXIMIZE_ICON = (string)App.Current.FindResource("WindowMaximize");
         internal static readonly string RESTORE_ICON = (string)App.Current.FindResource("WindowRestore");

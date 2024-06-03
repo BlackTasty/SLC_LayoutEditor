@@ -66,13 +66,10 @@ namespace SLC_LayoutEditor.Controls
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<EventArgs> TemplatingModeToggled;
         public event EventHandler<TemplateCreatedEventArgs> TemplateCreated;
-        public event EventHandler<SelectedDeckChangedEventArgs> SelectedDeckChanged;
 
         public event EventHandler<CabinDeckChangedEventArgs> CabinDeckChanged;
 
         private CabinDeck currentRemoveTarget;
-
-        private CabinDeckControl selectedDeck;
 
         #region CabinLayout property
         public CabinLayout CabinLayout
@@ -106,18 +103,6 @@ namespace SLC_LayoutEditor.Controls
         }
         #endregion
 
-        #region SelectedCabinSlots property
-        public List<CabinSlot> SelectedCabinSlots
-        {
-            get { return (List<CabinSlot>)GetValue(SelectedCabinSlotsProperty); }
-            set { SetValue(SelectedCabinSlotsProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for SelectedCabinSlots.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SelectedCabinSlotsProperty =
-            DependencyProperty.Register("SelectedCabinSlots", typeof(List<CabinSlot>), typeof(CabinLayoutControl), new PropertyMetadata(new List<CabinSlot>()));
-        #endregion
-
         public ContextMenu GuideMenu
         {
             get { return (ContextMenu)GetValue(GuideMenuProperty); }
@@ -137,18 +122,6 @@ namespace SLC_LayoutEditor.Controls
         public bool IsHorizontalScrollBarVisible => deck_scroll.ComputedHorizontalScrollBarVisibility == Visibility.Visible;
 
         public bool IsVerticalScrollBarVisible => deck_scroll.ComputedVerticalScrollBarVisibility == Visibility.Visible;
-
-        #region SelectedCabinSlotFloor property
-        public int SelectedCabinSlotFloor
-        {
-            get { return (int)GetValue(SelectedCabinSlotFloorProperty); }
-            set { SetValue(SelectedCabinSlotFloorProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for SelectedCabinSlotFloor.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SelectedCabinSlotFloorProperty =
-            DependencyProperty.Register("SelectedCabinSlotFloor", typeof(int), typeof(CabinLayoutControl), new PropertyMetadata(0));
-        #endregion
 
         #region SelectedMultiSlotTypeIndex properties
         public int SelectedMultiSlotTypeIndex
@@ -216,6 +189,24 @@ namespace SLC_LayoutEditor.Controls
             {
                 StartReloadLayout();
             }, ViewModelMessage.Keybind_ReloadLayout);
+
+            Mediator.Instance.Register(o =>
+            {
+                foreach (CabinDeckControl deckLayoutControl in container_decks.Children.OfType<CabinDeckControl>())
+                {
+                    deckLayoutControl.SelectAllSlots(true);
+                }
+            }, ViewModelMessage.SelectAll_Layout);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is int floor)
+                {
+                    container_decks.Children.OfType<CabinDeckControl>()
+                        .FirstOrDefault(x => x.CabinDeck.Floor == floor)
+                        ?.SelectAllSlots(true);
+                }
+            }, ViewModelMessage.SelectAll_Deck);
         }
 
         public void GenerateThumbnailForLayout(bool overwrite = false)
@@ -324,23 +315,15 @@ namespace SLC_LayoutEditor.Controls
 
         public void DeselectSlots()
         {
-            selectedDeck?.DeselectSlots();
+            foreach (CabinDeckControl cabinDeckControl in container_decks.Children.OfType<CabinDeckControl>())
+            {
+                cabinDeckControl.DeselectSlots();
+            }
         }
 
         private void CabinDeckControl_SelectedSlotsChanged(object sender, SelectedSlotsChangedEventArgs e)
         {
-            if (selectedDeck != null &&
-                selectedDeck.CabinDeck.Floor != e.DeckControl.CabinDeck.Floor)
-            {
-                DeselectSlots();
-            }
-
-            SelectedCabinSlots = e.NewSelection.ToList();
-            SelectedCabinSlotFloor = e.Floor;
-            selectedDeck = e.DeckControl;
-
             OnSelectedSlotsChanged(e);
-            OnSelectedDeckChanged(new SelectedDeckChangedEventArgs(selectedDeck));
         }
 
         private void CabinDeckControl_DeckRendered(object sender, EventArgs e)
@@ -504,8 +487,6 @@ namespace SLC_LayoutEditor.Controls
 
         private void ReloadLayout()
         {
-            SelectedCabinSlots.Clear();
-            selectedDeck?.SelectSlots(SelectedCabinSlots);
             CabinLayout.LoadCabinLayoutFromFile(true);
             RefreshCabinLayout(false);
             OnLayoutReloaded(EventArgs.Empty);
@@ -631,11 +612,6 @@ namespace SLC_LayoutEditor.Controls
         private void EditCabinLayoutName_Click(object sender, RoutedEventArgs e)
         {
             Mediator.Instance.NotifyColleagues(ViewModelMessage.EditLayoutNameRequested, CabinLayout);
-        }
-
-        protected virtual void OnSelectedDeckChanged(SelectedDeckChangedEventArgs e)
-        {
-            SelectedDeckChanged?.Invoke(this, e);
         }
 
         protected virtual void OnSelectedSlotsChanged(SelectedSlotsChangedEventArgs e)

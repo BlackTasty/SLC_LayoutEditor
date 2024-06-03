@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SLC_LayoutEditor.ViewModel.Communication;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tasty.Logging;
 using Tasty.ViewModel;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Core.Memento
 {
@@ -252,6 +254,7 @@ namespace SLC_LayoutEditor.Core.Memento
                 return;
             }
             HistoryChanged?.Invoke(this, e);
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.HistoryStepApplied);
         }
 
         protected virtual void OnHistoryChanging(EventArgs e)

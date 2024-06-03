@@ -138,6 +138,14 @@ namespace SLC_LayoutEditor.Core
             return diff;
         }
 
+        public static IEnumerable<T> Merge<T>(this IEnumerable<T> left, IEnumerable<T> right)
+        {
+            List<T> merged = new List<T>(left);
+            merged.AddRange(right);
+
+            return merged;
+        }
+
         public static Size Modify(this Size size, double width, double height)
         {
             return new Size(size.Width + width, size.Height + height);

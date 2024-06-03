@@ -40,8 +40,6 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mIsMaximized;
         private bool mIsGuideOpen;
 
-        private CabinDeckControl mSelectedDeck;
-
         private bool mIsSearching;
 
         #region Commands
@@ -223,14 +221,13 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     if (newValue == null)
                     {
-                        this.editor.DeselectSlots();
+                        this.editor.DeselectAllSlots();
                     }
 
                     this.editor = oldEditor;
                     oldEditor.CabinLayoutSelected -= Editor_CabinLayoutSelected;
                     oldEditor.Changed -= Editor_LayoutChanged;
                     oldEditor.TourRunningStateChanged -= Editor_TourRunningStateChanged;
-                    oldEditor.SelectedDeckChanged -= Editor_SelectedDeckChanged;
                 }
 
                 mContent = value;
@@ -240,7 +237,6 @@ namespace SLC_LayoutEditor.ViewModel
                     newValue.CabinLayoutSelected += Editor_CabinLayoutSelected;
                     newValue.Changed += Editor_LayoutChanged;
                     newValue.TourRunningStateChanged += Editor_TourRunningStateChanged;
-                    newValue.SelectedDeckChanged += Editor_SelectedDeckChanged;
                 }
 
                 InvokePropertyChanged();
@@ -251,16 +247,6 @@ namespace SLC_LayoutEditor.ViewModel
         public LayoutEditorViewModel EditorViewModel => editor != null ? editor.DataContext as LayoutEditorViewModel : null;
 
         public bool IsLayoutOpened => EditorViewModel?.ActiveLayout != null;
-
-        public CabinDeckControl SelectedDeck
-        {
-            get => mSelectedDeck;
-            set
-            {
-                mSelectedDeck = value;
-                InvokePropertyChanged();
-            }
-        }
 
         public bool AllowHistoryCommands => !IsViewNotEditor && !IsDialogOpen && !mIsGuideOpen;
 
@@ -372,7 +358,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void ShowChangelogIfUpdated()
         {
-            if (App.Settings.LastVersionChangelogShown < App.Patcher.VersionData.VersionNumber &&
+            if (App.Settings.LastVersionChangelogShown != App.Patcher.VersionData.VersionNumber &&
                 App.Settings.ShowChangesAfterUpdate)
             {
                 ShowChangelog();
@@ -432,15 +418,9 @@ namespace SLC_LayoutEditor.ViewModel
             editor.CabinLayoutSelected += Editor_CabinLayoutSelected;
             editor.Changed += Editor_LayoutChanged;
             editor.TourRunningStateChanged += Editor_TourRunningStateChanged;
-            editor.SelectedDeckChanged += Editor_SelectedDeckChanged;
             InvokePropertyChanged(nameof(EditorViewModel));
 
             return editor;
-        }
-
-        private void Editor_SelectedDeckChanged(object sender, SelectedDeckChangedEventArgs e)
-        {
-            SelectedDeck = e.NewValue;
         }
 
         private void Welcome_WelcomeConfirmed(object sender, EventArgs e)

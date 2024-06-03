@@ -329,6 +329,7 @@
     <Compile Include="ViewModel\AddEditDialogViewModel.cs" />
     <Compile Include="ViewModel\Communication\ViewModelMessage.cs" />
     <Compile Include="ViewModel\CreateTemplateDialogViewModel.cs" />
+    <Compile Include="ViewModel\DesignTime\KeybindInfoDesignControl.cs" />
     <Compile Include="ViewModel\DesignTime\LayoutEditorDesignViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\MainDesignViewModel.cs" />
     <Compile Include="ViewModel\DesignTime\TodoListDesignViewModel.cs" />
@@ -499,6 +500,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Styles\ScrollViewerStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles\TabStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

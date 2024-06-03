@@ -113,6 +113,14 @@ namespace SLC_LayoutEditor.Controls
                     renderer?.SelectAllSlots();
                 }
             }, ViewModelMessage.Keybind_SelectAllSlotsOnDeck);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is CabinDeck cabinDeck && cabinDeck != CabinDeck)
+                {
+                    renderer.DeselectAllSlots(false);
+                }
+            }, ViewModelMessage.DeselectOther_Deck);
         }
 
         public void RefreshCabinDeckLayout()
@@ -144,6 +152,11 @@ namespace SLC_LayoutEditor.Controls
 
             sw.Stop();
             Logger.Default.WriteLog("Cabin deck rendered in {0} seconds", Math.Round((double)sw.ElapsedMilliseconds / 1000, 3));
+        }
+
+        public void SelectAllSlots(bool fireEvent)
+        {
+            renderer.SelectAllSlots(fireEvent);
         }
 
         private void Renderer_CloseTooltip(object sender, EventArgs e)

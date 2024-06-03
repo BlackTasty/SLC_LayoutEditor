@@ -315,7 +315,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             return CabinSlots.Where(x => x.IsSeat).GroupBy(x => x.Column).Count();
         }
 
-        public bool ContainsCabinSlots(IEnumerable<CabinSlot> targets)
+        public bool ContainsAnyCabinSlots(IEnumerable<CabinSlot> targets)
         {
             if (targets == null)
             {
@@ -324,13 +324,13 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             foreach (CabinSlot target in targets)
             {
-                if (!ContainsCabinSlot(target))
+                if (ContainsCabinSlot(target))
                 {
-                    return false;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
 
         public bool ContainsCabinSlot(CabinSlot target)
@@ -382,8 +382,8 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         public AutoFixResult FixSlotCount()
         {
-            AutoFixResult autoFixResult = new AutoFixResult("Slot fix applied.", "Amount of added slots",
-                "Failed changes");
+            AutoFixResult autoFixResult = new AutoFixResult("Slot fix applied", "Amount of added slots",
+                "Failed changes", "Slots filled in");
             int expectedRowsCount = CabinSlots.Max(x => x.Row);
 
             var ordered = CabinSlots.GroupBy(x => x.Column).OrderBy(x => x.Key);

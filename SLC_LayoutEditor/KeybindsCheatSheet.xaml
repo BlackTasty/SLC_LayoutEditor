@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SLC_LayoutEditor"
         xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls"
         mc:Ignorable="d" WindowStyle="SingleBorderWindow"
-        Title="Keybinds cheat sheet" Width="640" Height="710"
+        Title="Keybinds cheat sheet" Width="650" Height="544"
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundDarkBrush}"
         BorderBrush="{DynamicResource BackgroundLightBrush}"
@@ -37,48 +37,114 @@
             </Border>
         </ControlTemplate>
     </Window.Template>
-    <StackPanel Margin="8,0">
-        <TextBlock Style="{StaticResource Title1TextStyle}" Text="Available keybinds" Margin="0,4"/>
-        <TextBlock Style="{StaticResource Title2TextStyle}" Text="Editor"/>
-        <UniformGrid Columns="2">
-            <controls:KeybindInfo Title="Save current layout" Keybind="Ctrl+S"/>
-            <controls:KeybindInfo Title="Save current layout as a new file" Keybind="Ctrl+Shift+S"/>
-            <controls:KeybindInfo Title="Open folder containing current layout" Keybind="Ctrl+E"/>
-            <controls:KeybindInfo Title="Open current layout file in text editor" Keybind="Ctrl+O"/>
-            <controls:KeybindInfo Title="Select all slots on current deck" Keybind="Ctrl+A"/>
-            <controls:KeybindInfo Title="Create a template from your current layout" Keybind="Ctrl+T"/>
-            <controls:KeybindInfo Title="Rename current layout" Keybind="Ctrl+R"/>
-            <controls:KeybindInfo Title="Reload current layout from hard drive" Keybind="Ctrl+Alt+R"/>
-            <controls:KeybindInfo Title="Show keybind cheat sheet" Keybind="Ctrl+K"/>
-        </UniformGrid>
-        <Separator/>
-        <TextBlock Style="{StaticResource Title2TextStyle}" Text="Slot type modification"/>
-        <UniformGrid Columns="2">
-            <controls:KeybindInfo Title="Set selected slots to &quot;Aisle&quot;" Keybind="Alt+A"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Wall&quot;" Keybind="Alt+W"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Door&quot;" Keybind="Ctrl+Alt+D"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Loading bay&quot;" Keybind="Ctrl+Alt+L"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Catering door&quot;" Keybind="Ctrl+Alt+C"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Cockpit&quot;" Keybind="Alt+C"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Galley&quot;" Keybind="Alt+G"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Toilet&quot;" Keybind="Alt+T"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Kitchen&quot;" Keybind="Alt+K"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Intercom&quot;" Keybind="Alt+I"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Stairway&quot;" Keybind="Alt+S"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Economy class&quot;" Keybind="Alt+1"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Business class&quot;" Keybind="Alt+2"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Premium class&quot;" Keybind="Alt+3"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;First class&quot;" Keybind="Alt+4"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Supersonic class&quot;" Keybind="Alt+5"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Unavailable seat&quot;" Keybind="Alt+0"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Service start point&quot;" Keybind="Alt+,"/>
-            <controls:KeybindInfo Title="Set selected slots to &quot;Service end point&quot;" Keybind="Alt+."/>
-        </UniformGrid>
-        <TextBlock Style="{StaticResource Title2TextStyle}" Text="Dialogs"/>
-        <UniformGrid Rows="1">
-            <controls:KeybindInfo Title="Input dialogs: Confirm input" Keybind="Enter"
+    <StackPanel>
+        <TextBlock Style="{StaticResource Title1TextStyle}" Text="Available shortcuts &amp; actions"/>
+        <TabControl x:Name="tabControl">
+            <TabItem Header="Editor">
+                <StackPanel Margin="8,0">
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Save current layout" Keybind="Ctrl+S"/>
+                        <controls:KeybindInfo Title="Save current layout as a new file" Keybind="Ctrl+Shift+S"/>
+                        <controls:KeybindInfo Title="Rename current layout" Keybind="Ctrl+R"/>
+                        <controls:KeybindInfo Title="Reload current layout from hard drive" Keybind="Ctrl+Alt+R"/>
+                        <controls:KeybindInfo Title="Create a template from your current layout" Keybind="Ctrl+T"/>
+                    </UniformGrid>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Open folder containing current layout" Keybind="Ctrl+E"/>
+                        <controls:KeybindInfo Title="Open current layout file in text editor" Keybind="Ctrl+O"/>
+                    </UniformGrid>
+                    <Separator/>
+                    <UniformGrid Columns="2">
+                        <!--<controls:KeybindInfo Title="Select all slots in current layout" Keybind="Ctrl+Shift+A" IsKeybindEnabled="False"/>-->
+                        <controls:KeybindInfo Title="Select all slots on current deck" Keybind="Ctrl+A" IsKeybindEnabled="False"/>
+                    </UniformGrid>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Select slots"
+                                              ActionIcon="{StaticResource MouseLeftClick}"
+                                              SecondActionIcon="{StaticResource MouseMove}"
+                                              Notes="Drag cursor over slots while holding LMB"/>
+                        <controls:KeybindInfo Title="Add slots to selection"
+                                              Keybind="Shift"
+                                              ActionIcon="{StaticResource MouseLeftClick}"
+                                              SecondActionIcon="{StaticResource MouseMove}"
+                                              Notes="Drag cursor over slots while holding LMB"/>
+                        <controls:KeybindInfo Title="Remove slots from selection" 
+                                              Keybind="Ctrl"
+                                              ActionIcon="{StaticResource MouseLeftClick}"
+                                              SecondActionIcon="{StaticResource MouseMove}"
+                                              Notes="Drag cursor over slots while holding LMB"/>
+                    </UniformGrid>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Select slot"
+                                              ActionIcon="{StaticResource MouseLeftClick}"
+                                              Notes="Hover over a cabin slot"/>
+                        <controls:KeybindInfo Title="Add single slot to selection"
+                                              Keybind="Shift"
+                                              ActionIcon="{StaticResource MouseLeftClick}"
+                                              Notes="Hover over a cabin slot"/>
+                        <controls:KeybindInfo Title="Remove single slot from selection" 
+                                              Keybind="Ctrl"
+                                              ActionIcon="{StaticResource MouseLeftClick}"
+                                              Notes="Hover over a cabin slot"/>
+                    </UniformGrid>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Slot modification">
+                <StackPanel Margin="8,0">
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Aisle&quot;" Keybind="Alt+A"
+                                              Notes="Allows passengers and cabin crew to pass through"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Wall&quot;" Keybind="Alt+W"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Door&quot;" Keybind="Ctrl+Alt+D"
+                                              Notes="Passenger enter and exit the plane through these"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Loading bay&quot;" Keybind="Ctrl+Alt+L"
+                                              Notes="Used for loading and unloading cargo and luggage"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Catering door&quot;" Keybind="Ctrl+Alt+C"
+                                              Notes="Catering services use this for supplying the plane"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Cockpit&quot;" Keybind="Alt+C"
+                                              Notes="Used by the captain and co-pilot to access the cockpit"/>
+                    </UniformGrid>
+                    <Separator/>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Galley&quot;" Keybind="Alt+G"
+                                              Notes="Seats for your cabin crew during take-off and landing"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Stairway&quot;" Keybind="Alt+S"
+                                              Notes="As with SLC 1.6 doesn't serve any functionality yet"/>
+                    </UniformGrid>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Kitchen&quot;" Keybind="Alt+K"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Intercom&quot;" Keybind="Alt+I"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Toilet&quot;" Keybind="Alt+T"/>
+                    </UniformGrid>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Service start point&quot;" Keybind="Alt+,"
+                                              Notes="Dictates where a service area starts for catering"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Service end point&quot;" Keybind="Alt+."
+                                              Notes="Dictates where a service area ends"/>
+                    </UniformGrid>
+                    <Separator/>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Economy class&quot;" Keybind="Alt+1"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Business class&quot;" Keybind="Alt+2"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Premium class&quot;" Keybind="Alt+3"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;First class&quot;" Keybind="Alt+4"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Supersonic class&quot;" Keybind="Alt+5"/>
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Unavailable seat&quot;" Keybind="Alt+0"/>
+                    </UniformGrid>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Dialogs">
+                <StackPanel Margin="8,0">
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Input dialogs: Confirm input" Keybind="Enter"
                                   Notes="Requires input to be focused"/>
-            <controls:KeybindInfo Title="Close dialog" Keybind="ESC"/>
-        </UniformGrid>
+                        <controls:KeybindInfo Title="Close dialog" Keybind="ESC"/>
+                    </UniformGrid>
+                    <UniformGrid Columns="2">
+                        <controls:KeybindInfo Title="Show keybind cheat sheet" Keybind="Ctrl+K"/>
+                    </UniformGrid>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
     </StackPanel>
 </Window>

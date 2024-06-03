@@ -115,7 +115,13 @@ namespace SLC_LayoutEditor.Controls
         {
             if (e.Target is CabinLayout target)
             {
-                target.FixStairwayPositions();
+                AutoFixResult result = target.FixStairwayPositions();
+
+                string message = result.FailCount > 0 ?
+                    string.Format("{0} non-aisle slots have been overridden while fixing {1} stairway positions.", result.FailCount, result.SuccessCount) :
+                    string.Format("Fixed {0} stairway positions.", result.SuccessCount);
+
+                result.SendNotification(message);
             }
         }
 
@@ -123,7 +129,9 @@ namespace SLC_LayoutEditor.Controls
         {
             if (e.Target is CabinDeck target)
             {
-                target.FixSlotCount();
+                AutoFixResult result = target.FixSlotCount();
+
+                result.SendNotification(string.Format("{0} missing slots have been added to your layout", result.SuccessCount));
             }
         }
 
@@ -132,6 +140,12 @@ namespace SLC_LayoutEditor.Controls
             if (e.Target is CabinLayout target)
             {
                 AutoFixResult result = target.FixDuplicateDoors();
+
+                string message = result.FailCount > 0 ?
+                    string.Format("{0}/{1} door numbers have been\nadjusted successfully.\n{2} doors could not be adjusted.", result.SuccessCount, result.TotalCount, result.FailCount) :
+                    string.Format("{0} door numbers have been adjusted.", result.SuccessCount);
+
+                result.SendNotification(message);
 
                 if (App.GuidedTour.IsAwaitingAutoFix)
                 {
