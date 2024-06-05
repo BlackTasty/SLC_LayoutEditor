@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/BlackTasty/SLC_LayoutEditor">
-    <img alt="SLC Layout Editor" width="256" heigth="256" src="https://i.imgur.com/PBA9A8v.png">
+    <img alt="SLC Layout Editor" width="256" heigth="256" src="https://i.imgur.com/IPy3OrJ.png">
   </a>
 </p>
 
