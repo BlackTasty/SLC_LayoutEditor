@@ -969,5 +969,10 @@ namespace SLC_LayoutEditor.UI
         {
             CabinHistory.Instance.RecordChanges(e);
         }
+
+        private void EditorMode_Toggled(object sender, RoutedEventArgs e)
+        {
+            RefreshSidebarToggleAdorner();
+        }
     }
 }

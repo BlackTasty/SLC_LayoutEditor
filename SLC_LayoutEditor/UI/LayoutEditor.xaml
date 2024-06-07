@@ -229,6 +229,8 @@
                                   controls:GuideAssist.HasGuide="True"
                                   controls:GuideAssist.RadiusOffset="-8"
                                   controls:GuideAssist.TextPosition="Right"
+                                  Checked="EditorMode_Toggled"
+                                  Unchecked="EditorMode_Toggled"
                                   Cursor="Help"
                                   ContextMenu="{StaticResource GuideMenu}"/>
                     <TextBlock DockPanel.Dock="Right" Margin="6,0,6,2" VerticalAlignment="Center"
@@ -833,9 +835,20 @@
                     <Style TargetType="ToggleButton" BasedOn="{StaticResource SidebarToggleButtonStyle}">
                         <Setter Property="controls:GuideAssist.TextPosition" Value="Bottom"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsLayoutTemplate}" Value="True">
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}" Value="False"/>
+                                    <Condition Binding="{Binding IsTemplatingMode}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
                                 <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
-                            </DataTrigger>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}" Value="True"/>
+                                    <Condition Binding="{Binding IsLayoutTemplate}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="BorderBrush" Value="{DynamicResource TemplatingModeBorderBrush}"/>
+                            </MultiDataTrigger>
                             <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
                                 <Setter Property="controls:GuideAssist.TextPosition" Value="Right"/>
                                 <Setter Property="Margin" Value="-1,0,0,0"/>

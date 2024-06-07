@@ -309,6 +309,7 @@
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding CreateCabinLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="N" Modifiers="Ctrl+Alt" Command="{Binding CreateTemplateCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="N" Modifiers="Ctrl+Shift" Command="{Binding CreateAircraftCommand}"/>
+        <KeyBinding Key="F1" Command="{Binding ShowAboutDialogCommand}"/>
         
         <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding OpenLayoutFolderCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenLayoutInTextEditor}" CommandParameter="{Binding EditorViewModel}"/>
@@ -364,7 +365,7 @@
         <notifications:NotificationBar HorizontalAlignment="Right" Panel.ZIndex="100" Margin="0,48,0,96"/>
         <Grid Background="{StaticResource BackdropColorBrush}"
               Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Border BorderBrush="{DynamicResource ButtonBorderColorBrush}" BorderThickness="2" CornerRadius="8"
+            <Border BorderBrush="{DynamicResource ComboBoxBorderColorBrush}" BorderThickness="2" CornerRadius="8"
                     Background="{StaticResource BackgroundColorBrush}" UseLayoutRounding="True"
                     HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,4,4,0"
                     Margin="64">

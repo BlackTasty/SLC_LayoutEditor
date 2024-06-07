@@ -22,6 +22,7 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         private static readonly SelectAllSlotsCommand _selectAllSlotsCommand = new SelectAllSlotsCommand();
         private static readonly SelectAllSlotsOnDeckCommand _selectAllSlotsOnDeckCommand = new SelectAllSlotsOnDeckCommand();
         private static readonly ShowKeybindsWindowCommand _showKeybindsWindowCommand = new ShowKeybindsWindowCommand();
+        private static readonly ShowAboutDialogCommand _showAboutDialogCommand = new ShowAboutDialogCommand();
 
         private static readonly UndoCommand _undoCommand = new UndoCommand();
         private static readonly RedoCommand _redoCommand = new RedoCommand();
@@ -77,6 +78,8 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         public static SelectAllSlotsOnDeckCommand SelectAllSlotsOnDeckCommand => _selectAllSlotsOnDeckCommand;
 
         public static ShowKeybindsWindowCommand ShowKeybindsWindowCommand => _showKeybindsWindowCommand;
+
+        public static ShowAboutDialogCommand ShowAboutDialogCommand => _showAboutDialogCommand;
 
         public static UndoCommand UndoCommand => _undoCommand;
 

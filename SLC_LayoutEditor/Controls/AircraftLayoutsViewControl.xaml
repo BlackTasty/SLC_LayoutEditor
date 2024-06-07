@@ -5,7 +5,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
         mc:Ignorable="d" 
-        d:DesignHeight="450" d:DesignWidth="800">
+        d:DesignHeight="450" d:DesignWidth="800"
+        IsVisibleChanged="Container_LayoutDetails_IsVisibleChanged">
     <Border.Resources>
         <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -61,7 +62,7 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
-            <Border VerticalAlignment="Bottom" CornerRadius="12,12,0,0"
+            <Border x:Name="container_details" VerticalAlignment="Bottom" CornerRadius="12,12,0,0"
                     HorizontalAlignment="Center" MinWidth="500" Grid.Row="1"
                     Margin="0,0,0,-1"
                     Background="{DynamicResource BackgroundDarkBrush}"

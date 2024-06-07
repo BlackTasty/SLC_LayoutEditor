@@ -127,6 +127,9 @@
 
     <SolidColorBrush x:Key="SeparatorColorBrush" Color="{StaticResource SeparatorColor}"/>
     <SolidColorBrush x:Key="LiveGuideOverlayBrush" Color="{StaticResource GuideBackdropColor}" Opacity=".7"/>
+    <SolidColorBrush x:Key="TabControlSeparatorColorBrush" Color="{StaticResource BackgroundLight}"/>
+    <SolidColorBrush x:Key="TabItemBorderSelectedColorBrush" Color="{StaticResource AccentPressedColor}" Opacity=".6"/>
+    <SolidColorBrush x:Key="TabItemBorderHoverColorBrush" Color="{StaticResource AccentHoverColor}" Opacity=".6"/>
 
     <SolidColorBrush x:Key="RemoveDeckButtonBackgroundBrush" Color="{StaticResource BackgroundColor}" Opacity=".24"/>
     <SolidColorBrush x:Key="RemoveDeckButtonHoverBackgroundBrush" Color="{StaticResource BackgroundLight}" Opacity=".24"/>

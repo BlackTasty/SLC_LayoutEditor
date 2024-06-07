@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,6 +70,8 @@ namespace SLC_LayoutEditor.ViewModel
         public SelectAllSlotsOnDeckCommand SelectAllSlotsOnDeckCommand => CommandInterface.SelectAllSlotsOnDeckCommand;
 
         public ShowKeybindsWindowCommand ShowKeybindsWindowCommand => CommandInterface.ShowKeybindsWindowCommand;
+
+        public ShowAboutDialogCommand ShowAboutDialogCommand => CommandInterface.ShowAboutDialogCommand;
 
         public CancelDialogCommand CancelDialogCommand => CommandInterface.CancelDialogCommand;
 
@@ -319,6 +322,11 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 IsSearching = (bool)o;
             }, ViewModelMessage.Patcher_IsSearchingChanged);
+
+            Mediator.Instance.Register(o =>
+            {
+                ShowAbout();
+            }, ViewModelMessage.About_Show);
         }
 
         private void History_HistoryApplying(object sender, HistoryApplyingEventArgs<CabinHistoryEntry> e)
@@ -366,7 +374,10 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void ShowAbout()
         {
-            ShowDialog(new About());
+            if (mDialog == null && queuedDialogs.Count == 0)
+            {
+                ShowDialog(new About());
+            }
         }
 
         public void ShowChangelogIfUpdated()

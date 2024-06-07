@@ -12,6 +12,11 @@
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Padding" Value="12"/>
         <Setter Property="Effect" Value="{DynamicResource DropShadowDepth2}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource DisabledColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="CardLayoutTitleStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">

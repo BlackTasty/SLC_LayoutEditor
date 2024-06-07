@@ -42,7 +42,7 @@
             <Run Text="This editor is a support tool for"/>
             <Hyperlink Click="SLC_Website_Hyperlink_Click">SLC (Self Loading Cargo)</Hyperlink><Run Text=", and makes creating and modifying cabin layouts as easy as making a few clicks! The editor comes with many useful features such as:"/>
         </TextBlock>
-        <FlowDocumentScrollViewer Margin="0,0,0,8">
+        <FlowDocumentScrollViewer Margin="0,0,0,8" IsEnabled="False">
             <FlowDocument>
                 <List>
                     <ListItem>

@@ -252,10 +252,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void Container_LayoutDetails_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is Border container)
-            {
-                UpdateListPadding(container.Visibility == Visibility.Visible ? container.ActualHeight : 0);
-            }
+            UpdateListPadding(container_details.Visibility == Visibility.Visible ? container_details.ActualHeight : 0);
         }
 
         private void UpdateListPadding(double bottomPadding)

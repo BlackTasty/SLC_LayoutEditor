@@ -302,6 +302,7 @@
     <Compile Include="ViewModel\Commands\SaveLayoutCommand.cs" />
     <Compile Include="ViewModel\Commands\SelectAllSlotsCommand.cs" />
     <Compile Include="ViewModel\Commands\SelectAllSlotsOnDeckCommand.cs" />
+    <Compile Include="ViewModel\Commands\ShowAboutDialogCommand.cs" />
     <Compile Include="ViewModel\Commands\ShowKeybindsWindowCommand.cs" />
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeAisleCommand.cs" />
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeBusinessClassCommand.cs" />
