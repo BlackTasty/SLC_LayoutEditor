@@ -257,7 +257,32 @@ namespace SLC_LayoutEditor.Controls
 
         private void UpdateListPadding(double bottomPadding)
         {
-            list_layouts.Padding = new Thickness(30, 63, 0, bottomPadding);
+            list_layouts.Padding = new Thickness(30, 63, 0, bottomPadding );
+        }
+
+        private void LayoutList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                e.Handled = true;
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.Source = sender;
+                var parent = ((Control)sender).Parent as UIElement;
+                parent.RaiseEvent(eventArg);
+            }
+        }
+
+        private void CreateLayoutTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsTemplatingMode)
+            {
+                CreateLayout_Click(sender, e);
+            }
+            else
+            {
+                CreateTemplate_Click(sender, e);
+            }
         }
     }
 }

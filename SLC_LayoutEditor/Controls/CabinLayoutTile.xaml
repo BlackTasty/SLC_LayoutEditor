@@ -25,10 +25,6 @@
         </Style>
     </Border.Style>
     <DockPanel>
-        <!--<StackPanel DockPanel.Dock="Bottom" Margin="8">
-            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutTile}, Path=CabinLayout.PassengerCapacity, StringFormat={}{0} PAX}"/>
-            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutTile}, Path=CabinLayout.GalleyCapacity, StringFormat={}{0} cabin crew capacity}"/>
-        </StackPanel>-->
         <TextBlock DockPanel.Dock="Top" Text="{Binding Title}"
                    Style="{StaticResource Title2TextStyle}"/>
         <Grid>
@@ -52,7 +48,7 @@
                         Click="GenerateThumbnail_Click"/>
             </StackPanel>
             
-            <Border HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="2,2" Margin="8"
+            <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="2,2" Margin="8"
                     Visibility="{Binding HasMultipleThumbnails, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Style="{StaticResource ChipStyle}">
                 <StackPanel Orientation="Horizontal">
@@ -61,11 +57,11 @@
                             IsEnabled="{Binding IsPreviousThumbnailButtonEnabled}"
                             Click="PreviousThumbnail_Click"/>
                     <StackPanel Orientation="Horizontal" Margin="4,-1,4,0">
-                        <TextBlock Text="{Binding ShownThumbnailIndex}" Foreground="{StaticResource ForegroundDarkColorBrush}"
+                        <TextBlock Text="{Binding ShownThumbnailIndex, Mode=OneWay}" Foreground="{StaticResource ForegroundDarkColorBrush}"
                                FontWeight="Bold" FontSize="13"/>
                         <TextBlock Text=" / " Foreground="{StaticResource ForegroundDarkColorBrush}"
                                FontWeight="Bold" FontSize="13" Margin="0,-1,0,0"/>
-                        <TextBlock Text="{Binding ThumbnailCount}" Foreground="{StaticResource ForegroundDarkColorBrush}"
+                        <TextBlock Text="{Binding ThumbnailCount, Mode=OneWay}" Foreground="{StaticResource ForegroundDarkColorBrush}"
                                FontWeight="Bold" FontSize="13"/>
                     </StackPanel>
                     <Button Style="{StaticResource ChipIconButtonStyle}"
@@ -74,6 +70,27 @@
                             Click="NextThumbnail_Click"/>
                 </StackPanel>
             </Border>
+            <Button Content="{StaticResource Trash}"
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8"
+                    Click="DeleteLayoutTemplate_Click"
+                    local:GuideAssist.Title="{StaticResource GuideDeleteLayoutTitle}"
+                    local:GuideAssist.Description="{StaticResource GuideDeleteLayoutDescription}"
+                    local:GuideAssist.HasGuide="True"
+                    local:GuideAssist.TextPosition="Bottom"
+                    local:GuideAssist.RadiusOffset="-24"
+                    Cursor="Help"
+                    ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=GuideMenu}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource FilledRoundErrorIconButtonStyle}">
+                        <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                                <Setter Property="ToolTip" Value="Delete this template. This cannot be undone!"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
     </DockPanel>
 </Border>

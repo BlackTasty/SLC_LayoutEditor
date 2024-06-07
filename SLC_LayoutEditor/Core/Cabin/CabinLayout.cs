@@ -30,6 +30,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public event EventHandler<EventArgs> Deleting;
 
         private string guid;
+        private static readonly Regex slotRegex = new Regex(@"(\w|-| ){5}");
 
         private readonly FileInfo layoutFile;
         private readonly bool isTemplate;
@@ -331,11 +332,13 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     continue;
                 }
-                string[] deckRows = deckCodes[floor].Split('\n');
-                int rows = deckRows.Length;
-                int columns = deckRows[0].Split(',').Length + 1;
 
-                cachedCabinDecks.Add(new CabinDeck(floor + 1, rows, columns, true));
+                string currentDeckCode = deckCodes[floor];
+                string[] deckRows = currentDeckCode.Replace("\r\n", "\n").Split('\n');
+                int columns = deckRows.Count(x => !string.IsNullOrWhiteSpace(x));
+                int rows = slotRegex.Matches(deckRows.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x))).Count;
+
+                cachedCabinDecks.Add(new CabinDeck(floor + 1, columns, rows, true));
             }
 
             RefreshCapacities();

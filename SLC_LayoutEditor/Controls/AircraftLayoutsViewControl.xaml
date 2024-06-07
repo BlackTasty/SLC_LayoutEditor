@@ -31,37 +31,123 @@
             <Border Grid.RowSpan="2" Background="{DynamicResource TemplatingModeBackBrush}"
                 Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-            <ListBox x:Name="list_layouts" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.RowSpan="2" Padding="30,63,0,0"
-                     SelectedItem="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=SelectedCabinLayout}">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                        <EventSetter Event="Loaded" Handler="ListBoxItem_Loaded"/>
-                        <EventSetter Event="PreviewMouseDoubleClick" Handler="LayoutTile_PreviewMouseDoubleClick"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.Style>
-                    <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-                        <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=SelectedAirframe.CabinLayouts}"/>
+            <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.RowSpan="2">
+                <ListBox x:Name="list_layouts" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled" Padding="30,63,0,0"
+                         PreviewMouseWheel="LayoutList_PreviewMouseWheel"
+                         SelectedItem="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=SelectedCabinLayout}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <EventSetter Event="Loaded" Handler="ListBoxItem_Loaded"/>
+                            <EventSetter Event="PreviewMouseDoubleClick" Handler="LayoutTile_PreviewMouseDoubleClick"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.Style>
+                        <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=SelectedAirframe.CabinLayouts}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                    <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=SelectedAirframe.Templates}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.Style>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:CabinLayoutTile x:Name="layout_tile" CabinLayout="{Binding Mode=OneWay}" MinWidth="539" MaxWidth="870" 
+                                               IsSelected="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=IsSelected}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </ScrollViewer>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Grid.RowSpan="2">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
-                                <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=SelectedAirframe.Templates}"/>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="False"/>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=SelectedAirframe.LayoutCount}" Value="0"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True"/>
+                                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=SelectedAirframe.TemplateCount}" Value="0"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=SelectedAirframe, Converter={StaticResource NotNullToBooleanConverter}}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </ListBox.Style>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <local:CabinLayoutTile x:Name="layout_tile" CabinLayout="{Binding}" MinWidth="539" MaxWidth="870" 
-                                               IsSelected="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=IsSelected}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
+                </StackPanel.Style>
+                <TextBlock FontSize="30">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Text" Value="There are no layouts for this aircraft yet"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                    <Setter Property="Text" Value="There are no templates for this aircraft yet"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <Button HorizontalAlignment="Center" Padding="10,6" Margin="0,16,0,0" Click="CreateLayoutTemplate_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource GreenBorderlessButtonStyle}">
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundColorBrush}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TemplatingModeBrush}"/>
+                                    <Setter Property="Background" Value="{StaticResource TemplatingModeBackgroundBrush}"/>
+                                </DataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
+                                        <Condition Binding="{Binding  RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Foreground" Value="{StaticResource TemplatingModeHoverBrush}"/>
+                                    <Setter Property="Background" Value="{StaticResource TemplatingModeBackgroundHoverBrush}"/>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsPressed}" Value="True"/>
+                                        <Condition Binding="{Binding  RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Foreground" Value="{StaticResource TemplatingModePressedBrush}"/>
+                                    <Setter Property="Background" Value="{StaticResource TemplatingModeBackgroundPressedBrush}"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" Margin="0,0,8,0"
+                              Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}"/>
+                        <TextBlock Foreground="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Setter Property="Text" Value="Create a new layout!"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:AircraftLayoutsViewControl, Mode=FindAncestor}, Path=IsTemplatingMode}" Value="True">
+                                            <Setter Property="Text" Value="Create a new template!"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
             <Border x:Name="container_details" VerticalAlignment="Bottom" CornerRadius="12,12,0,0"
                     HorizontalAlignment="Center" MinWidth="500" Grid.Row="1"
                     Margin="0,0,0,-1"

@@ -66,6 +66,14 @@
         <GradientStop Color="{StaticResource RedColor}" Offset="1"/>
     </LinearGradientBrush>
 
+    <LinearGradientBrush x:Key="ProgressBarColorBrush" EndPoint="24,0" StartPoint="0,24"
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource BlueColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource RedColor}" Offset="1"/>
+    </LinearGradientBrush>
+
     <LinearGradientBrush x:Key="TabControlSeparatorColorBrush" EndPoint="400,0" StartPoint="0,400"
                          MappingMode="Absolute" SpreadMethod="Repeat" Opacity=".35">
         <GradientStop Color="{StaticResource RedHoverColor}" Offset="0"/>

@@ -15,6 +15,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Enum;
+using SLC_LayoutEditor.Core.Events;
+using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using Tasty.ViewModel.Communication;
@@ -36,7 +39,8 @@ namespace SLC_LayoutEditor.Controls
 
         // Using a DependencyProperty as the backing store for CabinLayout.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CabinLayoutProperty =
-            DependencyProperty.Register("CabinLayout", typeof(CabinLayout), typeof(CabinLayoutTile), new PropertyMetadata(null, OnCabinLayoutChanged));
+            DependencyProperty.Register("CabinLayout", typeof(CabinLayout), typeof(CabinLayoutTile), 
+                new FrameworkPropertyMetadata(null, OnCabinLayoutChanged));
 
         private static void OnCabinLayoutChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
@@ -84,17 +88,38 @@ namespace SLC_LayoutEditor.Controls
 
         private void PreviousThumbnail_Click(object sender, RoutedEventArgs e)
         {
+            e.Handled = true;
             vm.ThumbnailIndex--;
         }
 
         private void NextThumbnail_Click(object sender, RoutedEventArgs e)
         {
+            e.Handled = true;
             vm.ThumbnailIndex++;
         }
 
         private void GenerateThumbnail_Click(object sender, RoutedEventArgs e)
         {
             vm.GenerateThumbnails(CabinLayout);
+        }
+
+        private void DeleteLayoutTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            ConfirmationDialog dialog = new ConfirmationDialog(!CabinLayout.IsTemplate ? "Delete cabin layout" : "Delete template",
+                "Are you sure you want to delete your " + (!CabinLayout.IsTemplate ? "cabin layout" : "template") + "? This action cannot be undone!",
+                DialogType.YesNo);
+
+            dialog.DialogClosing += DeleteLayout_DialogClosing;
+            dialog.ShowDialog();
+        }
+
+        private void DeleteLayout_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.Yes)
+            {
+                CabinLayout.Delete();
+            }
         }
     }
 }

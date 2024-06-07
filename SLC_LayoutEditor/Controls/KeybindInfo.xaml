@@ -6,7 +6,7 @@
            xmlns:dvm="clr-namespace:SLC_LayoutEditor.ViewModel.DesignTime"
            xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
            mc:Ignorable="d" d:DesignWidth="150" Margin="8">
-    <Border Style="{StaticResource CardStyle}" Padding="10,6" DockPanel.Dock="Right" Margin="12,0,0,0" VerticalAlignment="Center"
+    <Border Style="{StaticResource ExtendedCardStyle}" Padding="10,6" DockPanel.Dock="Right" Margin="12,0,0,0" VerticalAlignment="Center"
             IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=IsKeybindEnabled}">
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:KeybindInfo}, Path=Keybind, FallbackValue=Shift}"

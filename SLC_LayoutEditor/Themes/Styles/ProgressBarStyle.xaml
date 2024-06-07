@@ -10,7 +10,7 @@
     <Style TargetType="ProgressBar">
         <Setter Property="Background" Value="{StaticResource BackdropColorBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BackdropColorBrush}"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ProgressBarColorBrush}"/>
         <Setter Property="Height" Value="2"/>
     </Style>
 

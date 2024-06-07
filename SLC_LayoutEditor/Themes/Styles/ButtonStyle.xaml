@@ -408,6 +408,7 @@
         <Setter Property="Height" Value="20"/>
         <Setter Property="Width" Value="20"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="ContentTemplate" Value="{DynamicResource IconButtonTemplate}"/>
@@ -415,9 +416,11 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ButtonForegroundHoverColorBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressedColorBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
@@ -522,6 +525,7 @@
 
     <Style x:Key="ChipIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
         <Setter Property="Foreground" Value="{StaticResource ForegroundDarkColorBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Height" Value="14"/>
         <Setter Property="Width" Value="14"/>
         <Style.Triggers>
@@ -713,6 +717,20 @@
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Background" Value="{StaticResource DisabledLayerButtonBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="FilledRoundErrorIconButtonStyle" TargetType="Button" BasedOn="{StaticResource FilledRoundIconButtonStyle}">
+        <Setter Property="Background" Value="{StaticResource ErrorForegroundColorBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource RemoveDeckHoverBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource BackgroundLightBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource ErrorForegroundColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource BackgroundDarkBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
