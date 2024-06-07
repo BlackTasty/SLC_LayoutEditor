@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using SLC_LayoutEditor.Controls;
+using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Events;
@@ -43,6 +44,12 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mIsSearching;
 
         #region Commands
+        public CreateCabinLayoutCommand CreateCabinLayoutCommand => CommandInterface.CreateCabinLayoutCommand;
+
+        public CreateTemplateCommand CreateTemplateCommand => CommandInterface.CreateTemplateCommand;
+
+        public CreateAircraftCommand CreateAircraftCommand => CommandInterface.CreateAircraftCommand;
+
         public MakeTemplateCommand MakeTemplateCommand => CommandInterface.MakeTemplateCommand;
 
         public OpenLayoutFolderCommand OpenLayoutFolderCommand => CommandInterface.OpenLayoutFolderCommand;
@@ -157,6 +164,7 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mIsMaximized = value;
                 InvokePropertyChanged();
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.Window_StateChanged, value);
             }
         }
 
@@ -356,6 +364,11 @@ namespace SLC_LayoutEditor.ViewModel
             ShowDialog(new ChangelogDialog());
         }
 
+        public void ShowAbout()
+        {
+            ShowDialog(new About());
+        }
+
         public void ShowChangelogIfUpdated()
         {
             if (App.Settings.LastVersionChangelogShown != App.Patcher.VersionData.VersionNumber &&
@@ -435,12 +448,20 @@ namespace SLC_LayoutEditor.ViewModel
 
         private void ShowDialog(IDialog dialog)
         {
+            if (mDialog.IsSameDialogType(dialog))
+            {
+                return;
+            }
             if (mDialog == null)
             {
                 Dialog = dialog;
             }
             else
             {
+                if (queuedDialogs.Any(x => x.IsSameDialogType(dialog)))
+                {
+                    return;
+                }
                 queuedDialogs.Enqueue(dialog);
             }
         }

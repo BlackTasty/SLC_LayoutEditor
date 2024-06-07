@@ -1,0 +1,33 @@
+﻿<UniformGrid x:Class="SLC_LayoutEditor.Controls.CabinLayoutCapacities"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SLC_LayoutEditor.Controls"
+             mc:Ignorable="d" Columns="3">
+    <local:SeatCapacityBox Margin="4" SeatTypeLetter="SUPER"
+                           Capacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutCapacities}, Path=CabinLayout.SupersonicCapacity}"
+                           BoxBackground="{StaticResource SupersonicClassColorBrush}"
+                           ToolTip="Super class"/>
+    <local:SeatCapacityBox Margin="4" SeatTypeLetter="FIRST"
+                           Capacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutCapacities}, Path=CabinLayout.FirstClassCapacity}"
+                           BoxBackground="{StaticResource FirstClassColorBrush}"
+                           ToolTip="First class"/>
+    <local:SeatCapacityBox Margin="4" SeatTypeLetter="BZ"
+                           Capacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutCapacities}, Path=CabinLayout.BusinessCapacity}"
+                           BoxBackground="{StaticResource BusinessClassColorBrush}"
+                           ToolTip="Business class"/>
+    <local:SeatCapacityBox Margin="4" SeatTypeLetter="PREM"
+                           Capacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutCapacities}, Path=CabinLayout.PremiumCapacity}"
+                           BoxBackground="{StaticResource PremiumClassColorBrush}"
+                           ToolTip="Premium class"/>
+    <local:SeatCapacityBox Margin="4" SeatTypeLetter="ECO"
+                           Capacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutCapacities}, Path=CabinLayout.EconomyCapacity}"
+                           BoxBackground="{StaticResource EconomyClassColorBrush}"
+                           ToolTip="Economy class"/>
+    <local:SeatCapacityBox Margin="8,4" SeatTypeLetter="Crew"
+                           DockPanel.Dock="Right" TextElement.FontStyle="Italic"
+                           Capacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutCapacities}, Path=CabinLayout.GalleyCapacity}"
+                           BoxBackground="{StaticResource CrewAreaBorderColorBrush}"
+                           ToolTip="Galley seats"/>
+</UniformGrid>

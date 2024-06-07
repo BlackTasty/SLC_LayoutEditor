@@ -17,7 +17,11 @@ namespace SLC_LayoutEditor.ViewModel
         public string NameExistsErrorMessage
         {
             get => nameExistsErrorMessage;
-            set => nameExistsErrorMessage = value;
+            set
+            {
+                nameExistsErrorMessage = value;
+                InvokePropertyChanged();
+            }
         }
 
         public string Name

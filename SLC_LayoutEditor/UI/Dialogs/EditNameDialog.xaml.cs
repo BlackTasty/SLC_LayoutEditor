@@ -20,19 +20,20 @@ using System.Windows.Shapes;
 namespace SLC_LayoutEditor.UI.Dialogs
 {
     /// <summary>
-    /// Interaction logic for EditCabinLayoutNameDialog.xaml
+    /// Interaction logic for EditNameDialog.xaml
     /// </summary>
-    public partial class EditCabinLayoutNameDialog : CreateDialogBase
+    public partial class EditNameDialog : CreateDialogBase
     {
         private readonly AddEditCabinLayoutDialogViewModel vm;
 
-        public EditCabinLayoutNameDialog(IEnumerable<string> existingCabinLayouts, string currentLayoutName, bool isTemplate)
+        public EditNameDialog(string title, string inputTitle, IEnumerable<string> existingNames, string currentName)
         {
             InitializeComponent();
             vm = DataContext as AddEditCabinLayoutDialogViewModel;
-            vm.ExistingNames.AddRange(existingCabinLayouts);
-            vm.IsTemplate = isTemplate;
-            vm.Name = currentLayoutName;
+            vm.Title = title;
+            vm.InputTitle = inputTitle;
+            vm.ExistingNames.AddRange(existingNames);
+            vm.Name = currentName;
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)

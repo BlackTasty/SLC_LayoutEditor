@@ -4,17 +4,45 @@
                     xmlns:controls="clr-namespace:SLC_LayoutEditor.Controls">
     <converter:StringToGeometryConverter x:Key="StringToGeometryConverter"/>
 
+    <DrawingImage x:Key="kofi_s_logo_nolabelDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V1000 H1000 V0 H0 Z">
+                <DrawingGroup Opacity="1">
+                    <DrawingGroup Opacity="1">
+                        <DrawingGroup Opacity="1">
+                            <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1 M1000,1000z M0,0z M683.95,523.77C660.06,526.42,640.2,525.05,640.2,525.05L640.2,375.41 670.69,375.41C690.55,375.41 709.13,383.38 722.31,399.31 731.55,409.93 738.24,424.48 738.23,445.72 738.23,494.68 713.06,514.54 683.95,523.78z M812.46,419.17C803.22,372.76 779.33,343.66 752.88,326.45 726.43,307.87 694.58,298.62 662.82,298.62L207.02,298.6C191.09,298.6,184.5,314.53,184.5,322.49L184.5,327.8C184.5,327.8 183.21,529.15 185.76,637.79 189.69,701.4 253.3,701.4 253.3,701.4 253.3,701.4 461.24,701.41 561.92,700.14 567.23,700.14 571.16,700.14 576.47,698.86 633.4,684.31 638.71,631.32 638.71,602.12 752.76,607.24 833.58,526.43 812.45,419.16z" />
+                            <DrawingGroup Opacity="1">
+                                <GeometryDrawing Brush="#FF000000" Geometry="F1 M1000,1000z M0,0z M828.94,416.04L828.94,416.02 828.92,415.92 828.9,415.8C817.58,359.06 786.44,328.33 762.29,312.55 734,292.75 698.68,281.84 662.83,281.84L207.03,281.82C181.4,281.82,167.74,305.44,167.74,322.49L167.74,327.69C167.73,329.71 166.48,530.46 169.01,638.18 169.01,638.39 169.02,638.61 169.04,638.82 171.57,679.76 194.72,699.33 213.71,708.54 233.32,718.05 252.52,718.17 253.33,718.18L253.41,718.18C261.93,718.18 463.32,718.17 562.03,716.92 567.76,716.92 573.18,716.92 580.4,715.18L580.65,715.12C610.68,707.44 632.08,689.87 644.25,662.89 650,650.14 653.48,635.77 654.84,619.05 682.39,618.35 708.3,612.91 731.91,602.85 756.78,592.25 777.84,577.07 794.49,557.72 827.19,519.72 839.43,469.41 828.95,416.04z M202.53,637.06C200.06,531.23,201.23,336.09,201.28,327.79L201.28,322.58C201.35,322.11,202.54,315.36,207.02,315.36L662.82,315.38C691.94,315.38 720.5,324.18 743.23,340.16 743.4,340.28 743.56,340.39 743.73,340.5 771.14,358.33 788.73,385.89 796,422.41 804.49,465.49 794.91,505.77 769.05,535.82 739.91,569.69 692.69,587.75 639.48,585.35 634.93,585.14 630.43,586.83 627.13,589.98 623.84,593.13 621.95,597.55 621.95,602.1 621.95,647.69 605.74,674.01 572.49,682.55 569.19,683.34 566.8,683.34 562.05,683.34L561.72,683.34C474.14,684.45,304.94,684.58,255.16,684.6L253.35,684.6C253.23,684.6 240.77,684.36 228.33,678.33 212.51,670.65 203.82,656.76 202.53,637.03z" />
+                                <GeometryDrawing Brush="#FF000000" Geometry="F1 M1000,1000z M0,0z M639.03,541.78C639.62,541.82 645.06,542.18 653.56,542.18 664.56,542.18 675.4,541.59 685.79,540.44 686.88,540.32 687.97,540.09 689.02,539.76 732.79,525.86 754.99,494.22 754.99,445.71 754.99,422.96 748.28,403.68 735.11,388.49 719.13,369.24 696.24,358.64 670.67,358.64L640.19,358.64C630.94,358.64,623.42,366.16,623.41,375.41L623.41,525.05C623.41,533.83,630.26,541.18,639.02,541.78z M656.97,508.6L656.97,392.18 670.68,392.18C686.13,392.18,699.87,398.51,709.38,410L709.64,410.31C717.58,419.44 721.44,431.01 721.44,445.7 721.44,479.19 709.16,497.63 680.41,507.27 672.92,508.05 665.05,508.49 656.97,508.59z" />
+                            </DrawingGroup>
+                        </DrawingGroup>
+                        <GeometryDrawing Brush="#FFFF5E5B" Geometry="F1 M1000,1000z M0,0z M408.36,616.47C413.67,619.12 416.32,616.47 416.32,616.47 416.32,616.47 489.18,550.21 522.31,511.87 551.41,477.46 552.79,420.44 503.73,399.3 453.39,378.06 412.29,424.46 412.29,424.46 376.5,384.74 322.23,387.39 297.06,413.84 271.89,440.29 281.13,485.41 299.71,511.86 316.91,535.75 393.79,604.58 405.69,615.2 405.69,613.82 407.07,615.2 408.34,616.48z" />
+                        <GeometryDrawing Geometry="F1 M1000,1000z M0,0z M410.82,618.43C413.77,619.02 416.33,616.46 416.33,616.46 416.33,616.46 489.19,550.2 522.32,511.86 551.42,477.45 552.8,420.43 503.74,399.29 453.4,378.05 412.3,424.45 412.3,424.45 376.51,384.73 322.24,387.38 297.07,413.83 271.9,440.28 281.14,485.4 299.72,511.85 315.94,534.37 397.25,607.52 407.37,616.66 408.35,617.54 409.53,618.23 410.81,618.43z">
+                            <GeometryDrawing.Brush>
+                                <LinearGradientBrush StartPoint="336.01,4124.64" EndPoint="421.72,3861.61" MappingMode="Absolute" SpreadMethod="Pad" Opacity="1" Transform="1,0,0,-1,4.1,4362.59">
+                                    <GradientStop Color="#FFFF4EA3" Offset="0" />
+                                    <GradientStop Color="#FFFF5E5B" Offset="1" />
+                                </LinearGradientBrush>
+                            </GeometryDrawing.Brush>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
     <Style TargetType="Button">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Padding" Value="12,6"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
+                        <Border x:Name="border" CornerRadius="2" BorderThickness="{TemplateBinding BorderThickness}" 
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 Padding="{TemplateBinding Padding}">
@@ -23,94 +51,71 @@
                                               TextElement.FontWeight="Bold"/>
                         </Border>
                     </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonBackgroundHoverColorBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonBackgroundPressedColorBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource DisabledColorBrush}"/>
-                            <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressedColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="{StaticResource DisabledColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="GreenButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
     </Style>
-
-    <Style x:Key="YellowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonWarnBorderColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ButtonWarnBorderColorBrush}"/>
-
-        <Setter Property="Template">
+    
+    <Style x:Key="SupportButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Foreground" Value="{StaticResource ForegroundColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource HeartColorBrush}"/>
+        <Setter Property="Content">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          TextElement.FontWeight="Bold"/>
-                        </Border>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonWarnBackgroundHoverColorBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonWarnBackgroundPressedColorBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource DisabledColorBrush}"/>
-                            <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{StaticResource kofi_s_logo_nolabelDrawingImage}" Height="40" Margin="-4,-8,0,-10"/>
+                    <TextBlock Text="Buy me a coffee :)"/>
+                </StackPanel>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource HeartHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource HeartPressedColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="YellowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Foreground" Value="{StaticResource ButtonWarnBorderColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonWarnBorderColorBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource ButtonWarnBackgroundHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource ButtonWarnBackgroundPressedColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="RedButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource ButtonErrorBorderColorBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ButtonErrorBorderColorBrush}"/>
-
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          TextElement.FontWeight="Bold"/>
-                        </Border>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonErrorBackgroundHoverColorBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource ButtonErrorBackgroundPressedColorBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource DisabledColorBrush}"/>
-                            <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource ButtonErrorBackgroundHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource ButtonErrorBackgroundPressedColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="AddRowButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -289,7 +294,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="2" BorderThickness="1.5" 
+                        <Border x:Name="border" CornerRadius="2" BorderThickness="{TemplateBinding BorderThickness}" 
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     Padding="{TemplateBinding Padding}">
@@ -404,25 +409,9 @@
         <Setter Property="Width" Value="20"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="ContentTemplate" Value="{DynamicResource IconButtonTemplate}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="2" BorderThickness="{TemplateBinding BorderThickness}" 
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          TextElement.FontWeight="Bold"/>
-                        </Border>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ButtonForegroundHoverColorBrush}"/>
@@ -517,6 +506,47 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="GreenBorderlessButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="6,4"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ButtonForegroundHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressedColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ChipIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
+        <Setter Property="Foreground" Value="{StaticResource ForegroundDarkColorBrush}"/>
+        <Setter Property="Height" Value="14"/>
+        <Setter Property="Width" Value="14"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundDarkHoverColorBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundDarkPressedColorBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource DisabledDarkColorBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="CloseDialogButtonStyle" TargetType="Button" BasedOn="{StaticResource ForegroundIconButtonStyle}">
+        <Setter Property="Content" Value="{DynamicResource Close}"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Margin" Value="4,8"/>
+    </Style>
+
     <Style x:Key="WarnIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
         <Setter Property="Foreground" Value="{StaticResource WarnForegroundColorBrush}"/>
         <Style.Triggers>
@@ -545,6 +575,7 @@
 
     <Style x:Key="DefaultBorderedIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderColorBrush}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
         <Setter Property="Padding" Value="4"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -722,12 +753,13 @@
         <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColorBrush}"/>
         <Setter Property="Background" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource AddDeckButtonBackgroundBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Padding" Value="16"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="12,0,7,12" BorderThickness="1.5" 
+                        <Border x:Name="border" CornerRadius="12,0,7,12" BorderThickness="{TemplateBinding BorderThickness}" 
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     Padding="{TemplateBinding Padding}">
@@ -763,7 +795,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="0,12,12,7" BorderThickness="1.5" 
+                        <Border x:Name="border" CornerRadius="0,12,12,7" BorderThickness="{TemplateBinding BorderThickness}" 
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     Padding="{TemplateBinding Padding}">
@@ -794,7 +826,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid x:Name="grid">
-                        <Border x:Name="border" CornerRadius="40" BorderThickness="1.5" 
+                        <Border x:Name="border" CornerRadius="40" BorderThickness="{TemplateBinding BorderThickness}" 
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     Padding="{TemplateBinding Padding}">
@@ -806,6 +838,19 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource RemoveDeckHoverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="RemoveAircraftButtonStyle" TargetType="Button" BasedOn="{StaticResource MakeTemplateButtonStyle}">
+        <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
+        
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource RemoveDeckHoverBrush}"/>

@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Tasty.Logging;
 using Tasty.ViewModel;
 using Tasty.ViewModel.Communication;
 
@@ -43,6 +44,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         private bool hasUnsavedChanges;
         private dynamic storedNewValue = new Unset();
+        private Type storedNewValueType;
 
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
@@ -80,6 +82,8 @@ namespace SLC_LayoutEditor.ViewModel
         private bool mIsSidebarOpen = true;
         private bool mIsIssueTrackerExpanded;
         private bool mPlayExpanderAnimations = true;
+
+        private bool mIsWindowMaximized;
 
         private bool postponeLayoutChangeFinish;
 
@@ -402,7 +406,15 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        private CabinLayout ShownLayout => mSelectedCabinLayout != null ? mSelectedCabinLayout : mSelectedTemplate;
+        public bool IsWindowMaximized
+        {
+            get => mIsWindowMaximized;
+            set
+            {
+                mIsWindowMaximized = value;
+                InvokePropertyChanged();
+            }
+        }
 
         private void SelectedLayout_LayoutChanged(object sender, EventArgs e)
         {
@@ -549,7 +561,7 @@ namespace SLC_LayoutEditor.ViewModel
             foreach (DirectoryInfo layoutSetFolder in new DirectoryInfo(App.Settings.CabinLayoutsEditPath)
                                                             .EnumerateDirectories().AsParallel())
             {
-                mLayoutSets.Add(new CabinLayoutSet(layoutSetFolder));
+                AddAircraft(new CabinLayoutSet(layoutSetFolder));
             }
 
             mLayoutSets.CollectionUpdated += LayoutSets_CollectionUpdated;
@@ -561,8 +573,8 @@ namespace SLC_LayoutEditor.ViewModel
                     editNameTarget = layout;
                     IEnumerable<string> existingNames = (!layout.IsTemplate ? SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName) :
                     SelectedLayoutSet.Templates.Select(x => x.LayoutName)).Where(x => x != layout.LayoutName);
-                    IDialog dialog = new EditCabinLayoutNameDialog(existingNames, layout.LayoutName,
-                        layout.IsTemplate);
+                    IDialog dialog = new EditNameDialog(string.Format("Edit {0} name", !layout.IsTemplate ? "cabin layout" : "template"), 
+                        !layout.IsTemplate ? "Layout name" : "Template name", existingNames, layout.LayoutName);
 
                     dialog.DialogClosing += EditLayoutName_DialogClosing;
                     dialog.ShowDialog();
@@ -644,6 +656,79 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 RefreshUnsavedChanges();
             }, ViewModelMessage.HistoryStepApplied);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is CabinLayout layout)
+                {
+                    IsTemplatingMode = layout.IsTemplate;
+
+                    if (!layout.IsTemplate)
+                    {
+                        SelectedCabinLayout = layout;
+                    }
+                    else
+                    {
+                        SelectedTemplate = layout;
+                    }
+                }
+            }, ViewModelMessage.Layout_Load);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (!IsLayoutTemplate)
+                {
+                    SelectedCabinLayout = null;
+                }
+                else
+                {
+                    SelectedTemplate = null;
+                }
+            }, ViewModelMessage.BackToLayoutOverview);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is bool isMaximized && IsWindowMaximized != isMaximized)
+                {
+                    IsWindowMaximized = isMaximized;
+                }
+            }, ViewModelMessage.Window_StateChanged);
+        }
+
+        public void AddAircraft(CabinLayoutSet aircraft)
+        {
+            aircraft.Deleted += Aircraft_Deleted;
+            mLayoutSets.Add(aircraft);
+        }
+
+        private void LayoutIssues_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.Yes)
+            {
+                UnsetActiveLayout();
+            }
+        }
+
+        private void UnsetActiveLayout()
+        {
+            if (!IsLayoutTemplate)
+            {
+                SelectedCabinLayout = null;
+            }
+            else
+            {
+                SelectedTemplate = null;
+            }
+        }
+
+        private void Aircraft_Deleted(object sender, EventArgs e)
+        {
+            if (sender is CabinLayoutSet aircraft)
+            {
+                aircraft.Deleted -= Aircraft_Deleted;
+                LayoutSets.Remove(aircraft);
+                SelectedLayoutSet = null;
+            }
         }
 
         private void EditLayoutName_DialogClosing(object sender, DialogClosingEventArgs e)
@@ -691,9 +776,12 @@ namespace SLC_LayoutEditor.ViewModel
         {
             if (hasUnsavedChanges)
             {
-                bool isTemplate = ShownLayout.IsTemplate;
+                bool isTemplate = ActiveLayout.IsTemplate;
                 storedNewValue = newValue;
-                ConfirmationDialog dialog = new ConfirmationDialog(!isClosing ? "Save before swapping " + (!isTemplate ? "layout" : "template") : "Save before closing?",
+
+                IDialog dialog = new ConfirmationDialog(
+                    newValue == null ? "Save before returning to overview?" : !isClosing ? "Save before swapping " + (!isTemplate ? "layout" : "template") : 
+                    "Save before closing?",
                     "Do you want to save the current " + (!isTemplate ? "layout" : "template") + " before " + (!isClosing ? "proceeding" : "closing the editor") + "?", DialogType.YesNoCancel);
 
                 dialog.DialogClosing += UnsavedChangesDialog_DialogClosing;
@@ -802,7 +890,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         private void UnsavedChangesDialog_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            CabinLayout shownLayout = ShownLayout;
+            CabinLayout shownLayout = ActiveLayout;
 
             if (e.DialogResult == DialogResultType.Yes)
             {
@@ -819,11 +907,7 @@ namespace SLC_LayoutEditor.ViewModel
                 if (e.DialogResult != DialogResultType.Cancel) // User doesn't cancel, apply newly selected data
                 {
                     HasUnsavedChanges = false;
-                    if (storedNewValue is CabinLayoutSet selectedLayoutSet)
-                    {
-                        SelectedLayoutSet = selectedLayoutSet;
-                    }
-                    else if (storedNewValue is CabinLayout selectedLayout)
+                    if (storedNewValue is CabinLayout selectedLayout)
                     {
                         if (!selectedLayout.IsTemplate)
                         {
@@ -834,31 +918,60 @@ namespace SLC_LayoutEditor.ViewModel
                             SelectedTemplate = selectedLayout;
                         }
                     }
+                    else
+                    {
+                        if (!IsLayoutTemplate)
+                        {
+                            SelectedCabinLayout = null;
+                        }
+                        else
+                        {
+                            SelectedTemplate = null;
+                        }
+                    }
+                    /*else if (storedNewValue is CabinLayoutSet selectedLayoutSet)
+                    {
+                        SelectedLayoutSet = selectedLayoutSet;
+                    }*/
                 }
                 else
                 {
-                    if (storedNewValue is CabinLayoutSet)
+                    OnSelectionRollback(new SelectionRollbackEventArgs(ActiveLayout,
+                        (!IsTemplatingMode ? SelectedLayoutSet.CabinLayouts : SelectedLayoutSet.Templates)
+                            .IndexOf(shownLayout), RollbackType.CabinLayout));
+                    /*if (storedNewValue is CabinLayout)
                     {
-                        OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, AircraftListSortConverter.Sort(mLayoutSets)
-                            .ToList().IndexOf(SelectedLayoutSet), RollbackType.CabinLayoutSet));
-                    }
-                    else if (storedNewValue is CabinLayout)
-                    {
-                        OnSelectionRollback(new SelectionRollbackEventArgs(ActiveLayout, 
+                        OnSelectionRollback(new SelectionRollbackEventArgs(ActiveLayout,
                             (!IsTemplatingMode ? SelectedLayoutSet.CabinLayouts : SelectedLayoutSet.Templates)
                                 .IndexOf(shownLayout), RollbackType.CabinLayout));
                     }
+                    else if (storedNewValue is CabinLayoutSet)
+                    {
+                        OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, AircraftListSortConverter.Sort(mLayoutSets)
+                            .ToList().IndexOf(SelectedLayoutSet), RollbackType.CabinLayoutSet));
+                    }*/
                 }
             }
 
             storedNewValue = new Unset();
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.UnsavedChangesDialogClosed, e.DialogResult != DialogResultType.Cancel);
+            bool isCancel = e.DialogResult == DialogResultType.Cancel;
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.UnsavedChangesDialogClosed, !isCancel);
         }
 
         private bool PrepareCabinLayoutChange(CabinLayout current, CabinLayout updated, EventHandler<EventArgs> deletedCallback)
         {
+            if (updated != null)
+            {
+                Logger.Default.WriteLog("Preparing to switch to cabin layout \"{0}\"...", updated.LayoutName);
+            }
+            else
+            {
+                Logger.Default.WriteLog("Preparing to unload current cabin layout...");
+            }
+
             if (CheckUnsavedChanges(updated))
             {
+                //Logger.Default.WriteLog("Unsaved changes detected, postponing ", updated.LayoutName);
                 return false;
             }
 

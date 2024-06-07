@@ -1,0 +1,102 @@
+﻿<local:DialogBase x:Class="SLC_LayoutEditor.UI.Dialogs.About"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" Width="550" Margin="8,0">
+    <local:DialogBase.Resources>
+        <Style x:Key="FooterTextStyle" TargetType="TextBlock" BasedOn="{StaticResource Subtitle3TextStyle}">
+            <Setter Property="FontStyle" Value="Normal"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+    </local:DialogBase.Resources>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <StackPanel>
+                <TextBlock x:Name="title" Text="SLC Layout Editor" FontSize="20" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
+                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Style="{StaticResource Subtitle2TextStyle}">
+                    <Run Text="Compatible with"/>
+                    <Hyperlink Click="SLC_1_6_Hyperlink_Click">
+                        Self Loading Cargo v1.6
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <Button Style="{StaticResource CloseDialogButtonStyle}" Click="Close_Click"/>
+        </Grid>
+        <Image Height="156" Margin="0,8" Source="/SLC_LayoutEditor;component/Resources/icon_about.png" DockPanel.Dock="Top"/>
+        <Border DockPanel.Dock="Bottom" Style="{StaticResource CardStyle}" CornerRadius="8"
+            Margin="-12,0">
+            <DockPanel>
+                <TextBlock Text="by Midnight Bagel" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}"/>
+                <TextBlock Text="♥" FontSize="18" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}" Margin="4,-4"/>
+                <TextBlock Text="Made with" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}"/>
+                <TextBlock Style="{StaticResource FooterTextStyle}">
+                    <Run Text="Trello roadmap:" FontWeight="Bold"/>
+                    <Hyperlink Click="Roadmap_Hyperlink_Click">Roadmap</Hyperlink>
+                </TextBlock>
+            </DockPanel>
+        </Border>
+        <TextBlock DockPanel.Dock="Top" TextWrapping="WrapWithOverflow" Margin="0,0,0,16">
+            <Run Text="This editor is a support tool for"/>
+            <Hyperlink Click="SLC_Website_Hyperlink_Click">SLC (Self Loading Cargo)</Hyperlink><Run Text=", and makes creating and modifying cabin layouts as easy as making a few clicks! The editor comes with many useful features such as:"/>
+        </TextBlock>
+        <FlowDocumentScrollViewer Margin="0,0,0,8">
+            <FlowDocument>
+                <List>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Getting started guide" FontWeight="Bold"/><Run Text=": If you are new to the editor or you need a refresher, you can use the interactive guide to get into creating awesome layouts with ease!"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Issue checking" FontWeight="Bold"/><Run Text=": While editing any layout, the editor makes constant checks against cabin layout restraints, and shows all issues in a convenient list"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Autofixing issues" FontWeight="Bold"/><Run Text=": Some issues like misplaced stairways or duplicate doors can be automatically corrected by the editor itself!"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Automating slot configuration" FontWeight="Bold"/><Run Text=": Let the editor handle setting up slot configs for seats, doors and service points"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Crash backups" FontWeight="Bold"/><Run Text=": In case the editor crashes while you have unsaved changes on a layout, backups are created which can be restored on the next launch"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Cabin templates" FontWeight="Bold"/><Run Text=": Set up cabin templates to quickly create new layouts for the same aircraft"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Undo/Redo system" FontWeight="Bold"/><Run Text=": Made a mistake while editing your layout? Use either the Undo/Redo buttons in the title bar or Ctrl+Z/Ctrl+Y to quickly step through your changes"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Keybinds upon keybinds" FontWeight="Bold"/><Run Text=": Most actions you can do in the editor (saving layouts, cancelling dialogs, changing slot types, etc.) have a keybind attached to them. For a full list of keybinds either hit Ctrl+K or go to &quot;Help&quot; > &quot;Show keybinds&quot;"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="Multi-selecting slots" FontWeight="Bold"/><Run Text=": The editor allows you to freely add or remove slots to your selection on a cabin deck, speeding up the realisation of your next cabin layout. Also works across multiple decks since v1.6.7!"/>
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Run Text="In-app updates" FontWeight="Bold"/><Run Text=": Once you have extracted the files for the editor, you can get future updates via the editor itself!"/>
+                        </Paragraph>
+                    </ListItem>
+                </List>
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+    </DockPanel>
+</local:DialogBase>

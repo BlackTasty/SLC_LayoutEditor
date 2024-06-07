@@ -9,6 +9,9 @@ namespace SLC_LayoutEditor.ViewModel.Commands
 {
     internal static class CommandInterface
     {
+        private static readonly CreateCabinLayoutCommand _createCabinLayoutCommand = new CreateCabinLayoutCommand();
+        private static readonly CreateTemplateCommand _createTemplateCommand = new CreateTemplateCommand();
+        private static readonly CreateAircraftCommand _createAircraftCommand = new CreateAircraftCommand();
         private static readonly MakeTemplateCommand _makeTemplateCommand = new MakeTemplateCommand();
         private static readonly OpenLayoutFolderCommand _openLayoutFolderCommand = new OpenLayoutFolderCommand();
         private static readonly OpenLayoutInTextEditor _openLayoutInTextEditor = new OpenLayoutInTextEditor();
@@ -48,6 +51,12 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         private static readonly SlotTypeUnavailableSeatCommand _slotTypeUnavailableSeatCommand = new SlotTypeUnavailableSeatCommand();
         private static readonly SlotTypeWallCommand _slotTypeWallCommand = new SlotTypeWallCommand();
         #endregion
+
+        public static CreateCabinLayoutCommand CreateCabinLayoutCommand => _createCabinLayoutCommand;
+
+        public static CreateTemplateCommand CreateTemplateCommand => _createTemplateCommand;
+
+        public static CreateAircraftCommand CreateAircraftCommand => _createAircraftCommand;
 
         public static MakeTemplateCommand MakeTemplateCommand => _makeTemplateCommand;
 

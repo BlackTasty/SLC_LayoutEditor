@@ -1,12 +1,9 @@
 ﻿30.04.2024 m
-Added: Actions like removing slots from your selection are now also explained in the keybind cheatsheet window
-Added: Applying an autofix now also shows a notification containing information about the applied fix
-Added: Implemented two new tracked issues: "Catering door count" and "Door count"
-Added: There is now a separate notification after a successful save
-Updated: You can now select and configure slots across multiple decks!
-Updated: The keybind cheatsheet window has been cleaned up
-Updated: Replaced the "Save as" icon with a more fitting variant
-Fixed: The editor would crash when applying the door autofix, while having more than 9 doors present across your layout
-Fixed: Fixed a bug, where the state of the layout/template mode toggle would affect your current layout or template being copied to the clipboard
-Fixed: Using undo/redo didn't trigger the check for unsaved changes
-Disabled: Temporarily disabled the keybind to select all slots on the current deck
+Added: After all this time there finally is an About section now! (Help -> About)
+Added: A new seasonal theme has been added. Happy pride month!
+Updated: Replaced the icon for the editor
+Changed: Moved the "Back to editor" button to the left and updated the appearance, in order to fit in with the "Return to layout overview" button style
+Changed: Dialogs now have a close button
+Changed: Both the changelog dialog as well as the dialog to manage baked template got their close buttons replaced with the new close button
+Fixed: Smaller UI fixes
+Removed: Removed unused resources

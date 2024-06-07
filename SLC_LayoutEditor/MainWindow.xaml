@@ -9,11 +9,12 @@
         xmlns:notifications="clr-namespace:SLC_LayoutEditor.Controls.Notifications"
         TextElement.Foreground="{DynamicResource ForegroundColorBrush}"
         Background="{DynamicResource BackgroundDarkBrush}"
-        BorderBrush="{DynamicResource BackgroundLightBrush}"
+        BorderBrush="{DynamicResource WindowBorderBrush}"
         mc:Ignorable="d" Closing="Window_Closing" WindowStyle="SingleBorderWindow"
         Title="{Binding Title}" MinHeight="810" MinWidth="1260"
         d:DataContext="{d:DesignInstance {x:Type dvm:MainDesignViewModel}, IsDesignTimeCreatable=True}"
-        Icon="Resources/icon.ico" StateChanged="Window_StateChanged">
+        Icon="Resources/icon.ico" StateChanged="Window_StateChanged"
+        Loaded="Window_Loaded">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" CornerRadius="14" CaptionHeight="0" UseAeroCaptionButtons="False" ResizeBorderThickness="7"/>
     </WindowChrome.WindowChrome>
@@ -52,13 +53,10 @@
                         </Button>
                         <Button DockPanel.Dock="Right" Click="Minimize_Click" Style="{StaticResource HeaderButtonStyle}"
                                 Content="{StaticResource WindowMinimize}" Padding="17" ToolTip="Minimize"/>
-                        <Button Content="Return to editor" Click="ReturnToEditor_Click" FontSize="12"
-                                DockPanel.Dock="Right" Margin="24,0,24,0"
-                                Visibility="{Binding IsViewNotEditor, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <controls:Updater DockPanel.Dock="Right" Margin="32,0,8,0" InstallUpdateClicked="Updater_InstallUpdateClicked"
                                           x:Name="updater"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource Title3TextStyle}"
+                            <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource AppTitleStyle}"
                                        Margin="8,0" VerticalAlignment="Center"/>
                             <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14" VerticalAlignment="Center"
                                   IsEnabled="{Binding IsDialogOpen, Converter={StaticResource InverseBooleanConverter}}">
@@ -138,12 +136,13 @@
                                               InputGestureText="Ctrl+K"
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
                                     <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                                    <MenuItem Header="About" Click="About_Click"/>
                                     <MenuItem Header="What's new?" Click="Changelog_Click"
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
                                     <MenuItem Header="Roadmap" Click="Roadmap_Click"
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
+                                    <MenuItem Header="Buy me a coffee :)" Click="BuyACoffee_Clicked"/>
                                 </MenuItem>
-                                <!--<MenuItem Header="Make snapshot" Click="MenuItem_Click"/>-->
                             </Menu>
                             <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
 
@@ -170,7 +169,7 @@
                                         Click="Redo_Click" IsEnabled="{Binding CanRedo}" Loaded="RedoButton_Loaded"/>
                             </StackPanel>
                             <Border Margin="0,6,8,6" Padding="8,2" CornerRadius="4"
-                                        Visibility="{Binding CabinLayoutName, Converter={StaticResource NotNullToVisibilityConverter}}">
+                                    Visibility="{Binding CabinLayoutName, Converter={StaticResource NotNullToVisibilityConverter}}">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
@@ -216,6 +215,63 @@
                                     </Run>
                                 </TextBlock>
                             </Border>
+                            <Button VerticalAlignment="Center" Click="BackTo_Click" 
+                                    ToolTip="Return back to the layout overview for this aircraft">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource GreenBorderlessButtonStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsViewNotEditor}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsLayoutOpened}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsViewNotEditor}" Value="False"/>
+                                                    <Condition Binding="{Binding IsTemplate}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Foreground" Value="{StaticResource TemplatingModeBrush}"/>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
+                                                    <Condition Binding="{Binding IsTemplate}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Background" Value="{StaticResource TemplatingModeBackgroundHoverBrush}"/>
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsPressed}" Value="True"/>
+                                                    <Condition Binding="{Binding IsTemplate}" Value="True"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Background" Value="{StaticResource TemplatingModeBackgroundPressedBrush}"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource ChevronLeft}" Stretch="Uniform" Margin="0,1,0,0"
+                                          Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}"/>
+                                    <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" FontStyle="Normal"
+                                               Foreground="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource Subtitle3TextStyle}">
+                                                <Setter Property="Text" Value="Back to layout overview"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsViewNotEditor}" Value="True">
+                                                        <Setter Property="Text" Value="Return to editor"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsTemplate}" Value="True">
+                                                        <Setter Property="Text" Value="Back to template overview"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
                             <StackPanel x:Name="panel_guideStepper" VerticalAlignment="Center" Orientation="Horizontal"
                                         Visibility="{Binding IsTourRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Button Style="{StaticResource DefaultIconButtonStyle}" Content="{StaticResource ChevronLeftData}"
@@ -250,6 +306,10 @@
     </Window.DataContext>
     <Window.InputBindings>
         <!-- Basic commands -->
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding CreateCabinLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="N" Modifiers="Ctrl+Alt" Command="{Binding CreateTemplateCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="N" Modifiers="Ctrl+Shift" Command="{Binding CreateAircraftCommand}"/>
+        
         <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding OpenLayoutFolderCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenLayoutInTextEditor}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>

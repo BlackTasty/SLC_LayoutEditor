@@ -50,7 +50,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             templateName = "Start from scratch";
         }
 
-        public void GenerateThumbnails()
+        public void GenerateThumbnails(bool overwrite = false)
         {
             if (isDefault)
             {
@@ -64,7 +64,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             foreach (CabinDeck cabinDeck in template.CabinDecks)
             {
                 CabinDeckRenderer renderer = new CabinDeckRenderer(cabinDeck);
-                renderer.GenerateThumbnail();
+                renderer.GenerateThumbnail(overwrite);
             }
 
             LoadThumbnails();

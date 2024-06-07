@@ -15,6 +15,8 @@ namespace SLC_LayoutEditor.Converter
         {
             if (value is string rawGeometry && !string.IsNullOrWhiteSpace(rawGeometry))
                 return Geometry.Parse(rawGeometry);
+            else if (value is Geometry)
+                return value;
             else
                 return Geometry.Empty;
         }

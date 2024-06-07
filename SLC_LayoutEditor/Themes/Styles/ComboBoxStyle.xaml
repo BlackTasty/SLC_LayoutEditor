@@ -34,13 +34,13 @@
         <Setter Property="Template" Value="{DynamicResource RefinedComboBoxTemplate}"/>
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource ForegroundSecondaryColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderColorBrush}"/>
         <Setter Property="Padding" Value="4,0"/>
         <Setter Property="AlternationCount" Value="2"/>
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderHoverColorBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderHoverColorBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
@@ -74,7 +74,7 @@
                 <Themes:SystemDropShadowChrome x:Name="shadow" Color="{DynamicResource BackgroundDark}" MaxHeight="{TemplateBinding MaxDropDownHeight}" 
                                                MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
                     <Border x:Name="DropDownBorder" 
-                            BorderBrush="{DynamicResource ButtonBorderHoverColorBrush}"
+                            BorderBrush="{DynamicResource ComboBoxBorderHoverColorBrush}"
                             CornerRadius="2"
                             Background="{DynamicResource BackdropDarkColorBrush}">
                         <Border.Style>
@@ -454,13 +454,13 @@
         <Setter Property="Template" Value="{DynamicResource ComboBoxTemplate}"/>
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource ForegroundSecondaryColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderColorBrush}"/>
         <Setter Property="Padding" Value="4,0"/>
         <Setter Property="AlternationCount" Value="2"/>
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderHoverColorBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderHoverColorBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
@@ -483,7 +483,7 @@
                 <Themes:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MaxHeight="{TemplateBinding MaxDropDownHeight}" 
                                                MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
                     <Border x:Name="DropDownBorder" 
-                            BorderBrush="{DynamicResource ButtonBorderHoverColorBrush}"
+                            BorderBrush="{DynamicResource ComboBoxBorderHoverColorBrush}"
                             BorderThickness="1.5,2,1.5,1.5"
                             CornerRadius="2" Margin="0,-2,0,0"
                             Background="{DynamicResource BackdropDarkColorBrush}">
@@ -663,7 +663,7 @@
                 <Themes:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MaxHeight="{TemplateBinding MaxDropDownHeight}" 
                                                MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
                     <Border x:Name="DropDownBorder" 
-                            BorderBrush="{DynamicResource ButtonBorderHoverColorBrush}"
+                            BorderBrush="{DynamicResource ComboBoxBorderHoverColorBrush}"
                             BorderThickness="1.5"
                             CornerRadius="2" Margin="0,0,0,7"
                             Background="{DynamicResource BackdropDarkColorBrush}">

@@ -24,6 +24,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public event EventHandler<EventArgs> DeckSlotLayoutChanged;
 
         private VeryObservableCollection<CabinSlot> mCabinSlots = new VeryObservableCollection<CabinSlot>("CabinSlots");
+        private bool isPreview;
         private int mFloor;
 
         private bool mShowCateringAndLoadingBayIssues = true;
@@ -37,13 +38,16 @@ namespace SLC_LayoutEditor.Core.Cabin
         private string currentHash;
         private bool isIssueCheckingEnabled = true;
 
+        private int cachedRows;
+        private int cachedColumns;
+
         public double Width { get; set; }
 
         public double Height { get; set; }
 
-        public int Rows => CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Row) : 0;
+        public int Rows => !isPreview ? (CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Row) : 0) : cachedRows;
 
-        public int Columns => CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Column) : 0;
+        public int Columns => !isPreview ? (CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Column) : 0) : cachedColumns;
 
         public VeryObservableCollection<CabinSlot> CabinSlots
         {
@@ -246,21 +250,32 @@ namespace SLC_LayoutEditor.Core.Cabin
         /// <param name="floor"></param>
         /// <param name="rows"></param>
         /// <param name="columns"></param>
-        public CabinDeck(int floor, int rows, int columns)
+        public CabinDeck(int floor, int rows, int columns, bool isPreview = false)
         {
-            mFloor = floor;
-            for (int column = 0; column < columns; column++)
-            {
-                for (int row = 0; row < rows; row++)
-                {
-                    CabinSlotType slotType = row == 0 || row == rows - 1 || column == 0 || column == columns - 1 ? CabinSlotType.Wall : CabinSlotType.Aisle;
-                    CabinSlot cabinSlot = new CabinSlot(row, column, slotType, 0);
-                    AddCabinSlot(cabinSlot);
-                }
-            }
+            this.isPreview = isPreview;
 
-            RefreshPathGrid();
-            currentHash = Util.GetSHA256Hash(ToFileString());
+            mFloor = floor;
+
+            if (!isPreview)
+            {
+                for (int column = 0; column < columns; column++)
+                {
+                    for (int row = 0; row < rows; row++)
+                    {
+                        CabinSlotType slotType = row == 0 || row == rows - 1 || column == 0 || column == columns - 1 ? CabinSlotType.Wall : CabinSlotType.Aisle;
+                        CabinSlot cabinSlot = new CabinSlot(row, column, slotType, 0);
+                        AddCabinSlot(cabinSlot);
+                    }
+                }
+
+                RefreshPathGrid();
+                currentHash = Util.GetSHA256Hash(ToFileString());
+            }
+            else
+            {
+                cachedRows = rows;
+                cachedColumns = columns;
+            }
         }
 
         /*private void CabinSlots_ObserveChanges(object sender, EventArgs e)

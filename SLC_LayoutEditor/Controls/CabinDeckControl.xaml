@@ -21,7 +21,7 @@
                     Style="{StaticResource RemoveDeckButtonStyle}" Margin="32,0,0,0" Click="RemoveDeck_Click"/>
             <StackPanel Margin="0,8">
                 <TextBlock FontSize="20" FontWeight="Bold"
-                           Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.FloorName}">
+                           Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.FloorName, Mode=OneWay}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                             <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinDeckControl}, Path=CabinDeck.Floor, StringFormat={}Floor {0}}"/>

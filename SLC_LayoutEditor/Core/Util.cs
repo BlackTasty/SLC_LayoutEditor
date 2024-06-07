@@ -16,6 +16,9 @@ using System.Security.Cryptography;
 using System.Reflection;
 using SLC_LayoutEditor.Core.Cabin;
 using System.Windows.Media.Imaging;
+using SLC_LayoutEditor.Core.Dialogs;
+using SLC_LayoutEditor.UI.Dialogs;
+using System.Windows.Controls;
 
 namespace SLC_LayoutEditor.Core
 {
@@ -233,6 +236,60 @@ namespace SLC_LayoutEditor.Core
         public static Pen GetBorderColorFromResources(string name, double borderThickness)
         {
             return new Pen(GetBackgroundFromResources(name), borderThickness);
+        }
+
+        public static IDialog BeginCreateCabinLayout(bool isTemplatingMode, CabinLayoutSet targetSet)
+        {
+            Logger.Default.WriteLog("User requested creating a new {0} for aircraft \"{1}\"...", isTemplatingMode ? "template" : "layout", targetSet.AircraftName);
+
+            if (!isTemplatingMode)
+            {
+                return new CreateCabinLayoutDialog(targetSet.CabinLayouts.Select(x => x.LayoutName),
+                    targetSet.GetTemplatePreviews(), isTemplatingMode);
+            }
+            else
+            {
+                return new CreateTemplateDialog(targetSet.Templates.Select(x => x.LayoutName));
+            }
+        }
+
+        public static T GetTemplatedControlFromListBoxItem<T>(object source, string templateRootName)
+        {
+            if (source is ListBoxItem item)
+            {
+                ContentPresenter itemContentPresenter = FindVisualChild<ContentPresenter>(item);
+
+                if (itemContentPresenter == null) {
+                    return default;
+                }
+
+                // Finding textBlock from the DataTemplate that is set on that ContentPresenter
+                DataTemplate itemDataTemplate = itemContentPresenter.ContentTemplate;
+                return (T)itemDataTemplate.FindName(templateRootName, itemContentPresenter);
+            }
+            else
+            {
+                return default;
+            }
+        }
+        private static ChildItem FindVisualChild<ChildItem>(DependencyObject obj)
+    where ChildItem : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is ChildItem)
+                {
+                    return (ChildItem)child;
+                }
+                else
+                {
+                    ChildItem childOfChild = FindVisualChild<ChildItem>(child);
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+            return null;
         }
     }
 }

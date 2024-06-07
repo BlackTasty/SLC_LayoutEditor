@@ -17,7 +17,7 @@
     <system:String x:Key="GuideReloadLayoutDescription" d:Freeze="True" xml:space="preserve">Clicking this button allows you to reload the current layout from your hard drive, reverting all unsaved changes.</system:String>
 
     <system:String x:Key="GuideDeleteLayoutTitle" d:Freeze="True" xml:space="preserve">Deleting the layout</system:String>
-    <system:String x:Key="GuideDeleteLayoutDescription" d:Freeze="True" xml:space="preserve">Clicking on this button allows you to delete this layout.&#x0a;You will be asked for your confirmation first.</system:String>
+    <system:String x:Key="GuideDeleteLayoutDescription" d:Freeze="True" xml:space="preserve">Clicking on this button allows you to delete this layout.&#x0a;This action cannot be undone, but you will be asked for your confirmation first.</system:String>
 
     <system:String x:Key="GuideEditLayoutNameTitle" d:Freeze="True" xml:space="preserve">Changing the name of your layout</system:String>
     <system:String x:Key="GuideEditLayoutNameDescription" d:Freeze="True" xml:space="preserve">With this button you can rename your current layout.</system:String>
@@ -33,6 +33,12 @@
 
     <system:String x:Key="GuideCreateAircraftTitle" d:Freeze="True" xml:space="preserve">Creating a new aircraft</system:String>
     <system:String x:Key="GuideCreateAircraftDescription" d:Freeze="True" xml:space="preserve">To create a new aircraft type, click on the + button.</system:String>
+    
+    <system:String x:Key="GuideDeleteAircraftTitle" d:Freeze="True" xml:space="preserve">Deleting an aircraft</system:String>
+    <system:String x:Key="GuideDeleteAircraftDescription" d:Freeze="True" xml:space="preserve">This button allows you to remove the currently selected aircraft, including all layouts for it.&#x0a;This action cannot be undone, but you will be asked for your confirmation first.</system:String>
+
+    <system:String x:Key="GuideEditAircraftNameTitle" d:Freeze="True" xml:space="preserve">Changing aircraft names</system:String>
+    <system:String x:Key="GuideEditAircraftNameDescription" d:Freeze="True" xml:space="preserve">By clicking this button, you can rename your current aircraft.</system:String>
 
     <system:String x:Key="GuideCreateLayoutTitle" d:Freeze="True" xml:space="preserve">Creating a new layout</system:String>
     <system:String x:Key="GuideCreateLayoutDescription" d:Freeze="True" xml:space="preserve">In order to create a new layout, click on the + button.&#x0a;Here you can optionally select a template (if any are available) to base your layout off of.</system:String>

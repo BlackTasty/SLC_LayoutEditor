@@ -11,9 +11,9 @@
     <local:DialogBase.DataContext>
         <vm:SettingsViewModel/>
     </local:DialogBase.DataContext>
-    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="8">
-        <CheckBox Content="Show after every update" IsChecked="{Binding Settings.ShowChangesAfterUpdate}"/>
-        <Button Content="Close" Click="Close_Click" DockPanel.Dock="Right"/>
-    </DockPanel>
-    <controls:Patchnote x:Name="changelog" Margin="8"/>
+    <CheckBox DockPanel.Dock="Bottom" Margin="8,12" Content="Show after every update" IsChecked="{Binding Settings.ShowChangesAfterUpdate}"/>
+    <Grid>
+        <controls:Patchnote x:Name="changelog" Margin="8,4,8,8"/>
+        <Button Style="{StaticResource CloseDialogButtonStyle}" Click="Close_Click" Margin="8"/>
+    </Grid>
 </local:DialogBase>

@@ -22,6 +22,8 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         Keybind_SaveLayoutAs,
         Keybind_MakeTemplate,
         Keybind_ReloadLayout,
+        Keybind_Begin_CreateLayoutOrTemplate,
+        Keybind_Begin_CreateAircraft,
         RefocusKeybindSheet,
         Notification_AddNotification,
         CreateSnapshot,
@@ -32,6 +34,11 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         HistoryStepApplied,
         SelectAll_Layout,
         SelectAll_Deck,
-        DeselectOther_Deck
+        DeselectOther_Deck,
+        Layout_Load,
+        Layout_Tile_Init,
+        BackToLayoutOverview,
+        Window_StateChanged,
+        Layout_Tile_RefreshData
     }
 }

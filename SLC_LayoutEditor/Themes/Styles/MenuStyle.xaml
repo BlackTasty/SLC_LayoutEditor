@@ -142,7 +142,7 @@
 
     <Style x:Key="MenuSeparatorStyle" TargetType="Separator">
         <Setter Property="Margin" Value="-26,2,4,2"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderColorBrush}"/>
         <Setter Property="BorderThickness" Value="0,1,0,0"/>
     </Style>
 </ResourceDictionary>

@@ -12,7 +12,7 @@
                 <ResourceDictionary Source="Themes/Style.xaml"/>
                 <ResourceDictionary Source="Icons.xaml"/>
                 <ResourceDictionary Source="Strings.xaml"/>
-                <!--<ResourceDictionary Source="Themes/Overrides/ChristmasTheme.xaml"/>-->
+                <!--<ResourceDictionary Source="Themes/Seasonal/PrideTheme.xaml"/>-->
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -26,18 +26,6 @@
             <converter:EqualsToVisibilityConverter x:Key="EqualsToVisibilityConverter"/>
             <converter:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
             <converter:OffsetConverter x:Key="OffsetConverter"/>
-
-            <ImageBrush x:Key="CrewAreaIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_galley.png"/>
-            <ImageBrush x:Key="FirstClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_first_class.png"/>
-            <ImageBrush x:Key="BusinessClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_business_class.png"/>
-            <ImageBrush x:Key="PremiumClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_premium_class.png"/>
-            <ImageBrush x:Key="EconomyClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_economy_class.png"/>
-            <ImageBrush x:Key="SupersonicClassIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_supersonic_class.png"/>
-            <ImageBrush x:Key="UnavailableSeatIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/seat_unavailable.png"/>
-            <ImageBrush x:Key="ToiletIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/toilet.png"/>
-            <ImageBrush x:Key="KitchenIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/kitchen.png"/>
-            <ImageBrush x:Key="IntercomIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/intercom.png"/>
-            <ImageBrush x:Key="WallIcon" ImageSource="pack://application:,,,/SLC_LayoutEditor;component/Resources/wall.png"/>
 
             <system:Int32 x:Key="IssueTooltipInitialShowDelay">200</system:Int32>
         </ResourceDictionary>

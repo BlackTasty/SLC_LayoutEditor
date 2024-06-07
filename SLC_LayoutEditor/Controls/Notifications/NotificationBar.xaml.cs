@@ -40,7 +40,7 @@ namespace SLC_LayoutEditor.Controls.Notifications
             {
                 loadedNotifications.Add(notification);
                 notifications.Children.Insert(0, control);
-                notification.NotificationClosed += Notification_NotificationClosed;
+                notification.Closed += Notification_NotificationClosed;
                 notification.ShowNotification();
             }
         }
@@ -59,7 +59,7 @@ namespace SLC_LayoutEditor.Controls.Notifications
 
             if (index > -1)
             {
-                (notifications.Children[index] as INotification).NotificationClosed -= Notification_NotificationClosed;
+                (notifications.Children[index] as INotification).Closed -= Notification_NotificationClosed;
                 notifications.Children.RemoveAt(index);
                 INotification removedNotification = loadedNotifications.FirstOrDefault(x => x.Guid == e.NotificationGuid);
                 loadedNotifications.Remove(removedNotification);

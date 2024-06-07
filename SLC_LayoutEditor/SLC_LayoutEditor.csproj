@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>9.0</LangVersion>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -27,6 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,31 +39,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Rendering_Old|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Rendering_Old\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;RENDERING_OLD</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Rendering_New|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Rendering_New\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;RENDERING_NEW</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -92,9 +73,24 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\AircraftLayoutsViewControl.xaml.cs">
+      <DependentUpon>AircraftLayoutsViewControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CabinDeckCardAdorner.cs" />
+    <Compile Include="Controls\CabinLayoutCapacities.xaml.cs">
+      <DependentUpon>CabinLayoutCapacities.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CabinLayoutControl.xaml.cs">
       <DependentUpon>CabinLayoutControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CabinLayoutTile.xaml.cs">
+      <DependentUpon>CabinLayoutTile.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CheckedTextBlock.xaml.cs">
+      <DependentUpon>CheckedTextBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ContentTextBlock.xaml.cs">
+      <DependentUpon>ContentTextBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\GuideAssist.cs" />
     <Compile Include="Controls\IssueTracker.xaml.cs">
@@ -151,6 +147,7 @@
     <Compile Include="Converter\HistoryStepDataConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converter\LayoutThumbnailGrabber.cs" />
     <Compile Include="Converter\ModifyNumberConverter.cs" />
     <Compile Include="Converter\NotZeroConverter.cs" />
     <Compile Include="Converter\OffsetConverter.cs" />
@@ -246,7 +243,7 @@
       <DependentUpon>StyleTester.xaml</DependentUpon>
     </Compile>
     <Compile Include="TemplateSelector\AircraftItemTemplateSelector.cs" />
-    <Compile Include="UI\About.xaml.cs">
+    <Compile Include="UI\Dialogs\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\ChangelogDialog.xaml.cs">
@@ -266,8 +263,8 @@
       <DependentUpon>CreateTemplateDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\DialogBase.cs" />
-    <Compile Include="UI\Dialogs\EditCabinLayoutNameDialog.xaml.cs">
-      <DependentUpon>EditCabinLayoutNameDialog.xaml</DependentUpon>
+    <Compile Include="UI\Dialogs\EditNameDialog.xaml.cs">
+      <DependentUpon>EditNameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\MakeTemplateDialog.xaml.cs">
       <DependentUpon>MakeTemplateDialog.xaml</DependentUpon>
@@ -286,8 +283,12 @@
     </Compile>
     <Compile Include="ViewModel\AddEditCabinLayoutDialogViewModel.cs" />
     <Compile Include="ViewModel\BaseDialogViewModel.cs" />
+    <Compile Include="ViewModel\CabinLayoutTileViewModel.cs" />
     <Compile Include="ViewModel\Commands\CancelDialogCommand.cs" />
     <Compile Include="ViewModel\Commands\CommandInterface.cs" />
+    <Compile Include="ViewModel\Commands\CreateAircraftCommand.cs" />
+    <Compile Include="ViewModel\Commands\CreateCabinLayoutCommand.cs" />
+    <Compile Include="ViewModel\Commands\CreateTemplateCommand.cs" />
     <Compile Include="ViewModel\Commands\HistoryCommandBase.cs" />
     <Compile Include="ViewModel\Commands\LayoutBaseCommand.cs" />
     <Compile Include="ViewModel\Commands\MakeTemplateCommand.cs" />
@@ -358,11 +359,31 @@
       <DependentUpon>LayoutEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\LayoutEditorViewModel.cs" />
+    <Page Include="Controls\AircraftLayoutsViewControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CabinLayoutCapacities.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\CabinLayoutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CabinDeckControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CabinLayoutTile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CheckedTextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ContentTextBlock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -455,6 +476,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\Seasonal\PrideTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Style.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -523,7 +548,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\About.xaml">
+    <Page Include="UI\Dialogs\About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -535,7 +560,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Dialogs\EditCabinLayoutNameDialog.xaml">
+    <Page Include="UI\Dialogs\EditNameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -602,21 +627,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\intercom.png" />
-    <Resource Include="Resources\kitchen.png" />
-    <Resource Include="Resources\seat_business_class.png" />
-    <Resource Include="Resources\seat_economy_class.png" />
-    <Resource Include="Resources\seat_first_class.png" />
-    <Resource Include="Resources\seat_galley.png" />
-    <Resource Include="Resources\seat_premium_class.png" />
-    <Resource Include="Resources\seat_supersonic_class.png" />
-    <Resource Include="Resources\seat_unavailable.png" />
-    <Resource Include="Resources\toilet.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\wall.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\icon.ico" />

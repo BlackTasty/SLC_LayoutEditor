@@ -22,7 +22,7 @@ namespace SLC_LayoutEditor.Controls.Notifications
 
         string Guid { get; }
 
-        event EventHandler<NotificationClosedEventArgs> NotificationClosed;
+        event EventHandler<NotificationClosedEventArgs> Closed;
 
         void ShowNotification();
     }

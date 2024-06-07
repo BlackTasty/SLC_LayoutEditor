@@ -1,0 +1,68 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="RedColor">#eb656c</Color>
+    <Color x:Key="GreenColor">#a1eb83</Color>
+    <Color x:Key="BlueColor">#659eeb</Color>
+    <Color x:Key="RedHoverColor">#eb9da1</Color>
+    <Color x:Key="GreenHoverColor">#bfebad</Color>
+    <Color x:Key="BlueHoverColor">#9dbeeb</Color>
+    <Color x:Key="RedPressedColor">#bf3d44</Color>
+    <Color x:Key="GreenPressedColor">#63a748</Color>
+    <Color x:Key="BluePressedColor">#5082c5</Color>
+
+    <LinearGradientBrush x:Key="TitleForefroundColorBrush" StartPoint="230,0" EndPoint="0,70" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedHoverColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenHoverColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource BlueHoverColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource RedHoverColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!--<LinearGradientBrush x:Key="LayoutingModeBorderBrush" EndPoint="256,0" StartPoint="0,256" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource BlueColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource RedColor}" Offset="1"/>
+    </LinearGradientBrush>-->
+
+    <LinearGradientBrush x:Key="WindowBorderBrush" StartPoint="1024,0" EndPoint="0,750" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource BlueColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource RedColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ComboBoxBorderColorBrush" EndPoint="400,0" StartPoint="0,400" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource BlueColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource RedColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ComboBoxBorderHoverColorBrush" EndPoint="400,0" StartPoint="0,400"
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedHoverColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenHoverColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource BlueHoverColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource RedHoverColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ComboBoxBorderPressedColorBrush" EndPoint="400,0" StartPoint="0,400" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedPressedColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenPressedColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource BluePressedColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource RedPressedColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ComboBoxItemSplitterColorBrush" EndPoint="128,0" StartPoint="0,128"
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource RedColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource GreenColor}" Offset=".33"/>
+        <GradientStop Color="{StaticResource BlueColor}" Offset=".66"/>
+        <GradientStop Color="{StaticResource RedColor}" Offset="1"/>
+    </LinearGradientBrush>
+</ResourceDictionary>

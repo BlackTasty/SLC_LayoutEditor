@@ -10,18 +10,22 @@
     <local:DialogBase.DataContext>
         <vm:RestoreSnapshotDialogViewModel/>
     </local:DialogBase.DataContext>
-    <TextBlock DockPanel.Dock="Top" Margin="4">
-        <TextBlock.Style>
-            <Style TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
-                <Setter Property="Text" Value="Restore layout"/>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsTemplate}" Value="True">
-                        <Setter Property="Text" Value="Restore template"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </TextBlock.Style>
-    </TextBlock>
+    <DockPanel DockPanel.Dock="Top">
+        <Button Style="{StaticResource CloseDialogButtonStyle}" Click="Cancel_Click"
+                DockPanel.Dock="Right" Margin="4,10,4,8"/>
+        <TextBlock Margin="4">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
+                    <Setter Property="Text" Value="Restore layout"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsTemplate}" Value="True">
+                            <Setter Property="Text" Value="Restore template"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </DockPanel>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4">
         <Run Text="It seems like one or multiple backups have been found for your"/>
         <Run>

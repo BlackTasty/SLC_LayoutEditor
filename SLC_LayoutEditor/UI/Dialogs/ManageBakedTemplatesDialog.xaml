@@ -10,8 +10,12 @@
     <local:DialogBase.DataContext>
         <vm:ManageBakedTemplatesDialogViewModel/>
     </local:DialogBase.DataContext>
-    <TextBlock DockPanel.Dock="Top" Margin="4" Text="Manage default templates"
+    <DockPanel DockPanel.Dock="Top">
+        <Button Style="{StaticResource CloseDialogButtonStyle}" Click="Close_Click"
+                DockPanel.Dock="Right" Margin="12,10,8,8"/>
+        <TextBlock DockPanel.Dock="Top" Text="Manage default templates"
                Style="{StaticResource Title1TextStyle}"/>
+    </DockPanel>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" TextWrapping="Wrap">
         <Run Text="This dialog allows you to add or remove default templates, which are shipped with the editor."/>
         <LineBreak/>
@@ -19,10 +23,6 @@
         <Run Text="Note:" FontStyle="Italic"/>
         <Run Text="These templates are based off of the default layouts available on the SLC website."/>
     </TextBlock>
-    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-        <Button Content="Close" Width="80" Margin="8" Click="Close_Click"
-                Style="{StaticResource YellowButtonStyle}" DockPanel.Dock="Right"/>
-    </StackPanel>
     <DockPanel Margin="8">
         <DockPanel>
             <TextBlock Margin="0,3,0,7" FontWeight="SemiBold"
@@ -40,13 +40,13 @@
                                     <Button Style="{StaticResource ErrorIconButtonStyle}"
                                             Content="{StaticResource Trash}"
                                             ToolTip="Delete template"
-                                            Margin="8,0,0,0"
+                                            Margin="8,0"
                                             Click="DeleteTemplate_Click"
                                             Visibility="{Binding Exists, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                     <Button Style="{StaticResource GreenIconButtonStyle}"
                                             Content="{StaticResource Add}"
                                             ToolTip="Add template"
-                                            Margin="8,0,0,0"
+                                            Margin="8,0"
                                             Click="AddTemplate_Click"
                                             Visibility="{Binding Exists, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}"/>
                                 </StackPanel>

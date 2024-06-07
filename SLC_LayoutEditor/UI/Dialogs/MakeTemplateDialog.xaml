@@ -106,8 +106,12 @@
             <Setter Property="Padding" Value="4,4,4,8"/>
         </Style>
     </DockPanel.Resources>
-    <TextBlock DockPanel.Dock="Top" Text="Create template from layout" Margin="4"
-               Style="{StaticResource Title1TextStyle}"/>
+    <DockPanel DockPanel.Dock="Top">
+        <Button Style="{StaticResource CloseDialogButtonStyle}" Click="Cancel_Click"
+                DockPanel.Dock="Right" Margin="12,10,8,8"/>
+        <TextBlock DockPanel.Dock="Top" Text="Create template from layout"
+                   Style="{StaticResource Title1TextStyle}"/>
+    </DockPanel>
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Template name"/>
     <TextBox x:Name="input" DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"
              KeyUp="input_KeyUp"/>

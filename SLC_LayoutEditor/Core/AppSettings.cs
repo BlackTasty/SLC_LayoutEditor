@@ -33,6 +33,7 @@ namespace SLC_LayoutEditor.Core
         #endregion
 
         private bool mEnableSeasonalThemes = true;
+        private TimeSpan mUsageTime = TimeSpan.Zero;
 
         private bool mGettingStartedGuideShown;
 
@@ -206,6 +207,14 @@ namespace SLC_LayoutEditor.Core
             }
         }
 
+        public TimeSpan UsageTime
+        {
+            get => mUsageTime;
+            set => mUsageTime = value;
+        }
+
+        public bool DonateMessageShown { get; set; }
+
         public bool GettingStartedGuideShown
         {
             get => mGettingStartedGuideShown;
@@ -221,7 +230,7 @@ namespace SLC_LayoutEditor.Core
             bool showWarningWhenIssuesPresent, bool openLayoutAfterSaving, bool copyLayoutCodeToClipboard, bool navigateToSLCWebsite,
             bool autoSearchForUpdates, bool showChangesAfterUpdate, int lastVersionChangelogShown, 
             bool hideSidebarAfterLoadingLayout, bool rememberLastLayout, string lastLayoutSet, string lastLayout, bool lastLayoutWasTemplate, 
-            bool enableSeasonalThemes, bool gettingStartedGuideShown) : this()
+            bool enableSeasonalThemes, bool gettingStartedGuideShown, TimeSpan usageTime, bool donateMessageShown) : this()
         {
             mCabinLayoutsEditPath = cabinLayoutsEditPath;
             mWelcomeScreenShown = welcomeScreenShown;
@@ -250,7 +259,9 @@ namespace SLC_LayoutEditor.Core
             mLastLayout = lastLayout;
             mLastLayoutWasTemplate = lastLayoutWasTemplate;
             mEnableSeasonalThemes = enableSeasonalThemes;
+            mUsageTime = usageTime;
             mGettingStartedGuideShown = gettingStartedGuideShown;
+            DonateMessageShown = donateMessageShown;
         }
 
         public AppSettings() : base(false)

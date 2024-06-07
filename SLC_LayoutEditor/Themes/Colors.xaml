@@ -51,8 +51,13 @@
     <Color x:Key="BackgroundColor">#1d1b24</Color>
     <Color x:Key="BackgroundDark">#111015</Color>
     <Color x:Key="BackgroundLight">#323040</Color>
-    <Color x:Key="ForegroundColor">#FFFFFF</Color>
+    <Color x:Key="ForegroundColor">#FFF</Color>
     <Color x:Key="ForegroundSecondaryColor">#C9C9C9</Color>
+    <Color x:Key="ForegroundDarkColor">#222</Color>
+    <Color x:Key="ForegroundSecondaryDarkColor">#555</Color>
+    <Color x:Key="HyperlinkColor">#40afff</Color>
+    <Color x:Key="HyperlinkHoverColor">#80caff</Color>
+    <Color x:Key="HyperlinkPressedColor">#2485cb</Color>
 
     <Color x:Key="GuideBackdropColor">#030304</Color>
 
@@ -61,6 +66,10 @@
     <Color x:Key="TemplatingModePressedColor">#e7a573</Color>
 
     <Color x:Key="SeparatorColor">#424052</Color>
+
+    <Color x:Key="HeartColor">#ff73a7</Color>
+    <Color x:Key="HeartLightColor">#ff9ec2</Color>
+    <Color x:Key="HeartDarkColor">#bc3c6c</Color>
 
     <SolidColorBrush x:Key="AisleColorBrush" Color="{StaticResource BackgroundDark}" Opacity=".6"/>
     <SolidColorBrush x:Key="CockpitColorBrush" Color="{StaticResource CockpitColor}"/>
@@ -85,6 +94,10 @@
     <SolidColorBrush x:Key="ServicePointStartColorBrush" Color="{StaticResource ServicePointStartColor}"/>
     <SolidColorBrush x:Key="ServicePointEndColorBrush" Color="{StaticResource ServicePointEndColor}"/>
 
+    <SolidColorBrush x:Key="HeartColorBrush" Color="{StaticResource HeartColor}"/>
+    <SolidColorBrush x:Key="HeartHoverColorBrush" Color="{StaticResource HeartLightColor}" Opacity=".24"/>
+    <SolidColorBrush x:Key="HeartPressedColorBrush" Color="{StaticResource HeartDarkColor}" Opacity=".40"/>
+
     <LinearGradientBrush x:Key="SerivePointsGradientBrush" EndPoint="20,0" StartPoint="0,20" 
                          MappingMode="Absolute" SpreadMethod="Repeat">
         <GradientStop Color="{StaticResource ServicePointStartColor}" Offset="0"/>
@@ -93,13 +106,24 @@
         <GradientStop Color="{StaticResource ServicePointEndColor}" Offset="1"/>
     </LinearGradientBrush>
 
+    <SolidColorBrush x:Key="WindowBorderBrush" Color="{StaticResource BackgroundLight}"/>
+    
     <SolidColorBrush x:Key="BackgroundColorBrush" Color="{StaticResource BackgroundColor}"/>
     <SolidColorBrush x:Key="BackgroundLightBrush" Color="{StaticResource BackgroundLight}"/>
+    <SolidColorBrush x:Key="BackgroundLightHoverBrush" Color="{StaticResource BackgroundLight}" Opacity=".24"/>
+    <SolidColorBrush x:Key="BackgroundLightPressedBrush" Color="{StaticResource BackgroundDark}" Opacity=".24"/>
     <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{StaticResource BackgroundDark}"/>
     <SolidColorBrush x:Key="MenuBackgroundBrush" Color="{StaticResource BackgroundLight}" Opacity=".2"/>
     <SolidColorBrush x:Key="ForegroundColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".87"/>
+    <SolidColorBrush x:Key="TitleForefroundColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".87"/>
     <SolidColorBrush x:Key="ForegroundHoverColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".95"/>
     <SolidColorBrush x:Key="ForegroundPressedColorBrush" Color="{StaticResource ForegroundSecondaryColor}" Opacity=".6"/>
+    <SolidColorBrush x:Key="ForegroundDarkColorBrush" Color="{StaticResource ForegroundDarkColor}" Opacity=".87"/>
+    <SolidColorBrush x:Key="ForegroundDarkHoverColorBrush" Color="{StaticResource ForegroundSecondaryDarkColor}" Opacity=".95"/>
+    <SolidColorBrush x:Key="ForegroundDarkPressedColorBrush" Color="{StaticResource ForegroundDarkColor}" Opacity=".95"/>
+    <SolidColorBrush x:Key="HyperlinkColorBrush" Color="{StaticResource HyperlinkColor}" Opacity=".87"/>
+    <SolidColorBrush x:Key="HyperlinkHoverColorBrush" Color="{StaticResource HyperlinkHoverColor}" Opacity=".87"/>
+    <SolidColorBrush x:Key="HyperlinkFocusedColorBrush" Color="{StaticResource AccentPressedColor}" Opacity=".87"/>
 
     <SolidColorBrush x:Key="SeparatorColorBrush" Color="{StaticResource SeparatorColor}"/>
     <SolidColorBrush x:Key="LiveGuideOverlayBrush" Color="{StaticResource GuideBackdropColor}" Opacity=".7"/>
@@ -135,6 +159,7 @@
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="DisabledColorBrush" Color="{StaticResource ForegroundColor}" Opacity=".27"/>
+    <SolidColorBrush x:Key="DisabledDarkColorBrush" Color="{StaticResource ForegroundDarkColor}" Opacity=".27"/>
     <SolidColorBrush x:Key="BackdropColorBrush" Color="{StaticResource BackgroundColor}" Opacity=".6"/>
     <SolidColorBrush x:Key="BackdropDarkColorBrush" Color="{StaticResource BackgroundColor}" Opacity=".9"/>
     <SolidColorBrush x:Key="MenuItemHoverColorBrush">#333333</SolidColorBrush>
@@ -149,10 +174,17 @@
     <SolidColorBrush x:Key="ButtonBackgroundHoverColorBrush" Color="{StaticResource ButtonBackgroundHoverColor}"/>
     <SolidColorBrush x:Key="ButtonBackgroundPressedColorBrush" Color="{StaticResource ButtonBackgroundPressedColor}"/>
 
+    <SolidColorBrush x:Key="LayoutButtonBorderColorBrush" Color="{StaticResource ButtonBorderColor}"/>
+    <SolidColorBrush x:Key="LayoutButtonBackgroundHoverColorBrush" Color="{StaticResource ButtonBackgroundHoverColor}"/>
+    <SolidColorBrush x:Key="LayoutButtonBackgroundPressedColorBrush" Color="{StaticResource ButtonBackgroundPressedColor}"/>
+
     <SolidColorBrush x:Key="CheckBoxMarkColorBrush" Color="{StaticResource AccentColor}"/>
     <SolidColorBrush x:Key="CheckBoxMarkHoverColorBrush" Color="{StaticResource AccentHoverColor}"/>
     <SolidColorBrush x:Key="CheckBoxMarkPressedColorBrush" Color="{StaticResource AccentPressedColor}"/>
     <SolidColorBrush x:Key="ComboBoxItemSplitterColorBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="ComboBoxBorderColorBrush" Color="{StaticResource ButtonBorderColor}"/>
+    <SolidColorBrush x:Key="ComboBoxBorderHoverColorBrush" Color="{StaticResource ButtonBorderHoverColor}"/>
+    <SolidColorBrush x:Key="ComboBoxBorderPressedColorBrush" Color="{StaticResource ButtonBorderPressedColor}"/>
 
     <SolidColorBrush x:Key="AccentColorBrush" Color="{StaticResource AccentColor}"/>
     <SolidColorBrush x:Key="AccentHoverColorBrush" Color="{StaticResource AccentHoverColor}"/>
@@ -199,6 +231,9 @@
     <SolidColorBrush x:Key="TemplatingModeBrush" Color="{StaticResource TemplatingModeColor}"/>
     <SolidColorBrush x:Key="TemplatingModeHoverBrush" Color="{StaticResource TemplatingModeHoverColor}"/>
     <SolidColorBrush x:Key="TemplatingModePressedBrush" Color="{StaticResource TemplatingModePressedColor}"/>
+    <SolidColorBrush x:Key="TemplatingModeBackgroundBrush" Color="{StaticResource TemplatingModeColor}" Opacity=".24"/>
+    <SolidColorBrush x:Key="TemplatingModeBackgroundHoverBrush" Color="{StaticResource TemplatingModeHoverColor}" Opacity=".24"/>
+    <SolidColorBrush x:Key="TemplatingModeBackgroundPressedBrush" Color="{StaticResource TemplatingModePressedColor}" Opacity=".24"/>
 
     <LinearGradientBrush x:Key="TemplatingModeBackBrush" EndPoint="16,0" StartPoint="0,16" Opacity=".025"
                          MappingMode="Absolute" SpreadMethod="Repeat">

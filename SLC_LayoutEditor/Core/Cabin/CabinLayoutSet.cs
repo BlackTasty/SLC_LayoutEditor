@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Controls;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
@@ -12,8 +13,9 @@ using Tasty.ViewModel.Core.Events;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
-    class CabinLayoutSet : ViewModelBase
+    public class CabinLayoutSet : ViewModelBase
     {
+        public event EventHandler<EventArgs> Deleted;
         private DirectoryInfo layoutSetFolder;
 
         private bool mIsLoadingLayouts;
@@ -95,7 +97,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public string CurrentCountText => !mIsTemplatingMode ? (mLayoutCount != 1 ? string.Format("{0} layouts", mLayoutCount) : "1 layout") :
+        public string CurrentCountText => !mIsTemplatingMode ? (mLayoutCount != 1 ? string.Format("{0} layouts", mLayoutCount) : "1 template") :
                                                 mTemplateCount != 1 ? string.Format("{0} templates", mTemplateCount) : "1 template";
 
         public int TemplateCount
@@ -114,6 +116,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        /// <summary>
+        /// For testing only
+        /// </summary>
+        public CabinLayoutSet()
+        {
+            mAircraftName = "Test";
+        }
+
         public CabinLayoutSet(string name) : this(new DirectoryInfo(Path.Combine(App.Settings.CabinLayoutsEditPath, name)))
         {
             Logger.Default.WriteLog("New aircraft type \"{0}\" created!", name);
@@ -122,7 +132,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         public CabinLayoutSet(DirectoryInfo layoutSetFolder)
         {
             mCabinLayouts.CollectionUpdated += CabinLayouts_CollectionUpdated;
-            mTemplates.CollectionUpdated += Templates_CollectionUpdated; ;
+            mTemplates.CollectionUpdated += Templates_CollectionUpdated;
 
             this.layoutSetFolder = layoutSetFolder;
             mAircraftName = layoutSetFolder.Name;
@@ -185,16 +195,22 @@ namespace SLC_LayoutEditor.Core.Cabin
                 IsLoadingLayouts = true;
                 foreach (FileInfo cabinLayoutFile in layoutSetFolder.EnumerateFiles("*.txt"))
                 {
-                    CabinLayout cabinLayout = new CabinLayout(cabinLayoutFile);
-                    cabinLayout.Deleted += CabinLayout_Deleted;
-                    cabinLayouts.Add(cabinLayout);
+                    if (!cabinLayouts.Any(x => x.LayoutFile.Name == cabinLayoutFile.Name))
+                    {
+                        CabinLayout cabinLayout = new CabinLayout(cabinLayoutFile);
+                        cabinLayout.Deleted += CabinLayout_Deleted;
+                        cabinLayouts.Add(cabinLayout);
+                    }
                 }
 
                 foreach (FileInfo templateFile in new DirectoryInfo(App.GetTemplatePath(mAircraftName)).EnumerateFiles("*.txt"))
                 {
-                    CabinLayout template = new CabinLayout(templateFile);
-                    template.Deleted += Template_Deleted;
-                    templates.Add(template);
+                    if (!templates.Any(x => x.LayoutFile.Name == templateFile.Name))
+                    {
+                        CabinLayout template = new CabinLayout(templateFile);
+                        template.Deleted += Template_Deleted;
+                        templates.Add(template);
+                    }
                 }
 
                 IsLoadingLayouts = false;
@@ -205,6 +221,22 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             mCabinLayouts.AddRange(cabinLayouts);
             mTemplates.AddRange(templates);
+        }
+
+        public void Delete()
+        {
+            foreach (CabinLayout layout in mCabinLayouts.ToList())
+            {
+                layout.Delete();
+            }
+
+            foreach (CabinLayout template in mTemplates.ToList())
+            {
+                template.Delete();
+            }
+
+            layoutSetFolder.Delete(true);
+            OnDeleted(EventArgs.Empty);
         }
 
         private void Template_Deleted(object sender, EventArgs e)
@@ -243,6 +275,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         private void CabinLayouts_CollectionUpdated(object sender, CollectionUpdatedEventArgs<CabinLayout> e)
         {
             LayoutCount = mCabinLayouts.Count;
+        }
+
+        protected virtual void OnDeleted(EventArgs e)
+        {
+            Deleted?.Invoke(this, e);
         }
     }
 }

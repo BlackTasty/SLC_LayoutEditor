@@ -82,6 +82,19 @@ namespace SLC_LayoutEditor.UI
             {
                 StartSavingLayout();
             }, ViewModelMessage.Keybind_SaveLayout);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is bool createTemplate)
+                {
+                    CreateLayout(createTemplate);
+                }
+            }, ViewModelMessage.Keybind_Begin_CreateLayoutOrTemplate);
+
+            Mediator.Instance.Register(o =>
+            {
+                CreateAircraft();
+            }, ViewModelMessage.Keybind_Begin_CreateAircraft);
         }
 
         public void DeselectAllSlots()
@@ -269,6 +282,11 @@ namespace SLC_LayoutEditor.UI
 
         private void AddAircraft_Click(object sender, RoutedEventArgs e)
         {
+            CreateAircraft();
+        }
+
+        private void CreateAircraft()
+        {
             Logger.Default.WriteLog("User requested creating a new aircraft type...");
             CreateAircraftDialog dialog = new CreateAircraftDialog(vm.LayoutSets.Select(x => x.AircraftName));
             dialog.DialogClosing += CreateAircraft_DialogClosing;
@@ -288,7 +306,7 @@ namespace SLC_LayoutEditor.UI
                 if (e.Data is AddDialogResult result && result.IsCreate)
                 {
                     CabinLayoutSet layoutSet = new CabinLayoutSet(result.Name);
-                    vm.LayoutSets.Add(layoutSet);
+                    vm.AddAircraft(layoutSet);
                     vm.SelectedLayoutSet = layoutSet;
                 }
             }
@@ -300,21 +318,15 @@ namespace SLC_LayoutEditor.UI
 
         private void CreateCabinLayout_Click(object sender, RoutedEventArgs e)
         {
-            Logger.Default.WriteLog("User requested creating a new {0} for aircraft \"{1}\"...", vm.IsTemplatingMode ? "template" : "layout", vm.SelectedLayoutSet.AircraftName);
-            IDialog dialog;
+            CreateLayout(vm.IsTemplatingMode);
+        }
 
-            if (!vm.IsTemplatingMode)
-            {
-                dialog = new CreateCabinLayoutDialog(vm.SelectedLayoutSet.CabinLayouts.Select(x => x.LayoutName), 
-                    vm.SelectedLayoutSet.GetTemplatePreviews(), vm.IsTemplatingMode);
-                dialog.DialogClosing += CreateCabinLayout_DialogClosing;
-            }
-            else
-            {
-                dialog = new CreateTemplateDialog(vm.SelectedLayoutSet.Templates.Select(x => x.LayoutName));
-                dialog.DialogClosing += CreateTemplate_DialogClosing;
-            }
+        private void CreateLayout(bool createTemplate)
+        {
+            Logger.Default.WriteLog("User requested creating a new {0} for aircraft \"{1}\"...", createTemplate ? "template" : "layout", vm.SelectedLayoutSet.AircraftName);
+            IDialog dialog = Util.BeginCreateCabinLayout(createTemplate, vm.SelectedLayoutSet);
 
+            dialog.DialogClosing += (!createTemplate ? CreateCabinLayout_DialogClosing : CreateTemplate_DialogClosing);
             dialog.ShowDialog();
         }
 
@@ -333,6 +345,7 @@ namespace SLC_LayoutEditor.UI
                     layout.SaveLayout();
                     vm.SelectedLayoutSet.RegisterLayout(layout);
                     vm.SelectedTemplate = layout;
+                    Mediator.Instance.NotifyColleagues(ViewModelMessage.ForceTemplatingToggleState, true);
                 }
             }
             else
@@ -366,6 +379,7 @@ namespace SLC_LayoutEditor.UI
                     }
                     vm.SelectedLayoutSet.RegisterLayout(layout);
                     vm.SelectedCabinLayout = layout;
+                    Mediator.Instance.NotifyColleagues(ViewModelMessage.ForceTemplatingToggleState, false);
                 }
             }
             else

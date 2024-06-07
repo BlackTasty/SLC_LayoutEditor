@@ -374,7 +374,7 @@
     <Style x:Key="AutomationSwitchToggleButton"
          TargetType="{x:Type ToggleButton}"
          BasedOn="{StaticResource MaterialDesignLightSwitchToggleButton}">
-        <Setter Property="Background" Value="{DynamicResource TemplatingModeBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ValidForegroundColorBrush}" />
         <Setter Property="Content" Value="{DynamicResource SlotEditMode}"/>
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">

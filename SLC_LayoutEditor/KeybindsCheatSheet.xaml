@@ -87,6 +87,7 @@
                                               ActionIcon="{StaticResource MouseLeftClick}"
                                               Notes="Hover over a cabin slot"/>
                     </UniformGrid>
+                    <Button Style="{StaticResource YellowButtonStyle}"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Slot modification">

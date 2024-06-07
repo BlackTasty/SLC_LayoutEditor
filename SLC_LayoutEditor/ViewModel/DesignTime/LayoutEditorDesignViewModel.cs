@@ -15,6 +15,8 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
 
         public new CabinLayout ActiveLayout => new CabinLayout();
 
+        //public new CabinLayoutSet SelectedLayoutSet = new CabinLayoutSet();
+
         public LayoutEditorDesignViewModel()
         {
             IsAutomationChecked = false;

@@ -49,6 +49,7 @@ namespace SLC_LayoutEditor
         private bool forceClose;
 
         private LiveGuideAdorner currentGuideAdorner;
+        private Notification supportNotification;
 
         public MainWindow()
         {
@@ -176,11 +177,6 @@ namespace SLC_LayoutEditor
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             vm.ShowSettings();
-        }
-
-        private void ReturnToEditor_Click(object sender, RoutedEventArgs e)
-        {
-            vm.ReturnToEditor();
         }
 
         private void SearchUpdates_Click(object sender, RoutedEventArgs e)
@@ -477,6 +473,54 @@ namespace SLC_LayoutEditor
         {
             ManageBakedTemplatesDialog dialog = new ManageBakedTemplatesDialog();
             dialog.ShowDialog();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            App.SessionStart = DateTime.Now;
+            var test = App.Settings.UsageTime;
+            if (!App.Settings.DonateMessageShown &&
+                App.Settings.UsageTime.TotalHours >= FixedValues.HOURS_BEFORE_SUPPORT_NOTIFICATION)
+            {
+                supportNotification = Notification.MakeNotification("Enjoying the editor?", 
+                    "I hope you're enjoying working within the editor so far!\n\n" +
+                    "And i you're feeling extra generous today:", FixedValues.ICON_HEART,
+                    (Style)App.Current.FindResource("SupportButtonStyle"), 
+                    4000, FixedValues.HEART_BRUSH);
+                supportNotification.ButtonClicked += BuyACoffee_Clicked;
+                supportNotification.Closed += SupportNotification_Closed;
+            }
+        }
+
+        private void BuyACoffee_Clicked(object sender, EventArgs e)
+        {
+            Process.Start("https://ko-fi.com/midnight_bagel");
+            supportNotification?.Close();
+        }
+
+        private void SupportNotification_Closed(object sender, NotificationClosedEventArgs e)
+        {
+            supportNotification.ButtonClicked -= BuyACoffee_Clicked;
+            supportNotification.Closed -= SupportNotification_Closed;
+            supportNotification = null;
+            App.Settings.DonateMessageShown = true;
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            vm.ShowAbout();
+        }
+
+        private void BackTo_Click(object sender, RoutedEventArgs e)
+        {
+            if (vm.IsViewNotEditor)
+            {
+                vm.ReturnToEditor();
+            }
+            else
+            {
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.BackToLayoutOverview);
+            }
         }
     }
 }

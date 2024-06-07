@@ -145,6 +145,44 @@
         <GradientStop Color="{StaticResource WhiteStripeColor}" Offset="1"/>
     </LinearGradientBrush>
 
+    <LinearGradientBrush x:Key="ComboBoxBorderColorBrush" EndPoint="32,0" StartPoint="0,32" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".2"/>
+        <GradientStop Color="{StaticResource RedStripeColor2}" Offset=".2"/>
+        <GradientStop Color="{StaticResource RedStripeColor2}" Offset=".25"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".25"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".35"/>
+
+        <GradientStop Color="{StaticResource RedStripeColor}" Offset=".35"/>
+        <GradientStop Color="{StaticResource RedStripeColor}" Offset=".65"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".65"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".75"/>
+        <GradientStop Color="{StaticResource RedStripeColor2}" Offset=".75"/>
+        <GradientStop Color="{StaticResource RedStripeColor2}" Offset=".8"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".8"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ComboBoxBorderHoverColorBrush" EndPoint="32,0" StartPoint="0,32" 
+                         MappingMode="Absolute" SpreadMethod="Repeat">
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset="0"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".2"/>
+        <GradientStop Color="{StaticResource RedStripeHoverColor1}" Offset=".2"/>
+        <GradientStop Color="{StaticResource RedStripeHoverColor1}" Offset=".25"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".25"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".35"/>
+
+        <GradientStop Color="{StaticResource RedStripeHoverColor2}" Offset=".35"/>
+        <GradientStop Color="{StaticResource RedStripeHoverColor2}" Offset=".65"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".65"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".75"/>
+        <GradientStop Color="{StaticResource RedStripeHoverColor3}" Offset=".75"/>
+        <GradientStop Color="{StaticResource RedStripeHoverColor3}" Offset=".8"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset=".8"/>
+        <GradientStop Color="{StaticResource WhiteStripeColor}" Offset="1"/>
+    </LinearGradientBrush>
+
     <SolidColorBrush x:Key="CheckBoxMarkColorBrush" Color="{StaticResource RedStripeHoverColor3}"/>
     <SolidColorBrush x:Key="CheckBoxMarkHoverColorBrush" Color="{StaticResource RedStripeHoverColor3}"/>
     <SolidColorBrush x:Key="CheckBoxMarkPressedColorBrush" Color="{StaticResource RedStripePressedColor3}"/>

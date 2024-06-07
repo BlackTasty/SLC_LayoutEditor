@@ -40,16 +40,31 @@
             <StackPanel>
                 <DockPanel Margin="4">
                     <Path Width="24" Margin="8,4"
-                  Data="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=Icon, Converter={StaticResource StringToGeometryConverter}}"
-                  Fill="{StaticResource ForegroundColorBrush}"
-                  Stretch="Uniform"
-                  Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=Icon, Converter={StaticResource NotNullToVisibilityConverter}}"/>
-                    <Button Style="{StaticResource ErrorIconButtonStyle}" DockPanel.Dock="Right"
-                Content="{StaticResource Close}" Click="Close_Click"/>
+                          Data="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=Icon, Converter={StaticResource StringToGeometryConverter}}"
+                          Stretch="Uniform"
+                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=Icon, Converter={StaticResource NotNullToVisibilityConverter}}">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Setter Property="Fill" Value="{StaticResource ForegroundColorBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=IconColorOverride, Converter={StaticResource NotNullToBooleanConverter}}"
+                                                 Value="True">
+                                        <Setter Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=IconColorOverride}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
+                    <Button Style="{StaticResource ErrorIconButtonStyle}" DockPanel.Dock="Right" Content="{StaticResource Close}" Click="Close_Click"
+                            Margin="8,8,4,8"/>
                     <DockPanel>
                         <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=Title, FallbackValue=Title}"
                            Style="{StaticResource Title2TextStyle}" Margin="0,0,8,4"
                            DockPanel.Dock="Top"/>
+                        <Button x:Name="button" DockPanel.Dock="Bottom" Click="Button_Click"
+                                Visibility="{Binding RelativeSource={RelativeSource AncestorType=local:Notification}, Path=ButtonStyle, Converter={StaticResource NotNullToVisibilityConverter}}"
+                                Style="{Binding RelativeSource={RelativeSource AncestorType=local:Notification}, Path=ButtonStyle}"
+                                Margin="4,12,4,4"/>
                         <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Notification}, Path=Message, FallbackValue=Test message}"
                            TextWrapping="Wrap"/>
                     </DockPanel>

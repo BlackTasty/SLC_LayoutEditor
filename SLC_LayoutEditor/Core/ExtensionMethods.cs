@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
+using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Patcher;
 using System;
@@ -264,6 +265,11 @@ namespace SLC_LayoutEditor.Core
             int colorData = color.A << 24 | color.R << 16 | color.G << 8 | color.B;
 
             return colorData;
+        }
+
+        public static bool IsSameDialogType(this IDialog source, IDialog compareTo)
+        {
+            return source?.GetType() == compareTo?.GetType();
         }
     }
 }

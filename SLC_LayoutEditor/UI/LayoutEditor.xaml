@@ -147,6 +147,7 @@
         </Style>
     </Grid.Style>
     <controls:CabinLayoutControl x:Name="control_layout"
+                                 Visibility="{Binding ActiveLayout, Converter={StaticResource NotNullToVisibilityConverter}}"
                                  IsEnabled="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}"
                                  CabinLayout="{Binding ActiveLayout, UpdateSourceTrigger=PropertyChanged}"
                                  IsSidebarOpen="{Binding IsSidebarOpen}"
@@ -169,10 +170,30 @@
                 <Setter Property="Grid.ColumnSpan" Value="2"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
-                        <Setter Property="Margin" Value="-2,0,0,0"/>
                         <Setter Property="Grid.Column" Value="0"/>
                         <Setter Property="Grid.ColumnSpan" Value="3"/>
                     </DataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsSidebarOpen}" Value="False"/>
+                            <Condition Binding="{Binding IsWindowMaximized}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Margin" Value="-3,0,0,0"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsSidebarOpen}" Value="False"/>
+                            <Condition Binding="{Binding IsWindowMaximized}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Margin" Value="-3,0,0,2"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsSidebarOpen}" Value="True"/>
+                            <Condition Binding="{Binding IsWindowMaximized}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Margin" Value="0,0,0,2"/>
+                    </MultiDataTrigger>
                 </Style.Triggers>
             </Style>
         </controls:CabinLayoutControl.Style>
@@ -362,33 +383,7 @@
                 </Style>
             </Border.Style>
             <StackPanel>
-                <UniformGrid Columns="3">
-                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="SUPER"
-                                              Capacity="{Binding ActiveLayout.SupersonicCapacity}"
-                                              BoxBackground="{StaticResource SupersonicClassColorBrush}"
-                                              ToolTip="Super class"/>
-                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="FIRST"
-                                              Capacity="{Binding ActiveLayout.FirstClassCapacity}"
-                                              BoxBackground="{StaticResource FirstClassColorBrush}"
-                                              ToolTip="First class"/>
-                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="BZ"
-                                              Capacity="{Binding ActiveLayout.BusinessCapacity}"
-                                              BoxBackground="{StaticResource BusinessClassColorBrush}"
-                                              ToolTip="Business class"/>
-                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="PREM"
-                                              Capacity="{Binding ActiveLayout.PremiumCapacity}"
-                                              BoxBackground="{StaticResource PremiumClassColorBrush}"
-                                              ToolTip="Premium class"/>
-                    <controls:SeatCapacityBox Margin="4" SeatTypeLetter="ECO"
-                                              Capacity="{Binding ActiveLayout.EconomyCapacity}"
-                                              BoxBackground="{StaticResource EconomyClassColorBrush}"
-                                              ToolTip="Economy class"/>
-                    <controls:SeatCapacityBox Margin="8,4" SeatTypeLetter="Galley"
-                                              DockPanel.Dock="Right" TextElement.FontStyle="Italic"
-                                              Capacity="{Binding ActiveLayout.GalleyCapacity}"
-                                              BoxBackground="{StaticResource CrewAreaBorderColorBrush}"
-                                              ToolTip="Galley seats"/>
-                </UniformGrid>
+                <controls:CabinLayoutCapacities CabinLayout="{Binding ActiveLayout}"/>
                 <TextBlock Margin="4" Style="{StaticResource Title2TextStyle}" HorizontalAlignment="Center"
                            FontSize="22"
                            Text="{Binding ActiveLayout.PassengerCapacity, StringFormat={}Total passenger seats: {0}, FallbackValue=Total: 0}"/>
@@ -746,26 +741,52 @@
                 controls:GuideAssist.TextPosition="Top"
                 ContextMenu="{StaticResource GuideMenu}"/>
     </Grid>
-    <Border Background="{StaticResource BackgroundColorBrush}" BorderBrush="{StaticResource BackgroundLightBrush}" 
-            Grid.Column="1" Grid.ColumnSpan="2" BorderThickness="1.5"
-            CornerRadius="6" Visibility="Collapsed">
-        <DockPanel>
-            <ListBox Background="Transparent" BorderBrush="Transparent" ItemsSource="{Binding CabinLayouts}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Image Source="{Binding }"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </DockPanel>
-    </Border>
+
+    <controls:AircraftLayoutsViewControl SelectedAirframe="{Binding SelectedLayoutSet}"
+                                         IsHeaderEnabled="{Binding SelectedLayoutSet, Converter={StaticResource NotNullToBooleanConverter}}"
+                                         GuideMenu="{StaticResource GuideMenu}"
+                                         IsTemplatingMode="{Binding IsTemplatingMode}">
+        <controls:AircraftLayoutsViewControl.Style>
+            <Style TargetType="controls:AircraftLayoutsViewControl">
+                <Setter Property="Grid.Column" Value="1"/>
+                <Setter Property="Grid.ColumnSpan" Value="2"/>
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Style.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsSidebarOpen}" Value="False"/>
+                            <Condition Binding="{Binding IsWindowMaximized}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Margin" Value="-3,0,0,0"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsSidebarOpen}" Value="False"/>
+                            <Condition Binding="{Binding IsWindowMaximized}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Margin" Value="-3,0,0,2"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsSidebarOpen}" Value="True"/>
+                            <Condition Binding="{Binding IsWindowMaximized}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Margin" Value="0,0,0,2"/>
+                    </MultiDataTrigger>
+                    <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
+                        <Setter Property="Grid.Column" Value="0"/>
+                        <Setter Property="Grid.ColumnSpan" Value="3"/>
+                    </DataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding ActiveLayout, Converter={StaticResource NotNullToBooleanConverter}}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
+        </controls:AircraftLayoutsViewControl.Style>
+    </controls:AircraftLayoutsViewControl>
     <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
         <Grid.Style>
             <Style TargetType="Grid">
@@ -817,6 +838,7 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsSidebarOpen}" Value="False">
                                 <Setter Property="controls:GuideAssist.TextPosition" Value="Right"/>
+                                <Setter Property="Margin" Value="-1,0,0,0"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

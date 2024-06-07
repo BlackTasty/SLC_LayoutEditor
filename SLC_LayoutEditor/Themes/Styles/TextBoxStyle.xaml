@@ -7,7 +7,7 @@
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
         <Setter Property="Foreground" Value="{DynamicResource ForegroundColorBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ForegroundColorBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderColorBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -24,10 +24,10 @@
                             <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderHoverColorBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ComboBoxBorderHoverColorBrush}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderPressedColorBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ComboBoxBorderPressedColorBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -55,10 +55,10 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderHoverColorBrush}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ComboBoxBorderHoverColorBrush}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocused" Value="True">
-                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ButtonBorderPressedColorBrush}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ComboBoxBorderPressedColorBrush}"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>

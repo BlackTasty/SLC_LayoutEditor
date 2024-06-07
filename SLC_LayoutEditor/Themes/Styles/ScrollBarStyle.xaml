@@ -90,10 +90,10 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource ButtonBorderColorBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource ComboBoxBorderColorBrush}"/>
             </Trigger>
             <Trigger Property="IsDragging" Value="True">
-                <Setter Property="Background" Value="{DynamicResource ButtonBorderPressedColorBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource ComboBoxBorderPressedColorBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Background" Value="{DynamicResource DisabledColorBrush}"/>

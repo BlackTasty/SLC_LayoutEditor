@@ -25,6 +25,10 @@ namespace SLC_LayoutEditor.Controls.Notifications
     /// </summary>
     public partial class Notification : UserControl, INotification
     {
+        public event EventHandler<EventArgs> ButtonClicked;
+        public event EventHandler<EventArgs> Shown;
+        public event EventHandler<NotificationClosedEventArgs> Closed;
+
         private const int TICK_SPEED = 100;
 
         private readonly string guid;
@@ -34,6 +38,8 @@ namespace SLC_LayoutEditor.Controls.Notifications
         private readonly bool isSelfDeleting;
         private readonly int timeout;
         private readonly string icon;
+        private readonly Brush iconColorOverride;
+        private readonly Style buttonStyle;
 
         private DispatcherTimer closeTimer;
         private NotificationViewModel vm;
@@ -50,26 +56,52 @@ namespace SLC_LayoutEditor.Controls.Notifications
 
         public string Icon => icon;
 
-        public event EventHandler<NotificationClosedEventArgs> NotificationClosed;
+        public Brush IconColorOverride => iconColorOverride;
 
-        public static void MakeTimedNotification(string title, string message, int timeout, string icon)
+        public Style ButtonStyle => buttonStyle;
+
+        public static Notification MakeTimedNotification(string title, string message, int timeout, string icon,
+            Style buttonStyle = null, int showDelay = 0, Brush iconColorOverride = null)
         {
-            Notification notification = new Notification(title, message, timeout, icon);
+            Notification notification = new Notification(title, message, timeout, icon, buttonStyle, iconColorOverride);
             notification.border.Margin = new Thickness(300,0,-300,0);
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.Notification_AddNotification, notification);
+            
+            if (showDelay == 0)
+            {
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.Notification_AddNotification, notification);
+            }
+            else
+            {
+                DispatcherTimer delayTimer = new DispatcherTimer();
+                delayTimer.Tick += (object sender, EventArgs e) =>
+                {
+                    delayTimer.Stop();
+                    Mediator.Instance.NotifyColleagues(ViewModelMessage.Notification_AddNotification, notification);
+                };
+                delayTimer.Interval = TimeSpan.FromMilliseconds(showDelay);
+                delayTimer.Start();
+            }
+
+            return notification;
         }
 
-        public static void MakeNotification(string title, string message, string icon)
+        public static void MakeNotification(string title, string message, string icon, int showDelay = 0)
         {
-            MakeTimedNotification(title, message, 0, icon);
+            MakeTimedNotification(title, message, 0, icon, null, showDelay);
+        }
+
+        public static Notification MakeNotification(string title, string message, string icon, Style buttonStyle, int showDelay = 0, Brush iconColorOverride = null)
+        {
+            return MakeTimedNotification(title, message, 0, icon, buttonStyle, showDelay, iconColorOverride);
         }
 
         public void ShowNotification()
         {
             ToggleNotificationVisibility(true);
+            OnShown(EventArgs.Empty);
         }
 
-        public Notification(string title, string message, int timeout, string icon)
+        public Notification(string title, string message, int timeout, string icon, Style buttonStyle, Brush iconColorOverride)
             : this()
         {
             this.title = title;
@@ -80,6 +112,8 @@ namespace SLC_LayoutEditor.Controls.Notifications
 
             vm.TimeoutMax = timeout;
             vm.ShowTimeoutBar = isSelfDeleting;
+            this.buttonStyle = buttonStyle;
+            this.iconColorOverride = iconColorOverride;
         }
 
         public Notification()
@@ -87,6 +121,11 @@ namespace SLC_LayoutEditor.Controls.Notifications
             InitializeComponent();
             guid = System.Guid.NewGuid().ToString();
             vm = DataContext as NotificationViewModel;
+        }
+
+        public void Close()
+        {
+            ToggleNotificationVisibility(false);
         }
 
         public void ToggleNotificationVisibility(bool isVisible)
@@ -133,7 +172,7 @@ namespace SLC_LayoutEditor.Controls.Notifications
 
         private void Sb_Completed(object sender, EventArgs e)
         {
-            OnNotificationClosed(new NotificationClosedEventArgs(guid));
+            OnClosed(new NotificationClosedEventArgs(guid));
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -141,9 +180,24 @@ namespace SLC_LayoutEditor.Controls.Notifications
             ToggleNotificationVisibility(false);
         }
 
-        protected virtual void OnNotificationClosed(NotificationClosedEventArgs e)
+        protected virtual void OnClosed(NotificationClosedEventArgs e)
         {
-            NotificationClosed?.Invoke(this, e);
+            Closed?.Invoke(this, e);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OnButtonClicked(e);
+        }
+
+        protected virtual void OnButtonClicked(EventArgs e)
+        {
+            ButtonClicked?.Invoke(this, e);
+        }
+
+        protected virtual void OnShown(EventArgs e)
+        {
+            Shown?.Invoke(this, e);
         }
     }
 }

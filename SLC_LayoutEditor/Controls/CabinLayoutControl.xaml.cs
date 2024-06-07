@@ -594,7 +594,7 @@ namespace SLC_LayoutEditor.Controls
         private void DeleteLayout_Click(object sender, RoutedEventArgs e)
         {
             ConfirmationDialog dialog = new ConfirmationDialog(!IsTemplatingMode ? "Delete cabin layout" : "Delete template",
-                "Are you sure you want to delete this " + (!IsTemplatingMode ? "cabin layout" : "template") + "? This action cannot be undone!", 
+                "Are you sure you want to delete your " + (!IsTemplatingMode ? "cabin layout" : "template") + "? This action cannot be undone!", 
                 DialogType.YesNo);
 
             dialog.DialogClosing += DeleteLayout_DialogClosing;

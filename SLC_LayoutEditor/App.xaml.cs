@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Bson;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json.Bson;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.Core.Patcher;
@@ -26,6 +27,7 @@ namespace SLC_LayoutEditor
     public partial class App : Application, IUIManager
     {
         private Uri currentTheme;
+        private static DateTime? suspendStart;
 
         private static readonly string oldDefaultEditorLayoutsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "SLC Layout Editor");
@@ -37,6 +39,8 @@ namespace SLC_LayoutEditor
         private static readonly string snapshotsPath = Path.Combine(tempPath, "snapshots");
 
         private static UpdateManager patcher;
+
+        public static DateTime SessionStart { get; set; }
 
         public static bool IsDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
@@ -72,6 +76,7 @@ namespace SLC_LayoutEditor
             }
             catch (Exception ex)
             {
+                RecordUsageTime(true);
                 Logger.Default.WriteLog("SLC Layout Editor crashed with a fatal exception! Version {0}", LogType.FATAL, ex,
                     PatcherUtil.SerializeVersionNumber(Assembly.GetExecutingAssembly().GetName().Version.ToString(), 3));
 
@@ -91,14 +96,23 @@ namespace SLC_LayoutEditor
             if (App.Settings.EnableSeasonalThemes)
             {
                 DateTime now = DateTime.Now;
+                string targetTheme = null;
                 switch (now.Month)
                 {
+                    case 6: // Apply pride theme
+                        targetTheme = "Pride";
+                        break;
                     case 12: // Apply christmas theme
                         if (now.Day <= 25)
                         {
-                            ToggleTheme(new Uri(FixedValues.URI_THEMES + "ChristmasTheme.xaml"));
+                            targetTheme = "Christmas";
                         }
                         break;
+                }
+
+                if (targetTheme != null)
+                {
+                    ToggleTheme(new Uri(FixedValues.URI_THEMES + targetTheme + "Theme.xaml"));
                 }
 
                 if (currentTheme == null)
@@ -189,6 +203,7 @@ namespace SLC_LayoutEditor
                 }
             }
 
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
             RunMigrations();
             Directory.CreateDirectory(Settings.CabinLayoutsEditPath);
             CheckTemplates();
@@ -203,6 +218,7 @@ namespace SLC_LayoutEditor
             app.Run();
 
             Logger.Default.WriteLog("Editor shutting down...");
+            RecordUsageTime(false);
             SaveAppSettings();
 
             /*if (Directory.Exists(SnapshotsPath))
@@ -217,6 +233,41 @@ namespace SLC_LayoutEditor
             {
                 Logger.Default.WriteLog("Update installed, user requested app restart...");
                 Process.Start(Assembly.GetExecutingAssembly().Location.Replace(".dll", ".exe"));
+            }
+        }
+
+        private static void RecordUsageTime(bool saveSettings)
+        {
+            if (Settings == null) return;
+
+            DateTime now = DateTime.Now;
+            TimeSpan sessionTime = now - SessionStart;
+
+            if (suspendStart.HasValue)
+            {
+                TimeSpan suspendTime = now - suspendStart.Value;
+                sessionTime -= suspendTime;
+            }
+
+            Settings.UsageTime += sessionTime;
+            if (saveSettings)
+            {
+                Settings.Save();
+            }
+        }
+
+        private static void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            switch (e.Mode)
+            {
+                case PowerModes.Suspend:
+                    suspendStart = DateTime.Now;
+                    break;
+                case PowerModes.Resume:
+                    RecordUsageTime(false);
+                    SessionStart = DateTime.Now;
+                    suspendStart = null;
+                    break;
             }
         }
 

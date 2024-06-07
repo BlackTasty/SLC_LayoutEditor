@@ -82,8 +82,8 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         private static readonly Brush ERROR_HIGHLIGHT_SELECTED_BACKGROUND = Util.GetBackgroundFromResources("ErrorSelectedHighlightColorBrush");
         private static readonly Brush SLOT_MOUSE_OVER_BRUSH = Util.GetBackgroundFromResources("CabinSlotHoverColorBrush");
 
-        private static readonly Brush BUTTON_MOUSE_OVER_BRUSH = Util.GetBackgroundFromResources("ButtonBackgroundHoverColorBrush");
-        private static readonly Brush BUTTON_PRESSED_BRUSH = Util.GetBackgroundFromResources("ButtonBackgroundPressedColorBrush");
+        private static readonly Brush BUTTON_MOUSE_OVER_BRUSH = Util.GetBackgroundFromResources("LayoutButtonBackgroundHoverColorBrush");
+        private static readonly Brush BUTTON_PRESSED_BRUSH = Util.GetBackgroundFromResources("LayoutButtonBackgroundPressedColorBrush");
         private static readonly Brush BUTTON_RED_MOUSE_OVER_BRUSH = Util.GetBackgroundFromResources("ButtonErrorBackgroundHoverColorBrush");
         private static readonly Brush BUTTON_RED_PRESSED_BRUSH = Util.GetBackgroundFromResources("ButtonErrorBackgroundPressedColorBrush");
 
@@ -923,12 +923,12 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             }
 
             context.DrawRoundedRectangle(GetButtonBackground(isMouseOver, isMouseDown, false), 
-                new Pen(FixedValues.GREEN_BRUSH, FixedValues.DEFAULT_BORDER_THICKNESS), 
+                new Pen(FixedValues.GREEN_LAYOUT_BUTTON_BRUSH, FixedValues.DEFAULT_BORDER_THICKNESS), 
                 !useSeparateRectForBorder ? drawRect : new Rect(drawRect.Location.MakeOffset(1,1), drawRect.Size), BUTTONS_CORNER_RADIUS, BUTTONS_CORNER_RADIUS);
 
             TranslateTransform translateTransform = new TranslateTransform(iconOffset.X, iconOffset.Y);
             context.PushTransform(translateTransform);
-            context.DrawGeometry(FixedValues.GREEN_BRUSH, null, icon);
+            context.DrawGeometry(FixedValues.GREEN_LAYOUT_BUTTON_BRUSH, null, icon);
             context.Pop();
 
             string tooltip = string.Format("Select {0} {1}", !isRowButton ? "row" : "column", isRowButton ? row + 1 : column + 1);
@@ -1009,7 +1009,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             Rect rect = GetTriangleButtonHitbox(realIsRowButtonValue, row, column, isPure, useSeparateRectForBorder);
 
             StreamGeometry geometry = GetTriangleGeometry(isTopRightAligned);
-            Brush foreground = !isRemoveButton ? FixedValues.GREEN_BRUSH : FixedValues.RED_BRUSH;
+            Brush foreground = !isRemoveButton ? FixedValues.GREEN_LAYOUT_BUTTON_BRUSH : FixedValues.RED_BRUSH;
 
             if (!isPure)
             {

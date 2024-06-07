@@ -19,6 +19,7 @@ namespace SLC_LayoutEditor
         internal static readonly Brush DEFAULT_BRUSH = (Brush)App.Current.FindResource("ForegroundColorBrush");
         internal static readonly Brush DEFAULT_SECONDARY_BRUSH = (Brush)App.Current.FindResource("ForegroundSecondaryColorBrush");
         internal static readonly Brush GREEN_BRUSH = (Brush)App.Current.FindResource("ButtonBorderColorBrush");
+        internal static readonly Brush GREEN_LAYOUT_BUTTON_BRUSH = (Brush)App.Current.FindResource("LayoutButtonBorderColorBrush");
         internal static readonly Brush YELLOW_BRUSH = (Brush)App.Current.FindResource("WarnForegroundColorBrush");
         internal static readonly Brush RED_BRUSH = (Brush)App.Current.FindResource("ErrorForegroundColorBrush");
 
@@ -31,6 +32,8 @@ namespace SLC_LayoutEditor
         internal static readonly Brush LIVE_GUIDE_OVERLAY_BRUSH = (Brush)App.Current.FindResource("LiveGuideOverlayBrush");
         internal static readonly Brush LIVE_GUIDE_TEXT_BORDER_BRUSH = (Brush)App.Current.FindResource("ButtonBorderColorBrush");
         internal static readonly Brush LIVE_GUIDE_TEXT_BACK_BRUSH = (Brush)App.Current.FindResource("BackgroundLightBrush");
+
+        internal static readonly Brush HEART_BRUSH = (Brush)App.Current.FindResource("HeartColorBrush");
 
         internal static readonly string GUIDE_CREATE_LAYOUT_TITLE = (string)App.Current.FindResource("GuideCreateLayoutTitle");
         internal static readonly string GUIDE_CREATE_LAYOUT_DESC = (string)App.Current.FindResource("GuideCreateLayoutDescription");
@@ -57,6 +60,9 @@ namespace SLC_LayoutEditor
         internal static readonly string ICON_AUTO_FIX = (string)App.Current.FindResource("AutoFix");
         internal static readonly string ICON_AUTO_FIX_ALERT = (string)App.Current.FindResource("AutoFixAlert");
 
+        internal static readonly string ICON_HEART = (string)App.Current.FindResource("Heart");
+        internal static readonly string ICON_COFFEE = (string)App.Current.FindResource("Coffee");
+
         internal static readonly string MAXIMIZE_ICON = (string)App.Current.FindResource("WindowMaximize");
         internal static readonly string RESTORE_ICON = (string)App.Current.FindResource("WindowRestore");
 
@@ -68,5 +74,7 @@ namespace SLC_LayoutEditor
         internal const double LAYOUT_OFFSET_X = 64;
         internal const double LAYOUT_OFFSET_Y = 64;
         internal static Size SLOT_DIMENSIONS = new Size(40, 40);
+
+        internal const int HOURS_BEFORE_SUPPORT_NOTIFICATION = 8;
     }
 }
