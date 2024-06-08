@@ -35,6 +35,7 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         SelectAll_Layout,
         SelectAll_Deck,
         DeselectOther_Deck,
+        Deselect_Slots,
         Layout_Load,
         Layout_Tile_Init,
         BackToLayoutOverview,

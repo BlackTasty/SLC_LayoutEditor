@@ -177,11 +177,11 @@
                                                                  AutoFixApplying="Slots_AutoFixApplying"
                                                                  Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing slots"/>
 
-                                        <local:LayoutProblemText ValidText="Doors available"
+                                        <local:LayoutProblemText ValidText="Passenger doors available"
                                                                  Floor="{Binding Floor}"
-                                                                 InvalidText="No doors for this deck!"
+                                                                 InvalidText="No passenger doors for this deck!"
                                                                  IsValid="{Binding AreDoorsValid}"
-                                                                 Description="Each deck needs at least one door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
+                                                                 Description="Each deck needs at least one passenger door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
 
                                         <Separator Margin="0,4"/>
                                         <local:LayoutProblemText ValidText="CAT/LB on correct side"
@@ -214,20 +214,23 @@
                                             </local:LayoutProblemText.Style>
                                         </local:LayoutProblemText>
 
-                                        <local:LayoutProblemText ValidText="All passenger doors on valid positions"
+                                        <local:LayoutProblemText ValidText="All doors on valid positions"
                                                                  Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllDoorSlotPositionsValid}"
                                                                  InvalidSlots="{Binding InvalidPositionedDoorSlots}"
                                                                  ShowEye="True" 
                                                                  ShowProblemsChanged="InvalidPositionedDoorSlots_ShowProblemsChanged"
                                                                  ShowProblems="{Binding ShowDoorPositionIssues}"
-                                                                 Description="Passenger doors can only be placed at the top or bottom of your layout">
+                                                                 ShowAutoFix="True"
+                                                                 AutoFixTarget="{Binding}"
+                                                                 AutoFixApplying="InvalidDoorPlacements_AutoFixApplying"
+                                                                 Description="Doors (passenger, catering and loading bays) can only be placed at the top or bottom, and not on any corner of your layout">
                                             <local:LayoutProblemText.Style>
                                                 <Style TargetType="local:LayoutProblemText">
-                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedDoorSlots.Count, StringFormat={}{0} invalid positioned doors!}"/>
+                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedDoorSlots.Count, StringFormat={}{0} doors have invalid placements!}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding InvalidPositionedDoorSlots.Count}" Value="1">
-                                                            <Setter Property="InvalidText" Value="1 invalid positioned door!"/>
+                                                            <Setter Property="InvalidText" Value="1 door has invalid placement!"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>

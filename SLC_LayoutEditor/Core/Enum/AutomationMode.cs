@@ -24,6 +24,8 @@ namespace SLC_LayoutEditor.Core.Enum
         AutoFix_Doors,
         [Description("Missing slots")]
         AutoFix_SlotCount,
+        [Description("Door placements")]
+        AutoFix_DoorPlacements,
         [Description("Stairways")]
         AutoFix_Stairways
     }

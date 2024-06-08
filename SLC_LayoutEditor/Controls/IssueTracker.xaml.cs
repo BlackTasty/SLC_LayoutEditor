@@ -155,7 +155,16 @@ namespace SLC_LayoutEditor.Controls
                         App.GuidedTour.ContinueTour(true);
                     }
                 }
+            }
+        }
 
+        private void InvalidDoorPlacements_AutoFixApplying(object sender, AutoFixApplyingEventArgs e)
+        {
+            if (e.Target is CabinDeck target)
+            {
+                AutoFixResult result = target.FixInvalidDoorPlacements();
+
+                result.SendNotification(string.Format("{0} invalid placed doors have been replaced.\n{1} doors changed to Aisle.\n{2} doors changed to Wall.", result.TotalCount, result.SuccessCount, result.FailCount));
             }
         }
 

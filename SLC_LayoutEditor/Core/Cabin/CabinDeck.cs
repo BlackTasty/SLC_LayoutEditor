@@ -3,6 +3,7 @@ using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Memento;
 using SLC_LayoutEditor.Core.PathFinding;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Tasty.Logging;
 using Tasty.ViewModel;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
@@ -367,10 +369,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             return (target.Row == 0 || target.Row == Rows) && target.Column > 0 && target.Column < Columns;
         }
 
+        private bool IsSlotInsideLayout(CabinSlot target)
+        {
+            return target.Row > 0 && target.Row < Rows && target.Column > 0 && target.Column < Columns;
+        }
+
         public bool IsSlotValidInteriorPosition(CabinSlot target)
         {
-            return target.Row > 0 && target.Row < Rows && target.Column > 0 && target.Column < Columns &&
-                target.Type != CabinSlotType.Wall;
+            return IsSlotInsideLayout(target) && target.Type != CabinSlotType.Wall;
         }
 
         public IEnumerable<int> GetRowsWithSeats()
@@ -429,6 +435,38 @@ namespace SLC_LayoutEditor.Core.Cabin
             RefreshProblemChecks();
             OnDeckSlotLayoutChanged(EventArgs.Empty);
             CabinHistory.Instance.RecordChanges(addedSlots, mFloor, AutomationMode.AutoFix_SlotCount);
+            ToggleIssueChecking(true);
+
+            return autoFixResult;
+        }
+
+        public AutoFixResult FixInvalidDoorPlacements()
+        {
+            AutoFixResult autoFixResult = new AutoFixResult("Door placement fix applied", "Doors changed to Aisle",
+                "Doors changed to Wall", "Door placements fixed");
+
+            List<CabinSlot> updatedSlots = new List<CabinSlot>();
+
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.Deselect_Slots, InvalidPositionedDoorSlots);
+            foreach (CabinSlot invalidSlot in InvalidPositionedDoorSlots)
+            {
+                bool shouldBeAisle = IsSlotInsideLayout(invalidSlot);
+                invalidSlot.Type = shouldBeAisle ? CabinSlotType.Aisle : CabinSlotType.Wall;
+                
+                if (shouldBeAisle)
+                {
+                    autoFixResult.CountSuccess();
+                }
+                else
+                {
+                    autoFixResult.CountFail();
+                }
+                updatedSlots.Add(invalidSlot);
+            }
+
+            RefreshProblemChecks();
+            OnDeckSlotLayoutChanged(EventArgs.Empty);
+            CabinHistory.Instance.RecordChanges(updatedSlots, mFloor, AutomationMode.AutoFix_DoorPlacements);
             ToggleIssueChecking(true);
 
             return autoFixResult;
@@ -938,7 +976,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void CheckInvalidPositionedDoorSlots()
         {
-            IEnumerable<CabinSlot> invalidDoorSlots = mCabinSlots.Where(x => x.Type == CabinSlotType.Door && !IsSlotValidDoorPosition(x));
+            IEnumerable<CabinSlot> invalidDoorSlots = mCabinSlots.Where(x => x.IsDoor && !IsSlotValidDoorPosition(x));
 
             foreach (var diff in invalidDoorSlots.GetDiff(InvalidPositionedSlots))
             {

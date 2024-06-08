@@ -207,6 +207,18 @@ namespace SLC_LayoutEditor.Controls
                         ?.SelectAllSlots(true);
                 }
             }, ViewModelMessage.SelectAll_Deck);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is IEnumerable<CabinSlot> cabinSlots)
+                {
+                    foreach (CabinDeckControl deckControl in container_decks?.Children.OfType<CabinDeckControl>())
+                    {
+                        IEnumerable<CabinSlot> selectedOnDeck = cabinSlots.Where(x => deckControl.CabinDeck.ContainsCabinSlot(x));
+                        deckControl.DeselectSlots(selectedOnDeck);
+                    }
+                }
+            }, ViewModelMessage.Deselect_Slots);
         }
 
         public void GenerateThumbnailForLayout(bool overwrite = false)
@@ -244,12 +256,12 @@ namespace SLC_LayoutEditor.Controls
                 CabinLayout.CabinSlotsChanged -= CabinLayout_CabinSlotsChanged;
                 CabinLayout.CabinDeckCountChanged -= CabinLayout_CabinDeckCountChanged;
 
-                foreach (CabinDeckControl deckLayoutControl in container_decks?.Children.OfType<CabinDeckControl>())
+                foreach (CabinDeckControl deckControl in container_decks?.Children.OfType<CabinDeckControl>())
                 {
-                    deckLayoutControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
-                    deckLayoutControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
+                    deckControl.LayoutRegenerated -= CabinDeckControl_LayoutRegenerated;
+                    deckControl.RemoveDeckClicked -= CabinDeckControl_RemoveDeckClicked;
 
-                    deckLayoutControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
+                    deckControl.RenderSizeChanged -= CabinDeckControl_RenderSizeChanged;
                 }
             }
         }

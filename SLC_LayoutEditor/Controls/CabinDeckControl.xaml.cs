@@ -207,6 +207,11 @@ namespace SLC_LayoutEditor.Controls
             renderer.DeselectAllSlots();
         }
 
+        public void DeselectSlots(IEnumerable<CabinSlot> cabinSlots)
+        {
+            renderer.DeselectSlots(cabinSlots);
+        }
+
         public void SelectSlots(IEnumerable<CabinSlot> cabinSlots)
         {
             renderer.SelectSlots(cabinSlots);

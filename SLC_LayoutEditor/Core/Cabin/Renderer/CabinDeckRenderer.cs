@@ -460,7 +460,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 {
                     if (isStillOnElement) // If cursor is still on the same element, set it selected
                     {
-                        DeselectSlots(null);
+                        DeselectSlotsInternal((IEnumerable<CabinSlot>)null);
 
                         // Set slot beneath cursor to selected and rerender slot
                         slotHitResult.CabinSlot.IsSelected = !Util.IsControlDown();
@@ -488,7 +488,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                                 {
                                     IEnumerable<CabinSlot> targetSlots = slotHitResults.Select(x => x.CabinSlot).Where(x => (isRowSelect ? x.Row : x.Column) == rowOrColumn);
 
-                                    DeselectSlots(targetSlots);
+                                    DeselectSlotsInternal(targetSlots);
                                     SelectSlots(targetSlots);
                                 }
                                 break;
@@ -781,16 +781,21 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         {
             IEnumerable<CabinSlot> targetSlots = slotHitResults.Where(x => x.Rect.IntersectsWith(selectionRect)).Select(x => x.CabinSlot);
 
-            DeselectSlots(targetSlots);
+            DeselectSlotsInternal(targetSlots);
             SelectSlots(targetSlots);
         }
 
         public void DeselectAllSlots(bool notify = true)
         {
-            DeselectSlots(slotHitResults.Where(x => x.CabinSlot.IsSelected).Select(x => x.CabinSlot), true, notify);
+            DeselectSlotsInternal(slotHitResults.Where(x => x.CabinSlot.IsSelected).Select(x => x.CabinSlot), true, notify);
         }
 
-        private void DeselectSlots(IEnumerable<CabinSlot> selectedSlots, bool forceDeselect = false, bool notify = true)
+        public void DeselectSlots(IEnumerable<CabinSlot> cabinSlots)
+        {
+            DeselectSlotsInternal(cabinSlots.Where(x => x.IsSelected), true, false);
+        }
+
+        private void DeselectSlotsInternal(IEnumerable<CabinSlot> selectedSlots, bool forceDeselect = false, bool notify = true)
         {
             if (!Util.IsShiftDown() && !Util.IsControlDown()) // If no modifier keys are pressed, remove selection from all other selected slots
             {
