@@ -661,6 +661,7 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 if (o is CabinLayout layout)
                 {
+                    Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Loading, true);
                     IsTemplatingMode = layout.IsTemplate;
 
                     if (!layout.IsTemplate)
@@ -1009,6 +1010,7 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(!IsTemplatingMode ? nameof(SelectedLayoutText) : nameof(SelectedTemplateText));
             InvokePropertyChanged(nameof(ActiveLayout));
             InvokePropertyChanged(nameof(IsLayoutTemplate));
+
             OnCabinLayoutSelected(new CabinLayoutSelectedEventArgs(updated?.LayoutName, updated?.IsTemplate ?? false));
 
 
@@ -1016,6 +1018,7 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 IsSidebarOpen = false;
             }
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Loading, false);
         }
 
         private void SelectedLayout_CabinDeckCountChanged(object sender, CabinDeckChangedEventArgs e)

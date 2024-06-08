@@ -411,9 +411,6 @@ namespace SLC_LayoutEditor.Controls
 
         private void AddCabinDeck_Click(object sender, RoutedEventArgs e)
         {
-            int rows = 1;
-            int columns = 1;
-
             if (CabinLayout.CabinDecks.Count > 0)
             {
                 ConfirmationDialog dialog = new ConfirmationDialog("Match existing layout?",
@@ -424,26 +421,36 @@ namespace SLC_LayoutEditor.Controls
             }
             else
             {
-                CreateCabinDeck(rows, columns);
+                ShowDeckSizeDialog(12, 7);
             }
+        }
+
+        private void ShowDeckSizeDialog(int columns, int rows)
+        {
+            SpecifyDeckSizeDialog dialog = new SpecifyDeckSizeDialog(columns, rows);
+
+            dialog.DialogClosing += SpecifyDeckSize_DialogClosing;
+            dialog.ShowDialog();
         }
 
         private void CreateDeck_DialogClosing(object sender, DialogClosingEventArgs e)
         {
-            int rows = 1;
-            int columns = 1;
-
+            CabinDeck lastDeck = CabinLayout.CabinDecks.LastOrDefault();
             if (e.DialogResult == DialogResultType.No)
             {
-                CreateCabinDeck(rows, columns);
+                ShowDeckSizeDialog(lastDeck.Columns, lastDeck.Rows);
             }
             else if (e.DialogResult == DialogResultType.Yes)
             {
-                CabinDeck lastDeck = CabinLayout.CabinDecks.LastOrDefault();
-                rows = lastDeck.Rows + 1;
-                columns = lastDeck.Columns + 1;
+                CreateCabinDeck(lastDeck.Rows + 1, lastDeck.Columns + 1);
+            }
+        }
 
-                CreateCabinDeck(rows, columns);
+        private void SpecifyDeckSize_DialogClosing(object sender, DialogClosingEventArgs e)
+        {
+            if (e.DialogResult == DialogResultType.OK && e.Data is int[] deckData)
+            {
+                CreateCabinDeck(deckData[0], deckData[1]);
             }
         }
 

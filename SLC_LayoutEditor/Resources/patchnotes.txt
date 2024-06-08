@@ -1,9 +1,13 @@
-﻿30.04.2024 m
-Added: After all this time there finally is an About section now! Can be accessed via "Help" -> "About", or by pressing F1
+﻿07.06.2024 m
+Added: After all this time there finally is an About section now! Can be accessed via "Editor" -> "About", or by pressing F1
+Added: You can now specify the size of a deck when adding one
 Added: New keybinds to create aircrafts (Ctrl + Shift + N), layouts (Ctrl + N) and templates (Ctrl + Alt + N)
 Added: There is now a "Return to layout/template overview" button in the title bar whenever a layout or template is currently open
 Added: A new seasonal theme has been added. Happy pride month!
 Updated: Replaced the icon for the editor
+Updated: Slighty reworked the way patchnote entries are formatted
+Changed: Moved the "What's new?" menu item from "Help" to "Editor"
+Changed: Moved the "Welcome screen" menu item from "Editor" to "Help"
 Changed: Moved the "Back to editor" button to the left and updated the appearance, in order to fit in with the "Return to layout overview" button style
 Changed: Dialogs now have a close button in the top right corner
 Changed: Both the changelog dialog as well as the dialog to manage baked template got their close buttons replaced with the new close button

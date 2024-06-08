@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Core.Patcher;
+using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,15 +16,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.UI.Dialogs
 {
     /// <summary>
-    /// Interaction logic for About.xaml
+    /// Interaction logic for AboutDialog.xaml
     /// </summary>
-    public partial class About : DialogBase
+    public partial class AboutDialog : DialogBase
     {
-        public About()
+        public AboutDialog()
         {
             InitializeComponent();
             title.Text += string.Format(" ({0})", App.GetVersionText());
@@ -47,6 +49,12 @@ namespace SLC_LayoutEditor.UI.Dialogs
         private void Roadmap_Hyperlink_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://trello.com/b/vJMbqwXb/slc-layout-editor-roadmap");
+        }
+
+        private void Changelog_Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.Changelog_Show);
+            CancelDialog();
         }
     }
 }

@@ -22,6 +22,9 @@ namespace SLC_LayoutEditor.Controls
     public partial class Patchnote : DockPanel
     {
         private string version;
+        private readonly List<PatchnoteEntry> entries = new List<PatchnoteEntry>();
+
+        public List<PatchnoteEntry> Entries => entries;
 
         public Patchnote()
         {
@@ -49,82 +52,25 @@ namespace SLC_LayoutEditor.Controls
             IsHotfix = data.IsHotfix;
             IsMajorRelease = data.IsMajorRelease;
 
-            rtb_patchnotes.Document = BuildPatchnote(data.PatchContent);
+            BuildPatchnote(data.PatchContent);
 
             PatchNumber = string.Format("v{0}{1}", version, data.IsSketch ? " Sketch" : "");
         }
 
-        private FlowDocument BuildPatchnote(string[] content)
+        private void BuildPatchnote(string[] content)
         {
-            FlowDocument doc = new FlowDocument();
+            if (entries.Count > 0)
+            {
+                entries.Clear();
+            }
 
             if (content != null)
             {
-                if (!version.Contains("n") && !version.Contains("s"))
+                for (int i = 0; i < content.Length; i++)
                 {
-                    for (int i = 0; i < content.Length; i++)
-                    {
-                        string[] change = content[i].Split(new char[] { ':' }, 2);
-                        if (change.Length >= 2)
-                        {
-                            Run header = new Run(change[0] + ":")
-                            {
-                                FontWeight = FontWeights.SemiBold
-                            };
-                            if (change[0].ToLower().Contains("re-enabled"))
-                                header.TextDecorations = TextDecorations.Underline;
-                            header.Foreground = GetNoteBrush(change[0]);
-
-                            Paragraph p = new Paragraph
-                            {
-                                Margin = new Thickness(0, 0, 0, 4)
-                            };
-                            p.Inlines.Add(header);
-
-                            if (change[1].StartsWith(" (BETA)"))
-                            {
-                                Run betaTag = new Run("(BETA)")
-                                {
-                                    FontWeight = FontWeights.SemiBold,
-                                    FontStyle = FontStyles.Italic,
-                                    Foreground = (Brush)App.Current.FindResource("TemplatingModeBrush")
-                                };
-                                p.Inlines.Add(" ");
-                                p.Inlines.Add(betaTag);
-                                p.Inlines.Add(change[1].Substring(7));
-                            }
-                            else
-                            {
-                                p.Inlines.Add(change[1]);
-                            }
-                            doc.Blocks.Add(p);
-                        }
-                        else
-                        {
-                            doc.Blocks.Add(new Paragraph(new Run(content[i]))
-                            {
-                                Margin = new Thickness(0)
-                            });
-                        }
-                    }
-                }
-                else
-                {
-                    Run text = new Run("This is a secret for now...")
-                    {
-                        FontSize = 20,
-                        BaselineAlignment = BaselineAlignment.Center
-                    };
-
-                    Paragraph p = new Paragraph();
-                    p.Inlines.Add(text);
-
-                    doc.Blocks.Add(p);
+                    entries.Add(new PatchnoteEntry(content[i]));
                 }
             }
-
-            doc.PageWidth = 576;
-            return doc;
         }
 
         private Brush GetNoteBrush(string type)
@@ -211,7 +157,7 @@ namespace SLC_LayoutEditor.Controls
             set
             {
                 SetValue(PatchnotesProperty, value);
-                rtb_patchnotes.Document = BuildPatchnote(value);
+                BuildPatchnote(value);
             }
         }
 

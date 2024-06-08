@@ -114,12 +114,20 @@
                                 <MenuItem Header="Editor" IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
                                     <MenuItem Header="Settings" Click="Settings_Click"/>
                                     <MenuItem Header="Manage default templates" Click="ManageBakedTemplates_Click"/>
-                                    <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
                                     <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                                    <MenuItem Header="What's new?" Click="Changelog_Click"
+                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
                                     <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
                                               IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
+                                    <MenuItem Header="About" Click="About_Click" InputGestureText="F1"/>
+                                    <MenuItem Header="More...">
+                                        <MenuItem Header="Roadmap" Click="Roadmap_Click"
+                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
+                                        <MenuItem Header="Buy me a coffee :)" Click="BuyACoffee_Clicked"/>
+                                    </MenuItem>
                                 </MenuItem>
                                 <MenuItem Header="Help">
+                                    <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
                                     <MenuItem Click="ToggleGuide_Click">
                                         <MenuItem.Style>
                                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -135,13 +143,6 @@
                                     <MenuItem Header="Show keybinds" Command="{Binding ShowKeybindsWindowCommand}"
                                               InputGestureText="Ctrl+K"
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
-                                    <Separator Style="{StaticResource MenuSeparatorStyle}"/>
-                                    <MenuItem Header="About" Click="About_Click"/>
-                                    <MenuItem Header="What's new?" Click="Changelog_Click"
-                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
-                                    <MenuItem Header="Roadmap" Click="Roadmap_Click"
-                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
-                                    <MenuItem Header="Buy me a coffee :)" Click="BuyACoffee_Clicked"/>
                                 </MenuItem>
                             </Menu>
                             <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
@@ -372,5 +373,10 @@
                 <ContentPresenter Content="{Binding Dialog}"/>
             </Border>
         </Grid>
+        <Border Visibility="{Binding IsLoadingLayout, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Loading layout, please wait..." FontSize="30"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

@@ -29,9 +29,9 @@ namespace SLC_LayoutEditor.Controls
             set { SetValue(TextProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
+        // Using a DependencyProperty as the backing store for Content.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(ScrollingTextBlock), new PropertyMetadata(null, OnTextChanged));
+            DependencyProperty.Register("Content", typeof(string), typeof(ScrollingTextBlock), new PropertyMetadata(null, OnTextChanged));
 
         protected static void OnTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {

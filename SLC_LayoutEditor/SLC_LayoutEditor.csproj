@@ -115,6 +115,9 @@
     <Compile Include="Controls\Patchnote.xaml.cs">
       <DependentUpon>Patchnote.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PatchnoteEntry.xaml.cs">
+      <DependentUpon>PatchnoteEntry.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\RefinedComboBox.cs" />
     <Compile Include="Controls\RefinedExpander.cs" />
     <Compile Include="Controls\RefinedTextBlock.xaml.cs">
@@ -243,8 +246,8 @@
       <DependentUpon>StyleTester.xaml</DependentUpon>
     </Compile>
     <Compile Include="TemplateSelector\AircraftItemTemplateSelector.cs" />
-    <Compile Include="UI\Dialogs\About.xaml.cs">
-      <DependentUpon>About.xaml</DependentUpon>
+    <Compile Include="UI\Dialogs\AboutDialog.xaml.cs">
+      <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\ChangelogDialog.xaml.cs">
       <DependentUpon>ChangelogDialog.xaml</DependentUpon>
@@ -274,6 +277,9 @@
     </Compile>
     <Compile Include="UI\Dialogs\RestoreSnapshotDialog.xaml.cs">
       <DependentUpon>RestoreSnapshotDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\SpecifyDeckSizeDialog.xaml.cs">
+      <DependentUpon>SpecifyDeckSizeDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
@@ -343,6 +349,7 @@
     <Compile Include="ViewModel\NotificationViewModel.cs" />
     <Compile Include="ViewModel\RestoreSnapshotDialogViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
+    <Compile Include="ViewModel\SpecifyDeckSizeDialogViewModel.cs" />
     <Compile Include="ViewModel\TodoListViewModel.cs" />
     <Compile Include="ViewModel\UpdaterViewModel.cs" />
     <Page Include="App.xaml">
@@ -409,6 +416,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Patchnote.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PatchnoteEntry.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -549,9 +560,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Dialogs\About.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="UI\Dialogs\AboutDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Dialogs\ChangelogDialog.xaml">
       <SubType>Designer</SubType>
@@ -574,6 +585,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\RestoreSnapshotDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\SpecifyDeckSizeDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

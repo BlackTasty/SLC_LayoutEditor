@@ -25,7 +25,7 @@
         </Style>
     </Border.Style>
     <DockPanel>
-        <TextBlock DockPanel.Dock="Top" Text="{Binding Title}"
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Title, Mode=OneWay}"
                    Style="{StaticResource Title2TextStyle}"/>
         <Grid>
             <Image Source="{Binding CurrentThumbnail}" Stretch="Uniform">
@@ -49,13 +49,15 @@
             </StackPanel>
             
             <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="2,2" Margin="8"
+                    ToolTip="Allows switching between floors"
                     Visibility="{Binding HasMultipleThumbnails, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Style="{StaticResource ChipStyle}">
                 <StackPanel Orientation="Horizontal">
                     <Button Style="{StaticResource ChipIconButtonStyle}"
                             Content="{StaticResource ChevronLeftData}"
                             IsEnabled="{Binding IsPreviousThumbnailButtonEnabled}"
-                            Click="PreviousThumbnail_Click"/>
+                            Click="PreviousThumbnail_Click"
+                            ToolTip="Show previous floor"/>
                     <StackPanel Orientation="Horizontal" Margin="4,-1,4,0">
                         <TextBlock Text="{Binding ShownThumbnailIndex, Mode=OneWay}" Foreground="{StaticResource ForegroundDarkColorBrush}"
                                FontWeight="Bold" FontSize="13"/>
@@ -67,7 +69,8 @@
                     <Button Style="{StaticResource ChipIconButtonStyle}"
                             Content="{StaticResource ChevronRightData}"
                             IsEnabled="{Binding IsNextThumbnailButtonEnabled}"
-                            Click="NextThumbnail_Click"/>
+                            Click="NextThumbnail_Click"
+                            ToolTip="Show next floor"/>
                 </StackPanel>
             </Border>
             <Button Content="{StaticResource Trash}"
@@ -84,7 +87,7 @@
                     <Style TargetType="Button" BasedOn="{StaticResource FilledRoundErrorIconButtonStyle}">
                         <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutTile, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
                                 <Setter Property="ToolTip" Value="Delete this template. This cannot be undone!"/>
                             </DataTrigger>
                         </Style.Triggers>

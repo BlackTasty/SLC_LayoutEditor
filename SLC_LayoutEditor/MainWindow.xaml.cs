@@ -88,18 +88,22 @@ namespace SLC_LayoutEditor
 
         private void HistoryChanged(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
         {
-            if (e.IsClear)
-            {
-                redoHistoryMenu.Items.Clear();
-                undoHistoryMenu.Items.Clear();
-                return;
-            }
 
-            bool isUndo = !e.IsRecorded ? e.IsUndo : !e.IsUndo;
-            MoveEntries(e.PoppedHistory, e.IsRecorded ? e.IsUndo : !e.IsUndo,
-                isUndo ? undoHistoryMenu : redoHistoryMenu,
-                isUndo ? redoHistoryMenu : undoHistoryMenu);
-            (vm.Content as LayoutEditor)?.control_layout.RefreshState(false);
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (e.IsClear)
+                {
+                    redoHistoryMenu.Items.Clear();
+                    undoHistoryMenu.Items.Clear();
+                    return;
+                }
+
+                bool isUndo = !e.IsRecorded ? e.IsUndo : !e.IsUndo;
+                MoveEntries(e.PoppedHistory, e.IsRecorded ? e.IsUndo : !e.IsUndo,
+                    isUndo ? undoHistoryMenu : redoHistoryMenu,
+                    isUndo ? redoHistoryMenu : undoHistoryMenu);
+                (vm.Content as LayoutEditor)?.control_layout.RefreshState(false);
+            });
         }
 
         private void MoveEntries(IEnumerable<CabinHistoryEntry> poppedHistory, bool isUndo, ContextMenu sourceHistory, ContextMenu targetHistory)

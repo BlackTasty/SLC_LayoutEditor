@@ -41,6 +41,7 @@ namespace SLC_LayoutEditor.ViewModel
         private string mStateToggleButtonContent = FixedValues.MAXIMIZE_ICON;
         private bool mIsMaximized;
         private bool mIsGuideOpen;
+        private bool mIsLayoutLoading = false;
 
         private bool mIsSearching;
 
@@ -219,7 +220,18 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public bool IsDialogOpen => mDialog != null;
+        public bool IsLoadingLayout
+        {
+            get => mIsLayoutLoading;
+            set
+            {
+                mIsLayoutLoading = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(IsDialogOpen));
+            }
+        }
+
+        public bool IsDialogOpen => IsLoadingLayout || mDialog != null;
 
         public FrameworkElement Content
         {
@@ -327,6 +339,16 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 ShowAbout();
             }, ViewModelMessage.About_Show);
+
+            Mediator.Instance.Register(o =>
+            {
+                ShowChangelog();
+            }, ViewModelMessage.Changelog_Show);
+
+            Mediator.Instance.Register(o =>
+            {
+                IsLoadingLayout = (bool)o;
+            }, ViewModelMessage.Layout_Loading);
         }
 
         private void History_HistoryApplying(object sender, HistoryApplyingEventArgs<CabinHistoryEntry> e)
@@ -376,7 +398,7 @@ namespace SLC_LayoutEditor.ViewModel
         {
             if (mDialog == null && queuedDialogs.Count == 0)
             {
-                ShowDialog(new About());
+                ShowDialog(new AboutDialog());
             }
         }
 

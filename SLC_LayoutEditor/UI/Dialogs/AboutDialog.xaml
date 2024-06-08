@@ -1,11 +1,11 @@
-﻿<local:DialogBase x:Class="SLC_LayoutEditor.UI.Dialogs.About"
+﻿<local:DialogBase x:Class="SLC_LayoutEditor.UI.Dialogs.AboutDialog"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
              mc:Ignorable="d" 
-             d:DesignHeight="450" Width="550" Margin="8,0">
+             d:DesignHeight="450" Width="550" Margin="8,0" UseLayoutRounding="True">
     <local:DialogBase.Resources>
         <Style x:Key="FooterTextStyle" TargetType="TextBlock" BasedOn="{StaticResource Subtitle3TextStyle}">
             <Setter Property="FontStyle" Value="Normal"/>
@@ -29,13 +29,20 @@
         <Border DockPanel.Dock="Bottom" Style="{StaticResource CardStyle}" CornerRadius="8"
             Margin="-12,0">
             <DockPanel>
-                <TextBlock Text="by Midnight Bagel" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}"/>
-                <TextBlock Text="♥" FontSize="18" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}" Margin="4,-4"/>
-                <TextBlock Text="Made with" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}"/>
-                <TextBlock Style="{StaticResource FooterTextStyle}">
-                    <Run Text="Trello roadmap:" FontWeight="Bold"/>
-                    <Hyperlink Click="Roadmap_Hyperlink_Click">Roadmap</Hyperlink>
-                </TextBlock>
+                <TextBlock Text="by Midnight Bagel" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}" VerticalAlignment="Center"/>
+                <TextBlock Text="♥" FontSize="18" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}" VerticalAlignment="Center" Margin="4,-4"
+                           Foreground="{StaticResource HeartColorBrush}"/>
+                <TextBlock Text="Made with" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}" VerticalAlignment="Center"/>
+                <StackPanel>
+                    <TextBlock Style="{StaticResource FooterTextStyle}">
+                        <Run Text="See what's new in this version:" FontWeight="Bold"/>
+                        <Hyperlink Click="Changelog_Hyperlink_Click">Changelog</Hyperlink>
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource FooterTextStyle}" Margin="0,4,0,0">
+                        <Run Text="Trello roadmap:" FontWeight="Bold"/>
+                        <Hyperlink Click="Roadmap_Hyperlink_Click">Roadmap</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
             </DockPanel>
         </Border>
         <TextBlock DockPanel.Dock="Top" TextWrapping="WrapWithOverflow" Margin="0,0,0,16">

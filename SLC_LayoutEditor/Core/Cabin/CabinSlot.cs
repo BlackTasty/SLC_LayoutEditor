@@ -33,6 +33,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         private bool hasTypeChanged;
         private bool collectForHistory;
         private bool isRemoved;
+        private bool isLoading;
 
         private string guid;
 
@@ -233,6 +234,11 @@ namespace SLC_LayoutEditor.Core.Cabin
             get => collectForHistory;
             set
             {
+                if (isLoading)
+                {
+                    return;
+                }
+
                 collectForHistory = value;
                 if (value)
                 {
@@ -302,6 +308,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void ApplySlotData(string slotData)
         {
+            isLoading = true;
             string trimmedSlotData = slotData.Trim();
 
             if (trimmedSlotData != "-")
@@ -327,6 +334,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 Type = CabinSlotType.Aisle;
             }
+            isLoading = false;
         }
 
         public CabinSlot(int row, int column, CabinSlotType type, int slotNumber) : this()

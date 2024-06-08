@@ -40,6 +40,8 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         BackToLayoutOverview,
         Window_StateChanged,
         Layout_Tile_RefreshData,
-        About_Show
+        About_Show,
+        Changelog_Show,
+        Layout_Loading
     }
 }

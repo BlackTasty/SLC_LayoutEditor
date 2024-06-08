@@ -284,5 +284,10 @@ namespace SLC_LayoutEditor.Controls
                 CreateTemplate_Click(sender, e);
             }
         }
+
+        private void layout_tile_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

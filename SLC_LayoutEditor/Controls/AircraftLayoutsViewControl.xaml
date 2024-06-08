@@ -55,7 +55,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <local:CabinLayoutTile x:Name="layout_tile" CabinLayout="{Binding Mode=OneWay}" MinWidth="539" MaxWidth="870" 
-                                               IsSelected="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=IsSelected}"/>
+                                                   IsSelected="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=IsSelected}"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemsPanel>
@@ -191,7 +191,7 @@
                                                 <TextBlock Style="{StaticResource Subtitle1TextStyle}" Margin="0,0,0,2" FontSize="12">
                                                     <Run Text="{Binding FloorName, Mode=OneWay, StringFormat={}  • {0} size:}"
                                                          FontWeight="Bold"/>
-                                                    <Run Text="{Binding Columns, Mode=OneWay}"/><Run Text="x"/><Run Text="{Binding Rows, Mode=OneWay}"/>
+                                                    <Run Text="{Binding DisplayRows, Mode=OneWay}"/><Run Text="x"/><Run Text="{Binding DisplayColumns, Mode=OneWay}"/>
                                                 </TextBlock>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>

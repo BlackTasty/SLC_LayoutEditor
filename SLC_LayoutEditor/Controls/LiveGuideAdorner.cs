@@ -27,7 +27,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Renders a semi-transparent layer of color over the application, 
     /// but leaving out a circle area around the adorned element.
-    /// Text can be displayed besides the cropped out area
+    /// Content can be displayed besides the cropped out area
     /// </summary>
     internal class LiveGuideAdorner : Adorner
     {

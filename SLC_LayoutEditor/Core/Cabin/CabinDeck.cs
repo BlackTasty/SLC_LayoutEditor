@@ -38,16 +38,20 @@ namespace SLC_LayoutEditor.Core.Cabin
         private string currentHash;
         private bool isIssueCheckingEnabled = true;
 
-        private int cachedRows;
         private int cachedColumns;
+        private int cachedRows;
 
         public double Width { get; set; }
 
         public double Height { get; set; }
 
-        public int Rows => !isPreview ? (CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Row) : 0) : cachedRows;
+        public int Rows => CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Row) : 0;
 
-        public int Columns => !isPreview ? (CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Column) : 0) : cachedColumns;
+        public int DisplayRows => !isPreview ? Rows + 1 : cachedRows;
+
+        public int Columns => CabinSlots.Count > 0 ? CabinSlots.Max(x => x.Column) : 0;
+
+        public int DisplayColumns => !isPreview ? Columns + 1 : cachedColumns;
 
         public VeryObservableCollection<CabinSlot> CabinSlots
         {
@@ -273,8 +277,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
             else
             {
-                cachedRows = rows;
-                cachedColumns = columns;
+                cachedColumns = rows;
+                cachedRows = columns;
             }
         }
 
@@ -437,6 +441,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 cabinSlot.Changed += CabinSlot_CabinSlotChanged;
             }
             CabinSlots.Add(cabinSlot);
+            InvokePropertyChanged(nameof(DisplayColumns));
+            InvokePropertyChanged(nameof(DisplayRows));
         }
 
         public void RemoveCabinSlot(CabinSlot cabinSlot)
@@ -444,6 +450,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             cabinSlot.MarkForRemoval();
             cabinSlot.Changed -= CabinSlot_CabinSlotChanged;
             CabinSlots.Remove(cabinSlot);
+            InvokePropertyChanged(nameof(DisplayColumns));
+            InvokePropertyChanged(nameof(DisplayRows));
         }
 
         public int FixDuplicateDoors(int slotNumber, bool isZeroDoorSet, bool ignoreCateringDoors, out int successes, out int fails, out bool wasZeroDoorSet,

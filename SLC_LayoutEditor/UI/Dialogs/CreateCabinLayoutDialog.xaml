@@ -120,7 +120,7 @@
 
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">
-        <Button Content="Create" Width="80" Margin="8" IsEnabled="{Binding IsValid, UpdateSourceTrigger=PropertyChanged}"
+        <Button Width="80" Margin="8" IsEnabled="{Binding IsValid, UpdateSourceTrigger=PropertyChanged}"
                 Click="Create_Click">
             <Button.Style>
                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
