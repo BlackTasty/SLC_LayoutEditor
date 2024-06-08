@@ -14,6 +14,72 @@
     </Border.DataContext>
     <Border.Resources>
         <converter:LayoutThumbnailGrabber x:Key="LayoutThumbnailGrabber"/>
+        
+        <Style x:Key="MenuItemIconBorderStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+            <Setter Property="CornerRadius" Value="32"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="2"/>
+        </Style>
+
+        <Style x:Key="LayoutMenuItemStyle" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <ContextMenu x:Key="LayoutMenu">
+            <MenuItem>
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="Header" Value="Rename layout"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CabinLayout.IsTemplate}" Value="True">
+                                <Setter Property="Header" Value="Rename template"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+            <MenuItem>
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="Header" Value="Remove layout"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CabinLayout.IsTemplate}" Value="True">
+                                <Setter Property="Header" Value="Remove template"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+        </ContextMenu>
+        
+        <!--<ContextMenu x:Key="LayoutMenu" Background="Transparent">
+            <MenuItem Style="{StaticResource LayoutMenuItemStyle}">
+                <MenuItem.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Style="{StaticResource MenuItemIconBorderStyle}">
+                                <Path Data="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"/>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <TextBlock>
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                            <Setter Property="Text" Value="Rename layout"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutTile}, Path=CabinLayout.IsTemplate}" Value="True">
+                                                    <Setter Property="Text" Value="Rename template"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                </MenuItem.ItemTemplate>
+            </MenuItem>
+        </ContextMenu>-->
     </Border.Resources>
     <Border.Style>
         <Style TargetType="Border" BasedOn="{StaticResource CardStyle}">
@@ -28,24 +94,36 @@
         <TextBlock DockPanel.Dock="Top" Text="{Binding Title, Mode=OneWay}"
                    Style="{StaticResource Title2TextStyle}"/>
         <Grid>
-            <Image Source="{Binding CurrentThumbnail}" Stretch="Uniform">
-                <Image.OpacityMask>
-                    <VisualBrush>
-                        <VisualBrush.Visual>
-                            <Border Background="Blue" CornerRadius="0,0,8,8"
-                                Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Image}, Path=ActualWidth}"
-                                Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Image}, Path=ActualHeight}"/>
-                        </VisualBrush.Visual>
-                    </VisualBrush>
-                </Image.OpacityMask>
-            </Image>
+            <Image Source="{Binding CurrentThumbnail}" Stretch="Uniform" Margin="0,8,0,0"/>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Visibility="{Binding HasAnyThumbnails, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundSecondaryColorBrush}"
-                           Text="Preview unavailable (no thumbnails)"/>
-                <Button Margin="8" HorizontalAlignment="Center" Style="{StaticResource WarnIconButtonStyle}"
+                        Visibility="{Binding HasAnyThumbnailsLoaded, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasLayoutDecks}" Value="False">
+                                    <Setter Property="Text" Value="Preview unavailable (no decks for this layout)"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding HasLayoutDecks}" Value="True">
+                                    <Setter Property="Text" Value="Preview unavailable (thumbnails not generated)"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <Button Margin="8" HorizontalAlignment="Center"
                         Content="{StaticResource Refresh}" ToolTip="Generate thumbnail(s)"
-                        Click="GenerateThumbnail_Click"/>
+                        Click="GenerateThumbnail_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource WarnIconButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasLayoutDecks}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
             
             <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="2,2" Margin="8"
@@ -73,6 +151,9 @@
                             ToolTip="Show next floor"/>
                 </StackPanel>
             </Border>
+            <!--<Button Content="{StaticResource DotsVertical}" ContextMenu="{StaticResource LayoutMenu}"
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8"
+                    Click="Menu_Click" Style="{StaticResource FilledRoundIconButtonStyle}"/>-->
             <Button Content="{StaticResource Trash}"
                     VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8"
                     Click="DeleteLayoutTemplate_Click"
@@ -87,7 +168,7 @@
                     <Style TargetType="Button" BasedOn="{StaticResource FilledRoundErrorIconButtonStyle}">
                         <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutTile, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
+                            <DataTrigger Binding="{Binding CabinLayout.IsTemplate}" Value="True">
                                 <Setter Property="ToolTip" Value="Delete this template. This cannot be undone!"/>
                             </DataTrigger>
                         </Style.Triggers>

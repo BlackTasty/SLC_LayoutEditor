@@ -32,7 +32,7 @@
     </Style>
 
     <Style TargetType="ContextMenu">
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderColorBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxItemSplitterColorBrush}"/>
         <Setter Property="Background" Value="{DynamicResource BackgroundColorBrush}"/>
         <Setter Property="UseLayoutRounding" Value="True"/>
         <Setter Property="TextElement.FontSize" Value="16"/>

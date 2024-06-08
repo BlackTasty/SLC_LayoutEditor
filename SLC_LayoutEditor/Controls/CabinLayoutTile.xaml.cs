@@ -47,7 +47,7 @@ namespace SLC_LayoutEditor.Controls
             if (sender is CabinLayoutTile control)
             {
                 CabinLayoutTileViewModel vm = (CabinLayoutTileViewModel)control.DataContext;
-                vm.Title = control.CabinLayout.LayoutName;
+                vm.CabinLayout = control.CabinLayout;
                 vm.LoadThumbnails(control.CabinLayout.ThumbnailDirectory);
             }
         }
@@ -80,7 +80,7 @@ namespace SLC_LayoutEditor.Controls
             {
                 if (o is CabinLayout updated && updated.Guid == CabinLayout.Guid)
                 {
-                    vm.Title = updated.LayoutName;
+                    vm.CabinLayout = updated;
                     vm.GenerateThumbnails(updated);
                 }
             }, ViewModelMessage.Layout_Tile_RefreshData);
@@ -120,6 +120,11 @@ namespace SLC_LayoutEditor.Controls
             {
                 CabinLayout.Delete();
             }
+        }
+
+        private void Menu_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

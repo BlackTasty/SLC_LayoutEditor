@@ -61,6 +61,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             {
                 template.LoadLayoutData();
             }
+
             foreach (CabinDeck cabinDeck in template.CabinDecks)
             {
                 CabinDeckRenderer renderer = new CabinDeckRenderer(cabinDeck);

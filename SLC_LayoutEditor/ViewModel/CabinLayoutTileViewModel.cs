@@ -15,21 +15,29 @@ namespace SLC_LayoutEditor.ViewModel
 {
     internal class CabinLayoutTileViewModel : ViewModelBase
     {
-        private int mThumbnailIndex = 0;
-        private int mThumbnailCount = 0;
+        private CabinLayout mCabinLayout;
+
+        private int mThumbnailIndex;
+        private int mThumbnailCount;
+        private bool mHasLayoutDecks;
         private List<BitmapImage> thumbnails = new List<BitmapImage>();
         private string mTitle;
         private bool mIsSelected;
 
-        public string Title
+        public CabinLayout CabinLayout
         {
-            get => mTitle;
+            get => mCabinLayout;
             set
             {
-                mTitle = value;
+                mCabinLayout = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(Title));
+                InvokePropertyChanged(nameof(HasLayoutDecks));
+                InvokePropertyChanged(nameof(ShowNoThumbnailContainer));
             }
         }
+
+        public string Title => CabinLayout?.LayoutName;
 
         public bool IsSelected
         {
@@ -68,14 +76,19 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mThumbnailCount = value;
                 InvokePropertyChanged();
-                InvokePropertyChanged(nameof(HasAnyThumbnails));
+                InvokePropertyChanged(nameof(HasAnyThumbnailsLoaded));
+                InvokePropertyChanged(nameof(ShowNoThumbnailContainer));
                 InvokePropertyChanged(nameof(HasMultipleThumbnails));
             }
         }
 
         public bool HasMultipleThumbnails => ThumbnailCount > 1;
 
-        public bool HasAnyThumbnails => ThumbnailCount > 0;
+        public bool HasAnyThumbnailsLoaded => ThumbnailCount > 0;
+
+        public bool HasLayoutDecks => mCabinLayout?.CabinDecks.Count > 0;
+
+        public bool ShowNoThumbnailContainer => !HasLayoutDecks || !HasAnyThumbnailsLoaded;
 
         public BitmapImage CurrentThumbnail => mThumbnailIndex < thumbnails.Count ? thumbnails?[mThumbnailIndex] : null;
 
@@ -85,7 +98,6 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 if (o is CabinLayout cabinLayout)
                 {
-                    Title = cabinLayout.LayoutName;
                     LoadThumbnails(cabinLayout.ThumbnailDirectory);
                 }
             }, ViewModelMessage.Layout_Tile_Init);
@@ -98,7 +110,7 @@ namespace SLC_LayoutEditor.ViewModel
                 thumbnails.Clear();
             }
 
-            if (Directory.Exists(thumbnailsPath))
+            if (thumbnailsPath != null && Directory.Exists(thumbnailsPath))
             {
                 foreach (FileInfo fi in new DirectoryInfo(thumbnailsPath).EnumerateFiles("*.png"))
                 {
@@ -112,13 +124,20 @@ namespace SLC_LayoutEditor.ViewModel
 
         public void GenerateThumbnails(CabinLayout cabinLayout)
         {
-            TemplatePreview preview = new TemplatePreview(cabinLayout);
-
-            preview?.GenerateThumbnails(true);
-
-            if (preview?.HasThumbnails ?? false)
+            if (mHasLayoutDecks)
             {
-                LoadThumbnails(cabinLayout.ThumbnailDirectory);
+                TemplatePreview preview = new TemplatePreview(cabinLayout);
+
+                preview?.GenerateThumbnails(true);
+
+                if (preview?.HasThumbnails ?? false)
+                {
+                    LoadThumbnails(cabinLayout.ThumbnailDirectory);
+                }
+            }
+            else
+            {
+                LoadThumbnails(null);
             }
         }
     }

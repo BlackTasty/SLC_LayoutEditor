@@ -54,7 +54,8 @@
                     </ListBox.Style>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <local:CabinLayoutTile x:Name="layout_tile" CabinLayout="{Binding Mode=OneWay}" MinWidth="539" MaxWidth="870" 
+                            <local:CabinLayoutTile x:Name="layout_tile" CabinLayout="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=DataContext}"
+                                                   MinWidth="539" MaxWidth="700" 
                                                    IsSelected="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Path=IsSelected}"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -211,14 +212,14 @@
                         <TextBlock Text="Services" Style="{StaticResource Title3TextStyle}" FontWeight="Bold" 
                                    DockPanel.Dock="Top" Margin="8,0"/>
                         <StackPanel Margin="8,4,8,0" MaxWidth="210" HorizontalAlignment="Left">
-                            <local:CheckedTextBlock UncheckedText="No door access!"
+                            <local:CheckedTextBlock UncheckedText="No passenger access!"
                                                     IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=SelectedCabinLayout.CachedDoorCount, Converter={StaticResource GreaterThanConverter}}">
                                 <local:CheckedTextBlock.Style>
                                     <Style TargetType="local:CheckedTextBlock">
-                                        <Setter Property="CheckedText" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=SelectedCabinLayout.CachedDoorCount, StringFormat={}{0} doors available, Mode=OneWay}"/>
+                                        <Setter Property="CheckedText" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=SelectedCabinLayout.CachedDoorCount, StringFormat={}{0} passenger doors available, Mode=OneWay}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=SelectedCabinLayout.CachedDoorCount}" Value="1">
-                                                <Setter Property="CheckedText" Value="1 door available"/>
+                                                <Setter Property="CheckedText" Value="1 passenger door available"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
