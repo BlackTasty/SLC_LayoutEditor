@@ -112,6 +112,7 @@
                                               Visibility="{Binding EditorViewModel.IsLayoutTemplate, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                                 </MenuItem>
                                 <MenuItem Header="Editor" IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                    <MenuItem Header="About" Click="About_Click" InputGestureText="F1"/>
                                     <MenuItem Header="Settings" Click="Settings_Click"/>
                                     <MenuItem Header="Manage default templates" Click="ManageBakedTemplates_Click"/>
                                     <Separator Style="{StaticResource MenuSeparatorStyle}"/>
@@ -119,12 +120,9 @@
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
                                     <MenuItem Header="Search for updates" Click="SearchUpdates_Click" 
                                               IsEnabled="{Binding IsSearching, Converter={StaticResource InverseBooleanConverter}}"/>
-                                    <MenuItem Header="About" Click="About_Click" InputGestureText="F1"/>
-                                    <MenuItem Header="More...">
-                                        <MenuItem Header="Roadmap" Click="Roadmap_Click"
+                                    <MenuItem Header="Roadmap" Click="Roadmap_Click"
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
-                                        <MenuItem Header="Buy me a coffee :)" Click="BuyACoffee_Clicked"/>
-                                    </MenuItem>
+                                    <MenuItem Header="Buy me a coffee :)" Click="BuyACoffee_Clicked"/>
                                 </MenuItem>
                                 <MenuItem Header="Help">
                                     <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>

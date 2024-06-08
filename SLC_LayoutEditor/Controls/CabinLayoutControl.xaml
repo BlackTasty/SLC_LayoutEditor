@@ -194,7 +194,7 @@
                             Padding="16.5,16,14.5,14.5"
                             Width="53" Height="53"/>
                     <Button x:Name="btn_reloadLayout" Content="{DynamicResource Refresh}" Click="ReloadLayout_Click"
-                            Margin="-4,0,24,0" Height="32" Width="32" Padding="6,6,4,6"
+                            Margin="-4,0,24,0"
                             local:GuideAssist.Title="{StaticResource GuideReloadLayoutTitle}"
                             local:GuideAssist.Description="{StaticResource GuideReloadLayoutDescription}"
                             local:GuideAssist.HasGuide="True"
@@ -203,7 +203,7 @@
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource WarnIconButtonStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource ReloadCardButtonStyle}">
                             <Setter Property="ToolTip" Value="Force the editor to reload the layout from file. Unsaved changes are lost!"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">
@@ -214,7 +214,7 @@
                     </Button.Style>
                 </Button>
                     <Button x:Name="btn_deleteLayout" DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteLayout_Click"
-                            Margin="24,0,0,0" Height="32" Width="32" Padding="6"
+                            Margin="24,0,0,0"
                             local:GuideAssist.Title="{StaticResource GuideDeleteLayoutTitle}"
                             local:GuideAssist.Description="{StaticResource GuideDeleteLayoutDescription}"
                             local:GuideAssist.HasGuide="True"
@@ -223,7 +223,7 @@
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ErrorIconButtonStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource ErrorCardButtonStyle}">
                             <Setter Property="ToolTip" Value="Delete this cabin layout. This cannot be undone!"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:CabinLayoutControl, Mode=FindAncestor}, Path=CabinLayout.IsTemplate, FallbackValue=False}" Value="True">

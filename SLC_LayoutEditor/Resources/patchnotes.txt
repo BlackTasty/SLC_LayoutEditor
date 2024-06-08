@@ -12,6 +12,7 @@ Changed: Moved the "Welcome screen" menu item from "Editor" to "Help"
 Changed: Moved the "Back to editor" button to the left and updated the appearance, in order to fit in with the "Return to layout overview" button style
 Changed: Dialogs now have a close button in the top right corner
 Changed: Both the changelog dialog as well as the dialog to manage baked template got their close buttons replaced with the new close button
-Fixed: Smaller UI fixes
+Fixed: When a layout or template had no decks when loaded, the editor detected unsaved changes on said layout/template
 Fixed: The selection highlight glitched out when applying any autofix, and a selected slot was affected
+Fixed: Smaller UI fixes
 Removed: Removed unused resources

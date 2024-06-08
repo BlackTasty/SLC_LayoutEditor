@@ -602,7 +602,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 layoutRaw += cabinDeck.ToFileString() + "@";
             }
 
-            return layoutRaw != "" ? layoutRaw : "@";
+            return layoutRaw;
         }
 
         public void SaveLayout()

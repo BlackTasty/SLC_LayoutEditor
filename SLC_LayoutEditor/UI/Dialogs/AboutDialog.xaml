@@ -35,12 +35,10 @@
                 <TextBlock Text="Made with" DockPanel.Dock="Right" Style="{StaticResource FooterTextStyle}" VerticalAlignment="Center"/>
                 <StackPanel>
                     <TextBlock Style="{StaticResource FooterTextStyle}">
-                        <Run Text="See what's new in this version:" FontWeight="Bold"/>
-                        <Hyperlink Click="Changelog_Hyperlink_Click">Changelog</Hyperlink>
-                    </TextBlock>
-                    <TextBlock Style="{StaticResource FooterTextStyle}" Margin="0,4,0,0">
-                        <Run Text="Trello roadmap:" FontWeight="Bold"/>
+                        <Run Text="Useful stuff:" FontWeight="Bold"/>
                         <Hyperlink Click="Roadmap_Hyperlink_Click">Roadmap</Hyperlink>
+                        <Run Text="|"/>
+                        <Hyperlink Click="Changelog_Hyperlink_Click">Changelog</Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </DockPanel>
@@ -49,7 +47,7 @@
             <Run Text="This editor is a support tool for"/>
             <Hyperlink Click="SLC_Website_Hyperlink_Click">SLC (Self Loading Cargo)</Hyperlink><Run Text=", and makes creating and modifying cabin layouts as easy as making a few clicks! The editor comes with many useful features such as:"/>
         </TextBlock>
-        <FlowDocumentScrollViewer Margin="0,0,0,8" IsEnabled="False">
+        <FlowDocumentScrollViewer IsEnabled="False">
             <FlowDocument>
                 <List>
                     <ListItem>

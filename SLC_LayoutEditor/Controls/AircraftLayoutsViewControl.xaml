@@ -292,9 +292,9 @@
                         Padding="16.5,16,14.5,14.5"
                         Width="53" Height="53"/>
                     <Button DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteAircraft_Click"
-                        Style="{StaticResource ErrorIconButtonStyle}"
+                        Style="{StaticResource ErrorCardButtonStyle}"
                         ToolTip="Delete this aircraft and all of its layouts. This cannot be undone!"
-                        Margin="24,0,0,0" Height="32" Width="32" Padding="6"
+                        Margin="24,0,0,0"
                         local:GuideAssist.Title="{StaticResource GuideDeleteAircraftTitle}"
                         local:GuideAssist.Description="{StaticResource GuideDeleteAircraftDescription}"
                         local:GuideAssist.HasGuide="True"
