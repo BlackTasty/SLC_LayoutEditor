@@ -42,6 +42,18 @@ namespace SLC_LayoutEditor
 
         public static DateTime SessionStart { get; set; }
 
+        public static bool IsDebugMode
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
         public static bool IsDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
         public static string DefaultEditorLayoutsPath => defaultEditorLayoutsPath;
@@ -67,6 +79,7 @@ namespace SLC_LayoutEditor
         [STAThread]
         public static void Main(string[] args)
         {
+            Logger.Default.ApplyLineLimit();
 #if DEBUG
             RunApp(args);
 #else
@@ -89,6 +102,7 @@ namespace SLC_LayoutEditor
                     "This is awkward but...", MessageBoxButton.OK);
             }
 #endif
+            Logger.Default.ApplyLineLimit();
         }
 
         public void RefreshTheme()

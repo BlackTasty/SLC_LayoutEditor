@@ -18,7 +18,7 @@ namespace SLC_LayoutEditor.Controls
     /// <summary>
     /// Interaction logic for PatchnoteEntry.xaml
     /// </summary>
-    public partial class PatchnoteEntry : DockPanel
+    public partial class PatchnoteEntry : Grid
     {
         public string Intro
         {

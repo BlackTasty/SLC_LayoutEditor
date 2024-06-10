@@ -56,6 +56,7 @@ namespace SLC_LayoutEditor.UI
             vm.Changed += CabinLayoutChanged;
             vm.SelectionRollback += Vm_SelectionRollback;
             vm.ActiveLayoutForceUpdated += Vm_ActiveLayoutForceUpdated;
+            vm.RegenerateThumbnails += Vm_RegenerateThumbnails;
 
             Mediator.Instance.Register(o =>
             {
@@ -95,6 +96,11 @@ namespace SLC_LayoutEditor.UI
             {
                 CreateAircraft();
             }, ViewModelMessage.Keybind_Begin_CreateAircraft);
+        }
+
+        private void Vm_RegenerateThumbnails(object sender, EventArgs e)
+        {
+            control_layout.GenerateThumbnailsForLayout(true);
         }
 
         public void DeselectAllSlots()
@@ -240,7 +246,7 @@ namespace SLC_LayoutEditor.UI
             bool isTemplate = vm.ActiveLayout.IsTemplate;
 
             vm.ActiveLayout.SaveLayout();
-            control_layout.GenerateThumbnailForLayout(true);
+            control_layout.GenerateThumbnailsForLayout(true);
 
             if (!isTemplate)
             {
@@ -871,7 +877,7 @@ namespace SLC_LayoutEditor.UI
         private void SlotTypeChangedForTour()
         {
             if (App.GuidedTour != null && (App.GuidedTour.IsAwaitingSlotChangeToDoor ||
-                App.GuidedTour.IsAwaitingBorderSlotSelection))
+                App.GuidedTour.IsAwaitingBorderSlotSelection && vm.ActiveLayout != null))
             {
                 int doorCount = vm.ActiveLayout.CountSlots(CabinSlotType.Door);
                 int loadingBayCount = vm.ActiveLayout.CountSlots(CabinSlotType.LoadingBay);

@@ -16,6 +16,8 @@ namespace SLC_LayoutEditor.Core.AutoFix
         private string failText;
         private int failCount;
 
+        private bool wasAborted;
+
         private string notificationTitle;
 
         public bool AllSucceeded => failCount == 0;
@@ -25,6 +27,23 @@ namespace SLC_LayoutEditor.Core.AutoFix
         public int FailCount => failCount;
 
         public int TotalCount => successCount + failCount;
+
+        public bool WasAborted => wasAborted;
+
+        public AutoFixResult(string resultText, string successText, string failText, 
+            string notificationTitle)
+        {
+            //this.floor = floor;
+            this.resultText = resultText;
+            this.successText = successText;
+            this.failText = failText;
+            this.notificationTitle = notificationTitle;
+        }
+
+        public void Abort()
+        {
+            wasAborted = true;
+        }
 
         public void CountSuccess()
         {
@@ -46,19 +65,9 @@ namespace SLC_LayoutEditor.Core.AutoFix
             failCount += amount;
         }
 
-        public AutoFixResult(string resultText, string successText, string failText, 
-            string notificationTitle)
-        {
-            //this.floor = floor;
-            this.resultText = resultText;
-            this.successText = successText;
-            this.failText = failText;
-            this.notificationTitle = notificationTitle;
-        }
-
         public void SendNotification(string message)
         {
-            Notification.MakeTimedNotification(notificationTitle, message, 15000, FixedValues.ICON_AUTO_FIX);
+            Notification.MakeTimedNotification(!wasAborted ? notificationTitle : "Auto-fix cancelled", message, 15000, FixedValues.ICON_AUTO_FIX);
         }
 
         public override string ToString()

@@ -43,13 +43,14 @@ namespace SLC_LayoutEditor.ViewModel
         private CabinLayout editNameTarget;
 
         private bool hasUnsavedChanges;
-        private dynamic storedNewValue = new Unset();
-        private Type storedNewValueType;
+        private dynamic storedNewLayout = new Unset();
+        private dynamic storedNewAircraft = new Unset();
 
         public event EventHandler<CabinLayoutSelectedEventArgs> CabinLayoutSelected;
         public event EventHandler<ChangedEventArgs> Changed;
         public event EventHandler<SelectionRollbackEventArgs> SelectionRollback;
         public event EventHandler<EventArgs> ActiveLayoutForceUpdated;
+        public event EventHandler<EventArgs> RegenerateThumbnails;
 
         private VeryObservableCollection<CabinLayoutSet> mLayoutSets = 
             new VeryObservableCollection<CabinLayoutSet>("LayoutSets");
@@ -127,8 +128,9 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public string StairwayErrorMessage => ActiveLayout?.CabinDecks?.Count > 1 ? "Invalid stairway positions!" :
-                "Stairway can be removed!";
+        public bool HasMultipleDecks => ActiveLayout?.CabinDecks?.Count > 1;
+
+        public string StairwayErrorMessage => ActiveLayout?.StairwayErrorMessage;
         #endregion
 
         public VeryObservableCollection<CabinLayoutSet> LayoutSets
@@ -148,7 +150,21 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 if (CheckUnsavedChanges(value))
                 {
+                    storedNewAircraft = value;
                     return;
+                }
+
+                if (mSelectedLayoutSet != value)
+                {
+                    if (value != null)
+                    {
+                        Logger.Default.WriteLog("Switching current aicraft... (Current: {0}; New: {1})", 
+                            mSelectedLayoutSet != null ? mSelectedLayoutSet.AircraftName : "<UNSET>", value.AircraftName);
+                    }
+                    else
+                    {
+                        Logger.Default.WriteLog("Unloading aircraft \"{0}\"...", mSelectedLayoutSet.AircraftName);
+                    }
                 }
 
                 mSelectedLayoutSet = value;
@@ -181,6 +197,7 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     return;
                 }
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Tile_RefreshData, new LayoutTileRefreshData(mSelectedCabinLayout, true));
                 mSelectedCabinLayout = value;
 
                 if (value != null && SelectedTemplate != null)
@@ -207,6 +224,7 @@ namespace SLC_LayoutEditor.ViewModel
                 {
                     return;
                 }
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Tile_RefreshData, new LayoutTileRefreshData(mSelectedTemplate, true));
                 mSelectedTemplate = value;
 
                 if (value != null && SelectedCabinLayout != null)
@@ -450,7 +468,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public int RequiredLettersForAutomation
         {
-            get => ActiveLayout.CabinDecks.Sum(x => x.CountRowsWithSeats());
+            get => ActiveLayout?.CabinDecks.Sum(x => x.CountRowsWithSeats()) ?? 0;
             set
             {
                 mRequiredLettersForAutomation = value;
@@ -778,12 +796,12 @@ namespace SLC_LayoutEditor.ViewModel
             if (hasUnsavedChanges)
             {
                 bool isTemplate = ActiveLayout.IsTemplate;
-                storedNewValue = newValue;
+                storedNewLayout = newValue;
 
-                IDialog dialog = new ConfirmationDialog(
-                    newValue == null ? "Save before returning to overview?" : !isClosing ? "Save before swapping " + (!isTemplate ? "layout" : "template") : 
-                    "Save before closing?",
+                ConfirmationDialog dialog = new ConfirmationDialog(
+                    isClosing ? "Save before closing?" : (newValue == null ? "Save before returning to overview?" : "Save before swapping " + (!isTemplate ? "layout" : "template")),
                     "Do you want to save the current " + (!isTemplate ? "layout" : "template") + " before " + (!isClosing ? "proceeding" : "closing the editor") + "?", DialogType.YesNoCancel);
+                dialog.Width = 430;
 
                 dialog.DialogClosing += UnsavedChangesDialog_DialogClosing;
                 dialog.ShowDialog();
@@ -797,7 +815,15 @@ namespace SLC_LayoutEditor.ViewModel
             SelectedCabinSlots.Clear();
             SelectedCabinSlotTypeId = -1;
             SelectedMultiSlotTypeIndex = -1;
+
+            SelectedAutomationIndex = -1;
+            AutomationSeatLetters = "";
+            AutomationSeatStartNumber = 1;
+            ServiceAreasCount = 1;
+            IsAutomationChecked = false;
             AutomationSelectedDeck = null;
+            AutomationCountEmptySlots = false;
+            MaxRowsPerServiceGroup = 8;
             InvokePropertyChanged(nameof(SelectedCabinSlot));
             InvokePropertyChanged(nameof(SelectedCabinSlots));
             InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
@@ -896,6 +922,7 @@ namespace SLC_LayoutEditor.ViewModel
             if (e.DialogResult == DialogResultType.Yes)
             {
                 shownLayout.SaveLayout();
+                OnRegenerateThumbnails(EventArgs.Empty);
             }
             else if (e.DialogResult == DialogResultType.No)
             {
@@ -903,12 +930,14 @@ namespace SLC_LayoutEditor.ViewModel
             }
             InvokePropertyChanged(nameof(HasUnsavedChanges));
 
-            if (!(storedNewValue is Unset))
+
+            if (e.DialogResult != DialogResultType.Cancel)
             {
-                if (e.DialogResult != DialogResultType.Cancel) // User doesn't cancel, apply newly selected data
+                #region Handle post-layout swap
+                if (!(storedNewLayout is Unset))
                 {
                     HasUnsavedChanges = false;
-                    if (storedNewValue is CabinLayout selectedLayout)
+                    if (storedNewLayout is CabinLayout selectedLayout)
                     {
                         if (!selectedLayout.IsTemplate)
                         {
@@ -930,31 +959,34 @@ namespace SLC_LayoutEditor.ViewModel
                             SelectedTemplate = null;
                         }
                     }
-                    /*else if (storedNewValue is CabinLayoutSet selectedLayoutSet)
-                    {
-                        SelectedLayoutSet = selectedLayoutSet;
-                    }*/
                 }
-                else
+                #endregion
+
+                #region Handle post-aircraft swap
+                if (!(storedNewAircraft is Unset))
+                {
+                    SelectedLayoutSet = (storedNewAircraft is CabinLayoutSet aircraft) ? aircraft : null;
+                }
+                #endregion
+            }
+            else
+            {
+                if (!(storedNewLayout is Unset))
                 {
                     OnSelectionRollback(new SelectionRollbackEventArgs(ActiveLayout,
                         (!IsTemplatingMode ? SelectedLayoutSet.CabinLayouts : SelectedLayoutSet.Templates)
                             .IndexOf(shownLayout), RollbackType.CabinLayout));
-                    /*if (storedNewValue is CabinLayout)
-                    {
-                        OnSelectionRollback(new SelectionRollbackEventArgs(ActiveLayout,
-                            (!IsTemplatingMode ? SelectedLayoutSet.CabinLayouts : SelectedLayoutSet.Templates)
-                                .IndexOf(shownLayout), RollbackType.CabinLayout));
-                    }
-                    else if (storedNewValue is CabinLayoutSet)
-                    {
-                        OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, AircraftListSortConverter.Sort(mLayoutSets)
-                            .ToList().IndexOf(SelectedLayoutSet), RollbackType.CabinLayoutSet));
-                    }*/
+                }
+
+                if (!(storedNewAircraft is Unset))
+                {
+                    OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, AircraftListSortConverter.Sort(mLayoutSets)
+                        .ToList().IndexOf(SelectedLayoutSet), RollbackType.CabinLayoutSet));
                 }
             }
 
-            storedNewValue = new Unset();
+            storedNewLayout = new Unset();
+            storedNewAircraft = new Unset();
             bool isCancel = e.DialogResult == DialogResultType.Cancel;
             Mediator.Instance.NotifyColleagues(ViewModelMessage.UnsavedChangesDialogClosed, !isCancel);
         }
@@ -1060,6 +1092,11 @@ namespace SLC_LayoutEditor.ViewModel
         protected virtual void OnActiveLayoutForceUpdated(EventArgs e)
         {
             ActiveLayoutForceUpdated?.Invoke(this, e);
+        }
+
+        protected virtual void OnRegenerateThumbnails(EventArgs e)
+        {
+            RegenerateThumbnails?.Invoke(this, e);
         }
     }
 }

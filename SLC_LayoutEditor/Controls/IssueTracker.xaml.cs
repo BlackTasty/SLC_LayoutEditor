@@ -115,11 +115,20 @@ namespace SLC_LayoutEditor.Controls
         {
             if (e.Target is CabinLayout target)
             {
+                string message;
+
                 AutoFixResult result = target.FixStairwayPositions();
 
-                string message = result.FailCount > 0 ?
-                    string.Format("{0} non-aisle slots have been overridden while fixing {1} stairway positions.", result.FailCount, result.SuccessCount) :
-                    string.Format("Fixed {0} stairway positions.", result.SuccessCount);
+                if (!result.WasAborted)
+                {
+                    message = result.FailCount > 0 ?
+                        string.Format("{0} non-aisle slots have been overridden while fixing {1} stairway positions.", result.FailCount, result.SuccessCount) :
+                        string.Format("Fixed {0} stairway positions.", result.SuccessCount);
+                }
+                else
+                {
+                    message = "Auto-fix was cancelled by the editor:\nAt least 1 stairway is required for the auto-fix to work.";
+                }
 
                 result.SendNotification(message);
             }

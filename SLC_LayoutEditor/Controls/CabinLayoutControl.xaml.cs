@@ -23,7 +23,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
@@ -99,7 +98,7 @@ namespace SLC_LayoutEditor.Controls
         {
             return cabinLayout != null ?
                 string.Format("{0} (type: {1})", cabinLayout.LayoutName, cabinLayout.IsTemplate ? "template" : "layout") :
-                "Unset";
+                "<UNSET>";
         }
         #endregion
 
@@ -221,7 +220,7 @@ namespace SLC_LayoutEditor.Controls
             }, ViewModelMessage.Deselect_Slots);
         }
 
-        public void GenerateThumbnailForLayout(bool overwrite = false)
+        public void GenerateThumbnailsForLayout(bool overwrite = false)
         {
             if (CabinLayout != null)
             {
@@ -232,7 +231,8 @@ namespace SLC_LayoutEditor.Controls
                 {
                     deckLayoutControl.GenerateThumbnailForDeck(CabinLayout.ThumbnailDirectory, overwrite);
                 }
-                Logger.Default.WriteLog("{0} saved successfully!", CabinLayout.IsTemplate ? "template" : "layout");
+
+                CabinLayout.CheckThumbnailStore();
             }
         }
 
@@ -433,13 +433,13 @@ namespace SLC_LayoutEditor.Controls
             }
             else
             {
-                ShowDeckSizeDialog(12, 7);
+                ShowDeckSizeDialog(7, 15);
             }
         }
 
         private void ShowDeckSizeDialog(int columns, int rows)
         {
-            SpecifyDeckSizeDialog dialog = new SpecifyDeckSizeDialog(columns, rows);
+            SpecifyDeckSizeDialog dialog = new SpecifyDeckSizeDialog(rows, columns);
 
             dialog.DialogClosing += SpecifyDeckSize_DialogClosing;
             dialog.ShowDialog();
@@ -460,6 +460,11 @@ namespace SLC_LayoutEditor.Controls
 
         private void SpecifyDeckSize_DialogClosing(object sender, DialogClosingEventArgs e)
         {
+            if (sender is IDialog dialog)
+            {
+                dialog.DialogClosing -= SpecifyDeckSize_DialogClosing;
+            }
+
             if (e.DialogResult == DialogResultType.OK && e.Data is int[] deckData)
             {
                 CreateCabinDeck(deckData[0], deckData[1]);
@@ -570,7 +575,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void container_decks_Loaded(object sender, RoutedEventArgs e)
         {
-            GenerateThumbnailForLayout();
+            GenerateThumbnailsForLayout();
         }
 
         private void RefreshScrollBarVisibleFlags()

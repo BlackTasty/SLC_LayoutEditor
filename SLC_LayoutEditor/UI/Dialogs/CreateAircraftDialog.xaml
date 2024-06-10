@@ -19,7 +19,8 @@
     <TextBlock DockPanel.Dock="Top" Margin="8,8,8,4" Text="Aircraft name"/>
     <TextBox x:Name="input" DockPanel.Dock="Top" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="8,0"
              KeyUp="input_KeyUp"/>
-    <TextBlock DockPanel.Dock="Top" Style="{StaticResource DialogErrorTextStyle}" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"/>
+    <TextBlock DockPanel.Dock="Top" Style="{StaticResource DialogErrorTextStyle}" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"
+               Margin="8,2,8,0"/>
 
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">

@@ -125,8 +125,9 @@
                                     <MenuItem Header="Buy me a coffee :)" Click="BuyACoffee_Clicked"/>
                                 </MenuItem>
                                 <MenuItem Header="Help">
-                                    <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"/>
-                                    <MenuItem Click="ToggleGuide_Click">
+                                    <MenuItem Header="Welcome screen" Click="OpenWelcomeScreen_Click"
+                                              IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
+                                    <MenuItem Click="ToggleGuide_Click" IsEnabled="{Binding IsViewNotEditor, Converter={StaticResource InverseBooleanConverter}}">
                                         <MenuItem.Style>
                                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                                 <Setter Property="Header" Value="Start tour"/>
@@ -141,6 +142,14 @@
                                     <MenuItem Header="Show keybinds" Command="{Binding ShowKeybindsWindowCommand}"
                                               InputGestureText="Ctrl+K"
                                               IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}"/>
+                                </MenuItem>
+                                <MenuItem Header="DEBUG" Visibility="{Binding IsDebugMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                          IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                    <MenuItem Header="Open current TEMP aircraft folder" Click="DebugMenuItem_Click" Tag="aircraft"/>
+                                    <MenuItem Header="Open current layout thumbnail folder" Click="DebugMenuItem_Click" Tag="layout"/>
+                                    <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                                    <MenuItem Header="Show kofi message" Click="DebugMenuItem_Click" Tag="kofi"/>
+                                    <MenuItem Header="Clear log" Click="DebugMenuItem_Click" Tag="clearlog"/>
                                 </MenuItem>
                             </Menu>
                             <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
@@ -214,8 +223,9 @@
                                     </Run>
                                 </TextBlock>
                             </Border>
-                            <Button VerticalAlignment="Center" Click="BackTo_Click" 
-                                    ToolTip="Return back to the layout overview for this aircraft">
+                            <Button VerticalAlignment="Center" Click="BackTo_Click"  Margin="0,0,32,0"
+                                    ToolTip="Return back to the layout overview for this aircraft"
+                                    IsEnabled="{Binding IsTitleBarEnabled}">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource GreenBorderlessButtonStyle}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -329,10 +339,10 @@
         <!-- Slot type commands -->
         <KeyBinding Key="A" Modifiers="Alt" Command="{Binding SlotTypeAisleCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="W" Modifiers="Alt" Command="{Binding SlotTypeWallCommand}" CommandParameter="{Binding EditorViewModel}"/>
-        <KeyBinding Key="D" Modifiers="Ctrl+Alt" Command="{Binding SlotTypeDoorCommand}" CommandParameter="{Binding EditorViewModel}"/>
-        <KeyBinding Key="L" Modifiers="Ctrl+Alt" Command="{Binding SlotTypeLoadingBayCommand}" CommandParameter="{Binding EditorViewModel}"/>
-        <KeyBinding Key="C" Modifiers="Ctrl+Alt" Command="{Binding SlotTypeCateringDoorCommand}" CommandParameter="{Binding EditorViewModel}"/>
-        <KeyBinding Key="C" Modifiers="Alt" Command="{Binding SlotTypeCockpitCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="D" Modifiers="Alt" Command="{Binding SlotTypeDoorCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="L" Modifiers="Alt" Command="{Binding SlotTypeLoadingBayCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="C" Modifiers="Alt" Command="{Binding SlotTypeCateringDoorCommand}" CommandParameter="{Binding EditorViewModel}"/>
+        <KeyBinding Key="P" Modifiers="Alt" Command="{Binding SlotTypeCockpitCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="G" Modifiers="Alt" Command="{Binding SlotTypeGalleyCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="T" Modifiers="Alt" Command="{Binding SlotTypeToiletCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="K" Modifiers="Alt" Command="{Binding SlotTypeKitchenCommand}" CommandParameter="{Binding EditorViewModel}"/>

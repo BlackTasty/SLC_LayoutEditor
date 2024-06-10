@@ -62,10 +62,12 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Tasty.Logging">
-      <HintPath>..\..\Tasty.Toolkit\Tasty.Logging\bin\Release\Tasty.Logging.dll</HintPath>
+    <Reference Include="Tasty.Logging, Version=1.0.2.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Tasty.Toolkit\Tasty.SQLiteManager\bin\Release\Tasty.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Tasty.ViewModel">
+    <Reference Include="Tasty.ViewModel, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Tasty.Toolkit\Tasty.ViewModel\bin\Release\Tasty.ViewModel.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -210,6 +212,7 @@
     <Compile Include="Core\Guide\GuidedTour.cs" />
     <Compile Include="Core\Guide\LiveGuideData.cs" />
     <Compile Include="Core\IThemeManager.cs" />
+    <Compile Include="Core\Cabin\LayoutTileRefreshData.cs" />
     <Compile Include="Core\Memento\CabinChange.cs" />
     <Compile Include="Core\Memento\CabinHistory.cs" />
     <Compile Include="Core\Memento\CabinHistoryEntry.cs" />

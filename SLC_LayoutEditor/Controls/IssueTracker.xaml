@@ -59,8 +59,6 @@
                                          InvalidSlots="{Binding ActiveLayout.DuplicateSeats}"
                                          ShowEye="True" ShowProblemsChanged="DuplicateSeats_ShowIssuesChanged"
                                          ShowProblems="{Binding ShowDuplicateSeatIssues}"/>
-
-                <Separator Margin="0,4"/>
                 <local:LayoutProblemText ValidText="No duplicate doors"
                                          InvalidText="{Binding ActiveLayout.DuplicateDoors.Count, StringFormat={}{0} duplicate doors found!}"
                                          IsValid="{Binding ActiveLayout.HasNoDuplicateDoors}"
@@ -72,6 +70,7 @@
                                          ShowAutoFix="True"
                                          AutoFixApplying="DuplicateDoors_AutoFixApplying"
                                          Description="Make sure that each door has a unique number across all decks"/>
+                <Separator Margin="0,4"/>
                 <local:LayoutProblemText ValidText="Less than 100 doors/bays"
                                          IsValid="{Binding ActiveLayout.HasNoDoorSurplus}"
                                          ShowEye="False"

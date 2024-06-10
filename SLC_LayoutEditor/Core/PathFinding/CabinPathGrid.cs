@@ -47,7 +47,7 @@ namespace SLC_LayoutEditor.Core.PathFinding
                 grid[slot.Row, slot.Column] = new Node(slot);
             }
             sw.Stop();
-            Logger.Default.WriteLog("Path map update complete, took {0} seconds", Math.Round((decimal)sw.ElapsedMilliseconds, 3));
+            Logger.Default.WriteLog("Path map update complete, took {0} seconds", sw.GetElapsedSecondsForLog());
 
             //PrintPathMap();
         }

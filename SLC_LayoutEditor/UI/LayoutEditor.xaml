@@ -744,7 +744,7 @@
                 ContextMenu="{StaticResource GuideMenu}"/>
     </Grid>
 
-    <controls:AircraftLayoutsViewControl SelectedAirframe="{Binding SelectedLayoutSet}"
+    <controls:AircraftLayoutsViewControl x:Name="layouts_overview" SelectedAirframe="{Binding SelectedLayoutSet}"
                                          IsHeaderEnabled="{Binding SelectedLayoutSet, Converter={StaticResource NotNullToBooleanConverter}}"
                                          GuideMenu="{StaticResource GuideMenu}"
                                          IsTemplatingMode="{Binding IsTemplatingMode}">

@@ -31,6 +31,11 @@ namespace SLC_LayoutEditor.Core.Guide
         private UIElement createLayoutButton;
 
         private CabinLayoutControl editorArea;
+        private UIElement aircraftTitleCard;
+        private UIElement createTemplateButton;
+        private UIElement createLayoutFromOverviewButton;
+        private UIElement deleteAircraftButton;
+
         private UIElement layoutTitleCard;
         private UIElement makeTemplateButton;
         private UIElement reloadLayoutButton;
@@ -118,6 +123,12 @@ namespace SLC_LayoutEditor.Core.Guide
             this.aircraftsArea = editorContainer.area_aircrafts;
             this.createLayoutButton = editorContainer.btn_createLayout;
             this.layoutsArea = editorContainer.area_layouts;
+
+            AircraftLayoutsViewControl layoutsOverview = editorContainer.layouts_overview;
+            this.aircraftTitleCard = layoutsOverview.card_aircraftTitle;
+            this.createLayoutFromOverviewButton = layoutsOverview.btn_createLayout;
+            this.createTemplateButton = layoutsOverview.btn_createTemplate;
+            this.deleteAircraftButton = layoutsOverview.btn_deleteAircraft;
 
             this.layoutTitleCard = editorArea.card_layoutTitle;
             this.makeTemplateButton = editorArea.btn_makeTemplate;
@@ -247,6 +258,31 @@ namespace SLC_LayoutEditor.Core.Guide
                         guidedElement = aircraftsArea;
                         AwaitUserInput = true;
                         break;
+                    case GuidedTourStep.LayoutsOverview:
+                        overrides.Title = "Aircraft layouts overview";
+                        overrides.Description = "By selecting an aircraft, you get an overview of all layouts for this aircraft.\n" +
+                            "If you toggle to templating mode, the view will adjust accordingly and show all templates.";
+                        overrides.ApplyOverlayToAll = true;
+                        overrides.TextPosition = GuideTextPosition.Over;
+                        guidedElement = rootContainer;
+                        break;
+                    case GuidedTourStep.AircraftActionsArea:
+                        overrides.Title = "Aircraft information & general actions";
+                        overrides.Description = "This area shows the name of your selected aircraft, and includes buttons to perform basic actions.\n" +
+                            "These will be described in more detail in the next few steps.";
+                        overrides.IsCircularCutout = false;
+                        overrides.TextPosition = GuideTextPosition.Bottom;
+                        guidedElement = aircraftTitleCard;
+                        break;
+                    case GuidedTourStep.CreateLayoutFromOverview:
+                        guidedElement = createLayoutFromOverviewButton;
+                        break;
+                    case GuidedTourStep.CreateTemplate:
+                        guidedElement = createTemplateButton;
+                        break;
+                    case GuidedTourStep.DeleteAircraft:
+                        guidedElement = deleteAircraftButton;
+                        break;
                     case GuidedTourStep.CreateLayout:
                         overrides.Description = "Now that you've selected an aircraft, it's time to create your new layout!\n\n" +
                             "To do this click on the highlighted button, which will bring up the layout creation dialog.\n" +
@@ -261,6 +297,7 @@ namespace SLC_LayoutEditor.Core.Guide
                         overrides.Description = "This card shows the name of your layout/template, and also contains buttons to perform actions on your layout.\n" +
                             "These will be described in more detail in the next few steps.";
                         overrides.IsCircularCutout = false;
+                        overrides.HighlightXOffset = 2;
                         overrides.TextPosition = GuideTextPosition.Bottom;
                         guidedElement = layoutTitleCard;
                         break;
@@ -559,8 +596,14 @@ namespace SLC_LayoutEditor.Core.Guide
                 case GuidedTourStep.LayoutSelectionCard:
                 case GuidedTourStep.EditorModeToggle:
                 case GuidedTourStep.AircraftSelectionArea:
-                case GuidedTourStep.CreateLayout:
                     return "Selection area";
+                case GuidedTourStep.LayoutsOverview:
+                case GuidedTourStep.AircraftActionsArea:
+                case GuidedTourStep.CreateLayoutFromOverview:
+                case GuidedTourStep.CreateTemplate:
+                case GuidedTourStep.DeleteAircraft:
+                    return "Layouts overview";
+                case GuidedTourStep.CreateLayout:
                 case GuidedTourStep.BasicLayoutActionsArea:
                 case GuidedTourStep.MakeTemplate:
                 case GuidedTourStep.ReloadLayout:
@@ -579,15 +622,17 @@ namespace SLC_LayoutEditor.Core.Guide
                 case GuidedTourStep.RowAndColumnSelect:
                 case GuidedTourStep.PlacingEssentials:
                 case GuidedTourStep.CompletingTheInterior:
+                    return "Creating a basic layout";
                 case GuidedTourStep.SlotConfiguratorToggle:
                 case GuidedTourStep.SelectingSeatAutomation:
                 case GuidedTourStep.SeatAutomationSettings:
                 case GuidedTourStep.ServicePoints:
                 case GuidedTourStep.ServicePointAutomationSettings:
                 case GuidedTourStep.AutoFixingIssues:
+                    return "Configuring slots & auto-fixing";
                 case GuidedTourStep.SaveLayout:
                 case GuidedTourStep.SaveLayoutAs:
-                    return "Creating a layout";
+                    return "Finishing up";
                 default:
                     return null;
             }

@@ -161,7 +161,7 @@
                             local:GuideAssist.Description="{StaticResource GuideMakeTemplateDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
-                            local:GuideAssist.RadiusOffset="-24"
+                            local:GuideAssist.RadiusOffset="-30"
                             local:GuideAssist.HighlightXOffset="-2"
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"
@@ -186,7 +186,7 @@
                             local:GuideAssist.Description="{StaticResource GuideAddDeckDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
-                            local:GuideAssist.RadiusOffset="-28"
+                            local:GuideAssist.RadiusOffset="-34"
                             local:GuideAssist.HighlightXOffset="2"
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}"
@@ -199,7 +199,8 @@
                             local:GuideAssist.Description="{StaticResource GuideReloadLayoutDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
-                            local:GuideAssist.RadiusOffset="-20"
+                            local:GuideAssist.RadiusOffset="-32"
+                            local:GuideAssist.HighlightYOffset="-.5"
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>
@@ -219,7 +220,9 @@
                             local:GuideAssist.Description="{StaticResource GuideDeleteLayoutDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
-                            local:GuideAssist.RadiusOffset="-24"
+                            local:GuideAssist.RadiusOffset="-36"
+                            local:GuideAssist.HighlightXOffset="1"
+                            local:GuideAssist.HighlightYOffset="-.5"
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CabinLayoutControl}, Path=GuideMenu}">
                     <Button.Style>

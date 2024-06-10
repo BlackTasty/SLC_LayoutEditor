@@ -15,6 +15,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 {
     public class CabinSlot : ViewModelBase
     {
+        public event EventHandler<CabinSlotChangedEventArgs> Rerendered;
         public event EventHandler<CabinSlotChangedEventArgs> Changed;
         public event EventHandler<CabinSlotChangedEventArgs> TypeChanged;
         public event EventHandler<CabinSlotChangedEventArgs> ProblematicChanged;
@@ -40,6 +41,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         private string previousState;
 
         public string Guid => guid;
+
+        public bool IsChangedEventHooked { get; set; }
 
         public bool IsDirty
         {
@@ -486,6 +489,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             if (IsEvaluationActive)
             {
                 ProblematicChanged?.Invoke(this, e);
+                OnRerendered(e);
             }
         }
 
@@ -493,6 +497,11 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             IsDirty = true;
             TypeChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnRerendered(CabinSlotChangedEventArgs e)
+        {
+            Rerendered?.Invoke(this, e);
         }
     }
 }

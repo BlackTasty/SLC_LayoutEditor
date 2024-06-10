@@ -97,7 +97,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public string CurrentCountText => !mIsTemplatingMode ? (mLayoutCount != 1 ? string.Format("{0} layouts", mLayoutCount) : "1 template") :
+        public string CurrentCountText => !mIsTemplatingMode ? (mLayoutCount != 1 ? string.Format("{0} layouts", mLayoutCount) : "1 layout") :
                                                 mTemplateCount != 1 ? string.Format("{0} templates", mTemplateCount) : "1 template";
 
         public int TemplateCount
@@ -236,6 +236,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
 
             layoutSetFolder.Delete(true);
+            Directory.Delete(Path.Combine(App.ThumbnailsPath, AircraftName), true);
             OnDeleted(EventArgs.Empty);
         }
 

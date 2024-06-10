@@ -30,8 +30,8 @@ namespace SLC_LayoutEditor.UI.Dialogs
         {
             InitializeComponent();
             vm = DataContext as SpecifyDeckSizeDialogViewModel;
-            vm.Rows = initialRows;
-            vm.Columns = initialColumns;
+            vm.Rows = initialColumns;
+            vm.Columns = initialRows;
         }
 
         private void Create_Click(object sender, RoutedEventArgs e)

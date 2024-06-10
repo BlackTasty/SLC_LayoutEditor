@@ -45,6 +45,8 @@ namespace SLC_LayoutEditor.ViewModel
 
         private bool mIsSearching;
 
+        public bool IsDebugMode => App.IsDebugMode;
+
         #region Commands
         public CreateCabinLayoutCommand CreateCabinLayoutCommand => CommandInterface.CreateCabinLayoutCommand;
 
@@ -205,6 +207,7 @@ namespace SLC_LayoutEditor.ViewModel
                 mDialog = value;
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsDialogOpen));
+                InvokePropertyChanged(nameof(IsTitleBarEnabled));
 
                 if (mDialog != null)
                 {
@@ -271,7 +274,9 @@ namespace SLC_LayoutEditor.ViewModel
 
         public bool IsLayoutOpened => EditorViewModel?.ActiveLayout != null;
 
-        public bool AllowHistoryCommands => !IsViewNotEditor && !IsDialogOpen && !mIsGuideOpen;
+        public bool AllowHistoryCommands => !IsViewNotEditor && IsTitleBarEnabled;
+
+        public bool IsTitleBarEnabled => !IsDialogOpen && !mIsGuideOpen;
 
         public bool IsViewNotEditor => !(mContent is LayoutEditor) && App.Settings.WelcomeScreenShown;
 
@@ -297,6 +302,7 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mIsGuideOpen = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(IsTitleBarEnabled));
             }
         }
 

@@ -48,7 +48,7 @@ namespace SLC_LayoutEditor.Controls
             {
                 CabinLayoutTileViewModel vm = (CabinLayoutTileViewModel)control.DataContext;
                 vm.CabinLayout = control.CabinLayout;
-                vm.LoadThumbnails(control.CabinLayout.ThumbnailDirectory);
+                vm.LoadThumbnails();
             }
         }
 
@@ -78,10 +78,17 @@ namespace SLC_LayoutEditor.Controls
 
             Mediator.Instance.Register(o =>
             {
-                if (o is CabinLayout updated && updated.Guid == CabinLayout.Guid)
+                if (o is LayoutTileRefreshData data && data.CabinLayout != null && data.CabinLayout.Guid == CabinLayout.Guid)
                 {
-                    vm.CabinLayout = updated;
-                    vm.GenerateThumbnails(updated);
+                    vm.CabinLayout = data.CabinLayout;
+                    if (!data.IsLoadingOnly)
+                    {
+                        vm.GenerateThumbnails();
+                    }
+                    else
+                    {
+                        vm.LoadThumbnails();
+                    }
                 }
             }, ViewModelMessage.Layout_Tile_RefreshData);
         }
@@ -100,7 +107,7 @@ namespace SLC_LayoutEditor.Controls
 
         private void GenerateThumbnail_Click(object sender, RoutedEventArgs e)
         {
-            vm.GenerateThumbnails(CabinLayout);
+            vm.GenerateThumbnails();
         }
 
         private void DeleteLayoutTemplate_Click(object sender, RoutedEventArgs e)

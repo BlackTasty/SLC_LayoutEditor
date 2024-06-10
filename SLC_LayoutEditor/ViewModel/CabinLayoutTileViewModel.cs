@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Tasty.Logging;
 using Tasty.ViewModel;
 using Tasty.ViewModel.Communication;
 
@@ -19,7 +20,6 @@ namespace SLC_LayoutEditor.ViewModel
 
         private int mThumbnailIndex;
         private int mThumbnailCount;
-        private bool mHasLayoutDecks;
         private List<BitmapImage> thumbnails = new List<BitmapImage>();
         private string mTitle;
         private bool mIsSelected;
@@ -98,21 +98,23 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 if (o is CabinLayout cabinLayout)
                 {
-                    LoadThumbnails(cabinLayout.ThumbnailDirectory);
+                    LoadThumbnails();
                 }
             }, ViewModelMessage.Layout_Tile_Init);
         }
 
-        public void LoadThumbnails(string thumbnailsPath)
+        public void LoadThumbnails()
         {
             if (thumbnails.Count > 0)
             {
                 thumbnails.Clear();
             }
 
-            if (thumbnailsPath != null && Directory.Exists(thumbnailsPath))
+            string thumbnailsDirectoryPath = CabinLayout.ThumbnailDirectory;
+            if (thumbnailsDirectoryPath != null && Directory.Exists(thumbnailsDirectoryPath))
             {
-                foreach (FileInfo fi in new DirectoryInfo(thumbnailsPath).EnumerateFiles("*.png"))
+                CabinLayout.CheckThumbnailStore();
+                foreach (FileInfo fi in new DirectoryInfo(thumbnailsDirectoryPath).EnumerateFiles("*.png"))
                 {
                     thumbnails.Add(Util.LoadImage(fi.FullName));
                 }
@@ -122,22 +124,24 @@ namespace SLC_LayoutEditor.ViewModel
             ThumbnailIndex = 0;
         }
 
-        public void GenerateThumbnails(CabinLayout cabinLayout)
+        public void GenerateThumbnails()
         {
-            if (mHasLayoutDecks)
+            Logger.Default.WriteLog("User requested generating thumbnail for {0} \"{1}\"", 
+                CabinLayout.IsTemplate ? "template" : "layout", CabinLayout.LayoutName);
+            if (HasLayoutDecks)
             {
-                TemplatePreview preview = new TemplatePreview(cabinLayout);
+                TemplatePreview preview = new TemplatePreview(CabinLayout);
 
                 preview?.GenerateThumbnails(true);
 
                 if (preview?.HasThumbnails ?? false)
                 {
-                    LoadThumbnails(cabinLayout.ThumbnailDirectory);
+                    LoadThumbnails();
                 }
             }
             else
             {
-                LoadThumbnails(null);
+                LoadThumbnails();
             }
         }
     }

@@ -175,6 +175,30 @@ namespace SLC_LayoutEditor.Core
             }
         }
 
+        public static void MoveThumbnailToDelete(CabinDeck cabinDeck)
+        {
+            string thumbnailPath = Path.Combine(cabinDeck.ThumbnailDirectory, cabinDeck.ThumbnailFileName);
+            MoveFileToDelete(new FileInfo(thumbnailPath));
+        }
+
+        public static void MoveFileToDelete(FileInfo fi)
+        {
+            string sourcePath = fi.FullName;
+            string destPath = Path.Combine(App.TempPath, "deleted", string.Format(".{0}", fi.Name));
+
+            MoveFileToDelete(sourcePath, destPath);
+        }
+
+        public static void MoveFileToDelete(string sourcePath, string destPath)
+        {
+            string deleteDirectoryPath = new FileInfo(destPath).Directory.FullName;
+            Directory.CreateDirectory(deleteDirectoryPath);
+
+            File.Move(sourcePath, destPath);
+            SafeDeleteFile(destPath);
+            Directory.Delete(deleteDirectoryPath, true);
+        }
+
         public static string ReadTextResource(string name)
         {
             // Determine path
@@ -195,7 +219,12 @@ namespace SLC_LayoutEditor.Core
             {
                 return false;
             }
-            return !GetSHA256Hash(File.ReadAllText(originalFilePath).ToUpper()).Equals(GetSHA256Hash(current));
+            string savedLayoutCode = File.ReadAllText(originalFilePath).ToUpper();
+            if (savedLayoutCode.Trim() == "@")
+            {
+                savedLayoutCode = "";
+            }
+            return !GetSHA256Hash(savedLayoutCode).Equals(GetSHA256Hash(current));
         }
 
         public static string GetSHA256Hash(string value)

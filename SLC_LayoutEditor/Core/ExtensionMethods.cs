@@ -4,6 +4,7 @@ using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Patcher;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -270,6 +271,12 @@ namespace SLC_LayoutEditor.Core
         public static bool IsSameDialogType(this IDialog source, IDialog compareTo)
         {
             return source?.GetType() == compareTo?.GetType();
+        }
+
+        public static object GetElapsedSecondsForLog(this Stopwatch sw)
+        {
+            return sw.ElapsedMilliseconds > 0 ?
+                Math.Round((decimal)sw.ElapsedMilliseconds / 1000, 3) : "< 1";
         }
     }
 }

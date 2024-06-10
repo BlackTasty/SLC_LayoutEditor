@@ -165,5 +165,18 @@ namespace SLC_LayoutEditor.Controls
         public static readonly DependencyProperty PatchnotesProperty =
             DependencyProperty.Register("Patchnotes", typeof(string[]), typeof(Patchnote), new PropertyMetadata(null));
         #endregion
+
+        private void Changes_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                e.Handled = true;
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.Source = sender;
+                var parent = ((Control)sender).Parent as UIElement;
+                parent.RaiseEvent(eventArg);
+            }
+        }
     }
 }

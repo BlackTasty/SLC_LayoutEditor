@@ -248,7 +248,7 @@
                     </DockPanel>
                 </UniformGrid>
             </Border>
-            <Border Height="55" MinWidth="460" x:Name="card_layoutTitle"
+            <Border Height="55" MinWidth="460" x:Name="card_aircraftTitle"
                     IsEnabled="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=IsHeaderEnabled}">
                 <Border.Style>
                     <Style TargetType="Border" BasedOn="{StaticResource CardLayoutTitleStyle}">
@@ -263,7 +263,7 @@
                     </Style>
                 </Border.Style>
                 <DockPanel Margin="-1.5,0,-1.5,-1.5">
-                    <Button DockPanel.Dock="Left" Click="CreateTemplate_Click"
+                    <Button x:Name="btn_createTemplate" DockPanel.Dock="Left" Click="CreateTemplate_Click"
                             Style="{StaticResource MakeTemplateButtonStyle}"
                             Content="{StaticResource Add}"
                             ToolTip="Create a new template for this aircraft"
@@ -271,38 +271,40 @@
                             local:GuideAssist.Description="{StaticResource GuideCreateTemplateDescription}"
                             local:GuideAssist.HasGuide="True"
                             local:GuideAssist.TextPosition="Bottom"
-                            local:GuideAssist.RadiusOffset="-24"
+                            local:GuideAssist.RadiusOffset="-30"
                             local:GuideAssist.HighlightXOffset="-2"
                             Cursor="Help"
                             ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=GuideMenu}"
                             Margin="-10.5,-10.5,15.5,-8.5"
                             Padding="14.5,16,16.5,14.5"
                             Width="53" Height="53"/>
-                    <Button DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="CreateLayout_Click"
-                        Style="{StaticResource AddDeckButtonStyle}"
-                        ToolTip="Create a new layout for this aircraft"
-                        local:GuideAssist.Title="{StaticResource GuideCreateLayoutTitle}"
-                        local:GuideAssist.Description="{StaticResource GuideCreateLayoutDescription}"
-                        local:GuideAssist.HasGuide="True"
-                        local:GuideAssist.TextPosition="Bottom"
-                        local:GuideAssist.RadiusOffset="-28"
-                        local:GuideAssist.HighlightXOffset="2"
-                        Cursor="Help"
-                        ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=GuideMenu}"
-                        Margin="15.5,-9,-6.5,-7"
-                        Padding="16.5,16,14.5,14.5"
-                        Width="53" Height="53"/>
-                    <Button DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteAircraft_Click"
-                        Style="{StaticResource ErrorCardButtonStyle}"
-                        ToolTip="Delete this aircraft and all of its layouts. This cannot be undone!"
-                        Margin="24,0,0,0"
-                        local:GuideAssist.Title="{StaticResource GuideDeleteAircraftTitle}"
-                        local:GuideAssist.Description="{StaticResource GuideDeleteAircraftDescription}"
-                        local:GuideAssist.HasGuide="True"
-                        local:GuideAssist.TextPosition="Bottom"
-                        local:GuideAssist.RadiusOffset="-24"
-                        Cursor="Help"
-                        ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=GuideMenu}"/>
+                    <Button x:Name="btn_createLayout" DockPanel.Dock="Right" Content="{DynamicResource Add}" Click="CreateLayout_Click"
+                            Style="{StaticResource AddDeckButtonStyle}"
+                            ToolTip="Create a new layout for this aircraft"
+                            local:GuideAssist.Title="{StaticResource GuideCreateLayoutTitle}"
+                            local:GuideAssist.Description="{StaticResource GuideCreateLayoutDescription}"
+                            local:GuideAssist.HasGuide="True"
+                            local:GuideAssist.TextPosition="Bottom"
+                            local:GuideAssist.RadiusOffset="-34"
+                            local:GuideAssist.HighlightXOffset="2"
+                            Cursor="Help"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=GuideMenu}"
+                            Margin="15.5,-9,-6.5,-7"
+                            Padding="16.5,16,14.5,14.5"
+                            Width="53" Height="53"/>
+                    <Button x:Name="btn_deleteAircraft" DockPanel.Dock="Right" Content="{DynamicResource Trash}" Click="DeleteAircraft_Click"
+                            Style="{StaticResource ErrorCardButtonStyle}"
+                            ToolTip="Delete this aircraft and all of its layouts. This cannot be undone!"
+                            Margin="24,0,0,0"
+                            local:GuideAssist.Title="{StaticResource GuideDeleteAircraftTitle}"
+                            local:GuideAssist.Description="{StaticResource GuideDeleteAircraftDescription}"
+                            local:GuideAssist.HasGuide="True"
+                            local:GuideAssist.TextPosition="Bottom"
+                            local:GuideAssist.RadiusOffset="-36"
+                            local:GuideAssist.HighlightXOffset="1"
+                            local:GuideAssist.HighlightYOffset="-.5"
+                            Cursor="Help"
+                            ContextMenu="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AircraftLayoutsViewControl}, Path=GuideMenu}"/>
                     <StackPanel Margin="52,0,0,0">
                         <TextBlock Margin="0,2,0,0" Text="Aircraft" Style="{StaticResource CabinLayoutTitleStyle}"/>
 

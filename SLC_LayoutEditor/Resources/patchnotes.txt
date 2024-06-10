@@ -1,18 +1,27 @@
-﻿07.06.2024 m
-Added: After all this time there finally is an About section now! Can be accessed via "Editor" -> "About", or by pressing F1
+﻿10.06.2024 m
+Added: Selecting an aircraft now shows an overview of all layouts within
 Added: You can now specify the size of a deck when adding one
 Added: You can now auto-fix invalid door placements
 Added: New keybinds to create aircrafts (Ctrl + Shift + N), layouts (Ctrl + N) and templates (Ctrl + Alt + N)
 Added: There is now a "Return to layout/template overview" button in the title bar whenever a layout or template is currently open
+Added: After all this time there finally is an About section now! Can be accessed via "Editor" -> "About", or by pressing F1
 Added: A new seasonal theme has been added. Happy pride month!
+Updated: Added additional guide steps to explain the new layouts overview
 Updated: Replaced the icon for the editor
 Updated: Slighty reworked the way patchnote entries are formatted
+Changed: To better fit in with the other hotkeys, the keybinds for changing slots to doors (new: Alt + D), loading bays (new: Alt + L) and catering doors (new: Alt + C) have changed
+Changed: The keybind for changing slots to cockpit type has been changed to Alt + P
+Changed: In order to prevent issues with Windows, certain characters are now disallowed when creating or renaming any aircraft, layout or template. The disallowed characters are: / : * ? \" < > |
 Changed: Moved the "What's new?" menu item from "Help" to "Editor"
 Changed: Moved the "Welcome screen" menu item from "Editor" to "Help"
+Changed: Increased opacity for error highlighting
 Changed: Moved the "Back to editor" button to the left and updated the appearance, in order to fit in with the "Return to layout overview" button style
 Changed: Dialogs now have a close button in the top right corner
 Changed: Both the changelog dialog as well as the dialog to manage baked template got their close buttons replaced with the new close button
+Changed: Log files are now limited to 2k lines
+Fixed: Certain layout validators are now able to be not required (e.g. layouts with only one deck do not require stairways), thus not showing up as an issue
 Fixed: When a layout or template had no decks when loaded, the editor detected unsaved changes on said layout/template
 Fixed: The selection highlight glitched out when applying any autofix, and a selected slot was affected
-Fixed: Smaller UI fixes
+Fixed: The aircraft dropdown showed "1 template" instead of "1 layout" when not in templating mode
+Fixed: Various smaller UI fixes
 Removed: Removed unused resources

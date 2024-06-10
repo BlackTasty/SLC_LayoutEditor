@@ -47,9 +47,6 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.IsSharedSizeScope="True">
-                                    <Path Data="{StaticResource CheckOutline}" DockPanel.Dock="Right" Height="18" Stretch="Uniform" Margin="8,2,0,0"
-                                          Fill="{DynamicResource ButtonBorderColorBrush}" VerticalAlignment="Center"
-                                          Visibility="{Binding IsComplete, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                     <TextBlock FontSize="13" VerticalAlignment="Center" Margin="8,0,0,0"
                                                Visibility="{Binding HasTargetAmount, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <TextBlock.Style>
@@ -66,6 +63,9 @@
                                         </TextBlock.Style>
                                         <Run Text="{Binding Current}"/><Run Text="{Binding Amount, Mode=OneWay, StringFormat={}/{0}}"/>
                                     </TextBlock>
+                                    <Path Data="{StaticResource CheckOutline}" Height="18" Stretch="Uniform" Margin="8,2,0,0"
+                                          Fill="{DynamicResource ButtonBorderColorBrush}" VerticalAlignment="Center"
+                                          Visibility="{Binding IsComplete, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </StackPanel>
                                 <TextBlock FontSize="13" VerticalAlignment="Center" Margin="0,0,32,0">
                                     <TextBlock.Style>

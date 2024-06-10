@@ -303,5 +303,10 @@ namespace SLC_LayoutEditor.UI.Dialogs
         {
             OnDialogClosing(new DialogClosingEventArgs(RightResult));
         }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            CancelDialog();
+        }
     }
 }

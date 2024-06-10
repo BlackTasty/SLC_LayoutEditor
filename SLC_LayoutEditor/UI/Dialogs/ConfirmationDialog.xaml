@@ -6,7 +6,11 @@
            xmlns:local="clr-namespace:SLC_LayoutEditor.UI.Dialogs"
            mc:Ignorable="d" x:Name="dialog"
            MinHeight="170" Width="370">
-    <TextBlock DockPanel.Dock="Top" Text="{Binding ElementName=dialog, Path=Title}" Style="{DynamicResource Title1TextStyle}" Margin="4"/>
+    <DockPanel DockPanel.Dock="Top" Margin="0,0,4,0">
+        <Button Style="{StaticResource CloseDialogButtonStyle}" Click="Cancel_Click"
+                DockPanel.Dock="Right" Margin="12,10,4,8"/>
+        <TextBlock Text="{Binding ElementName=dialog, Path=Title}" Style="{DynamicResource Title1TextStyle}"/>
+    </DockPanel>
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">
         <Button Content="{Binding ElementName=dialog, Path=LeftButtonText, FallbackValue=Left}" MinWidth="80" Margin="8"

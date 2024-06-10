@@ -88,11 +88,6 @@
             <Style TargetType="TextBlock" BasedOn="{StaticResource LayoutProblemTextStyle}">
                 <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel}, Path=ValidText}"/>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsRequired, UpdateSourceTrigger=PropertyChanged}"
-                                 Value="False">
-                        <Setter Property="Foreground" Value="{StaticResource DisabledColorBrush}"/>
-                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=NotRequiredText}"/>
-                    </DataTrigger>
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsValid, UpdateSourceTrigger=PropertyChanged}"
@@ -113,6 +108,11 @@
                         <Setter Property="Foreground" Value="{StaticResource WarnForegroundColorBrush}"/>
                         <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=InvalidText}"/>
                     </MultiDataTrigger>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=IsRequired, UpdateSourceTrigger=PropertyChanged}"
+                                 Value="False">
+                        <Setter Property="Foreground" Value="{StaticResource ForegroundSecondaryColorBrush}"/>
+                        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:LayoutProblemText}, Path=NotRequiredText}"/>
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
         </TextBlock.Style>

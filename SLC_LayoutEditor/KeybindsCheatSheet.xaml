@@ -101,13 +101,13 @@
                         <controls:KeybindInfo Title="Set selected slots to &quot;Aisle&quot;" Keybind="Alt + A"
                                               Notes="Allows passengers and cabin crew to pass through"/>
                         <controls:KeybindInfo Title="Set selected slots to &quot;Wall&quot;" Keybind="Alt + W"/>
-                        <controls:KeybindInfo Title="Set selected slots to &quot;Door&quot;" Keybind="Ctrl + Alt + D"
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Door&quot;" Keybind="Alt + D"
                                               Notes="Passenger enter and exit the plane through these"/>
-                        <controls:KeybindInfo Title="Set selected slots to &quot;Loading bay&quot;" Keybind="Ctrl + Alt + L"
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Loading bay&quot;" Keybind="Alt + L"
                                               Notes="Used for loading and unloading cargo and luggage"/>
-                        <controls:KeybindInfo Title="Set selected slots to &quot;Catering door&quot;" Keybind="Ctrl + Alt + C"
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Catering door&quot;" Keybind="Alt + C"
                                               Notes="Catering services use this for supplying the plane"/>
-                        <controls:KeybindInfo Title="Set selected slots to &quot;Cockpit&quot;" Keybind="Alt + C"
+                        <controls:KeybindInfo Title="Set selected slots to &quot;Cockpit&quot;" Keybind="Alt + P"
                                               Notes="Used by the captain and co-pilot to access the cockpit"/>
                     </UniformGrid>
                     <Separator/>

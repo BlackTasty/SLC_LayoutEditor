@@ -25,7 +25,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
@@ -486,14 +485,19 @@ namespace SLC_LayoutEditor
             if (!App.Settings.DonateMessageShown &&
                 App.Settings.UsageTime.TotalHours >= FixedValues.HOURS_BEFORE_SUPPORT_NOTIFICATION)
             {
-                supportNotification = Notification.MakeNotification("Enjoying the editor?", 
-                    "I hope you're enjoying working within the editor so far!\n\n" +
-                    "And i you're feeling extra generous today:", FixedValues.ICON_HEART,
-                    (Style)App.Current.FindResource("SupportButtonStyle"), 
-                    4000, FixedValues.HEART_BRUSH);
-                supportNotification.ButtonClicked += BuyACoffee_Clicked;
-                supportNotification.Closed += SupportNotification_Closed;
+                ShowSupportNotification();
             }
+        }
+
+        private void ShowSupportNotification(int showDelay = 4000)
+        {
+            supportNotification = Notification.MakeNotification("Enjoying the editor?",
+                "I hope you're enjoying working within the editor so far!\n\n" +
+                "And i you're feeling extra generous today:", FixedValues.ICON_HEART,
+                (Style)App.Current.FindResource("SupportButtonStyle"),
+                showDelay, FixedValues.HEART_BRUSH);
+            supportNotification.ButtonClicked += BuyACoffee_Clicked;
+            supportNotification.Closed += SupportNotification_Closed;
         }
 
         private void BuyACoffee_Clicked(object sender, EventArgs e)
@@ -524,6 +528,50 @@ namespace SLC_LayoutEditor
             else
             {
                 Mediator.Instance.NotifyColleagues(ViewModelMessage.BackToLayoutOverview);
+            }
+        }
+
+        private void DebugMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (vm.EditorViewModel != null && sender is MenuItem menuItem)
+            {
+                switch (menuItem.Tag.ToString())
+                {
+                    case "aircraft":
+                        if (vm.EditorViewModel.SelectedLayoutSet == null)
+                        {
+                            return;
+                        }
+
+                        string aircraftTempPath = Path.Combine(App.ThumbnailsPath, vm.EditorViewModel.SelectedLayoutSet.AircraftName);
+                        if (!Directory.Exists(aircraftTempPath))
+                        {
+                            return;
+                        }
+
+                        Process.Start(aircraftTempPath);
+                        break;
+                    case "layout":
+                        if (vm.EditorViewModel.ActiveLayout == null)
+                        {
+                            return;
+                        }
+
+                        string layoutTempPath = Path.Combine(vm.EditorViewModel.ActiveLayout.ThumbnailDirectory);
+                        if (!Directory.Exists(layoutTempPath))
+                        {
+                            return;
+                        }
+
+                        Process.Start(layoutTempPath);
+                        break;
+                    case "clearlog":
+                        Logger.Default.ClearLog();
+                        break;
+                    case "kofi":
+                        ShowSupportNotification(0);
+                        break;
+                }
             }
         }
     }

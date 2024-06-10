@@ -43,6 +43,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         private int cachedColumns;
         private int cachedRows;
 
+        private readonly bool eventsHooked;
+
         public double Width { get; set; }
 
         public double Height { get; set; }
@@ -129,9 +131,16 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             get
             {
-                IEnumerable<int> coveredRows = GetRowsCoveredByService();
-                IEnumerable<int> rowsWithSeats = GetRowsWithSeats();
-                return rowsWithSeats.All(x => coveredRows.Contains(x));
+                if (AreKitchensValid)
+                {
+                    IEnumerable<int> coveredRows = GetRowsCoveredByService();
+                    IEnumerable<int> rowsWithSeats = GetRowsWithSeats();
+                    return rowsWithSeats.All(x => coveredRows.Contains(x));
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
 
@@ -309,7 +318,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
             if (!isThumbnailMode)
             {
-                RefreshPathGrid();
+                //RefreshPathGrid();
             }
             currentHash = Util.GetSHA256Hash(ToFileString());
         }
@@ -476,6 +485,7 @@ namespace SLC_LayoutEditor.Core.Cabin
         {
             if (hookEvents)
             {
+                cabinSlot.IsChangedEventHooked = true;
                 cabinSlot.Changed += CabinSlot_CabinSlotChanged;
             }
             CabinSlots.Add(cabinSlot);
@@ -486,7 +496,10 @@ namespace SLC_LayoutEditor.Core.Cabin
         public void RemoveCabinSlot(CabinSlot cabinSlot)
         {
             cabinSlot.MarkForRemoval();
-            cabinSlot.Changed -= CabinSlot_CabinSlotChanged;
+            if (cabinSlot.IsChangedEventHooked)
+            {
+                cabinSlot.Changed -= CabinSlot_CabinSlotChanged;
+            }
             CabinSlots.Remove(cabinSlot);
             InvokePropertyChanged(nameof(DisplayColumns));
             InvokePropertyChanged(nameof(DisplayRows));
@@ -941,7 +954,7 @@ namespace SLC_LayoutEditor.Core.Cabin
             IEnumerable<CabinSlot> unreachableSlots = mCabinSlots.Where(x => x.IsInteractable && !x.IsReachable(this));
             sw.Stop();
             Logger.Default.WriteLog("Check complete, found {0}/{1} unreachable slots in {2} seconds",
-                unreachableSlots.Count(), interactableCount, Math.Round((decimal)sw.ElapsedMilliseconds, 3));
+                unreachableSlots.Count(), interactableCount, sw.GetElapsedSecondsForLog());
 
             foreach (var diff in unreachableSlots.GetDiff(UnreachableSlots))
             {

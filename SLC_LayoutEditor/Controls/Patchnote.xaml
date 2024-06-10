@@ -24,15 +24,19 @@
     </StackPanel>
     <TextBlock Text="{Binding PatchDate, ElementName=patchnote, FallbackValue=Release date}" Margin="12,0" FontSize="10.667" 
                FontStyle="Italic" DockPanel.Dock="Top" Foreground="{DynamicResource ForegroundSecondaryColorBrush}"/>
-    <DataGrid Width="576" ItemsSource="{Binding ElementName=patchnote, Path=Entries}" Margin="0,16,0,0">
-        <DataGrid.Columns>
-            <DataGridTemplateColumn>
-                <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <ContentPresenter Content="{Binding}"/>
-                    </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-        </DataGrid.Columns>
-    </DataGrid>
+    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <DataGrid Width="586" ItemsSource="{Binding ElementName=patchnote, Path=Entries}" Margin="0,16,0,0"
+                  HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
+                  PreviewMouseWheel="Changes_PreviewMouseWheel" Grid.IsSharedSizeScope="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ContentPresenter Content="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </ScrollViewer>
 </DockPanel>

@@ -14,36 +14,7 @@
     <DockPanel DockPanel.Dock="Top" Margin="0,0,4,0">
         <Button Style="{StaticResource CloseDialogButtonStyle}" Click="Cancel_Click"
                 DockPanel.Dock="Right" Margin="12,10,4,8"/>
-        <TextBlock>
-            <TextBlock.Style>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource Title1TextStyle}">
-                    <Setter Property="Text" Value="Specify deck size"/>
-                    <Style.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsTemplate}" Value="True"/>
-                                <Condition Binding="{Binding IsSaveAs}" Value="False"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Text" Value="Create a new template"/>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsTemplate}" Value="False"/>
-                                <Condition Binding="{Binding IsSaveAs}" Value="True"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Text" Value="Save cabin layout as"/>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsTemplate}" Value="True"/>
-                                <Condition Binding="{Binding IsSaveAs}" Value="True"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Text" Value="Save template as"/>
-                        </MultiDataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
+        <TextBlock Text="Specify deck size" Style="{StaticResource Title1TextStyle}"/>
     </DockPanel>
     <UniformGrid Rows="1" Columns="2" DockPanel.Dock="Top">
         <StackPanel>
@@ -68,7 +39,7 @@
 
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"
                 HorizontalAlignment="Right">
-        <Button Content="Create" Width="80" Margin="8" IsEnabled="{Binding IsValid, UpdateSourceTrigger=PropertyChanged}"
+        <Button Content="Create" Width="80" Margin="8"
                 Click="Create_Click"/>
 
         <Button Content="Cancel" Width="80" Margin="8" Click="Cancel_Click"

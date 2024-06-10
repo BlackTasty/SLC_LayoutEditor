@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tasty.ViewModel;
 
@@ -10,6 +11,7 @@ namespace SLC_LayoutEditor.ViewModel
     public class AddEditDialogViewModel : BaseDialogViewModel
     {
         private string nameExistsErrorMessage;
+        private Regex blacklistedCharacters = new Regex(@"(\\|\/|:|\*|\?|\""|<|>|\|)");
 
         private string mName;
         private List<string> mExistingNames = new List<string>();
@@ -45,6 +47,10 @@ namespace SLC_LayoutEditor.ViewModel
                 if (string.IsNullOrWhiteSpace(mName))
                 {
                     return "Name cannot be empty!";
+                }
+                else if (blacklistedCharacters.IsMatch(mName))
+                {
+                    return "Name canot contain any of the following characters:\n\\ / : * ? \" < > |";
                 }
                 else if (mExistingNames.Contains(mName))
                 {

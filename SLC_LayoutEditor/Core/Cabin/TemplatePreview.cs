@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
+using Tasty.Logging;
 using Tasty.ViewModel;
 
 namespace SLC_LayoutEditor.Core.Cabin
@@ -57,8 +58,10 @@ namespace SLC_LayoutEditor.Core.Cabin
                 return;
             }
 
+            Logger.Default.WriteLog("Generating thumbnails...");
             if (!template.IsLoaded)
             {
+                Logger.Default.WriteLog("Loading {0} code...", template.IsTemplate ? "template" : "layout");
                 template.LoadLayoutData();
             }
 
@@ -68,6 +71,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 renderer.GenerateThumbnail(overwrite);
             }
 
+            Logger.Default.WriteLog("Thumbnails generated");
             LoadThumbnails();
             InvokePropertyChanged(nameof(HasThumbnails));
             InvokePropertyChanged(nameof(Thumbnails));
@@ -81,6 +85,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void LoadThumbnails()
         {
+            Logger.Default.WriteLog("Loading thumbnails from disk...");
             thumbnailPaths.Clear();
             deckNames.Clear();
             thumbnails.Clear();
@@ -96,6 +101,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     }
                 }
             }
+            Logger.Default.WriteLog("{0} thumbnails have been loaded for {1} decks", thumbnails.Count, template.CabinDecks.Count);
         }
 
         public override string ToString()
