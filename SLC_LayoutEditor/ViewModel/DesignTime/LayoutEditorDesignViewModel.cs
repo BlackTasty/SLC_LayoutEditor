@@ -11,7 +11,7 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
     {
         public new bool IsSingleCabinSlotSelected => true;
 
-        public new CabinSlot SelectedCabinSlot => new CabinSlot(0, 0, Core.Enum.CabinSlotType.PremiumClassSeat, 1);
+        public new CabinSlot SelectedCabinSlot => new CabinSlot(0, 0, 0, Core.Enum.CabinSlotType.PremiumClassSeat, 1);
 
         public new CabinLayout ActiveLayout => new CabinLayout();
 
@@ -20,8 +20,11 @@ namespace SLC_LayoutEditor.ViewModel.DesignTime
         public LayoutEditorDesignViewModel()
         {
             IsAutomationChecked = false;
+            SelectedAutomationIndex = 0;
+            AutomationAutofillLetters = true;
+
             IsSidebarOpen = true;
-            SelectedCabinSlotTypeId = SelectedCabinSlot.TypeId;
+            SelectedMultiSlotTypeIndex = SelectedCabinSlot.TypeId;
         }
     }
 }

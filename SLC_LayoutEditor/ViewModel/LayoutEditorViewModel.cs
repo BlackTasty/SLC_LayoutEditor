@@ -62,12 +62,17 @@ namespace SLC_LayoutEditor.ViewModel
 
         private List<CabinSlot> mSelectedCabinSlots = new List<CabinSlot>();
         private int mSelectedMultiSlotTypeIndex = -1;
+        private int mSelectedMultiSlotNumber = -1;
+        private string mSelectedMultiSlotLetter;
 
         private int mSelectedAutomationIndex = -1;
         private string mAutomationSeatLetters = "";
         private int mRequiredLettersForAutomation;
         private int mAutomationSeatStartNumber = 1;
         private bool mAutomationCountEmptySlots;
+        private bool mAutomationOnlyAffectsSelection;
+        private bool mAutomationReverseLetterOrder;
+        private bool mAutomationAutofillLetters;
         private bool mIsAutomationChecked;
         private CabinDeck mAutomationSelectedDeck;
         private int mMaxRowsPerServiceGroup = 8;
@@ -92,9 +97,19 @@ namespace SLC_LayoutEditor.ViewModel
         public string SeatLetterError => SelectedCabinSlot != null && !Regex.IsMatch(SelectedCabinSlot.SeatLetter.ToString(), @"^[a-zA-Z]+$") ?
             TEXT_ERROR_SLOT_LETTER_INVALID : null;
 
-        public string SeatLettersError => !AutomationLettersValid ? TEXT_ERROR_SLOT_LETTER_INVALID :
-            !IsSeatLetterCountForAutomationMatching ? 
-            string.Format(TEXT_ERROR_SLOT_LETTER_COUNT, RequiredLettersForAutomation) : null;
+        public string SeatLettersError {
+            get
+            {
+                if (AutomationAutofillLetters)
+                {
+                    return null;
+                }
+
+                return !AutomationLettersValid ? TEXT_ERROR_SLOT_LETTER_INVALID :
+                        !IsSeatLetterCountForAutomationMatching ?
+                        string.Format(TEXT_ERROR_SLOT_LETTER_COUNT, RequiredLettersForAutomation) : null;
+            }
+        }
         #endregion
 
         #region Problem visibility properties
@@ -277,26 +292,11 @@ namespace SLC_LayoutEditor.ViewModel
 
         public bool IgnoreMultiSlotTypeChange { get; private set; }
 
+        public bool ShowSlotNumberInput => SelectedCabinSlots.Any(x => x.HasSlotNumber);
+
+        public bool ShowSlotLetterInput => SelectedCabinSlots.Any(x => x.IsSeat);
+
         public CabinSlot SelectedCabinSlot => mSelectedCabinSlots.FirstOrDefault();
-
-        #region SelectedCabinSlot nested properties
-        public int SelectedCabinSlotTypeId
-        {
-            get => SelectedCabinSlot?.TypeId ?? -1;
-            set
-            {
-                if (SelectedCabinSlot != null)
-                {
-                    SelectedCabinSlot.TypeId = value;
-                }
-
-                InvokePropertyChanged();
-                InvokePropertyChanged(nameof(RequiredLettersForAutomation));
-                InvokePropertyChanged(nameof(SeatLettersError));
-            }
-        }
-
-        #endregion
 
         public bool IsSingleCabinSlotSelected => SelectedCabinSlots.Count <= 1;
 
@@ -348,11 +348,75 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedMultiSlotTypeIndex = value;
                 InvokePropertyChanged();
+
+                if (mSelectedCabinSlots == null || mSelectedCabinSlots.Count == 0)
+                {
+                    return;
+                }
+
+                if (value > -1 && !IgnoreMultiSlotTypeChange)
+                {
+                    ActiveLayout.ToggleIssueChecking(false);
+                    mSelectedCabinSlots.ForEach(x => x.Type = (CabinSlotType)value);
+                    ActiveLayout.ToggleIssueChecking(true);
+                }
                 InvokePropertyChanged(nameof(MultiSlotTypesMatch));
+                InvokePropertyChanged(nameof(ShowSlotNumberInput));
+                InvokePropertyChanged(nameof(ShowSlotLetterInput));
             }
         }
 
-        public bool MultiSlotTypesMatch => mSelectedAutomationIndex > -1;
+        public int SelectedMultiSlotNumber
+        {
+            get => mSelectedMultiSlotNumber;
+            set
+            {
+                mSelectedMultiSlotNumber = value;
+                InvokePropertyChanged();
+
+                if (mSelectedCabinSlots == null || mSelectedCabinSlots.Count == 0)
+                {
+                    return;
+                }
+
+                if (value > -1 && !IgnoreMultiSlotTypeChange)
+                {
+                    ActiveLayout.ToggleIssueChecking(false);
+                    foreach (CabinSlot cabinSlot in mSelectedCabinSlots.Where(x => x.IsDoor || x.IsSeat))
+                    {
+                        cabinSlot.SlotNumber = value;
+                    }
+                    ActiveLayout.ToggleIssueChecking(true);
+                }
+            }
+        }
+
+        public string SelectedMultiSlotLetter
+        {
+            get => mSelectedMultiSlotLetter;
+            set
+            {
+                mSelectedMultiSlotLetter = value.Length > 0 ? value.ToUpper().Last().ToString() : value;
+                InvokePropertyChanged();
+
+                if (mSelectedCabinSlots == null || mSelectedCabinSlots.Count == 0)
+                {
+                    return;
+                }
+
+                if (mSelectedMultiSlotLetter != "" && !IgnoreMultiSlotTypeChange)
+                {
+                    ActiveLayout.ToggleIssueChecking(false);
+                    foreach (CabinSlot cabinSlot in mSelectedCabinSlots.Where(x => x.IsSeat))
+                    {
+                        cabinSlot.SeatLetter = mSelectedMultiSlotLetter[0];
+                    }
+                    ActiveLayout.ToggleIssueChecking(true);
+                }
+            }
+        }
+
+        public bool MultiSlotTypesMatch => mSelectedCabinSlots.Skip(1).All(x => x.Type == SelectedCabinSlot.Type);
 
         public string LayoutOverviewTitle => ActiveLayout != null ? 
             string.Format("Cabin layout \"{0}\"{1}", ActiveLayout.LayoutName, hasUnsavedChanges ? "*" : "") : 
@@ -411,6 +475,7 @@ namespace SLC_LayoutEditor.ViewModel
                 InvokePropertyChanged(nameof(RequiredLettersForAutomation));
                 InvokePropertyChanged(nameof(SeatLettersError));
                 InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
+                InvokePropertyChanged(nameof(ShowAutomationOnlyAffectsSelectionToggle));
             }
         }
         
@@ -450,6 +515,7 @@ namespace SLC_LayoutEditor.ViewModel
             {
                 mSelectedAutomationIndex = value;
                 InvokePropertyChanged();
+                InvokePropertyChanged(nameof(ShowAutomationOnlyAffectsSelectionToggle));
             }
         }
 
@@ -468,7 +534,24 @@ namespace SLC_LayoutEditor.ViewModel
 
         public int RequiredLettersForAutomation
         {
-            get => ActiveLayout?.CabinDecks.Sum(x => x.CountRowsWithSeats()) ?? 0;
+            get
+            {
+                if (!AutomationOnlyAffectsSelection)
+                {
+                    return ActiveLayout?.CabinDecks.Sum(x => x.CountRowsWithSeats()) ?? 0;
+                }
+                else
+                {
+                    var floorGroups = SelectedCabinSlots.GroupBy(x => x.AssignedFloor);
+                    int requiredLetters = 0;
+                    foreach (var floorGroup in floorGroups)
+                    {
+                        requiredLetters += floorGroup.Where(x => x.IsSeat).GroupBy(x => x.Column).Count();
+                    }
+
+                    return requiredLetters;
+                }
+            }
             set
             {
                 mRequiredLettersForAutomation = value;
@@ -477,7 +560,7 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
-        public bool IsSeatLetterCountForAutomationMatching => RequiredLettersForAutomation <= AutomationSeatLetters.Length;
+        public bool IsSeatLetterCountForAutomationMatching => AutomationAutofillLetters || RequiredLettersForAutomation <= AutomationSeatLetters.Length;
 
         public int AutomationSeatStartNumber
         {
@@ -499,6 +582,44 @@ namespace SLC_LayoutEditor.ViewModel
             }
         }
 
+
+        public bool AutomationOnlyAffectsSelection
+        {
+            get => mAutomationOnlyAffectsSelection;
+            set
+            {
+                mAutomationOnlyAffectsSelection = value;
+                InvokePropertyChanged();
+                RequiredLettersForAutomation = RequiredLettersForAutomation;
+            }
+        }
+
+        public bool ShowAutomationOnlyAffectsSelectionToggle => mIsAutomationChecked && mSelectedAutomationIndex == 0;
+
+        public bool AutomationReverseLetterOrder
+        {
+            get => mAutomationReverseLetterOrder;
+            set
+            {
+                mAutomationReverseLetterOrder = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        public bool AutomationAutofillLetters
+        {
+            get => mAutomationAutofillLetters;
+            set
+            {
+                mAutomationAutofillLetters = value;
+                InvokePropertyChanged();
+                InvokePropertyChanged(nameof(AutomationLettersValid));
+                InvokePropertyChanged(nameof(IsSeatLetterCountForAutomationMatching));
+                InvokePropertyChanged(nameof(SeatLettersError));
+            }
+        }
+
+
         public CabinDeck AutomationSelectedDeck
         {
             get => mAutomationSelectedDeck;
@@ -512,7 +633,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         public bool AutomationSelectedDeckValid => mAutomationSelectedDeck != null;
 
-        public bool AutomationLettersValid => Regex.IsMatch(AutomationSeatLetters, @"^[a-zA-Z]+$");
+        public bool AutomationLettersValid => AutomationAutofillLetters || AutomationSeatLetters == "" || Regex.IsMatch(AutomationSeatLetters, @"^[a-zA-Z]+$");
 
         public int ServiceAreasCount
         {
@@ -813,8 +934,9 @@ namespace SLC_LayoutEditor.ViewModel
         public void ClearSelection()
         {
             SelectedCabinSlots.Clear();
-            SelectedCabinSlotTypeId = -1;
             SelectedMultiSlotTypeIndex = -1;
+            SelectedMultiSlotLetter = "";
+            SelectedMultiSlotNumber = -1;
 
             SelectedAutomationIndex = -1;
             AutomationSeatLetters = "";
@@ -828,6 +950,8 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(nameof(SelectedCabinSlots));
             InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
             InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));
+            InvokePropertyChanged(nameof(ShowSlotNumberInput));
+            InvokePropertyChanged(nameof(ShowSlotLetterInput));
         }
 
         private void UpdateSelectedCabinSlots()
@@ -835,20 +959,32 @@ namespace SLC_LayoutEditor.ViewModel
             InvokePropertyChanged(nameof(IsSingleCabinSlotSelected));
             InvokePropertyChanged(nameof(SelectedCabinSlot));
 
-            if (mSelectedCabinSlots.Count <= 1)
-            {
-                InvokePropertyChanged(nameof(SelectedCabinSlotTypeId));
-            }
-
             IgnoreMultiSlotTypeChange = true;
             if (mSelectedCabinSlots?.Count > 0)
             {
-                int checkType = mSelectedCabinSlots.First().TypeId;
-                SelectedMultiSlotTypeIndex = mSelectedCabinSlots.All(x => x.TypeId == checkType) ? checkType : -1;
+                int checkType = SelectedCabinSlot.TypeId;
+                SelectedMultiSlotTypeIndex = mSelectedCabinSlots.Skip(1)
+                    .All(x => x.TypeId == checkType) ? checkType : -1;
+
+                if (ShowSlotLetterInput)
+                {
+                    char checkLetter = SelectedCabinSlots.First(x => x.IsSeat).SeatLetter;
+                    SelectedMultiSlotLetter = mSelectedCabinSlots.Skip(1).Where(x => x.IsSeat)
+                        .All(x => x.SeatLetter == checkLetter) ? checkLetter.ToString() : "";
+                }
+
+                if (ShowSlotNumberInput)
+                {
+                    int checkNumber = SelectedCabinSlots.First(x => x.IsSeat || x.IsDoor).SlotNumber;
+                    SelectedMultiSlotNumber = mSelectedCabinSlots.Skip(1).Where(x => x.IsSeat || x.IsDoor)
+                        .All(x => x.SlotNumber == checkNumber) ? checkNumber : -1;
+                }
             }
             else
             {
                 SelectedMultiSlotTypeIndex = -1;
+                SelectedMultiSlotLetter = "";
+                SelectedMultiSlotNumber = -1;
             }
             IgnoreMultiSlotTypeChange = false;
             InvokePropertyChanged(nameof(ShowSelectedCabinSlotDetails));

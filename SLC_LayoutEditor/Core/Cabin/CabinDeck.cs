@@ -278,7 +278,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     for (int row = 0; row < rows; row++)
                     {
                         CabinSlotType slotType = row == 0 || row == rows - 1 || column == 0 || column == columns - 1 ? CabinSlotType.Wall : CabinSlotType.Aisle;
-                        CabinSlot cabinSlot = new CabinSlot(row, column, slotType, 0);
+                        CabinSlot cabinSlot = new CabinSlot(floor, row, column, slotType, 0);
                         AddCabinSlot(cabinSlot);
                     }
                 }
@@ -311,7 +311,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
                 for (int row = 0; row < columnData.Length; row++)
                 {
-                    CabinSlot cabinSlot = new CabinSlot(columnData[row], row, column);
+                    CabinSlot cabinSlot = new CabinSlot(columnData[row], floor, row, column);
                     AddCabinSlot(cabinSlot, !isThumbnailMode);
                 }
             }
@@ -433,7 +433,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                     do
                     {
                         columnRowsCount++;
-                        CabinSlot slot = new CabinSlot(columnRowsCount, deckColumn.Key);
+                        CabinSlot slot = new CabinSlot(mFloor, columnRowsCount, deckColumn.Key);
                         addedSlots.Add(slot);
                         AddCabinSlot(slot);
                         autoFixResult.CountSuccess();
@@ -756,7 +756,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                         }
                         else if (change.IsInserted)
                         {
-                            AddCabinSlot(new CabinSlot(change.Data, change.Row, change.Column));
+                            AddCabinSlot(new CabinSlot(change.Data, change.Floor, change.Row, change.Column));
                         }
                     }
 

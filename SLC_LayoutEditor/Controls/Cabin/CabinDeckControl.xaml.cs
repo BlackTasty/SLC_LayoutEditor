@@ -29,7 +29,7 @@ using System.Xml.Linq;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
-namespace SLC_LayoutEditor.Controls
+namespace SLC_LayoutEditor.Controls.Cabin
 {
     /// <summary>
     /// Interaction logic for DeckLayoutControl.xaml

@@ -1,4 +1,4 @@
-﻿using SLC_LayoutEditor.Controls;
+﻿using SLC_LayoutEditor.Controls.Cabin;
 using System;
 using System.Collections.Generic;
 using System.Linq;

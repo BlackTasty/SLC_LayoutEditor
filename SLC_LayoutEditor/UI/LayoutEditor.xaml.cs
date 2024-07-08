@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Controls;
+using SLC_LayoutEditor.Controls.Guide;
 using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.AutoFix;
@@ -403,13 +404,6 @@ namespace SLC_LayoutEditor.UI
         {
             if (!vm.IgnoreMultiSlotTypeChange && sender is ComboBox comboBox && comboBox.SelectedItem is CabinSlotType slotType)
             {
-                vm.ActiveLayout.ToggleIssueChecking(false);
-                foreach (CabinSlot cabinSlot in vm.SelectedCabinSlots)
-                {
-                    cabinSlot.Type = slotType;
-                }
-
-                vm.ActiveLayout.ToggleIssueChecking(true);
                 RefreshLayoutFlags();
                 control_layout.RefreshState(false);
 
@@ -429,60 +423,96 @@ namespace SLC_LayoutEditor.UI
             control_layout.RefreshState(false);
         }
 
-        private void Automate_Click(object sender, RoutedEventArgs e)
+        private void AutomateSeatNumeration(IEnumerable<CabinSlot> affectedSlots)
         {
-            isAutomationRunning = true;
-            char[] seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray();
             int currentLetterIndex = 0;
+            List<char> seatLetters = !vm.AutomationAutofillLetters ? 
+                vm.AutomationSeatLetters.Replace(",", "").ToCharArray().ToList() : new List<char>();
 
-            usedAutomationMode = (AutomationMode)vm.SelectedAutomationIndex;
-            switch (usedAutomationMode)
+            var floorGroups = affectedSlots.GroupBy(x => x.AssignedFloor);
+
+            if (!vm.AutomationAutofillLetters)
             {
-                case AutomationMode.SeatNumeration: // Seat numeration
-                    foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
-                    {
-                        var seatRowGroups =
-                            (!vm.AutomationCountEmptySlots ?
-                                cabinDeck.CabinSlots.Where(x => x.IsSeat) :
-                                cabinDeck.CabinSlots)
-                            .GroupBy(x => x.Column).OrderBy(x => x.Key);
+                seatLetters = vm.AutomationSeatLetters.Replace(",", "").ToCharArray().ToList();
+            }
+            else // Analyze rows first
+            {
+                int currentAnalyzeLetter = 0;
+                foreach (var floorGroup in floorGroups)
+                {
+                    var seatRowGroups = floorGroup.GroupBy(x => x.Column).OrderBy(x => x.Key);
+                    seatLetters.AddRange(Util.GetLettersForSeatNumeration(seatRowGroups.Count(), currentAnalyzeLetter));
+                    currentAnalyzeLetter+= seatLetters.Count;
+                }
+            }
 
-                        foreach (var group in seatRowGroups)
+            if (vm.AutomationReverseLetterOrder)
+            {
+                seatLetters.Reverse();
+            }
+
+            foreach (var floorGroup in floorGroups)
+            {
+                var seatRowGroups = floorGroup.GroupBy(x => x.Column).OrderBy(x => x.Key);
+
+                foreach (var group in seatRowGroups)
+                {
+                    if (!group.Any(x => x.IsSeat))
+                    {
+                        continue;
+                    }
+                    int seatNumber = vm.AutomationSeatStartNumber;
+                    IEnumerable<CabinSlot> slots = group.OrderBy(x => x.Row);
+                    int firstSeatRow = slots.FirstOrDefault(x => x.IsSeat)?.Row ?? -1;
+                    if (vm.AutomationCountEmptySlots)
+                    {
+                        slots = slots.Skip(firstSeatRow);
+                    }
+
+                    if (firstSeatRow > -1)
+                    {
+                        foreach (CabinSlot cabinSlot in slots)
                         {
-                            if (!group.Any(x => x.IsSeat))
+                            if (!vm.AutomationCountEmptySlots && !cabinSlot.IsSeat)
                             {
                                 continue;
                             }
-                            int seatNumber = vm.AutomationSeatStartNumber;
-                            IEnumerable<CabinSlot> slots = group.OrderBy(x => x.Row);
-                            int firstSeatRow = slots.FirstOrDefault(x => x.IsSeat)?.Row ?? -1;
-                            if (vm.AutomationCountEmptySlots)
-                            {
-                                slots = slots.Skip(firstSeatRow);
-                            }
-
-                            if (firstSeatRow > -1)
-                            {
-                                foreach (CabinSlot cabinSlot in slots)
-                                {
-                                    if (!vm.AutomationCountEmptySlots && !cabinSlot.IsSeat)
-                                    {
-                                        continue;
-                                    }
-                                    cabinSlot.IsEvaluationActive = false;
-                                    cabinSlot.SeatLetter = seatLetters[currentLetterIndex];
-                                    cabinSlot.SlotNumber = seatNumber;
-                                    seatNumber++;
-                                    cabinSlot.IsEvaluationActive = true;
-                                }
-                            }
-
-                            if (currentLetterIndex + 1 < seatLetters.Length)
-                            {
-                                currentLetterIndex++;
-                            }
+                            cabinSlot.IsEvaluationActive = false;
+                            cabinSlot.SeatLetter = seatLetters[currentLetterIndex];
+                            cabinSlot.SlotNumber = seatNumber;
+                            seatNumber++;
+                            cabinSlot.IsEvaluationActive = true;
                         }
                     }
+
+                    if (currentLetterIndex + 1 < seatLetters.Count)
+                    {
+                        currentLetterIndex++;
+                    }
+                }
+            }
+        }
+
+        private void Automate_Click(object sender, RoutedEventArgs e)
+        {
+            isAutomationRunning = true;
+            usedAutomationMode = (AutomationMode)vm.SelectedAutomationIndex;
+
+            switch (usedAutomationMode)
+            {
+                case AutomationMode.SeatNumeration: // Seat numeration
+                    List<CabinSlot> affectedSlots = !vm.AutomationOnlyAffectsSelection ? new List<CabinSlot>() : vm.SelectedCabinSlots;
+                    if (!vm.AutomationOnlyAffectsSelection)
+                    {
+                        foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)
+                        {
+                            affectedSlots.AddRange(!vm.AutomationCountEmptySlots ?
+                                    cabinDeck.CabinSlots.Where(x => x.IsSeat) :
+                                    cabinDeck.CabinSlots);
+                        }
+                    }
+
+                    AutomateSeatNumeration(affectedSlots);
                     break;
                 case AutomationMode.WallGenerator: // Wall generator
                     IEnumerable<CabinSlot> wallSlots = vm.AutomationSelectedDeck.CabinSlots
@@ -897,7 +927,7 @@ namespace SLC_LayoutEditor.UI
 
         private void RecordHistoryEntry()
         {
-            if (!isAutomationRunning && vm.ActiveLayout != null)
+            if (!isAutomationRunning && vm?.ActiveLayout != null)
             {
                 Dictionary<int, IEnumerable<CabinSlot>> changedPerFloor = new Dictionary<int, IEnumerable<CabinSlot>>();
                 foreach (CabinDeck cabinDeck in vm.ActiveLayout.CabinDecks)

@@ -22,7 +22,7 @@ using System.Windows.Threading;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
-namespace SLC_LayoutEditor.Controls
+namespace SLC_LayoutEditor.Controls.Guide
 {
     /// <summary>
     /// Renders a semi-transparent layer of color over the application, 

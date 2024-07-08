@@ -22,6 +22,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="BorderBrush" Value="{DynamicResource DisabledColorBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledColorBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ComboBoxBorderHoverColorBrush}"/>

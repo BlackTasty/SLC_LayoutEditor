@@ -601,7 +601,7 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
             // Generate new cabin slots at the target row/column
             for (int rowColumn = 0; rowColumn <= (!isAddingColumn ? cabinDeck.Columns : cabinDeck.Rows); rowColumn++)
             {
-                CabinSlot cabinSlot = new CabinSlot(!isAddingColumn ? targetRowColumn : rowColumn, isAddingColumn ? targetRowColumn : rowColumn);
+                CabinSlot cabinSlot = new CabinSlot(cabinDeck.Floor, !isAddingColumn ? targetRowColumn : rowColumn, isAddingColumn ? targetRowColumn : rowColumn);
                 if (changes?.FirstOrDefault(x => x.Row == cabinSlot.Row && x.Column == cabinSlot.Column) is CabinChange change)
                 {
                     cabinSlot.ApplyHistoryChange(change, isUndo);

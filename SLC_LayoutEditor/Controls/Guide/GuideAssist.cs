@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SLC_LayoutEditor.Controls
+namespace SLC_LayoutEditor.Controls.Guide
 {
     internal class GuideAssist : UIElement
     {

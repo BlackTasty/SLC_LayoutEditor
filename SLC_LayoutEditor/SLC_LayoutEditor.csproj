@@ -64,7 +64,7 @@
     </Reference>
     <Reference Include="Tasty.Logging, Version=1.0.2.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Tasty.Toolkit\Tasty.SQLiteManager\bin\Release\Tasty.Logging.dll</HintPath>
+      <HintPath>..\..\Tasty.Toolkit\Tasty.Logging\bin\Release\Tasty.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Tasty.ViewModel, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -75,17 +75,17 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\AircraftLayoutsViewControl.xaml.cs">
+    <Compile Include="Controls\Cabin\AircraftLayoutsViewControl.xaml.cs">
       <DependentUpon>AircraftLayoutsViewControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CabinDeckCardAdorner.cs" />
-    <Compile Include="Controls\CabinLayoutCapacities.xaml.cs">
+    <Compile Include="Controls\Cabin\CabinDeckCardAdorner.cs" />
+    <Compile Include="Controls\Cabin\CabinLayoutCapacities.xaml.cs">
       <DependentUpon>CabinLayoutCapacities.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CabinLayoutControl.xaml.cs">
+    <Compile Include="Controls\Cabin\CabinLayoutControl.xaml.cs">
       <DependentUpon>CabinLayoutControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CabinLayoutTile.xaml.cs">
+    <Compile Include="Controls\Cabin\CabinLayoutTile.xaml.cs">
       <DependentUpon>CabinLayoutTile.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\CheckedTextBlock.xaml.cs">
@@ -94,7 +94,7 @@
     <Compile Include="Controls\ContentTextBlock.xaml.cs">
       <DependentUpon>ContentTextBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\GuideAssist.cs" />
+    <Compile Include="Controls\Guide\GuideAssist.cs" />
     <Compile Include="Controls\IssueTracker.xaml.cs">
       <DependentUpon>IssueTracker.xaml</DependentUpon>
     </Compile>
@@ -104,8 +104,8 @@
     <Compile Include="Controls\LayoutProblemText.xaml.cs">
       <DependentUpon>LayoutProblemText.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\LayoutSelectorInnerCardAdorner.cs" />
-    <Compile Include="Controls\LiveGuideAdorner.cs" />
+    <Compile Include="Controls\Guide\LayoutSelectorInnerCardAdorner.cs" />
+    <Compile Include="Controls\Guide\LiveGuideAdorner.cs" />
     <Compile Include="Controls\Material\ShadowAssist.cs" />
     <Compile Include="Controls\Notifications\INotification.cs" />
     <Compile Include="Controls\Notifications\Notification.xaml.cs">
@@ -130,7 +130,7 @@
     <Compile Include="Controls\ScrollingTextBlock.xaml.cs">
       <DependentUpon>ScrollingTextBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\SeatCapacityBox.xaml.cs">
+    <Compile Include="Controls\Cabin\SeatCapacityBox.xaml.cs">
       <DependentUpon>SeatCapacityBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Material\ToggleButtonAssist.cs" />
@@ -370,23 +370,23 @@
       <DependentUpon>LayoutEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\LayoutEditorViewModel.cs" />
-    <Page Include="Controls\AircraftLayoutsViewControl.xaml">
+    <Page Include="Controls\Cabin\AircraftLayoutsViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\CabinLayoutCapacities.xaml">
+    <Page Include="Controls\Cabin\CabinLayoutCapacities.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\CabinLayoutControl.xaml">
+    <Page Include="Controls\Cabin\CabinLayoutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\CabinDeckControl.xaml">
+    <Page Include="Controls\Cabin\CabinDeckControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\CabinLayoutTile.xaml">
+    <Page Include="Controls\Cabin\CabinLayoutTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -434,7 +434,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\SeatCapacityBox.xaml">
+    <Page Include="Controls\Cabin\SeatCapacityBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -462,7 +462,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\CabinDeckControl.xaml.cs">
+    <Compile Include="Controls\Cabin\CabinDeckControl.xaml.cs">
       <DependentUpon>CabinDeckControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\AppSettings.cs" />

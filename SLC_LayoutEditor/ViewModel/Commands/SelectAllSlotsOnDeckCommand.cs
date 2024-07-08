@@ -1,4 +1,4 @@
-﻿using SLC_LayoutEditor.Controls;
+﻿using SLC_LayoutEditor.Controls.Cabin;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;

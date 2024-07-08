@@ -24,6 +24,8 @@ namespace SLC_LayoutEditor.Core
 {
     static class Util
     {
+        private static string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
         public static int GetProblemCount(int existingProblemCount, params bool[] valuesToCheck)
         {
             int problemCount = existingProblemCount;
@@ -267,6 +269,16 @@ namespace SLC_LayoutEditor.Core
             return new Pen(GetBackgroundFromResources(name), borderThickness);
         }
 
+        public static string GetLettersForSeatNumeration(int rows, int startIndex = 0)
+        {
+            if (rows > letters.Length)
+            {
+                return null;
+            }
+
+            return letters.Substring(startIndex, rows);
+        }
+
         public static IDialog BeginCreateCabinLayout(bool isTemplatingMode, CabinLayoutSet targetSet)
         {
             Logger.Default.WriteLog("User requested creating a new {0} for aircraft \"{1}\"...", isTemplatingMode ? "template" : "layout", targetSet.AircraftName);
@@ -301,8 +313,9 @@ namespace SLC_LayoutEditor.Core
                 return default;
             }
         }
+
         private static ChildItem FindVisualChild<ChildItem>(DependencyObject obj)
-    where ChildItem : DependencyObject
+            where ChildItem : DependencyObject
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
             {

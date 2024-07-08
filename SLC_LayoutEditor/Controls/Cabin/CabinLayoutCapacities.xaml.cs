@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SLC_LayoutEditor.Controls
+namespace SLC_LayoutEditor.Controls.Cabin
 {
     /// <summary>
     /// Interaction logic for CabinLayoutCapacities.xaml

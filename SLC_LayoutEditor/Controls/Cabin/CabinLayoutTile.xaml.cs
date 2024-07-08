@@ -22,7 +22,7 @@ using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using Tasty.ViewModel.Communication;
 
-namespace SLC_LayoutEditor.Controls
+namespace SLC_LayoutEditor.Controls.Cabin
 {
     /// <summary>
     /// Interaction logic for CabinLayoutTile.xaml

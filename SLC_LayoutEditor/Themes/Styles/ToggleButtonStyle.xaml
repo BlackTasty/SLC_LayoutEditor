@@ -384,6 +384,17 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="AutomationReverseLetterOrderToggleButton"
+         TargetType="{x:Type ToggleButton}"
+         BasedOn="{StaticResource AutomationSwitchToggleButton}">
+        <Setter Property="Content" Value="{DynamicResource AutomationOrderAZ}"/>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Content" Value="{DynamicResource AutomationOrderZA}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="LargeTemplateSwitchToggleButton" TargetType="{x:Type ToggleButton}"
            BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
         <Setter Property="Content" Value="{DynamicResource TemplateMode}"/>

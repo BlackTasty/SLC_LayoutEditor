@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Controls;
+using SLC_LayoutEditor.Controls.Guide;
 using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Events;
@@ -493,7 +494,7 @@ namespace SLC_LayoutEditor
         {
             supportNotification = Notification.MakeNotification("Enjoying the editor?",
                 "I hope you're enjoying working within the editor so far!\n\n" +
-                "And i you're feeling extra generous today:", FixedValues.ICON_HEART,
+                "And if you're feeling extra generous today:", FixedValues.ICON_HEART,
                 (Style)App.Current.FindResource("SupportButtonStyle"),
                 showDelay, FixedValues.HEART_BRUSH);
             supportNotification.ButtonClicked += BuyACoffee_Clicked;
@@ -567,6 +568,9 @@ namespace SLC_LayoutEditor
                         break;
                     case "clearlog":
                         Logger.Default.ClearLog();
+                        break;
+                    case "openlog":
+                        Process.Start(Logger.Default.FilePath);
                         break;
                     case "kofi":
                         ShowSupportNotification(0);

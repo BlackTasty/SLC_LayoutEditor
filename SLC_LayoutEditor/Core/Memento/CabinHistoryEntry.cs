@@ -78,17 +78,17 @@ namespace SLC_LayoutEditor.Core.Memento
                         }
                         else if (firstChange.HasTypeChanged())
                         {
-                            subMessage = string.Format("changed type: \"{0}\" >> \"{1}\"", 
+                            subMessage = string.Format("changed type: \"{0}\" » \"{1}\"", 
                                 firstChange.GetSlotTypeDescription(false), firstChange.GetSlotTypeDescription(true));
                         }
                         else if (firstChange.HasSlotNumberChanged())
                         {
-                            subMessage = string.Format("changed number: {0} >> {1}", 
+                            subMessage = string.Format("changed number: {0} » {1}", 
                                 firstChange.GetSlotNumber(false), firstChange.GetSlotNumber(true));
                         }
                         else if (firstChange.HasSlotLetterChanged())
                         {
-                            subMessage = string.Format("changed seat letter: \"{0}\" >> \"{1}\"",
+                            subMessage = string.Format("changed seat letter: \"{0}\" » \"{1}\"",
                                 firstChange.GetSeatLetter(false), firstChange.GetSeatLetter(true));
                         }
 

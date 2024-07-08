@@ -145,6 +145,7 @@
                                 </MenuItem>
                                 <MenuItem Header="DEBUG" Visibility="{Binding IsDebugMode, Converter={StaticResource BooleanToVisibilityConverter}}"
                                           IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                    <MenuItem Header="Open log file" Click="DebugMenuItem_Click" Tag="openlog"/>
                                     <MenuItem Header="Open current TEMP aircraft folder" Click="DebugMenuItem_Click" Tag="aircraft"/>
                                     <MenuItem Header="Open current layout thumbnail folder" Click="DebugMenuItem_Click" Tag="layout"/>
                                     <Separator Style="{StaticResource MenuSeparatorStyle}"/>

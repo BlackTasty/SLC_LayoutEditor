@@ -25,7 +25,7 @@ using System.Windows.Navigation;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
-namespace SLC_LayoutEditor.Controls
+namespace SLC_LayoutEditor.Controls.Cabin
 {
     /// <summary>
     /// Interaction logic for AircraftLayoutsViewControl.xaml

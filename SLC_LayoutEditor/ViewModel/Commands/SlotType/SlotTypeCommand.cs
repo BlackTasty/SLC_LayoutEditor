@@ -27,7 +27,7 @@ namespace SLC_LayoutEditor.ViewModel.Commands.SlotType
                 }
                 else
                 {
-                    vm.SelectedCabinSlotTypeId = (int)targetType;
+                    vm.SelectedMultiSlotTypeIndex = (int)targetType;
                 }
             }
         }

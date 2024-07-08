@@ -1,4 +1,5 @@
 ﻿using SLC_LayoutEditor.Controls;
+using SLC_LayoutEditor.Controls.Cabin;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.ViewModel;

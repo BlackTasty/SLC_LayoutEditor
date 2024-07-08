@@ -22,6 +22,7 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private int mRow;
         private int mColumn;
+        private int assignedFloor;
         private CabinSlotType mType;
         private int mSlotNumber; // Only in use when SlotType is one of the seats or a door
         private char mSeatLetter; // Only in use when SlotType is one of the seats
@@ -74,6 +75,8 @@ namespace SLC_LayoutEditor.Core.Cabin
                 InvokePropertyChanged();
             }
         }
+
+        public int AssignedFloor => assignedFloor;
 
         public CabinSlotType Type
         {
@@ -250,13 +253,14 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
-        public CabinSlot(int row, int column) : this(row, column, CabinSlotType.Aisle, 0)
+        public CabinSlot(int assignedFloor, int row, int column) : this(assignedFloor, row, column, CabinSlotType.Aisle, 0)
         {
 
         }
 
-        public CabinSlot(string slotData, int row, int column) : this()
+        public CabinSlot(string slotData, int assignedFloor, int row, int column) : this()
         {
+            this.assignedFloor = assignedFloor;
             mRow = row;
             mColumn = column;
             ApplySlotData(slotData);
@@ -340,8 +344,9 @@ namespace SLC_LayoutEditor.Core.Cabin
             isLoading = false;
         }
 
-        public CabinSlot(int row, int column, CabinSlotType type, int slotNumber) : this()
+        public CabinSlot(int assignedFloor, int row, int column, CabinSlotType type, int slotNumber) : this()
         {
+            this.assignedFloor = assignedFloor;
             mRow = row;
             mColumn = column;
             mType = type;
