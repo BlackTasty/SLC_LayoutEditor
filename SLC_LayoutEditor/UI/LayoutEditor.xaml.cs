@@ -406,12 +406,6 @@ namespace SLC_LayoutEditor.UI
             {
                 RefreshLayoutFlags();
                 control_layout.RefreshState(false);
-
-                /*control_layout.SelectedCabinSlots.ForEach(x =>
-                {
-                    //x.SlotIssues.RefreshProblematicFlag(true);
-                    x.FireChangedEvent();
-                });*/
                 SlotTypeChangedForTour();
             }
         }

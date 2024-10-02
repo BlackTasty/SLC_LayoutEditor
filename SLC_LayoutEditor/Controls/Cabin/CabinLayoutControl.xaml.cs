@@ -511,6 +511,7 @@ namespace SLC_LayoutEditor.Controls.Cabin
 
         private void ReloadLayout()
         {
+            CabinLayout.UnloadLayout();
             CabinLayout.LoadCabinLayoutFromFile(true);
             RefreshCabinLayout(false);
             OnLayoutReloaded(EventArgs.Empty);

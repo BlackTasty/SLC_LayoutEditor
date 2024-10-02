@@ -523,6 +523,22 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="RedBorderlessButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="6,4"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ButtonErrorBorderHoverColorBrush}"/>
+                <Setter Property="Background" Value="{StaticResource ButtonErrorBackgroundHoverColorBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ErrorForegroundColorBrush}"/>
+                <Setter Property="Background" Value="{StaticResource ButtonErrorBackgroundPressedColorBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="ChipIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultIconButtonStyle}">
         <Setter Property="Foreground" Value="{StaticResource ForegroundDarkColorBrush}"/>
         <Setter Property="Background" Value="Transparent"/>

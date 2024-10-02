@@ -303,10 +303,16 @@ namespace SLC_LayoutEditor.Core.Cabin
         public CabinDeck(string deckData, int floor, bool isThumbnailMode = false)
         {
             mFloor = floor + 1;
+#if DEBUG
+            Logger.Default.WriteLog("Loading cabin deck floor {0} (isThumbnailMode: {1})", LogType.DEBUG, mFloor, isThumbnailMode);
+#endif
 
             string[] columns = deckData.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             for (int column = 0; column < columns.Length; column++)
             {
+#if DEBUG
+                Logger.Default.WriteLog("Analyzing column {0}/{1}", LogType.DEBUG, column + 1, columns.Length);
+#endif
                 string[] columnData = columns[column].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 for (int row = 0; row < columnData.Length; row++)
@@ -321,6 +327,18 @@ namespace SLC_LayoutEditor.Core.Cabin
                 //RefreshPathGrid();
             }
             currentHash = Util.GetSHA256Hash(ToFileString());
+#if DEBUG
+            Logger.Default.WriteLog("Cabin deck floor {0} loaded!", LogType.DEBUG, mFloor);
+#endif
+        }
+
+        public void UnloadDeck()
+        {
+            foreach (CabinSlot cabinSlot in mCabinSlots)
+            {
+                cabinSlot.Changed -= CabinSlot_CabinSlotChanged;
+            }
+            mCabinSlots.Clear();
         }
 
         private void RefreshPathGrid()

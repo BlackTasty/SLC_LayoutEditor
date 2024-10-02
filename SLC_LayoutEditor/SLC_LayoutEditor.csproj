@@ -284,6 +284,9 @@
     <Compile Include="UI\Dialogs\SpecifyDeckSizeDialog.xaml.cs">
       <DependentUpon>SpecifyDeckSizeDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LogOutput.xaml.cs">
+      <DependentUpon>LogOutput.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -333,6 +336,7 @@
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeToiletCommand.cs" />
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeUnavailableSeatCommand.cs" />
     <Compile Include="ViewModel\Commands\SlotType\SlotTypeWallCommand.cs" />
+    <Compile Include="ViewModel\Commands\ToggleLogOutputCommand.cs" />
     <Compile Include="ViewModel\Commands\UndoCommand.cs" />
     <Compile Include="ViewModel\Commands\UndoUntilCommand.cs" />
     <Compile Include="ViewModel\CreateAircraftDialogViewModel.cs" />
@@ -611,6 +615,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\LogOutput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -643,6 +651,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Resource Include="Resources\Inconsolata.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

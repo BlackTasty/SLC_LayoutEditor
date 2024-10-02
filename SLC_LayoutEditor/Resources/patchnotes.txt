@@ -1,7 +1,3 @@
-﻿06.07.2024
-Added: While automating seat numeration, you can now toggle if the automation is only applied to your current selection
-Added: The seat numeration automation now allows you to reverse the order in which letters are applied
-Added: When automating seat numeration, you can now toggle if the editor should handle assigning letters automatically
-Added: When selecting multiple slots, you can now set the number (seats & doors) and letter (for seats) for all slots of them simultaneously
-Changed: Replaced ">>" with "»" in undo/redo entries
-Fixed: The letter input field for seat numeration automation shows the required number of letters now when the input field is empty
+﻿08.07.2024
+Added: When loading layouts, you will now see a "Loading layout" screen to show something is happening. This is especially useful on larger layouts
+Fixed: Changing slots with keybinds didn't trigger the check for unsaved changes

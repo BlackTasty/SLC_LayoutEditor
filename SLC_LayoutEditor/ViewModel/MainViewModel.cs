@@ -41,11 +41,17 @@ namespace SLC_LayoutEditor.ViewModel
         private string mStateToggleButtonContent = FixedValues.MAXIMIZE_ICON;
         private bool mIsMaximized;
         private bool mIsGuideOpen;
-        private bool mIsLayoutLoading = false;
+        private bool mIsLayoutLoading;
+
+        private bool mShowLogOutput;
 
         private bool mIsSearching;
 
         public bool IsDebugMode => App.IsDebugMode;
+
+        #region Debug commands
+        public ToggleLogOutputCommand ToggleLogOutputCommand => CommandInterface.ToggleLogOutputCommand;
+        #endregion
 
         #region Commands
         public CreateCabinLayoutCommand CreateCabinLayoutCommand => CommandInterface.CreateCabinLayoutCommand;
@@ -207,6 +213,7 @@ namespace SLC_LayoutEditor.ViewModel
                 mDialog = value;
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsDialogOpen));
+                InvokePropertyChanged(nameof(DisableControls));
                 InvokePropertyChanged(nameof(IsTitleBarEnabled));
 
                 if (mDialog != null)
@@ -231,10 +238,23 @@ namespace SLC_LayoutEditor.ViewModel
                 mIsLayoutLoading = value;
                 InvokePropertyChanged();
                 InvokePropertyChanged(nameof(IsDialogOpen));
+                InvokePropertyChanged(nameof(DisableControls));
             }
         }
 
-        public bool IsDialogOpen => IsLoadingLayout || mDialog != null;
+        public bool IsDialogOpen => mDialog != null;
+
+        public bool DisableControls => IsDialogOpen || IsLoadingLayout;
+
+        public bool ShowLogOutput
+        {
+            get => mShowLogOutput;
+            set
+            {
+                mShowLogOutput = value;
+                InvokePropertyChanged();
+            }
+        }
 
         public FrameworkElement Content
         {

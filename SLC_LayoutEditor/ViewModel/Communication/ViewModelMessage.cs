@@ -43,6 +43,7 @@ namespace SLC_LayoutEditor.ViewModel.Communication
         Layout_Tile_RefreshData,
         About_Show,
         Changelog_Show,
-        Layout_Loading
+        Layout_Loading,
+        Layout_LoadingPaused
     }
 }

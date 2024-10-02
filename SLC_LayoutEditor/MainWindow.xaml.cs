@@ -84,6 +84,22 @@ namespace SLC_LayoutEditor
             {
                 SetGuideAdorner(null);
             }, ViewModelMessage.GuideAdornerClosed);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is bool isLoading)
+                {
+                    taskbarItemInfo.ProgressState = isLoading ? System.Windows.Shell.TaskbarItemProgressState.Indeterminate : System.Windows.Shell.TaskbarItemProgressState.None;
+                }
+            }, ViewModelMessage.Layout_Loading);
+
+            Mediator.Instance.Register(o =>
+            {
+                if (o is bool isPaused)
+                {
+                    taskbarItemInfo.ProgressState = isPaused ? System.Windows.Shell.TaskbarItemProgressState.Paused : System.Windows.Shell.TaskbarItemProgressState.Indeterminate;
+                }
+            }, ViewModelMessage.Layout_LoadingPaused);
         }
 
         private void HistoryChanged(object sender, HistoryChangedEventArgs<CabinHistoryEntry> e)
@@ -566,17 +582,30 @@ namespace SLC_LayoutEditor
 
                         Process.Start(layoutTempPath);
                         break;
-                    case "clearlog":
+                    case "clear_log":
                         Logger.Default.ClearLog();
                         break;
-                    case "openlog":
+                    case "open_log":
                         Process.Start(Logger.Default.FilePath);
                         break;
                     case "kofi":
                         ShowSupportNotification(0);
                         break;
+                    case "toggle_log_output":
+                        vm.ShowLogOutput = !vm.ShowLogOutput;
+                        break;
                 }
             }
+        }
+
+        private void LogOutput_ClosingRequested(object sender, EventArgs e)
+        {
+            vm.ShowLogOutput = false;
+        }
+
+        private void log_output_Loaded(object sender, RoutedEventArgs e)
+        {
+            Logger.Default.AttachedConsole = log_output;
         }
     }
 }

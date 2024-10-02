@@ -1,5 +1,6 @@
 ﻿using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core.AutoFix;
+using SLC_LayoutEditor.Core.Cabin.Renderer;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Memento;
@@ -8,10 +9,12 @@ using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,6 +32,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         public event EventHandler<CabinDeckChangedEventArgs> CabinDeckCountChanged;
         public event EventHandler<EventArgs> Deleted;
         public event EventHandler<EventArgs> Deleting;
+
+        private BackgroundWorker loadWorker;
 
         private string guid;
         private static readonly Regex slotRegex = new Regex(@"(\w|-| ){5}");
@@ -448,6 +453,24 @@ namespace SLC_LayoutEditor.Core.Cabin
             return autoFixResult;
         }
 
+        public void UnloadLayout()
+        {
+            if (!isLoaded)
+            {
+                return;
+            }
+            Logger.Default.WriteLog("Unloading cabin layout \"{0}\"...", mLayoutName);
+            isLoaded = false;
+            invalidSlots = null;
+            
+            foreach (CabinDeck cabinDeck in mCabinDecks)
+            {
+                cabinDeck.UnloadDeck();
+                cabinDeck.CabinSlotsChanged -= Deck_CabinSlotsChanged;
+            }
+            Logger.Default.WriteLog("Cabin layout unloaded");
+        }
+
         public bool LoadCabinLayoutFromFile(bool reload = false)
         {
             if (!isLoaded || reload)
@@ -458,14 +481,14 @@ namespace SLC_LayoutEditor.Core.Cabin
 
                     restoreSnapshotDialog.DialogClosing += RestoreSnapshotDialog_DialogClosing;
                     restoreSnapshotDialog.ShowDialog();
-                    return true;
                 }
                 else
                 {
                     LoadCabinLayout();
+                    CabinHistory.Instance.Clear();
                 }
 
-                CabinHistory.Instance.Clear();
+                return true;
             }
 
             return false;
@@ -714,7 +737,36 @@ namespace SLC_LayoutEditor.Core.Cabin
             return autoFixResult;
         }
 
+        private string layoutCodeOverride;
+        private bool isReload;
+
         private void LoadCabinLayout(string layoutCodeOverride = null)
+        {
+            this.layoutCodeOverride = layoutCodeOverride;
+            if (loadWorker == null)
+            {
+                loadWorker = new BackgroundWorker();
+                loadWorker.DoWork += LoadWorker_DoWork;
+                loadWorker.RunWorkerCompleted += LoadWorker_RunWorkerCompleted;
+            }
+
+            if (!loadWorker.IsBusy)
+            {
+                if (!isLoaded)
+                {
+                    mCabinDecks = new VeryObservableCollection<CabinDeck>("CabinDecks");
+                }
+
+                loadWorker.RunWorkerAsync();
+            }
+        }
+
+        private void LoadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.FinishLayoutChange, this);
+        }
+
+        private void LoadWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             foreach (CabinDeck cabinDeck in mCabinDecks)
             {
@@ -805,12 +857,21 @@ namespace SLC_LayoutEditor.Core.Cabin
 
         private void LoadCabinLayout(string layoutCode, bool skipRefresh = false, bool isThumbnailMode = false)
         {
+#if DEBUG
+            Logger.Default.WriteLog("Loading cabin layout... (skipRefresh: {1}; isThumbnailMode: {2})", LogType.DEBUG, layoutCode.GetLogValue(), skipRefresh, isThumbnailMode);
+#endif
             string[] decks = layoutCode.ToUpper().Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int floor = 0; floor < decks.Length; floor++)
             {
+#if DEBUG
+                Logger.Default.WriteLog("Analyzing floor {0}/{1}", LogType.DEBUG, floor + 1, decks.Length);
+#endif
                 if (string.IsNullOrWhiteSpace(decks[floor]))
                 {
+#if DEBUG
+                    Logger.Default.WriteLog("No data for this deck, skipping...", LogType.DEBUG);
+#endif
                     continue;
                 }
 
@@ -819,6 +880,7 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     deck.CabinSlotsChanged += Deck_CabinSlotsChanged;
                 }
+
                 mCabinDecks.Add(deck);
             }
 

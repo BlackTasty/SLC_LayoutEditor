@@ -59,7 +59,7 @@
                             <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource AppTitleStyle}"
                                        Margin="8,0" VerticalAlignment="Center"/>
                             <Menu Foreground="{StaticResource ForegroundColorBrush}" FontSize="14" VerticalAlignment="Center"
-                                  IsEnabled="{Binding IsDialogOpen, Converter={StaticResource InverseBooleanConverter}}">
+                                  IsEnabled="{Binding DisableControls, Converter={StaticResource InverseBooleanConverter}}">
                                 <MenuItem IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
                                     <MenuItem.Style>
                                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -145,12 +145,13 @@
                                 </MenuItem>
                                 <MenuItem Header="DEBUG" Visibility="{Binding IsDebugMode, Converter={StaticResource BooleanToVisibilityConverter}}"
                                           IsEnabled="{Binding IsGuideOpen, Converter={StaticResource InverseBooleanConverter}}">
-                                    <MenuItem Header="Open log file" Click="DebugMenuItem_Click" Tag="openlog"/>
                                     <MenuItem Header="Open current TEMP aircraft folder" Click="DebugMenuItem_Click" Tag="aircraft"/>
                                     <MenuItem Header="Open current layout thumbnail folder" Click="DebugMenuItem_Click" Tag="layout"/>
                                     <Separator Style="{StaticResource MenuSeparatorStyle}"/>
+                                    <MenuItem Header="Show/Hide log output" Click="DebugMenuItem_Click" Tag="toggle_log_output"/>
+                                    <MenuItem Header="Open log file" Click="DebugMenuItem_Click" Tag="open_log"/>
                                     <MenuItem Header="Show kofi message" Click="DebugMenuItem_Click" Tag="kofi"/>
-                                    <MenuItem Header="Clear log" Click="DebugMenuItem_Click" Tag="clearlog"/>
+                                    <MenuItem Header="Clear log" Click="DebugMenuItem_Click" Tag="clear_log"/>
                                 </MenuItem>
                             </Menu>
                             <Border Width="1.5" Background="{StaticResource SeparatorColorBrush}" Margin="8,6,12,6" CornerRadius="1"/>
@@ -163,7 +164,7 @@
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding IsLayoutOpened}" Value="True"/>
-                                                    <Condition Binding="{Binding IsDialogOpen}" Value="False"/>
+                                                    <Condition Binding="{Binding DisableControls}" Value="False"/>
                                                     <Condition Binding="{Binding IsGuideOpen}" Value="False"/>
                                                     <Condition Binding="{Binding IsViewNotEditor}" Value="False"/>
                                                 </MultiDataTrigger.Conditions>
@@ -314,7 +315,13 @@
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="taskbarItemInfo"/>
+    </Window.TaskbarItemInfo>
     <Window.InputBindings>
+        <!-- Debug commands -->
+        <KeyBinding Key="D" Modifiers="Ctrl+Alt" Command="{Binding ToggleLogOutputCommand}" CommandParameter="{Binding}"/>
+
         <!-- Basic commands -->
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding CreateCabinLayoutCommand}" CommandParameter="{Binding EditorViewModel}"/>
         <KeyBinding Key="N" Modifiers="Ctrl+Alt" Command="{Binding CreateTemplateCommand}" CommandParameter="{Binding EditorViewModel}"/>
@@ -364,7 +371,7 @@
                 <Style TargetType="DockPanel">
                     <Setter Property="Effect" Value="{x:Null}"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsDialogOpen}" Value="True">
+                        <DataTrigger Binding="{Binding DisableControls}" Value="True">
                             <Setter Property="Effect" Value="{StaticResource DisableBlur}"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -374,18 +381,50 @@
         </DockPanel>
         <notifications:NotificationBar HorizontalAlignment="Right" Panel.ZIndex="100" Margin="0,48,0,96"/>
         <Grid Background="{StaticResource BackdropColorBrush}"
-              Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+              Visibility="{Binding DisableControls, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border x:Name="container_loader" Visibility="{Binding IsLoadingLayout, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    BorderThickness="2" CornerRadius="10"
+                    Background="{StaticResource BackgroundColorBrush}" UseLayoutRounding="True"
+                    HorizontalAlignment="Center"
+                    Margin="64">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsDialogOpen}" Value="True">
+                                <Setter Property="VerticalAlignment" Value="Top"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel>
+                    <StackPanel.OpacityMask>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Border BorderThickness="{Binding ElementName=container_loader, Path=BorderThickness}" 
+                                        CornerRadius="{Binding ElementName=container_loader, Path=CornerRadius}"
+                                        Width="{Binding ElementName=container_loader, Path=ActualWidth}"
+                                        Height="{Binding ElementName=container_loader, Path=ActualHeight}"
+                                        Background="{StaticResource BackgroundColorBrush}"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </StackPanel.OpacityMask>
+                    <TextBlock Text="Loading layout, please wait..." FontSize="30" Margin="8,4,8,0"/>
+                    <ProgressBar IsIndeterminate="True" Margin="0,8,0,2"
+                                 BorderBrush="Transparent"/>
+                </StackPanel>
+            </Border>
             <Border BorderBrush="{DynamicResource ComboBoxBorderColorBrush}" BorderThickness="2" CornerRadius="8"
                     Background="{StaticResource BackgroundColorBrush}" UseLayoutRounding="True"
                     HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,4,4,0"
-                    Margin="64">
+                    Margin="64"
+                    Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <ContentPresenter Content="{Binding Dialog}"/>
             </Border>
         </Grid>
-        <Border Visibility="{Binding IsLoadingLayout, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="Loading layout, please wait..." FontSize="30"/>
-            </StackPanel>
-        </Border>
+        <controls:LogOutput x:Name="log_output" VerticalAlignment="Bottom" Margin="33,0,36,0"
+                            ClosingRequested="LogOutput_ClosingRequested"
+                            Loaded="log_output_Loaded"
+                            Visibility="{Binding ShowLogOutput, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     </Grid>
 </Window>

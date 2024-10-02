@@ -193,6 +193,7 @@
     <SolidColorBrush x:Key="AccentColorBrush" Color="{StaticResource AccentColor}"/>
     <SolidColorBrush x:Key="AccentHoverColorBrush" Color="{StaticResource AccentHoverColor}"/>
     <SolidColorBrush x:Key="AccentPressedColorBrush" Color="{StaticResource AccentPressedColor}"/>
+    <SolidColorBrush x:Key="TextSelectionBrush" Color="{StaticResource AccentPressedColor}" Opacity=".65"/>
 
     <SolidColorBrush x:Key="NotificationProgressForeground" Color="{StaticResource AccentPressedColor}" Opacity=".17"/>
 
@@ -207,6 +208,7 @@
     <SolidColorBrush x:Key="ButtonWarnBackgroundPressedColorBrush" Color="{StaticResource ButtonWarnBackgroundPressedColor}"/>
 
     <SolidColorBrush x:Key="ButtonErrorBorderColorBrush" Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="ButtonErrorBorderHoverColorBrush" Color="{StaticResource ErrorLightColor}"/>
     <SolidColorBrush x:Key="ButtonErrorBorderPressedColorBrush" Color="{StaticResource ErrorDarkColor}"/>
     <SolidColorBrush x:Key="ButtonErrorBackgroundHoverColorBrush" Color="{StaticResource ErrorLightColor}" Opacity=".24"/>
     <SolidColorBrush x:Key="ButtonErrorBackgroundPressedColorBrush" Color="{StaticResource ButtonErrorBackgroundPressedColor}"/>

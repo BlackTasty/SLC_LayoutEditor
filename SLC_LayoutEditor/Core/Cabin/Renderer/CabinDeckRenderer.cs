@@ -830,6 +830,9 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
         {
             if (!hitResult.IsSlot && hitResult is ButtonHitResult buttonHitResult)
             {
+#if DEBUG
+                Logger.Default.WriteLog("Redrawing button... (hit result: {0}; isMouseOver: {1}; isMouseDown: {2})", LogType.DEBUG, hitResult, isMouseOver, isMouseDown);
+#endif
                 if (!buttonHitResult.IsTriangle)
                 {
                     RedrawSelectButton(buttonHitResult, isMouseOver, isMouseDown);
@@ -1088,6 +1091,9 @@ namespace SLC_LayoutEditor.Core.Cabin.Renderer
                 return;
             }
 
+#if DEBUG
+            Logger.Default.WriteLog("Redrawing cabin slot... (row: {0}; column: {1}; isMouseOver: {2}; isGeneratingThumbnail: {3})", LogType.DEBUG, cabinSlot.Row, cabinSlot.Column, isMouseOver, isGeneratingThumbnail);
+#endif
             DrawingVisual drawingVisual = new DrawingVisual();
             Rect cabinSlotRect;
 

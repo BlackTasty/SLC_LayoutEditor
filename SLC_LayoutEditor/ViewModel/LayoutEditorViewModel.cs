@@ -793,14 +793,16 @@ namespace SLC_LayoutEditor.ViewModel
 
             Mediator.Instance.Register(o =>
             {
-                RefreshUnsavedChanges();
+                if (o is bool isClear && !isClear)
+                {
+                    RefreshUnsavedChanges();
+                }
             }, ViewModelMessage.HistoryStepApplied);
 
             Mediator.Instance.Register(o =>
             {
                 if (o is CabinLayout layout)
                 {
-                    Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Loading, true);
                     IsTemplatingMode = layout.IsTemplate;
 
                     if (!layout.IsTemplate)
@@ -914,8 +916,14 @@ namespace SLC_LayoutEditor.ViewModel
 
         public bool CheckUnsavedChanges(dynamic newValue, bool isClosing = false)
         {
+            if (hasUnsavedChanges && (!ActiveLayout?.IsLoaded ?? true))
+            {
+                hasUnsavedChanges = false;
+            }
+
             if (hasUnsavedChanges)
             {
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_LoadingPaused, true);
                 bool isTemplate = ActiveLayout.IsTemplate;
                 storedNewLayout = newValue;
 
@@ -1062,13 +1070,14 @@ namespace SLC_LayoutEditor.ViewModel
             }
             else if (e.DialogResult == DialogResultType.No)
             {
-                shownLayout.LoadCabinLayoutFromFile(true);
+                shownLayout.UnloadLayout();
             }
             InvokePropertyChanged(nameof(HasUnsavedChanges));
 
 
             if (e.DialogResult != DialogResultType.Cancel)
             {
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_LoadingPaused, false);
                 #region Handle post-layout swap
                 if (!(storedNewLayout is Unset))
                 {
@@ -1119,6 +1128,8 @@ namespace SLC_LayoutEditor.ViewModel
                     OnSelectionRollback(new SelectionRollbackEventArgs(SelectedLayoutSet, AircraftListSortConverter.Sort(mLayoutSets)
                         .ToList().IndexOf(SelectedLayoutSet), RollbackType.CabinLayoutSet));
                 }
+
+                Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Loading, false);
             }
 
             storedNewLayout = new Unset();
@@ -1129,6 +1140,7 @@ namespace SLC_LayoutEditor.ViewModel
 
         private bool PrepareCabinLayoutChange(CabinLayout current, CabinLayout updated, EventHandler<EventArgs> deletedCallback)
         {
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Loading, true);
             if (updated != null)
             {
                 Logger.Default.WriteLog("Preparing to switch to cabin layout \"{0}\"...", updated.LayoutName);
@@ -1181,11 +1193,11 @@ namespace SLC_LayoutEditor.ViewModel
 
             OnCabinLayoutSelected(new CabinLayoutSelectedEventArgs(updated?.LayoutName, updated?.IsTemplate ?? false));
 
-
             if (App.Settings.HideSidebarAfterLoadingLayout)
             {
                 IsSidebarOpen = false;
             }
+
             Mediator.Instance.NotifyColleagues(ViewModelMessage.Layout_Loading, false);
         }
 

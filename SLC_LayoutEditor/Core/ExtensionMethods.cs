@@ -103,6 +103,11 @@ namespace SLC_LayoutEditor.Core
             return cabinSlots.Count(x => targetTypes.Contains(x.Type));
         }
 
+        public static string GetLogValue(this string str, string fallback = "<UNSET>")
+        {
+            return str != null ? str : fallback;
+        }
+
         public static void AddRangeDistinct(this List<CabinSlot> source, IEnumerable<CabinSlot> items)
         {
             foreach (var item in items)

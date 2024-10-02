@@ -20,15 +20,7 @@ namespace SLC_LayoutEditor.ViewModel.Commands.SlotType
         {
             if (parameter is LayoutEditorViewModel vm)
             {
-                if (vm.SelectedCabinSlots.Count > 1)
-                {
-                    vm.SelectedMultiSlotTypeIndex = (int)targetType;
-                    vm.SelectedCabinSlots.ForEach(x => x.Type = targetType);
-                }
-                else
-                {
-                    vm.SelectedMultiSlotTypeIndex = (int)targetType;
-                }
+                vm.SelectedMultiSlotTypeIndex = (int)targetType;
             }
         }
 

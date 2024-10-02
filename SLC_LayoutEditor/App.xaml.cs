@@ -80,7 +80,9 @@ namespace SLC_LayoutEditor
         public static void Main(string[] args)
         {
             Logger.Default.ApplyLineLimit();
+
 #if DEBUG
+            //Logger.Default.IsDebug = true;
             RunApp(args);
 #else
             try

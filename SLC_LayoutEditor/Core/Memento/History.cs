@@ -254,7 +254,7 @@ namespace SLC_LayoutEditor.Core.Memento
                 return;
             }
             HistoryChanged?.Invoke(this, e);
-            Mediator.Instance.NotifyColleagues(ViewModelMessage.HistoryStepApplied);
+            Mediator.Instance.NotifyColleagues(ViewModelMessage.HistoryStepApplied, e.IsClear);
         }
 
         protected virtual void OnHistoryChanging(EventArgs e)

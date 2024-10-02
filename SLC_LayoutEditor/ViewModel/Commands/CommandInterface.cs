@@ -9,6 +9,8 @@ namespace SLC_LayoutEditor.ViewModel.Commands
 {
     internal static class CommandInterface
     {
+        private static readonly ToggleLogOutputCommand _toggleLogOutputCommand = new ToggleLogOutputCommand();
+
         private static readonly CreateCabinLayoutCommand _createCabinLayoutCommand = new CreateCabinLayoutCommand();
         private static readonly CreateTemplateCommand _createTemplateCommand = new CreateTemplateCommand();
         private static readonly CreateAircraftCommand _createAircraftCommand = new CreateAircraftCommand();
@@ -51,6 +53,10 @@ namespace SLC_LayoutEditor.ViewModel.Commands
         private static readonly SlotTypeToiletCommand _slotTypeToiletCommand = new SlotTypeToiletCommand();
         private static readonly SlotTypeUnavailableSeatCommand _slotTypeUnavailableSeatCommand = new SlotTypeUnavailableSeatCommand();
         private static readonly SlotTypeWallCommand _slotTypeWallCommand = new SlotTypeWallCommand();
+        #endregion
+
+        #region Debug commands
+        public static ToggleLogOutputCommand ToggleLogOutputCommand => _toggleLogOutputCommand;
         #endregion
 
         public static CreateCabinLayoutCommand CreateCabinLayoutCommand => _createCabinLayoutCommand;

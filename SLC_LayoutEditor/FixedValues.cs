@@ -29,6 +29,9 @@ namespace SLC_LayoutEditor
         internal static readonly Brush PATCH_REMOVED_BRUSH = (Brush)App.Current.FindResource("PatchRemovedBrush");
         internal static readonly Brush PATCH_DISABLED_BRUSH = (Brush)App.Current.FindResource("PatchDisabledBrush");
 
+        internal static readonly Brush LOG_DEBUG_BRUSH = (Brush)App.Current.FindResource("HeartColorBrush");
+        internal static readonly Brush LOG_VERBOSE_BRUSH = (Brush)App.Current.FindResource("HyperlinkHoverColorBrush");
+
         internal static readonly Brush LIVE_GUIDE_OVERLAY_BRUSH = (Brush)App.Current.FindResource("LiveGuideOverlayBrush");
         internal static readonly Brush LIVE_GUIDE_TEXT_BORDER_BRUSH = (Brush)App.Current.FindResource("ButtonBorderColorBrush");
         internal static readonly Brush LIVE_GUIDE_TEXT_BACK_BRUSH = (Brush)App.Current.FindResource("BackgroundLightBrush");

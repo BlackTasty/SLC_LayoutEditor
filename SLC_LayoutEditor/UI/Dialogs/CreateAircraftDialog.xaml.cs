@@ -30,7 +30,7 @@ namespace SLC_LayoutEditor.UI.Dialogs
 
         private void ConfirmDialog()
         {
-            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult((DataContext as AddEditDialogViewModel).Name)));
+            OnDialogClosing(new DialogClosingEventArgs(DialogResultType.OK, new AddDialogResult(vm.Name)));
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
