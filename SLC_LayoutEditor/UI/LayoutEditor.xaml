@@ -134,7 +134,7 @@
         </ContextMenu>
     </Grid.Resources>
     <Grid.ColumnDefinitions>
-        <ColumnDefinition x:Name="column_sidebar" Width="365"/>
+        <ColumnDefinition x:Name="column_sidebar" Width="381"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="Auto"/>
     </Grid.ColumnDefinitions>
@@ -832,7 +832,7 @@
             </ToggleButton>
         </AdornerDecorator>
     </Grid>
-    <Border Background="{DynamicResource BackdropColorBrush}" Grid.ColumnSpan="3"
+    <Border Background="{DynamicResource BackdropColorBrush}" Grid.ColumnSpan="3" Padding="16"
             Visibility="{Binding IsLoadingLayout, Converter={StaticResource BooleanToVisibilityConverter}}">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="16">
             <TextBlock Style="{StaticResource Title1TextStyle}" HorizontalAlignment="Center">

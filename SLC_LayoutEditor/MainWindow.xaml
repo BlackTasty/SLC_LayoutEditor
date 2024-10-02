@@ -383,8 +383,8 @@
         <Grid Background="{StaticResource BackdropColorBrush}"
               Visibility="{Binding DisableControls, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Border x:Name="container_loader" Visibility="{Binding IsLoadingLayout, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    BorderThickness="2" CornerRadius="10"
-                    Background="{StaticResource BackgroundColorBrush}" UseLayoutRounding="True"
+                    BorderThickness="2" CornerRadius="10" Padding="8,8,8,0"
+                    Background="{StaticResource BackgroundDarkBrush}" UseLayoutRounding="True"
                     HorizontalAlignment="Center"
                     Margin="64">
                 <Border.Style>
@@ -410,7 +410,7 @@
                         </VisualBrush>
                     </StackPanel.OpacityMask>
                     <TextBlock Text="Loading layout, please wait..." FontSize="30" Margin="8,4,8,0"/>
-                    <ProgressBar IsIndeterminate="True" Margin="0,8,0,2"
+                    <ProgressBar IsIndeterminate="True" Margin="-8,8,-8,2"
                                  BorderBrush="Transparent"/>
                 </StackPanel>
             </Border>

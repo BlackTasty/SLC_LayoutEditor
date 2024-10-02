@@ -1,8 +1,10 @@
-﻿using System;
+﻿using SLC_LayoutEditor.Core.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SLC_LayoutEditor.Core.Cabin
 {
@@ -22,6 +24,8 @@ namespace SLC_LayoutEditor.Core.Cabin
         public bool HasAdjacentAisle => adjacentSlots.Any(x => x?.IsAir ?? false) ||
              center.IsSeat && ((TopSlot?.IsSeat ?? false) || (BottomSlot?.IsSeat ?? false));
 
+        public bool HasAdjacentSlotsWithType => adjacentSlots.Any(x => x?.Type == center.Type);
+
         public List<CabinSlot> Adjacent => adjacentSlots;
 
         public AdjacentSlots(CabinDeck cabinDeck, CabinSlot center)
@@ -31,6 +35,25 @@ namespace SLC_LayoutEditor.Core.Cabin
             adjacentSlots.Add(cabinDeck.GetSlotAtPosition(center.Row + 1, center.Column)); // right slot
             adjacentSlots.Add(cabinDeck.GetSlotAtPosition(center.Row, center.Column - 1)); // top slot
             adjacentSlots.Add(cabinDeck.GetSlotAtPosition(center.Row, center.Column + 1)); // bottom slot
+        }
+
+        public bool IsGroupReachable(CabinDeck cabinDeck)
+        {
+            return IsGroupReachable(cabinDeck, null);
+        }
+
+        private bool IsGroupReachable(CabinDeck cabinDeck, CabinSlot source)
+        {
+            foreach (CabinSlot groupedSlot in adjacentSlots.Where(x => x != null && x.GetPosition() != source?.GetPosition() && x.Type == center.Type))
+            {
+                if (cabinDeck.PathGrid.HasPathToAny(groupedSlot, cabinDeck.CabinSlots.Where(x => x.Type == CabinSlotType.Door)) ||
+                    new AdjacentSlots(cabinDeck, groupedSlot).IsGroupReachable(cabinDeck, center))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -253,6 +253,8 @@ namespace SLC_LayoutEditor.Core.Cabin
             }
         }
 
+        protected bool IsGroupableType => Type == CabinSlotType.Cockpit || Type == CabinSlotType.Kitchen;
+
         public CabinSlot(int assignedFloor, int row, int column) : this(assignedFloor, row, column, CabinSlotType.Aisle, 0)
         {
 
@@ -391,6 +393,10 @@ namespace SLC_LayoutEditor.Core.Cabin
                 {
                     bool hasPath = deck.PathGrid.HasPathToAny(this, deck.CabinSlots.Where(x => x.Type == CabinSlotType.Door));
                     return hasPath;
+                }
+                else if (IsGroupableType && adjacentSlots.HasAdjacentSlotsWithType)
+                {
+                    return adjacentSlots.IsGroupReachable(deck);
                 }
                 else
                 {

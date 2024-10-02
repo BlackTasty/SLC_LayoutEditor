@@ -131,25 +131,28 @@
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
-                                                Margin="0,0,0,12" HorizontalAlignment="Stretch" Width="318">
-                                        <TextBlock FontSize="16" Margin="0,0,0,0"
+                                    <Border Visibility="{Binding CabinSlots, Converter={StaticResource NotNullToVisibilityConverter}}"
+                                            Margin="0,12,0,0" HorizontalAlignment="Stretch"
+                                            Style="{StaticResource CardStyle}" Padding="6"
+                                            Background="{DynamicResource BackdropColorBrush}">
+                                        <StackPanel Width="318">
+                                            <TextBlock FontSize="16" Margin="2,0,0,8"
                                                    Foreground="{DynamicResource ForegroundSecondaryColorBrush}">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                    <Setter Property="Text" Value="{Binding Floor, StringFormat={}Floor {0}}"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Floor}" Value="1">
-                                                            <Setter Property="Text" Value="Lower deck"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Floor}" Value="2">
-                                                            <Setter Property="Text" Value="Upper deck"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <local:LayoutProblemText ValidText="All slots are reachable"
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                        <Setter Property="Text" Value="{Binding Floor, StringFormat={}Floor {0}}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Floor}" Value="1">
+                                                                <Setter Property="Text" Value="Lower deck"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Floor}" Value="2">
+                                                                <Setter Property="Text" Value="Upper deck"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <local:LayoutProblemText ValidText="All slots are reachable"
                                                                  Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllSlotsReachable}"
                                                                  InvalidSlots="{Binding UnreachableSlots}"
@@ -157,18 +160,18 @@
                                                                  ShowProblemsChanged="UnreachableSlots_ShowProblemsChanged"
                                                                  ShowProblems="{Binding ShowUnreachableSlots}"
                                                                  Description="If there are unreachable &quot;interactable&quot; slots (seats, intercoms, toilets, etc.), it will show up as an issue here">
-                                            <local:LayoutProblemText.Style>
-                                                <Style TargetType="local:LayoutProblemText">
-                                                    <Setter Property="InvalidText" Value="{Binding UnreachableSlots.Count, StringFormat={}{0} unreachable slots detected!}"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding UnreachableSlots.Count}" Value="1">
-                                                            <Setter Property="InvalidText" Value="1 unreachable slot detected!"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </local:LayoutProblemText.Style>
-                                        </local:LayoutProblemText>
-                                        <local:LayoutProblemText ValidText="No missing cabin slots"
+                                                <local:LayoutProblemText.Style>
+                                                    <Style TargetType="local:LayoutProblemText">
+                                                        <Setter Property="InvalidText" Value="{Binding UnreachableSlots.Count, StringFormat={}{0} unreachable slots detected!}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding UnreachableSlots.Count}" Value="1">
+                                                                <Setter Property="InvalidText" Value="1 unreachable slot detected!"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </local:LayoutProblemText.Style>
+                                            </local:LayoutProblemText>
+                                            <local:LayoutProblemText ValidText="No missing cabin slots"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Missing cabin slots found!"
                                                                  IsValid="{Binding AreSlotsValid}"
@@ -177,14 +180,14 @@
                                                                  AutoFixApplying="Slots_AutoFixApplying"
                                                                  Description="This layout validator checks if your deck has &quot;holes&quot;, i.e. missing slots"/>
 
-                                        <local:LayoutProblemText ValidText="Passenger doors available"
+                                            <local:LayoutProblemText ValidText="Passenger doors available"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No passenger doors for this deck!"
                                                                  IsValid="{Binding AreDoorsValid}"
                                                                  Description="Each deck needs at least one passenger door. Also make sure that each layout has at least one loading bay, catering doors are optional"/>
 
-                                        <Separator Margin="0,4"/>
-                                        <local:LayoutProblemText ValidText="CAT/LB on correct side"
+                                            <Separator Margin="0,4"/>
+                                            <local:LayoutProblemText ValidText="CAT/LB on correct side"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="CAT/LB detected on the left side"
                                                                  InvalidSlots="{Binding InvalidCateringDoorsAndLoadingBays}"
@@ -194,7 +197,7 @@
                                                                  IsValid="{Binding AreCateringAndLoadingBaysValid}" IsSevereProblem="False"
                                                                  Description="Catering doors and loading bays should face the right side of the layout (top side in the view)"/>
 
-                                        <local:LayoutProblemText ValidText="All interior slots on valid positions"
+                                            <local:LayoutProblemText ValidText="All interior slots on valid positions"
                                                                  Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllInteriorSlotPositionsValid}"
                                                                  InvalidSlots="{Binding InvalidPositionedSlots}"
@@ -202,19 +205,19 @@
                                                                  ShowProblemsChanged="InvalidPositionedSlots_ShowProblemsChanged"
                                                                  ShowProblems="{Binding ShowInteriorPositionIssues}"
                                                                  Description="Slot types like toilets, seats and so on can only be placed in the interior">
-                                            <local:LayoutProblemText.Style>
-                                                <Style TargetType="local:LayoutProblemText">
-                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedSlots.Count, StringFormat={}{0} invalid positioned interior slots!}"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding UnreachableSlots.Count}" Value="1">
-                                                            <Setter Property="InvalidText" Value="1 invalid positioned interior slot!"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </local:LayoutProblemText.Style>
-                                        </local:LayoutProblemText>
+                                                <local:LayoutProblemText.Style>
+                                                    <Style TargetType="local:LayoutProblemText">
+                                                        <Setter Property="InvalidText" Value="{Binding InvalidPositionedSlots.Count, StringFormat={}{0} invalid positioned interior slots!}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding UnreachableSlots.Count}" Value="1">
+                                                                <Setter Property="InvalidText" Value="1 invalid positioned interior slot!"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </local:LayoutProblemText.Style>
+                                            </local:LayoutProblemText>
 
-                                        <local:LayoutProblemText ValidText="All doors on valid positions"
+                                            <local:LayoutProblemText ValidText="All doors on valid positions"
                                                                  Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllDoorSlotPositionsValid}"
                                                                  InvalidSlots="{Binding InvalidPositionedDoorSlots}"
@@ -225,18 +228,18 @@
                                                                  AutoFixTarget="{Binding}"
                                                                  AutoFixApplying="InvalidDoorPlacements_AutoFixApplying"
                                                                  Description="Doors (passenger, catering and loading bays) can only be placed at the top or bottom, and not on any corner of your layout">
-                                            <local:LayoutProblemText.Style>
-                                                <Style TargetType="local:LayoutProblemText">
-                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedDoorSlots.Count, StringFormat={}{0} doors have invalid placements!}"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding InvalidPositionedDoorSlots.Count}" Value="1">
-                                                            <Setter Property="InvalidText" Value="1 door has invalid placement!"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </local:LayoutProblemText.Style>
-                                        </local:LayoutProblemText>
-                                        <local:LayoutProblemText ValidText="All cockpit slots on valid positions"
+                                                <local:LayoutProblemText.Style>
+                                                    <Style TargetType="local:LayoutProblemText">
+                                                        <Setter Property="InvalidText" Value="{Binding InvalidPositionedDoorSlots.Count, StringFormat={}{0} doors have invalid placements!}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding InvalidPositionedDoorSlots.Count}" Value="1">
+                                                                <Setter Property="InvalidText" Value="1 door has invalid placement!"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </local:LayoutProblemText.Style>
+                                            </local:LayoutProblemText>
+                                            <local:LayoutProblemText ValidText="All cockpit slots on valid positions"
                                                                  Floor="{Binding Floor}"
                                                                  IsValid="{Binding AllCockpitSlotPositionsValid}"
                                                                  InvalidSlots="{Binding InvalidPositionedCockpitSlots}"
@@ -245,51 +248,52 @@
                                                                  ShowProblemsChanged="InvalidPositionedCockpitSlots_ShowProblemsChanged"
                                                                  ShowProblems="{Binding ShowCockpitPositionIssues}"
                                                                  Description="Cockpit slots should only be placed at the left or right side of your layout">
-                                            <local:LayoutProblemText.Style>
-                                                <Style TargetType="local:LayoutProblemText">
-                                                    <Setter Property="InvalidText" Value="{Binding InvalidPositionedCockpitSlots.Count, StringFormat={}{0} invalid positioned cockpit slots!}"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding InvalidPositionedCockpitSlots.Count}" Value="1">
-                                                            <Setter Property="InvalidText" Value="1 invalid positioned cockpit slot!"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </local:LayoutProblemText.Style>
-                                        </local:LayoutProblemText>
-                                        <Separator Margin="0,4"/>
-                                        <local:LayoutProblemText ValidText="Service start- and endpoints are valid"
+                                                <local:LayoutProblemText.Style>
+                                                    <Style TargetType="local:LayoutProblemText">
+                                                        <Setter Property="InvalidText" Value="{Binding InvalidPositionedCockpitSlots.Count, StringFormat={}{0} invalid positioned cockpit slots!}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding InvalidPositionedCockpitSlots.Count}" Value="1">
+                                                                <Setter Property="InvalidText" Value="1 invalid positioned cockpit slot!"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </local:LayoutProblemText.Style>
+                                            </local:LayoutProblemText>
+                                            <Separator Margin="0,4"/>
+                                            <local:LayoutProblemText ValidText="Service start- and endpoints are valid"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Invalid service points!"
                                                                  IsValid="{Binding AreServicePointsValid}"
                                                                  Description="Each service start point (&lt;) also requires an end point (&gt;) in the same column"/>
-                                        <local:LayoutProblemText ValidText="All seat rows covered by service"
+                                            <local:LayoutProblemText ValidText="All seat rows covered by service"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Some rows aren't covered by service!"
                                                                  IsValid="{Binding AreSeatsReachableByService}"
                                                                  IsRequired="{Binding AreKitchensValid}"
                                                                  NotRequiredText="No service coverage required (no kitchen)"
                                                                  Description="In case you have a kitchen on this deck, make sure to cover all rows with the service start- and endpoints"/>
-                                        <local:LayoutProblemText ValidText="Enough galley seats available for crew"
+                                            <local:LayoutProblemText ValidText="Enough galley seats available for crew"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="Insufficient galley seats for servicing!"
                                                                  IsValid="{Binding AreGalleysValid}"
                                                                  Description="Make sure to have at least as many galley seats on this deck as there are service areas"/>
-                                        <local:LayoutProblemText ValidText="Kitchen accessible (In-Flight services available)"
+                                            <local:LayoutProblemText ValidText="Kitchen accessible (In-Flight services available)"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No kitchen available! (No In-Flight services)"
                                                                  IsValid="{Binding AreKitchensValid}" IsSevereProblem="False"
                                                                  Description="If you wanna be able to offer in-flight services, make sure to place down a kitchen"/>
-                                        <local:LayoutProblemText ValidText="Intercom available"
+                                            <local:LayoutProblemText ValidText="Intercom available"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No intercom on this deck!"
                                                                  IsValid="{Binding AreIntercomsValid}"
                                                                  Description="Intercoms are used by your cabin crew to communicate to both the captain as well as the passengers"/>
-                                        <local:LayoutProblemText ValidText="Toilets available"
+                                            <local:LayoutProblemText ValidText="Toilets available"
                                                                  Floor="{Binding Floor}"
                                                                  InvalidText="No toilets on this deck!"
                                                                  IsValid="{Binding AreToiletsAvailable}" IsSevereProblem="False"
                                                                  Description="In order to satisfy the needs of your passengers, one or more toilets are required"/>
-                                    </StackPanel>
+                                        </StackPanel>
+                                    </Border>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
