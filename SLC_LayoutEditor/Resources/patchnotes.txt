@@ -1,5 +1,5 @@
-﻿08.07.2024
-Added: When loading layouts, you will now see a "Loading layout" screen to show something is happening. This is especially useful on larger layouts
+﻿04.10.2024
+Added: When loading layouts, you will now see a "Loading layout" screen to show something is happening. This is especially useful on larger layouts!
 Changed: Groups of kitchen and cockpit slots are now considered as accessible by the editor, as long as at least one of the slots in the group is adjacent to an aisle
 Changed: The issue lists for decks are now better visible
 Fixed: Changing slots with keybinds didn't trigger the check for unsaved changes
