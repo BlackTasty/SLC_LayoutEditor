@@ -1,13 +1,8 @@
 ﻿using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Memento;
-using SLC_LayoutEditor.Core.PathFinding;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using Tasty.ViewModel;
 

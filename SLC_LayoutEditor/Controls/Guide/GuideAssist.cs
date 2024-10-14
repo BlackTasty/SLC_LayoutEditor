@@ -1,13 +1,6 @@
 ﻿using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Guide;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace SLC_LayoutEditor.Controls.Guide
 {

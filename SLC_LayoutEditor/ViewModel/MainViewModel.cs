@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using SLC_LayoutEditor.Controls;
-using SLC_LayoutEditor.Core;
+﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.Core.Memento;
-using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Commands;
@@ -13,15 +10,8 @@ using SLC_LayoutEditor.ViewModel.Commands.SlotType;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using Tasty.ViewModel;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.ViewModel

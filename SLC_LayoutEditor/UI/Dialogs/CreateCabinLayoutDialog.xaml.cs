@@ -3,10 +3,8 @@ using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
 using SLC_LayoutEditor.ViewModel;
-using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace SLC_LayoutEditor.UI.Dialogs
 {

@@ -1,10 +1,8 @@
 ﻿using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Enum;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Documents;
 
 namespace SLC_LayoutEditor.ViewModel
 {

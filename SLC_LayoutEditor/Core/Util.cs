@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 using System.Diagnostics;
 using System.Windows.Input;
-using System.IO.Pipes;
 using Tasty.Logging;
 using System.IO;
-using System.Threading;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.Reflection;

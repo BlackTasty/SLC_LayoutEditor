@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using Tasty.Logging;
 using Tasty.ViewModel;
 using Tasty.ViewModel.Communication;

@@ -1,15 +1,8 @@
 ﻿using SLC_LayoutEditor.Core.Cabin;
-using SLC_LayoutEditor.Core.Enum;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO.Packaging;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Xml.Linq;
 using Tasty.Logging;
 
 namespace SLC_LayoutEditor.Core.PathFinding

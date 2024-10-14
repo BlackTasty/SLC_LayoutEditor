@@ -5,15 +5,9 @@ using SLC_LayoutEditor.UI;
 using SLC_LayoutEditor.ViewModel;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Tasty.ViewModel;
 using Tasty.ViewModel.Communication;
 
 namespace SLC_LayoutEditor.Core.Guide

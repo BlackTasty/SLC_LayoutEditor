@@ -2,7 +2,6 @@
 using SLC_LayoutEditor.Core.Cabin;
 using System;
 using System.Collections.Generic;
-using System.Windows.Media;
 
 namespace SLC_LayoutEditor.Core.Events
 {

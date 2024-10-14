@@ -7,23 +7,17 @@ using SLC_LayoutEditor.UI.Dialogs;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ScrollBar;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace SLC_LayoutEditor.Core.Cabin.Renderer
 {

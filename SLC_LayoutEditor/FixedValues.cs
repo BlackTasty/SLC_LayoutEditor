@@ -1,8 +1,6 @@
 ﻿using SLC_LayoutEditor.Core.Enum;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace SLC_LayoutEditor

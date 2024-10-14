@@ -2,7 +2,6 @@
 using SLC_LayoutEditor.Controls.Guide;
 using SLC_LayoutEditor.Controls.Notifications;
 using SLC_LayoutEditor.Core;
-using SLC_LayoutEditor.Core.AutoFix;
 using SLC_LayoutEditor.Core.Cabin;
 using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
@@ -17,20 +16,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace SLC_LayoutEditor.UI
 {

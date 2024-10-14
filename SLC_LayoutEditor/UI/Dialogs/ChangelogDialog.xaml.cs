@@ -1,10 +1,7 @@
 ﻿using SLC_LayoutEditor.Core;
-using SLC_LayoutEditor.Core.Dialogs;
 using SLC_LayoutEditor.Core.Enum;
 using SLC_LayoutEditor.Core.Events;
-using System;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace SLC_LayoutEditor.UI.Dialogs
 {

@@ -1,21 +1,15 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json.Bson;
 using SLC_LayoutEditor.Core;
 using SLC_LayoutEditor.Core.Guide;
 using SLC_LayoutEditor.Core.Patcher;
 using SLC_LayoutEditor.ViewModel.Communication;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Animation;
 using Tasty.Logging;
 using Tasty.ViewModel.Communication;
 
